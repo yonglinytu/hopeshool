@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HOPE 情緒六大家族｜SEL 情緒教育課程</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --yellow: #EF9F27; --yellow-light: #FAEEDA; --yellow-dark: #633806;
+  --green: #639922;  --green-light: #EAF3DE;  --green-dark: #27500A;
+  --blue: #378ADD;   --blue-light: #E6F1FB;   --blue-dark: #0C447C;
+  --orange: #D85A30; --orange-light: #FAECE7; --orange-dark: #712B13;
+  --purple: #7F77DD; --purple-light: #EEEDFE; --purple-dark: #3C3489;
+  --red: #E24B4A;    --red-light: #FCEBEB;    --red-dark: #791F1F;
+  --ink: #1a1a18;
+  --ink2: #3d3d3a;
+  --ink3: #73726c;
+  --ink4: #a8a7a0;
+  --paper: #faf9f6;
+  --paper2: #f2f0eb;
+  --border: rgba(26,26,24,0.1);
+  --border2: rgba(26,26,24,0.18);
+  --serif: 'Noto Serif TC', serif;
+  --sans: 'Noto Sans TC', sans-serif;
+  --radius: 12px;
+  --radius-lg: 20px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--sans); background: var(--paper); color: var(--ink); line-height: 1.7; font-size: 16px; }
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(250,249,246,0.92); backdrop-filter: blur(12px);
+  border-bottom: 0.5px solid var(--border);
+  padding: 0 2rem; display: flex; align-items: center; justify-content: space-between;
+  height: 60px;
+}
+.nav-logo { font-family: var(--serif); font-size: 17px; font-weight: 600; letter-spacing: 0.02em; color: var(--ink); text-decoration: none; }
+.nav-logo span { color: var(--purple); }
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a { font-size: 14px; color: var(--ink3); text-decoration: none; transition: color 0.2s; }
+.nav-links a:hover { color: var(--ink); }
+.nav-cta { font-size: 13px; font-weight: 500; padding: 7px 18px; border-radius: 99px; background: var(--purple); color: #fff; text-decoration: none; transition: opacity 0.2s; }
+.nav-cta:hover { opacity: 0.85; }
+
+/* HERO */
+.hero {
+  min-height: 92vh; display: flex; flex-direction: column; justify-content: center;
+  padding: 6rem 2rem 4rem; max-width: 860px; margin: 0 auto;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--purple-dark); background: var(--purple-light);
+  padding: 5px 14px; border-radius: 99px; margin-bottom: 2rem;
+}
+.hero h1 {
+  font-family: var(--serif); font-size: clamp(2.4rem, 5vw, 3.6rem);
+  font-weight: 600; line-height: 1.2; letter-spacing: -0.01em;
+  color: var(--ink); margin-bottom: 1.5rem;
+}
+.hero h1 em { font-style: normal; color: var(--purple); }
+.hero-sub { font-size: 17px; color: var(--ink3); line-height: 1.8; max-width: 560px; margin-bottom: 2.5rem; }
+.hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn-primary {
+  font-size: 14px; font-weight: 500; padding: 12px 28px; border-radius: 99px;
+  background: var(--purple); color: #fff; border: none; cursor: pointer;
+  text-decoration: none; display: inline-block; transition: all 0.2s;
+}
+.btn-primary:hover { background: var(--purple-dark); }
+.btn-secondary {
+  font-size: 14px; padding: 12px 28px; border-radius: 99px;
+  background: transparent; color: var(--ink); border: 1px solid var(--border2);
+  cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.2s;
+}
+.btn-secondary:hover { background: var(--paper2); }
+.hero-stats { display: flex; gap: 2.5rem; margin-top: 3rem; padding-top: 2rem; border-top: 0.5px solid var(--border); }
+.stat-num { font-family: var(--serif); font-size: 2rem; font-weight: 600; color: var(--ink); }
+.stat-label { font-size: 12px; color: var(--ink4); margin-top: 2px; }
+
+/* SECTION */
+section { padding: 5rem 2rem; }
+.section-inner { max-width: 900px; margin: 0 auto; }
+.section-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink4); margin-bottom: 12px; }
+.section-title { font-family: var(--serif); font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 600; color: var(--ink); margin-bottom: 1rem; }
+.section-sub { font-size: 15px; color: var(--ink3); line-height: 1.8; max-width: 560px; }
+hr.section-div { border: none; border-top: 0.5px solid var(--border); margin: 0; }
+
+/* ORIGIN */
+.origin-card {
+  background: var(--paper2); border-radius: var(--radius-lg); padding: 2rem 2.5rem;
+  border: 0.5px solid var(--border); margin-top: 2rem;
+  display: flex; gap: 2rem; align-items: flex-start;
+}
+.origin-badge {
+  font-size: 12px; font-weight: 500; background: var(--purple-light); color: var(--purple-dark);
+  padding: 4px 12px; border-radius: 99px; white-space: nowrap; margin-top: 2px;
+  flex-shrink: 0;
+}
+.origin-text p { font-size: 14px; color: var(--ink2); line-height: 1.8; margin-bottom: 8px; }
+.origin-text p:last-child { margin-bottom: 0; color: var(--ink3); }
+
+/* FAMILIES */
+.families-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 2rem; }
+.family-card {
+  border-radius: var(--radius); padding: 1.25rem; border: 0.5px solid var(--border);
+  transition: transform 0.15s;
+}
+.family-card:hover { transform: translateY(-2px); }
+.family-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+.family-name { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 5px; display: flex; align-items: center; }
+.family-kw { font-size: 12px; color: var(--ink3); line-height: 1.6; }
+.family-anchor { font-size: 11px; color: var(--ink4); margin-top: 6px; font-style: italic; }
+
+/* CARD DEMO */
+.demo-wrap { max-width: 520px; margin: 2rem auto 0; }
+.sel-row { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; margin-bottom: 14px; }
+.sel-btn {
+  font-size: 12px; padding: 5px 14px; border-radius: 99px;
+  border: 1px solid var(--border2); background: var(--paper2); color: var(--ink3);
+  cursor: pointer; transition: all 0.15s;
+}
+.card-scene { width: 100%; height: 300px; perspective: 1000px; cursor: pointer; margin-bottom: 12px; }
+.card-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.55s cubic-bezier(.4,0,.2,1); }
+.card-scene.flipped .card-inner { transform: rotateY(180deg); }
+.card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 18px; padding: 1.5rem; display: flex; flex-direction: column; }
+.card-back { background: #fff; border: 1px solid var(--border); transform: rotateY(180deg); overflow-y: auto; }
+.cbadge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 4px 12px; border-radius: 99px; margin-bottom: auto; width: fit-content; }
+.cdot { width: 8px; height: 8px; border-radius: 50%; }
+.cnum { font-size: 12px; margin-bottom: 6px; }
+.cword { font-family: var(--serif); font-size: 30px; font-weight: 600; margin-bottom: 10px; }
+.canchor { font-size: 14px; line-height: 1.65; font-style: italic; }
+.chint { font-size: 11px; margin-top: auto; text-align: right; opacity: 0.55; }
+.blabel { font-size: 10px; font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink4); margin-bottom: 4px; }
+.btext { font-size: 12px; color: var(--ink2); line-height: 1.65; margin-bottom: 10px; }
+.btask { font-size: 12px; color: var(--ink2); line-height: 1.65; background: var(--paper2); border-radius: 8px; padding: 9px 11px; margin-bottom: 10px; }
+.bdiv { border: none; border-top: 0.5px solid var(--border); margin: 8px 0; }
+.flip-btn {
+  width: 100%; padding: 10px; font-size: 13px; border-radius: var(--radius);
+  background: transparent; cursor: pointer; transition: all 0.15s; margin-bottom: 8px;
+}
+.card-hint { font-size: 12px; color: var(--ink4); text-align: center; }
+
+/* HOW */
+.how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 2rem; }
+.how-card { background: var(--paper2); border-radius: var(--radius); padding: 1.5rem; border: 0.5px solid var(--border); }
+.how-time { font-family: var(--serif); font-size: 2rem; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+.how-title { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
+.how-desc { font-size: 13px; color: var(--ink3); line-height: 1.7; }
+
+/* CARD DB */
+.filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.f-btn {
+  font-size: 12px; padding: 5px 14px; border-radius: 99px;
+  border: 1px solid var(--border2); background: var(--paper2); color: var(--ink3);
+  cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 5px;
+}
+.f-btn.on { font-weight: 500; }
+.f-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.count-bar { font-size: 12px; color: var(--ink4); margin: 12px 0; padding-bottom: 12px; border-bottom: 0.5px solid var(--border); }
+.cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.cdb-card {
+  border-radius: var(--radius); padding: 14px; border: 0.5px solid var(--border);
+  cursor: pointer; transition: transform 0.12s, border-color 0.12s;
+}
+.cdb-card:hover { transform: translateY(-2px); border-color: var(--border2); }
+.cdb-num { font-size: 11px; margin-bottom: 4px; }
+.cdb-word { font-family: var(--serif); font-size: 16px; font-weight: 600; margin-bottom: 5px; }
+.cdb-anc { font-size: 11px; line-height: 1.5; opacity: 0.8; }
+
+/* LESSONS */
+.lessons-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.lesson-card {
+  background: #fff; border: 0.5px solid var(--border); border-radius: var(--radius);
+  padding: 14px; cursor: pointer; transition: all 0.12s;
+}
+.lesson-card:hover { border-color: var(--border2); transform: translateY(-1px); }
+.lesson-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+.lesson-num { font-size: 11px; color: var(--ink4); }
+.type-pill { font-size: 11px; padding: 2px 8px; border-radius: 99px; white-space: nowrap; }
+.lesson-title { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 6px; line-height: 1.4; }
+.lesson-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+.ltag { font-size: 11px; padding: 2px 8px; border-radius: 99px; background: var(--paper2); color: var(--ink3); border: 0.5px solid var(--border); }
+
+/* STEPS */
+.steps-row { display: grid; grid-template-columns: repeat(3,1fr); border-radius: var(--radius-lg); overflow: hidden; border: 0.5px solid var(--border); margin-top: 2rem; }
+.step { padding: 1.25rem; background: var(--paper2); border-right: 0.5px solid var(--border); }
+.step:last-child { border-right: none; }
+.step-num { font-size: 11px; color: var(--ink4); margin-bottom: 5px; }
+.step-text { font-size: 13px; color: var(--ink2); line-height: 1.6; }
+
+/* CTA BOX */
+.cta-box {
+  background: var(--purple-light); border-radius: var(--radius-lg);
+  padding: 2.5rem; text-align: center; margin-top: 1.5rem;
+}
+.cta-box h3 { font-family: var(--serif); font-size: 1.5rem; color: var(--purple-dark); margin-bottom: 1rem; }
+.cta-box .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+/* CONTACT */
+.contact-wrap { max-width: 560px; margin: 2rem auto 0; }
+.form-card { background: #fff; border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; }
+.field-group { margin-bottom: 1.25rem; }
+.field-label { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 6px; display: block; }
+.field-hint { font-size: 12px; color: var(--ink3); margin-bottom: 6px; display: block; }
+.req { color: #E24B4A; margin-left: 2px; }
+.badge-must { font-size: 11px; background: var(--purple-light); color: var(--purple-dark); padding: 2px 8px; border-radius: 99px; margin-left: 6px; }
+.badge-opt { font-size: 11px; background: var(--paper2); color: var(--ink3); padding: 2px 8px; border-radius: 99px; margin-left: 6px; }
+input[type=text], input[type=email], select, textarea {
+  width: 100%; padding: 9px 12px; font-size: 14px; font-family: var(--sans);
+  border: 1px solid var(--border2); border-radius: 8px; background: var(--paper);
+  color: var(--ink); outline: none; transition: border-color 0.15s;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--purple); }
+textarea { resize: vertical; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.ctag {
+  font-size: 12px; padding: 5px 14px; border-radius: 99px;
+  border: 1px solid var(--border2); background: var(--paper2); color: var(--ink3);
+  cursor: pointer; transition: all 0.15s;
+}
+.ctag.sel { background: var(--purple-light); border-color: var(--purple); color: var(--purple-dark); }
+.sec-label { font-size: 11px; font-weight: 500; letter-spacing: 0.07em; color: var(--ink4); text-transform: uppercase; margin: 1.5rem 0 1rem; border-top: 0.5px solid var(--border); padding-top: 1rem; }
+.submit-btn {
+  width: 100%; padding: 12px; font-size: 14px; font-weight: 500; font-family: var(--sans);
+  background: var(--purple); color: #fff; border: none; border-radius: 99px; cursor: pointer;
+  margin-top: 1.25rem; transition: opacity 0.2s;
+}
+.submit-btn:hover { opacity: 0.85; }
+.form-note { font-size: 12px; color: var(--ink4); text-align: center; margin-top: 10px; }
+
+/* MODAL */
+.modal-bg {
+  position: fixed; inset: 0; background: rgba(26,26,24,0.4);
+  display: flex; align-items: center; justify-content: center; z-index: 200; padding: 16px;
+}
+.modal {
+  background: #fff; border-radius: 18px; padding: 1.75rem; width: 100%;
+  max-width: 420px; max-height: 86vh; overflow-y: auto;
+  border: 0.5px solid var(--border);
+}
+.modal-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.m-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; padding: 3px 10px; border-radius: 99px; }
+.close-btn { font-size: 22px; background: none; border: none; cursor: pointer; color: var(--ink3); line-height: 1; padding: 0; }
+.m-num { font-size: 11px; color: var(--ink4); margin-bottom: 3px; }
+.m-word { font-family: var(--serif); font-size: 26px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+.m-anc { font-size: 14px; color: var(--ink3); font-style: italic; line-height: 1.65; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 0.5px solid var(--border); }
+.m-label { font-size: 10px; font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink4); margin-bottom: 4px; margin-top: 12px; }
+.m-text { font-size: 13px; color: var(--ink2); line-height: 1.65; }
+.m-task { font-size: 13px; color: var(--ink2); line-height: 1.65; background: var(--paper2); border-radius: 8px; padding: 10px 12px; }
+.m-div { border: none; border-top: 0.5px solid var(--border); margin: 10px 0; }
+.m-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+
+/* FOOTER */
+footer {
+  background: var(--ink); color: rgba(255,255,255,0.7);
+  padding: 3rem 2rem; text-align: center;
+}
+.footer-logo { font-family: var(--serif); font-size: 18px; color: #fff; margin-bottom: 8px; }
+.footer-sub { font-size: 13px; margin-bottom: 1.5rem; }
+.footer-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem; }
+.footer-btn-p { font-size: 13px; padding: 8px 22px; border-radius: 99px; background: var(--purple); color: #fff; text-decoration: none; }
+.footer-btn-s { font-size: 13px; padding: 8px 22px; border-radius: 99px; border: 1px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.8); text-decoration: none; }
+.footer-copy { font-size: 12px; color: rgba(255,255,255,0.35); }
+
+/* RESPONSIVE */
+@media (max-width: 640px) {
+  .families-grid, .how-grid { grid-template-columns: repeat(2,1fr); }
+  .cards-grid { grid-template-columns: repeat(2,1fr); }
+  .lessons-grid, .two-col { grid-template-columns: 1fr; }
+  .steps-row { grid-template-columns: 1fr; }
+  .step { border-right: none; border-bottom: 0.5px solid var(--border); }
+  .step:last-child { border-bottom: none; }
+  .nav-links { display: none; }
+  .origin-card { flex-direction: column; gap: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#home">HOPE <span>情緒六大家族</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">關於課程</a></li>
+    <li><a href="#cards">牌卡資料庫</a></li>
+    <li><a href="#lessons">教案總覽</a></li>
+    <li><a href="#contact">合作洽詢</a></li>
+  </ul>
+  <a class="nav-cta" href="#contact">預約說明</a>
+</nav>
+
+<!-- HERO -->
+<section id="home" style="padding:0;">
+<div class="hero">
+  <div class="hero-eyebrow">SEL 情緒教育課程</div>
+  <h1>老師有具體工具，<br><em>不用自己想。</em></h1>
+  <p class="hero-sub">六大家族 84 張情緒牌卡 ＋ 71 個完整教案，從 3 分鐘到 50 分鐘都有，備課直接用。</p>
+  <div class="hero-btns">
+    <a class="btn-primary" href="#cards">瀏覽全部牌卡 →</a>
+    <a class="btn-secondary" href="#about">了解這套課程</a>
+  </div>
+  <div class="hero-stats">
+    <div><div class="stat-num">84</div><div class="stat-label">張情緒牌卡</div></div>
+    <div><div class="stat-num">71</div><div class="stat-label">個完整教案</div></div>
+    <div><div class="stat-num">6</div><div class="stat-label">大情緒家族</div></div>
+  </div>
+</div>
+</section>
+
+<hr class="section-div">
+
+<!-- ABOUT -->
+<section id="about">
+<div class="section-inner">
+  <div class="section-eyebrow">關於課程</div>
+  <h2 class="section-title">一張能終身使用的情緒地圖</h2>
+  <p class="section-sub">這套課程幫助孩子解決三個困境：叫不出情緒的名字、分不清情緒的強弱、只會用行為代替語言。</p>
+
+  <div class="origin-card">
+    <div class="origin-badge">永齡希望小學</div>
+    <div class="origin-text">
+      <p>這套課程從永齡希望小學的教學現場長出來，在真實的班級裡反覆試驗、調整，才形成現在的樣子。</p>
+      <p>不是憑空設計的教材——每一張牌卡、每一個教案，都來自孩子真實的情緒反應與老師的課堂需求。</p>
+    </div>
+  </div>
+
+  <div style="margin-top:3rem;">
+    <div class="section-eyebrow">六大情緒家族</div>
+    <p style="font-size:14px;color:var(--ink3);margin-bottom:0;">每個家族 14 張牌，涵蓋情緒從輕到重的完整光譜</p>
+  </div>
+  <div class="families-grid">
+    <div class="family-card" style="background:#FAEEDA;border-color:#EF9F27;">
+      <div class="family-name"><span class="family-dot" style="background:#EF9F27;"></span>黃色家族</div>
+      <div class="family-kw">安心｜放鬆｜喜悅｜幸福</div>
+      <div class="family-anchor">把心安放好，情緒就有地方回家。</div>
+    </div>
+    <div class="family-card" style="background:#EAF3DE;border-color:#639922;">
+      <div class="family-name"><span class="family-dot" style="background:#639922;"></span>綠色家族</div>
+      <div class="family-kw">怪怪的｜厭煩｜討厭｜拒絕</div>
+      <div class="family-anchor">穩住節奏，把努力長成力量。</div>
+    </div>
+    <div class="family-card" style="background:#E6F1FB;border-color:#378ADD;">
+      <div class="family-name"><span class="family-dot" style="background:#378ADD;"></span>藍色家族</div>
+      <div class="family-kw">心悶｜失落｜委屈｜心碎</div>
+      <div class="family-anchor">低落不是壞事，它在提醒我需要支持。</div>
+    </div>
+    <div class="family-card" style="background:#FAECE7;border-color:#D85A30;">
+      <div class="family-name"><span class="family-dot" style="background:#D85A30;"></span>橘色家族</div>
+      <div class="family-kw">好奇｜驚訝｜驚喜｜嚇呆</div>
+      <div class="family-anchor">驚訝讓我停一下，再決定下一步怎麼做。</div>
+    </div>
+    <div class="family-card" style="background:#EEEDFE;border-color:#7F77DD;">
+      <div class="family-name"><span class="family-dot" style="background:#7F77DD;"></span>紫色家族</div>
+      <div class="family-kw">緊張｜不安｜害怕｜焦慮</div>
+      <div class="family-anchor">害怕不是弱，是身體在保護我。</div>
+    </div>
+    <div class="family-card" style="background:#FCEBEB;border-color:#E24B4A;">
+      <div class="family-name"><span class="family-dot" style="background:#E24B4A;"></span>紅色家族</div>
+      <div class="family-kw">心煩｜不爽｜生氣｜氣炸</div>
+      <div class="family-anchor">生氣在告訴我：有一個界線被碰到了。</div>
+    </div>
+  </div>
+
+  <div style="margin-top:3rem;">
+    <div class="section-eyebrow">三種帶法</div>
+  </div>
+  <div class="how-grid">
+    <div class="how-card">
+      <div class="how-time">3 分</div>
+      <div class="how-title">情緒快照</div>
+      <div class="how-desc">每日開場收尾，抽牌＋1–5分手勢＋「我現在需要⋯」</div>
+    </div>
+    <div class="how-card">
+      <div class="how-time">15 分</div>
+      <div class="how-title">情境小劇場</div>
+      <div class="how-desc">兩人一組抽卡訪談，練習說出陪伴句</div>
+    </div>
+    <div class="how-card">
+      <div class="how-time">50 分</div>
+      <div class="how-title">家族主題課</div>
+      <div class="how-desc">完整一堂課，情緒光譜排序＋個人回穩計畫</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<hr class="section-div">
+
+<!-- CARD DEMO + DB -->
+<section id="cards">
+<div class="section-inner">
+  <div class="section-eyebrow">牌卡資料庫</div>
+  <h2 class="section-title">六大情緒家族・84 張牌卡</h2>
+  <p class="section-sub">點選家族篩選，點擊牌卡展開完整內容</p>
+
+  <!-- Demo -->
+  <div class="demo-wrap">
+    <div class="sel-row">
+      <button class="sel-btn" style="border-color:#EF9F27;color:#633806;" onclick="sw('y',this)">黃色｜心安</button>
+      <button class="sel-btn" style="border-color:#639922;color:#27500A;" onclick="sw('g',this)">綠色｜拒絕</button>
+      <button class="sel-btn" style="border-color:#378ADD;color:#0C447C;" onclick="sw('b',this)">藍色｜委屈</button>
+      <button class="sel-btn" style="border-color:#D85A30;color:#712B13;" onclick="sw('o',this)">橘色｜驚訝</button>
+      <button class="sel-btn" style="border-color:#7F77DD;color:#3C3489;" onclick="sw('p',this)">紫色｜焦慮</button>
+      <button class="sel-btn" style="border-color:#E24B4A;color:#791F1F;" onclick="sw('r',this)">紅色｜生氣</button>
+    </div>
+    <div class="card-scene" id="demo-card" onclick="demoFlip()">
+      <div class="card-inner">
+        <div class="card-face" id="demo-front">
+          <div class="cbadge" id="demo-badge"><span class="cdot" id="demo-dot"></span><span id="demo-fname"></span></div>
+          <div>
+            <div class="cnum" id="demo-num"></div>
+            <div class="cword" id="demo-word"></div>
+            <div class="canchor" id="demo-anc"></div>
+          </div>
+          <div class="chint">點擊翻面 →</div>
+        </div>
+        <div class="card-face card-back">
+          <div class="blabel">覺察小問題</div><div class="btext" id="demo-q1"></div>
+          <div class="blabel">身體線索</div><div class="btext" id="demo-q2"></div>
+          <hr class="bdiv">
+          <div class="blabel">陪伴句</div><div class="btext" id="demo-co"></div>
+          <hr class="bdiv">
+          <div class="blabel">小任務</div><div class="btask" id="demo-tk"></div>
+        </div>
+      </div>
+    </div>
+    <button class="flip-btn" id="demo-flipbtn" onclick="demoFlip()">翻面 / 翻回</button>
+    <div class="card-hint">以下可瀏覽全部 84 張牌卡</div>
+  </div>
+
+  <!-- Full DB -->
+  <div style="margin-top:2.5rem;">
+    <div class="filter-bar">
+      <button class="f-btn on" style="border-color:var(--ink);color:var(--ink);" onclick="dbFilter('all',this)">全部 84 張</button>
+      <button class="f-btn" onclick="dbFilter('yellow',this)"><span class="f-dot" style="background:#EF9F27;"></span>黃色</button>
+      <button class="f-btn" onclick="dbFilter('green',this)"><span class="f-dot" style="background:#639922;"></span>綠色</button>
+      <button class="f-btn" onclick="dbFilter('blue',this)"><span class="f-dot" style="background:#378ADD;"></span>藍色</button>
+      <button class="f-btn" onclick="dbFilter('orange',this)"><span class="f-dot" style="background:#D85A30;"></span>橘色</button>
+      <button class="f-btn" onclick="dbFilter('purple',this)"><span class="f-dot" style="background:#7F77DD;"></span>紫色</button>
+      <button class="f-btn" onclick="dbFilter('red',this)"><span class="f-dot" style="background:#E24B4A;"></span>紅色</button>
+    </div>
+    <div class="count-bar" id="db-count">顯示全部 84 張</div>
+    <div class="cards-grid" id="db-grid"></div>
+  </div>
+</div>
+</section>
+
+<hr class="section-div">
+
+<!-- LESSONS -->
+<section id="lessons">
+<div class="section-inner">
+  <div class="section-eyebrow">教案總覽</div>
+  <h2 class="section-title">71 個活動教案</h2>
+  <p class="section-sub">依活動類型或情緒主題篩選，點擊展開完整說明</p>
+
+  <div class="filter-bar" style="margin-top:1.5rem;" id="ltype-bar">
+    <button class="f-btn on" style="border-color:var(--ink);color:var(--ink);" onclick="lFilter('type','all',this)">全部 71 個</button>
+    <button class="f-btn" style="border-color:#534AB7;color:#3C3489;" onclick="lFilter('type','夥伴',this)">情緒小夥伴</button>
+    <button class="f-btn" style="border-color:#185FA5;color:#0C447C;" onclick="lFilter('type','光譜',this)">情緒光譜</button>
+    <button class="f-btn" style="border-color:#1D9E75;color:#085041;" onclick="lFilter('type','偵探',this)">情緒小偵探</button>
+    <button class="f-btn" style="border-color:#D85A30;color:#712B13;" onclick="lFilter('type','故事',this)">故事時間</button>
+    <button class="f-btn" style="border-color:#639922;color:#27500A;" onclick="lFilter('type','冷靜',this)">冷靜策略</button>
+    <button class="f-btn" style="border-color:#7F77DD;color:#3C3489;" onclick="lFilter('type','正念',this)">正念體驗</button>
+    <button class="f-btn" style="border-color:#888780;color:#444441;" onclick="lFilter('type','綜合',this)">綜合活動</button>
+  </div>
+  <div class="filter-bar" id="lemo-bar">
+    <button class="f-btn on" onclick="lFilter('emotion','all',this)">所有情緒</button>
+    <button class="f-btn" style="border-color:#EF9F27;color:#633806;" onclick="lFilter('emotion','開心',this)">開心</button>
+    <button class="f-btn" style="border-color:#378ADD;color:#0C447C;" onclick="lFilter('emotion','難過',this)">難過</button>
+    <button class="f-btn" style="border-color:#E24B4A;color:#791F1F;" onclick="lFilter('emotion','生氣',this)">生氣</button>
+    <button class="f-btn" style="border-color:#639922;color:#27500A;" onclick="lFilter('emotion','噁心',this)">噁心或厭惡</button>
+    <button class="f-btn" style="border-color:#7F77DD;color:#3C3489;" onclick="lFilter('emotion','害怕',this)">害怕</button>
+    <button class="f-btn" style="border-color:#D85A30;color:#712B13;" onclick="lFilter('emotion','驚訝',this)">驚訝或驚喜</button>
+  </div>
+  <div class="count-bar" id="l-count">顯示全部 71 個活動</div>
+  <div class="lessons-grid" id="l-grid"></div>
+</div>
+</section>
+
+<hr class="section-div">
+
+<!-- STEPS + CONTACT -->
+<section id="contact">
+<div class="section-inner">
+  <div class="section-eyebrow">開始合作</div>
+  <h2 class="section-title">開始很簡單</h2>
+
+  <div class="steps-row">
+    <div class="step"><div class="step-num">01</div><div class="step-text">瀏覽牌卡資料庫，找到感興趣的家族</div></div>
+    <div class="step"><div class="step-num">02</div><div class="step-text">對照教案，選一個適合班級的活動</div></div>
+    <div class="step"><div class="step-num">03</div><div class="step-text">填表洽詢，一起討論怎麼引進</div></div>
+  </div>
+
+  <div style="margin-top:2.5rem;">
+    <div class="section-eyebrow">合作洽詢</div>
+  </div>
+  <div class="contact-wrap">
+    <div class="form-card">
+      <div class="sec-label" style="margin-top:0;border-top:none;padding-top:0;">基本資訊</div>
+      <div class="two-col">
+        <div class="field-group">
+          <label class="field-label">姓名<span class="req">*</span></label>
+          <input type="text" placeholder="王小明">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Email<span class="req">*</span></label>
+          <input type="email" placeholder="name@school.edu.tw">
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">單位名稱<span class="req">*</span><span class="badge-must">幫助快速判斷對象</span></label>
+        <input type="text" placeholder="例：國立某某國小、某某社福基金會">
+      </div>
+      <div class="field-group">
+        <label class="field-label">您的身份<span class="req">*</span></label>
+        <span class="field-hint">選一個最接近的</span>
+        <div class="tag-row" id="role-tags">
+          <span class="ctag sel" onclick="selRole(this)">學校老師／輔導老師</span>
+          <span class="ctag" onclick="selRole(this)">安親班／補習班</span>
+          <span class="ctag" onclick="selRole(this)">社福機構／NPO</span>
+          <span class="ctag" onclick="selRole(this)">企業內訓負責人</span>
+          <span class="ctag" onclick="selRole(this)">家長</span>
+          <span class="ctag" onclick="selRole(this)">其他</span>
+        </div>
+      </div>
+
+      <div class="sec-label">合作需求</div>
+      <div class="field-group">
+        <label class="field-label">想了解的合作方式<span class="req">*</span><span class="badge-must">可複選</span></label>
+        <div class="tag-row">
+          <span class="ctag" onclick="this.classList.toggle('sel')">單次演講／工作坊</span>
+          <span class="ctag" onclick="this.classList.toggle('sel')">學期課程合作</span>
+          <span class="ctag" onclick="this.classList.toggle('sel')">教師培訓</span>
+          <span class="ctag" onclick="this.classList.toggle('sel')">還不確定，想先了解</span>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="field-group">
+          <label class="field-label">預計對象年段<span class="badge-opt">選填</span></label>
+          <select>
+            <option value="">請選擇</option>
+            <option>低年級（1-2年級）</option>
+            <option>中年級（3-4年級）</option>
+            <option>高年級（5-6年級）</option>
+            <option>國中</option>
+            <option>混齡／成人</option>
+            <option>不限</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">預計人數規模<span class="badge-opt">選填</span></label>
+          <select>
+            <option value="">請選擇</option>
+            <option>小團體（10人以內）</option>
+            <option>1班（約30人以內）</option>
+            <option>2–4班</option>
+            <option>全校或大型活動</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">想說的話<span class="badge-opt">選填，但很有用</span></label>
+        <span class="field-hint">例如：預計時間、特殊需求、或任何想先讓我知道的</span>
+        <textarea rows="3" placeholder="自由填寫..."></textarea>
+      </div>
+      <button class="submit-btn" onclick="handleSubmit()">送出洽詢</button>
+      <div class="form-note">通常在 3 個工作天內回覆</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">HOPE 情緒六大家族</div>
+  <div class="footer-sub">永齡希望小學 SEL 情緒教育課程</div>
+  <div class="footer-btns">
+    <a class="footer-btn-p" href="#cards">瀏覽牌卡</a>
+    <a class="footer-btn-s" href="#contact">預約說明</a>
+  </div>
+  <div class="footer-copy">© 2025 HOPE 情緒六大家族。保留一切權利。</div>
+</footer>
+
+<!-- CARD MODAL -->
+<div id="card-modal" style="display:none;" class="modal-bg" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal">
+    <div class="modal-top">
+      <div class="m-badge" id="cm-badge"></div>
+      <button class="close-btn" onclick="document.getElementById('card-modal').style.display='none'">×</button>
+    </div>
+    <div class="m-num" id="cm-num"></div>
+    <div class="m-word" id="cm-word"></div>
+    <div class="m-anc" id="cm-anc"></div>
+    <div class="m-label">覺察小問題</div><div class="m-text" id="cm-q1"></div>
+    <div class="m-label">身體線索</div><div class="m-text" id="cm-q2"></div>
+    <hr class="m-div">
+    <div class="m-label">陪伴句</div><div class="m-text" id="cm-co"></div>
+    <hr class="m-div">
+    <div class="m-label">小任務</div><div class="m-task" id="cm-tk"></div>
+  </div>
+</div>
+
+<!-- LESSON MODAL -->
+<div id="lesson-modal" style="display:none;" class="modal-bg" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal">
+    <div class="modal-top">
+      <div></div>
+      <button class="close-btn" onclick="document.getElementById('lesson-modal').style.display='none'">×</button>
+    </div>
+    <div class="m-num" id="lm-num"></div>
+    <div class="m-word" id="lm-title"></div>
+    <div class="m-tags" id="lm-tags"></div>
+    <div class="m-label">SEL 目標</div><div class="m-text" id="lm-goal"></div>
+    <hr class="m-div">
+    <div class="m-label">SEL 核心能力</div><div class="m-text" id="lm-sel"></div>
+    <hr class="m-div">
+    <div class="m-label">活動說明</div><div class="m-text" id="lm-desc"></div>
+  </div>
+</div>
+
+<script>
+// ===== CARD DATA =====
+const FC={
+  yellow:{name:'黃色家族',bg:'#FAEEDA',bd:'#EF9F27',bbg:'#FAC775',bt:'#412402',dc:'#BA7517',nc:'#854F0B',wc:'#412402',ac:'#633806'},
+  green:{name:'綠色家族',bg:'#EAF3DE',bd:'#639922',bbg:'#C0DD97',bt:'#173404',dc:'#3B6D11',nc:'#3B6D11',wc:'#173404',ac:'#27500A'},
+  blue:{name:'藍色家族',bg:'#E6F1FB',bd:'#378ADD',bbg:'#B5D4F4',bt:'#042C53',dc:'#185FA5',nc:'#185FA5',wc:'#042C53',ac:'#0C447C'},
+  orange:{name:'橘色家族',bg:'#FAECE7',bd:'#D85A30',bbg:'#F5C4B3',bt:'#4A1B0C',dc:'#993C1D',nc:'#993C1D',wc:'#4A1B0C',ac:'#712B13'},
+  purple:{name:'紫色家族',bg:'#EEEDFE',bd:'#7F77DD',bbg:'#CECBF6',bt:'#26215C',dc:'#534AB7',nc:'#534AB7',wc:'#26215C',ac:'#3C3489'},
+  red:{name:'紅色家族',bg:'#FCEBEB',bd:'#E24B4A',bbg:'#F7C1C1',bt:'#501313',dc:'#A32D2D',nc:'#A32D2D',wc:'#501313',ac:'#791F1F'}
+};
+const DEMO={
+  y:{fname:'黃色家族',f:'yellow',num:'黃色 01',word:'心安',anc:'心裡安安穩穩的，像被輕輕托住。',q1:'最近什麼時候，你會覺得心裡比較安穩、不那麼緊張？',q2:'讓你心安的時刻，旁邊通常有誰或哪些小東西陪你？',co:'「你值得待在讓自己覺得安心、踏實的地方和關係裡。」',tk:'寫下三件讓你覺得心安的小事（一個人、一個地方或一個習慣）。'},
+  g:{fname:'綠色家族',f:'green',num:'綠色 14',word:'拒絕',anc:'心裡很清楚：「這個我不要。」',q1:'有沒有一件事，你心裡很清楚不想要，但還是說了好？',q2:'當你說「不要」的時候，身體有什麼感覺？',co:'「你有權利說不，而且不需要解釋太多。」',tk:'練習一句話：「這個我沒辦法，謝謝你的邀請。」大聲說三次。'},
+  b:{fname:'藍色家族',f:'blue',num:'藍色 07',word:'委屈',anc:'明明有話想說卻被誤會，心裡縮起來。',q1:'最近有沒有被誤會的時候？那時心裡最想說什麼？',q2:'覺得委屈時你會沉默還是試著說出來？什麼讓你做這個選擇？',co:'「你的委屈是真實的，你不需要假裝沒事，可以讓人知道你受傷了。」',tk:'寫一句「其實我那時候很＿＿，我希望你知道＿＿。」先寫給自己看就好。'},
+  o:{fname:'橘色家族',f:'orange',num:'橘色 05',word:'驚訝',anc:'眼睛突然睜大，腦袋暫時跟不上。',q1:'最近一次「超驚訝」的時刻是什麼？',q2:'那一刻你的身體有什麼反應？',co:'「當你很驚訝時，給自己一點時間慢慢消化也沒關係。」',tk:'畫出你「最驚訝表情」的漫畫臉，當成認識自己反應的小圖示。'},
+  p:{fname:'紫色家族',f:'purple',num:'紫色 07',word:'焦慮',anc:'心裡一直拉警報，覺得好像哪裡真的很不安全。',q1:'當你覺得「好像哪裡都不太安全」的時候，通常是在什麼情境？',q2:'那時候，你的身體有什麼反應？例如：睡不太好、肚子痛、一直想事情。',co:'「當心裡一直拉警報時，更需要有人陪你一起確認，哪些地方其實是安全的。」',tk:'寫下一份「讓我有一點安全感的東西」清單，例如：一個人、一個地方或一個小物品。'},
+  r:{fname:'紅色家族',f:'red',num:'紅色 05',word:'生氣',anc:'心裡大聲說：「我很不開心！」',q1:'最近哪一件事最讓你想在心裡大喊「我很不開心」？',q2:'如果別人願意聽，你最想怎麼好好說出這個生氣？',co:'「生氣是在幫你告訴別人：有些事情，對你來說不可以。」',tk:'寫下三件「讓我生氣的事」，以及一件你希望別人下次可以怎麼做比較好。'}
+};
+let demoFlipped=false;
+function applyDemo(d){
+  const fc=FC[d.f];
+  const front=document.getElementById('demo-front');
+  front.style.background=fc.bg; front.style.border=`0.5px solid ${fc.bd}`;
+  const badge=document.getElementById('demo-badge');
+  badge.style.background=fc.bbg; badge.style.color=fc.bt;
+  document.getElementById('demo-dot').style.background=fc.dc;
+  document.getElementById('demo-fname').textContent=d.fname;
+  const num=document.getElementById('demo-num'); num.textContent=d.num; num.style.color=fc.nc;
+  const word=document.getElementById('demo-word'); word.textContent=d.word; word.style.color=fc.wc;
+  const anc=document.getElementById('demo-anc'); anc.textContent=d.anc; anc.style.color=fc.ac;
+  const fb=document.getElementById('demo-flipbtn'); fb.style.borderColor=fc.bd; fb.style.color=fc.wc;
+  document.getElementById('demo-q1').textContent=d.q1;
+  document.getElementById('demo-q2').textContent=d.q2;
+  document.getElementById('demo-co').textContent=d.co;
+  document.getElementById('demo-tk').textContent=d.tk;
+}
+function sw(k,btn){
+  if(demoFlipped){demoFlipped=false;document.getElementById('demo-card').classList.remove('flipped');}
+  applyDemo(DEMO[k]);
+}
+function demoFlip(){demoFlipped=!demoFlipped;document.getElementById('demo-card').classList.toggle('flipped',demoFlipped);}
+applyDemo(DEMO.y);
+
+// ===== FULL CARD DATA =====
+const CARDS=[
+  {f:'yellow',n:1,w:'心安',a:'心裡安安穩穩的，像被輕輕托住。',q1:'最近什麼時候，你會覺得心裡比較安穩、不那麼緊張？',q2:'讓你心安的時刻，旁邊通常有誰或哪些小東西陪你？',co:'「你值得待在讓自己覺得安心、踏實的地方和關係裡。」',tk:'寫下三件讓你覺得心安的小事（一個人、一個地方或一個習慣）。'},
+  {f:'yellow',n:2,w:'放鬆',a:'身體慢慢軟下來，呼吸也跟著變慢。',q1:'上一次覺得真的有放鬆，是在做什麼？',q2:'放鬆時，身體哪個部位最有感覺？',co:'「放鬆不是偷懶，而是讓自己有力氣再出發。」',tk:'做三次慢慢的深呼吸，感覺身體哪裡變舒服了。'},
+  {f:'yellow',n:3,w:'輕鬆',a:'肩膀變輕了，好像把很重的書包放下。',q1:'什麼事做完後會讓你覺得「終於可以鬆一口氣」？',q2:'輕鬆時和緊繃時的自己，哪裡不一樣？',co:'「你可以在努力之後，好好享受自己變輕的那一刻。」',tk:'「肩膀放假 60 秒」，聳肩→放下做 10 次，最後雙手抱自己 10 秒。'},
+  {f:'yellow',n:4,w:'喜悅',a:'心裡亮亮的，嘴角自己往上。',q1:'最近哪個時刻讓你覺得心裡慢慢亮起來？',q2:'喜悅和單純「好玩」在你心裡有什麼不一樣？',co:'「那種從心裡冒出來的喜悅，是很值得收藏的禮物。」',tk:'寫下一件喜悅的小事，用一個圖案或顏色代表這份感覺。'},
+  {f:'yellow',n:5,w:'開心',a:'一想到這件事，就想笑出聲。',q1:'什麼事情一想到就會讓你忍不住想笑？',q2:'你最想和誰分享這份開心？為什麼？',co:'「你的開心，也可以成為別人的小禮物。」',tk:'閉眼回放一個開心畫面 10 秒，注意身體哪裡變鬆、變暖。'},
+  {f:'yellow',n:6,w:'高興',a:'心裡好像開了一盞小燈。',q1:'最近哪件事讓你覺得心裡被點亮了一點？',q2:'用顏色形容你「高興」時的心，會是什麼顏色？',co:'「那盞小燈一點一滴地亮起來，也是你自己給自己的。」',tk:'畫出一盞屬於你的「心裡小燈」，寫下一件讓它亮起來的事。'},
+  {f:'yellow',n:7,w:'興奮',a:'全身都有電一樣，超想立刻去做。',q1:'什麼活動或計畫會讓你興奮到睡前一直想？',q2:'太興奮時，有沒有哪個時刻需要提醒自己慢一點？',co:'「興奮可以是動力，也可以學著幫它裝上煞車。」',tk:'寫下讓你最興奮的事，再想一個「讓自己慢下來的方法」寫在旁邊。'},
+  {f:'yellow',n:8,w:'有趣',a:'腦袋一直冒出：「再玩一次！」。',q1:'對你來說，「有趣」通常是和誰、在哪裡發生的？',q2:'有沒有可能把「無聊的事」加點創意變得有趣？',co:'「你看見有趣的眼睛，也可以讓生活變得更好玩。」',tk:'選一件平常無聊的小事，加上一個小變化看看。'},
+  {f:'yellow',n:9,w:'得意',a:'想對自己說：「我真的很棒！」。',q1:'最近哪件事讓你很想跟自己擊掌說「你真的不錯」？',q2:'得意和「看不起別人」有什麼不一樣？',co:'「看見自己的好很重要，只要也記得尊重別人就更棒。」',tk:'寫下一句「我做得好的地方是＿＿」，貼在可以經常看見的地方。'},
+  {f:'yellow',n:10,w:'自豪',a:'對自己的努力感到驕傲。',q1:'你為自己哪一個努力或改變感到自豪？',q2:'如果有人問你哪裡做得很好，你最想怎麼回答？',co:'「你可以為自己感到自豪，不只是成績，而是你做人的方式。」',tk:'畫一張「給自己的小小獎狀」，寫上自豪的事情。'},
+  {f:'yellow',n:11,w:'感動',a:'心裡被碰了一下，眼淚有點想掉。',q1:'什麼樣的話或行動，最容易讓你感動？',q2:'你有沒有做過什麼事，可能也悄悄地感動了別人？',co:'「被感動，代表你的心真的有在用力感受世界。」',tk:'寫下一件讓你感動的事情，最後加上一句：「謝謝這個時刻。」'},
+  {f:'yellow',n:12,w:'感恩',a:'心裡裝滿「還好有你／有這件事」。',q1:'今天有哪三件事，是你覺得「還好有」的？',q2:'如果少了其中一件，你的今天會不一樣在哪裡？',co:'「看見值得感謝的地方，是一種很溫柔的力量。」',tk:'寫一句「謝謝＿＿，因為＿＿。」'},
+  {f:'yellow',n:13,w:'滿足',a:'心裡剛剛好，不多也不少。',q1:'什麼時候，你會覺得「這樣就很好了，不需要再更多」？',q2:'滿足和「還想再要更多」在你心裡的感覺有什麼不一樣？',co:'「能說出「這樣就夠了」，是一種很成熟的力量。」',tk:'想一件你已經擁有的東西或關係，對它說：「有你，我覺得很足夠。」'},
+  {f:'yellow',n:14,w:'幸福',a:'心裡像被厚厚抱住，覺得自己被好好愛著。',q1:'如果用一張照片當作「幸福畫面」，你會選什麼場景？',q2:'在那些幸福的時刻，你有沒有也好好對自己溫柔一點？',co:'「你值得被好好地愛、好好地對待，包括被別人愛，也被自己愛。」',tk:'畫出一張「我的幸福畫面」，寫上圖中的人、地點和一句關鍵話。'},
+  {f:'green',n:1,w:'怪怪的',a:'心裡有一點怪怪的，說不上來哪裡不對。',q1:'最近什麼時候，你覺得心裡有點怪怪的？',q2:'這個怪怪的感覺比較像「怕」、「生氣」還是「不喜歡」？',co:'「還說不清楚也沒關係，我們可以一起慢慢找出哪裡怪。」',tk:'在紙上畫一個「怪怪的雷達」，寫下最近一件讓你怪怪的小事。'},
+  {f:'green',n:2,w:'不合拍',a:'感覺跟自己不太合，心裡有一點卡卡的。',q1:'當你覺得跟別人不合拍時，通常是發生在什麼情況下？',q2:'那時候，你比較想勉強跟著，還是先退開一下？',co:'「不合拍不代表誰不好，只是你們現在的節奏不一樣。」',tk:'想一個跟你比較合拍的人或活動，寫下來當成你的小小充電站。'},
+  {f:'green',n:3,w:'看膩',a:'一看到就覺得「又是這個」，好膩喔。',q1:'有哪些事情會讓你一看到就覺得「又是這個，好膩」？',q2:'你覺得自己是因為太常看到，還是心裡想試試別的？',co:'「覺得膩，是在提醒你需要一點新鮮感。」',tk:'挑一件你常覺得很膩的事情，加上一個小小變化看看。'},
+  {f:'green',n:4,w:'厭煩',a:'同一件事一再出現，只想說：「夠了啦。」',q1:'什麼事情一直重複，會讓你很想說「夠了啦」？',q2:'在厭煩的背後，你心裡真正需要的是什麼？',co:'「當你覺得厭煩時，可以試著說：「我現在需要的是＿＿。」',tk:'練習一句話：「我現在覺得很煩，可以請你＿＿嗎？」'},
+  {f:'green',n:5,w:'討厭',a:'一看到就皺眉，完全不想靠近。',q1:'你最常說「好討厭喔」是在面對什麼東西或情況？',q2:'那個「討厭」裡面，有沒有「害怕」或「擔心」藏在裡面？',co:'「覺得討厭本身沒有錯，重要的是你怎麼保護自己和對待別人。」',tk:'在紙上畫兩欄：「我討厭的東西」和「我可以怎麼保護自己」。'},
+  {f:'green',n:6,w:'反感',a:'身體會自己往後退，心裡一直說「不要」。',q1:'什麼樣的動作或說話方式，會讓你全身覺得「好反感」？',q2:'在那個時候，你有試著說「請你不要這樣」嗎？',co:'「覺得反感的時候，常常是在幫自己的界線發聲。」',tk:'練習界線用語：「這樣我會不舒服，可以不要這樣嗎？」'},
+  {f:'green',n:7,w:'嫌棄',a:'覺得超不好，心裡在「哼」的一聲。',q1:'你會在什麼情況下，忍不住露出「嫌棄」的表情？',q2:'當你嫌棄別人或事情時，心裡其實希望它變成什麼樣子？',co:'「有時候嫌棄，是因為你其實很在意好不好。」',tk:'想一件你很想嫌棄的事，試著在心裡加上：「我其實希望可以＿＿。」'},
+  {f:'green',n:8,w:'厭惡',a:'心裡很排斥，一想到就想說「好噁」。',q1:'有沒有哪一種畫面或行為，讓你一想到就覺得「好噁」？',q2:'你覺得這種厭惡是在保護什麼？',co:'「厭惡有時候是在提醒你：「這裡好像不太適合你。」',tk:'畫一張「我的安全距離地圖」，標出你想離遠一點的東西。'},
+  {f:'green',n:9,w:'噁心',a:'胃有點翻，覺得整個噁心。',q1:'你上一次覺得「好噁心」是碰到什麼？',q2:'那時候，你的身體哪一個地方最不舒服？',co:'「當身體覺得噁心時，可以先離開一下，讓自己安全一點。」',tk:'寫下兩件在覺得噁心時，你可以做的小小保護動作。'},
+  {f:'green',n:10,w:'超噁',a:'想馬上轉頭、閉眼，完全不想再看到。',q1:'什麼樣的畫面或事情，會讓你想馬上轉頭、閉上眼睛？',q2:'有沒有可能別人覺得還好，但你特別不能接受？這樣可以嗎？',co:'「每個人能接受的程度不一樣，你不喜歡，就有權利說不。」',tk:'寫下一句話：「我真的無法接受的是＿＿。」'},
+  {f:'green',n:11,w:'想吐',a:'喉嚨卡卡的，好像要吐出來。',q1:'你曾經噁心到差點想吐，是發生了什麼事？',q2:'當你想吐時，身邊有誰可以幫你？',co:'「當你不舒服到想吐時，照顧身體比什麼都重要。」',tk:'畫一個自己的身體輪廓，圈出最不舒服的地方，對自己說：「我先好好照顧你。」'},
+  {f:'green',n:12,w:'反胃',a:'肚子翻來翻去，很不舒服。',q1:'你會在什麼時候覺得肚子翻來翻去、很反胃？',q2:'除了食物，有沒有某些氣氛也會讓你覺得「有點反胃」？',co:'「有時候反胃，不一定只是肚子的事，也可能是心裡太緊張。」',tk:'找一個讓肚子比較舒服的小方法，例如喝溫水或做三次慢呼吸。'},
+  {f:'green',n:13,w:'躲開',a:'很想離遠一點，找一個安全的地方。',q1:'遇到什麼人或事情時，你最想「趕快躲開」？',q2:'你覺得「躲開」是在逃避，還是先保護自己？',co:'「先躲開，有時候是在幫自己找一個比較安全的位置。」',tk:'在紙上畫一個「安全角落」，寫下當你覺得很不舒服時，可以去哪裡待一下。'},
+  {f:'green',n:14,w:'拒絕',a:'心裡很清楚：「這個我不要。」',q1:'有沒有一件事，你心裡很清楚不想要，但還是說了好？',q2:'當你說「不要」的時候，身體有什麼感覺？',co:'「你有權利說不，而且不需要解釋太多。」',tk:'練習一句話：「這個我沒辦法，謝謝你的邀請。」大聲說三次。'},
+  {f:'blue',n:1,w:'心悶',a:'心裡有一小塊陰影，不太開心。',q1:'最近什麼事讓你心裡好像多了一小塊陰影？',q2:'心悶時比較想說出來還是先安靜？',co:'「有時候心裡悶悶的很正常，我願意陪你一起看看這塊小陰影。」',tk:'畫一個代表「心悶」的小雲朵，寫上一句話：「我看到你了。」'},
+  {f:'blue',n:2,w:'失落',a:'沒做到或沒得到，心有點空空的。',q1:'最近哪件「沒如願」的事讓你覺得心裡空空的？',q2:'失落時，什麼人或事可以讓空空的感覺好一點？',co:'「你會失落，是因為你很在乎，那個在乎很重要。」',tk:'寫下一件失落的事，再寫一件「還好我還有＿＿」的小安慰。'},
+  {f:'blue',n:3,w:'小難過',a:'有點想嘆氣，心裡暖暖的變涼了。',q1:'什麼小事會讓你有一點點難過、想嘆氣？',q2:'這種小難過你通常怎麼讓自己好一點？',co:'「就算只是小小的難過，也值得被溫柔對待。」',tk:'如果出現「小難過」，幫自己做一件小小好事（如喝水、深呼吸）。'},
+  {f:'blue',n:4,w:'難過',a:'心裡沉沉的，好像背著一顆石頭。',q1:'最近一次覺得心裡很沉是因為什麼事？',q2:'如果那顆「石頭」可以說話，它會說什麼？',co:'「當你心裡很沉的時候，不需要假裝沒事，可以讓人陪你。」',tk:'畫一顆「心裡的石頭」，在旁邊寫一個可以讓它變輕一點點的小方法。'},
+  {f:'blue',n:5,w:'傷心',a:'在意的人或事變糟時，眼淚有點想掉。',q1:'最近哪一件事讓你傷心到很想哭？',q2:'傷心時你最希望別人怎麼對你？',co:'「傷心的時候，眼淚不需要藏起來，它是心在說話。」',tk:'寫下一件讓你傷心的事，在最後加一句：「我值得被好好安慰。」'},
+  {f:'blue',n:6,w:'心酸',a:'一想到那件事，心裡酸酸的、有點痛。',q1:'什麼事情一想到會讓你心裡酸酸的？',q2:'心酸裡有沒有藏著「想被看見」或「想被理解」？',co:'「你的心酸是真實的，那份感受值得被好好看見。」',tk:'寫一句：「其實那時候我很＿＿，希望有人可以＿＿。」'},
+  {f:'blue',n:7,w:'委屈',a:'明明有話想說卻被誤會，心裡縮起來。',q1:'最近有沒有被誤會的時候？那時心裡最想說什麼？',q2:'覺得委屈時你會沉默還是試著說出來？',co:'「你的委屈是真實的，你不需要假裝沒事。」',tk:'寫一句「其實我那時候很＿＿，我希望你知道＿＿。」先寫給自己看就好。'},
+  {f:'blue',n:8,w:'寂寞',a:'周圍很安靜，好像只有自己一個人。',q1:'什麼時候你會覺得世界好安靜、只剩下你一個人？',q2:'有什麼東西在你寂寞時可以陪你？',co:'「即使現在很安靜，你不是一個人，有人在想著你。」',tk:'寫下一個在你寂寞時你可以聯絡的人，想像跟他說：「我有點想你。」'},
+  {f:'blue',n:9,w:'孤單',a:'明明有人在旁邊，卻覺得沒有人懂我。',q1:'你有沒有過「明明有人在還是覺得很孤單」的經驗？',q2:'如果有人能真正懂你，你最希望他懂你哪一件事？',co:'「覺得孤單不代表你不好，而是你很需要被真正理解。」',tk:'寫下一句你希望別人對你說的話，如：「我懂你現在的感覺。」'},
+  {f:'blue',n:10,w:'失望',a:'期待的事沒有發生，像氣球慢慢漏氣。',q1:'最近哪件事讓你從很期待變成很失望？',q2:'在失望裡有沒有藏著「我其實很想要＿＿」的心願？',co:'「你會失望，是因為你曾經很用力期待。」',tk:'畫一個「心願氣球」，寫下一個你仍然想守護的希望。'},
+  {f:'blue',n:11,w:'沮喪',a:'覺得怎麼努力都沒用，好像被按下暫停鍵。',q1:'有沒有一件事讓你覺得「不管怎麼做都一樣」而很沮喪？',q2:'沮喪時，你最需要別人陪你做什麼？',co:'「當你覺得好像怎麼做都沒用時，更需要有人陪你慢慢找出路。」',tk:'寫下一件曾經「明明很難但後來有一點進步」的經驗提醒自己。'},
+  {f:'blue',n:12,w:'低落',a:'做什麼都提不起勁，只想靜靜的。',q1:'通常在什麼時候會覺得整個人「提不起勁」？',q2:'低落時如果只能做一件最小的事，你願意為自己做什麼？',co:'「有時候能做的只有一點點也沒關係，那一點點也是在照顧自己。」',tk:'若覺得低落，只需完成一件小事（如喝水），然後對自己說：「這樣就夠好了。」'},
+  {f:'blue',n:13,w:'心碎',a:'好像心被重重摔了一下，碎成很多片。',q1:'有沒有哪一件事讓你覺得心被重重摔了一下？',q2:'在那個故事裡最讓你痛的地方是什麼？',co:'「當你覺得心碎的時候，不需要假裝沒事，你值得被好好抱一抱。」',tk:'畫出「破掉的心」，在旁邊畫幾個小貼布，寫上覺得有幫助的人或事。'},
+  {f:'blue',n:14,w:'無助',a:'很想有人幫忙，卻不知道能找誰。',q1:'什麼時候你會覺得「我自己一個人真的撐不住了」？',q2:'如果你可以開口求助，你最想請誰幫你什麼？',co:'「開口說「我需要幫忙」，是一種需要練習的勇敢。」',tk:'寫下一個你可以求助的人，練習說：「我最近有點撐不住，可以跟你說說嗎？」'},
+  {f:'orange',n:1,w:'好奇',a:'很想知道「後面會怎樣？」。',q1:'最近什麼事讓你一直很好奇後面會怎樣發展？',q2:'好奇時你的眼睛、身體或表情會變成什麼樣子？',co:'「你的好奇心，是一個很重要的學習超能力。」',tk:'選一個「小小好奇問題」，查資料或問人滿足一下好奇心。'},
+  {f:'orange',n:2,w:'小驚喜',a:'比想像中好一點，心裡亮一下。',q1:'最近有沒有發生過「比想像中好一點」的小事？',q2:'這個小驚喜裡最讓你開心的是什麼？',co:'「日常裡的小驚喜，很適合慢慢收集起來。」',tk:'寫下一件今天發生的「小驚喜」。'},
+  {f:'orange',n:3,w:'意外',a:'跟原本想的不一樣，有點出乎意料。',q1:'最近遇過什麼「跟原本想的不一樣」的事？',q2:'那個意外讓你比較開心還是困惑？為什麼？',co:'「意外有時候會打亂計畫，但也可能帶來新的可能。」',tk:'想一個曾經發生的「小意外」，找出裡面一個小小的學習或收穫。'},
+  {f:'orange',n:4,w:'想不到',a:'心裡說：「咦？想不到竟然是這樣！」。',q1:'最近哪件事讓你心裡大喊「想不到竟然是這樣」？',q2:'下次再遇到類似狀況，你會不會比較有準備？',co:'「每一個「想不到」，都在幫你認識這個世界更多一點。」',tk:'寫下一件讓你「想不到」的事，在旁邊寫：「原來世界也可以這樣。」'},
+  {f:'orange',n:5,w:'驚訝',a:'眼睛突然睜大，腦袋暫時跟不上。',q1:'最近一次「超驚訝」的時刻是什麼？',q2:'那一刻你的身體有什麼反應？',co:'「當你很驚訝時，給自己一點時間慢慢消化也沒關係。」',tk:'畫出你「最驚訝表情」的漫畫臉，當成認識自己反應的小圖示。'},
+  {f:'orange',n:6,w:'讚嘆',a:'心裡一直「哇～」，覺得超厲害。',q1:'最近有沒有對誰或什麼東西產生「哇～好厲害」的感覺？',q2:'那個「厲害」讓你最佩服的是什麼？',co:'「會讚嘆別人，也代表你看得見美好和努力。」',tk:'選一個你佩服的人或作品，寫下一句「我讚嘆的是＿＿。」'},
+  {f:'orange',n:7,w:'驚豔',a:'又美又特別，讓人捨不得移開視線。',q1:'你看過什麼畫面或作品會讓你一直想多看幾眼？',q2:'那個讓你驚豔的東西跟一般的比起來有什麼不一樣？',co:'「你能被美好的東西打動，是一件很珍貴的事。」',tk:'今天找一樣讓你覺得「好美好特別」的東西，安靜看它 30 秒。'},
+  {f:'orange',n:8,w:'欣喜',a:'開心得很暖，嘴角一直收不起來。',q1:'最近哪件事讓你有「從心裡冒出來的開心」？',q2:'欣喜和一般的開心感覺有什麼不同？',co:'「那種從裡面慢慢冒出來的開心，很值得被記住。」',tk:'寫下一件讓你欣喜的事，加上一句：「謝謝這個美好的瞬間。」'},
+  {f:'orange',n:9,w:'狂喜',a:'開心到想跳起來大叫：「太好了！」。',q1:'你有沒有「開心到想大叫」的經驗？',q2:'狂喜時會不會忘記旁邊人的感受？以後可以怎麼拿捏？',co:'「你能那麼開心很棒，也可以慢慢學會照顧到身邊的人。」',tk:'想一個讓你超開心的回憶，寫下來並在心裡幫那時的自己比個讚。'},
+  {f:'orange',n:10,w:'嚇一跳',a:'突然被嚇一下，心臟「咚」地跳，發現沒事就笑出來。',q1:'你曾經被嚇一跳後來發現沒事而笑出來嗎？',q2:'當你嚇一跳又發現沒事時，心裡從「緊張」變成什麼感覺？',co:'「嚇一跳再笑出來，也是一種很可愛的放鬆方式。」',tk:'回想一次你「先被嚇到後來覺得好笑」的經驗，寫成三行小故事。'},
+  {f:'orange',n:11,w:'傻眼',a:'實在太扯，只能在心裡說：「蛤？」。',q1:'有沒有什麼事讓你當下只想說「也太扯了」或「蛤？」？',q2:'傻眼時比較想笑還是比較生氣或無言？',co:'「覺得傻眼的時候，可以先給自己幾秒鐘，不急著做反應。」',tk:'畫出專屬的「傻眼表情」，當成提醒自己先冷靜一下的小圖示。'},
+  {f:'orange',n:12,w:'超驚喜',a:'又驚又喜，覺得「也太好了吧！」。',q1:'你有沒有收過讓你覺得「也太好了吧！」的驚喜？',q2:'如果你要幫別人準備一個「超驚喜」，你最想帶給他什麼感覺？',co:'「你值得被用心準備驚喜，也有力量為別人創造驚喜。」',tk:'想一個你可以為身邊的人做的小驚喜，寫下來找一天實現。'},
+  {f:'orange',n:13,w:'大吃一驚',a:'完全沒預料到，一下子說不出話。',q1:'你曾經有過「完全沒預料到」的經驗嗎？',q2:'那時候你心裡的第一個想法是什麼？',co:'「當你大吃一驚時，先停下來確認狀況，是很重要的一步。」',tk:'畫一個「驚訝表情的自己」，旁邊寫：「我可以先看清楚，再決定要怎麼反應。」'},
+  {f:'orange',n:14,w:'嚇呆',a:'被結果嚇到，一時間愣在那裡，腦袋短暫當機。',q1:'你有沒有一次被結果嚇到愣住的經驗？',q2:'後來你是怎麼讓自己慢慢恢復、想清楚的？',co:'「當你嚇呆時，大腦只是暫停一下，很快就會慢慢恢復。」',tk:'想像下一次被嚇呆，可以先做一個小動作（如深呼吸）提醒自己「我還在這裡」。'},
+  {f:'purple',n:1,w:'緊張',a:'要做新的事情前，心跟手都有點緊緊的。',q1:'最近什麼事讓你一想到就有點緊張？',q2:'當你緊張的時候，身體哪裡最有感覺？',co:'「會緊張，是因為這件事對你很重要。」',tk:'在一件重要事情開始前，做三次慢慢的深呼吸，觀察緊張有沒有小一點。'},
+  {f:'purple',n:2,w:'不安',a:'好像有事要發生，卻說不出是哪一件。',q1:'你什麼時候會覺得心裡怪怪的、好像有事要發生？',q2:'那種不安感比較像是擔心自己，還是擔心別人或事情？',co:'「感到不安的時候，可以先停一下，讓心有機會慢慢說話。」',tk:'寫下一句：「我現在有點不安，因為我在想＿＿。」試著把感覺說出來。'},
+  {f:'purple',n:3,w:'擔心',a:'一直在想「如果出事怎麼辦」。',q1:'最近你最常擔心的一件事是什麼？',q2:'在你擔心的事情裡，有沒有哪一部分是你可以做一點點準備的？',co:'「擔心可以提醒我們小心，但不用一個人扛全部。」',tk:'畫出兩格：「我能做的」和「我不能控制的」，把你擔心的事分開寫進去。'},
+  {f:'purple',n:4,w:'煩惱',a:'腦袋一直轉來轉去，想很多又停不下來。',q1:'你通常在什麼時候最容易開始一直煩惱、停不下來？',q2:'煩惱裡有沒有藏著「其實我很在意＿＿」這樣的心願？',co:'「會煩惱，是因為你很認真在面對自己的生活。」',tk:'幫自己的煩惱設定一個「思考時間」，例如 5 分鐘，時間到就對自己說：「今天先想這樣就好。」'},
+  {f:'purple',n:5,w:'怕被罵',a:'做錯事時，心裡一直想大人會不會生氣。',q1:'什麼情況下，你最容易怕被罵？',q2:'當你怕被罵時，你通常會選擇躲起來、說謊，還是說實話？',co:'「你會怕被罵，是因為你在乎別人怎麼看你，也在乎這段關係。」',tk:'寫下一句你希望大人在你做錯事時可以說的話。'},
+  {f:'purple',n:6,w:'怕失敗',a:'很怕做不好，別人會笑我或失望。',q1:'哪一種事情最容易讓你很怕失敗？',q2:'在「怕失敗」裡，你最怕的是別人笑你、失望，還是你自己會很難過？',co:'「害怕失敗，不代表你做不到，而是你很想把事情做好。」',tk:'想一件你曾經「有一點失敗，但也有學到東西」的經驗，把學到的寫下來。'},
+  {f:'purple',n:7,w:'焦慮',a:'心裡一直拉警報，覺得好像哪裡真的很不安全。',q1:'當你覺得「好像哪裡都不太安全」的時候，通常是在什麼情境？',q2:'那時候，你的身體有什麼反應？例如：睡不太好、肚子痛、一直想事情。',co:'「當心裡一直拉警報時，更需要有人陪你一起確認，哪些地方其實是安全的。」',tk:'寫下一份「讓我有一點安全感的東西」清單，例如：一個人、一個地方或一個小物品。'},
+  {f:'purple',n:8,w:'害怕',a:'覺得可能會發生不好的事。',q1:'你最近最害怕的事情是什麼？它真的有那麼容易發生嗎？',q2:'當你害怕時，有沒有什麼方式可以讓自己安全一點、放心一點？',co:'「害怕會出現，是在提醒你要小心，而不是要你什麼都不敢做。」',tk:'畫一個「害怕量表」從 0 到 10，想一件讓你害怕的事，幫它在量表上畫一個圈。'},
+  {f:'purple',n:9,w:'心慌',a:'心跳變快，手腳有點不知道放哪裡。',q1:'你上一次心慌，是因為發生了什麼事？',q2:'心慌的時候，你有注意過自己的呼吸或心跳變成什麼樣子嗎？',co:'「心慌的時候，先不用想那麼多，只要慢慢把注意力帶回呼吸就好。」',tk:'試試看「4-4-4 呼吸」：吸氣數 4 下、停住數 4 下、慢慢吐氣數 4 下，做三輪。'},
+  {f:'purple',n:10,w:'驚嚇',a:'突然發生一件事，心臟「砰」地跳很大一下。',q1:'你有沒有被突然的聲音或畫面嚇到過？那時發生了什麼？',q2:'事後你花了多久才慢慢覺得沒那麼害怕？有什麼幫助到你？',co:'「被嚇一跳很正常，身體只是突然在保護你。」',tk:'回想一次你被嚇到但最後沒事的經驗，寫上：「原來我最後是安全的。」'},
+  {f:'purple',n:11,w:'驚恐',a:'覺得很危險，腦袋只想著「快逃走」。',q1:'你有沒有哪一次覺得「好危險，我只想快點離開」？那時發生了什麼？',q2:'那時候，有沒有哪一個人或哪一件事，讓你覺得比較有被保護一點？',co:'「當你覺得很恐怖、只想逃走時，你並不奇怪，你是在保護自己。」',tk:'畫一個保護自己的「安全盾牌」，想一想在害怕時可以用哪三種方法來保護自己。'},
+  {f:'purple',n:12,w:'恐懼',a:'一直躲著那件事，光想到就不敢面對。',q1:'有沒有一件你一直很害怕、不太敢面對的事情？',q2:'如果這件事有 10 個部分，有沒有哪一個最小、最不那麼可怕的部分可以先面對？',co:'「恐懼不會一下子消失，可以一點一點、按自己的步伐慢慢來。」',tk:'把你害怕的事情分成三個小階段，寫下「也許我可以先做到的第一小步」。'},
+  {f:'purple',n:13,w:'超害怕',a:'怕到全身發抖，聲音都變小了。',q1:'你有沒有一次害怕到全身發抖、講話講不太出來的經驗？',q2:'事情過去之後，你花了多久才慢慢覺得比較好一點？什麼最有幫助？',co:'「當你害怕到說不出話時，更需要有人用溫柔的方式陪在旁邊。」',tk:'寫下一句你希望在「超害怕」時有人對你說的話，留在筆記本裡當成你的安心句。'},
+  {f:'purple',n:14,w:'嚇壞',a:'被嚇到腦袋一片空白，好幾秒都動不了。',q1:'如果你曾經被嚇壞過，那一次最讓你害怕的是什麼？',q2:'現在回頭看，你會想對那個被嚇壞的自己說什麼話？',co:'「那時候你真的很害怕，不是你太脆弱，而是那件事真的嚇人。」',tk:'畫出那個「被嚇壞的自己」，在旁邊畫一個現在的你，寫上一句想對他說的安慰話。'},
+  {f:'red',n:1,w:'悶悶',a:'心裡卡卡的，說不出哪裡怪。',q1:'最近有沒有哪一件事，讓你說不上來哪裡怪，但就是不太舒服？',q2:'這個「悶悶」比較像是生氣、難過，還是覺得不被理解？',co:'「還說不出來也沒關係，我們可以一起慢慢幫這個感覺取名字。」',tk:'畫一個代表「悶悶」的小符號，旁邊寫一句：「我知道你在這裡。」'},
+  {f:'red',n:2,w:'心煩',a:'腦袋很多事，一點小聲音都覺得吵。',q1:'你通常在什麼時候會覺得「超煩」，連小聲音都覺得吵？',q2:'在那些心煩的時候，有沒有一件事可以讓你稍微安靜一點？',co:'「當你覺得心裡好亂好煩時，很需要給自己一點空間。」',tk:'幫自己找一個「安靜一小會」的角落，做三次慢呼吸，什麼都先不用做。'},
+  {f:'red',n:3,w:'不爽',a:'臉臭臭的，就是覺得哪裡不對勁。',q1:'最近有沒有讓你「臉臭起來」的時刻？那時發生什麼事？',q2:'如果可以用一句話說出你的不爽，你會想說什麼？',co:'「你覺得不爽，背後一定有你在意的地方。」',tk:'寫下一句「其實我不爽的是＿＿」，讓自己有機會看見真正的原因。'},
+  {f:'red',n:4,w:'惱火',a:'好像被一直戳，火慢慢被點起來。',q1:'什麼樣的行為，會讓你覺得「被一直戳」，火越來越上來？',q2:'在火還沒燒很大之前，有沒有什麼方法可以先退一步或說出來？',co:'「當你開始惱火時，是一個很重要的提醒點。」',tk:'想一句你可以在「快爆發前」說的話，例如：「我現在有點不舒服，可以先停一下嗎？」'},
+  {f:'red',n:5,w:'生氣',a:'心裡大聲說：「我很不開心！」',q1:'最近哪一件事最讓你想在心裡大喊「我很不開心」？',q2:'如果別人願意聽，你最想怎麼好好說出這個生氣？',co:'「生氣是在幫你告訴別人：有些事情，對你來說不可以。」',tk:'寫下三件「讓我生氣的事」，以及一件你希望別人下次可以怎麼做比較好。'},
+  {f:'red',n:6,w:'氣憤',a:'覺得事情超不公平，越想越氣。',q1:'你曾經有覺得「超不公平」的時候嗎？是什麼事？',q2:'如果要讓事情變得比較公平一點，你覺得可以怎麼做或跟誰說？',co:'「你會為不公平而生氣，也代表你心裡有很重要的公平感。」',tk:'寫下你心中的「公平小願望」，例如：「希望大家＿＿的時候，可以＿＿。」'},
+  {f:'red',n:7,w:'火大',a:'像胸口有火在燒，很想大聲吼。',q1:'你什麼時候會氣到好像胸口有火在燒？',q2:'如果那團火可以變小一點，你覺得什麼會有幫助？',co:'「當你火大時，不用急著把火丟出去，可以先想怎麼把火降溫。」',tk:'畫出你胸口的「怒火」，在旁邊畫三種幫它降溫的方法。'},
+  {f:'red',n:8,w:'怒氣',a:'全身都是怒氣，眉頭皺得很緊。',q1:'當你全身都是怒氣時，你最不想聽到別人說什麼話？',q2:'如果別人願意幫你，你希望他在你很生氣時怎麼陪你比較好？',co:'「在怒氣最大聲的時候，你更需要被好好對待，而不是被否定。」',tk:'想一想：下次當你很生氣時，可以先做哪一個小動作來保護自己和別人？'},
+  {f:'red',n:9,w:'憤怒',a:'心裡像打雷，什麼都不想聽。',q1:'你什麼時候會氣到「完全不想聽任何人說話」？',q2:'等雷聲比較小之後，你會不會比較有可能聽一點點別人的想法？',co:'「當你憤怒到不想聽時，可以先讓自己安靜一下，等雷聲小一點再說。」',tk:'寫下一句「當我現在很生氣時，可以先＿＿」，幫自己設定一個暫停鍵。'},
+  {f:'red',n:10,w:'氣炸',a:'覺得快爆掉了，一點就會炸開。',q1:'你記得自己哪一次真的快氣炸了嗎？那時候是發生什麼事？',q2:'在快要「炸掉」之前，有沒有可能先離開那個地方一下下？',co:'「當你快要氣炸的時候，先保護自己離開，比留在那裡更重要。」',tk:'幫自己想一個「情緒紅燈」暗號，例如在心裡說：「我需要離開一下。」'},
+  {f:'red',n:11,w:'怨氣',a:'那口氣吞不下去，一直卡在心裡。',q1:'你心裡有沒有一件事，想到時會覺得那口氣還卡在那裡？',q2:'這口怨氣裡，有沒有你想說但還沒說出口的句子？',co:'「怨氣常常是在提醒：有一些委屈還沒被好好聽見。」',tk:'寫下一句「其實我一直很在意＿＿」，先寫給自己看就好。'},
+  {f:'red',n:12,w:'怨恨',a:'一想到那件事，心裡就又酸又氣。',q1:'有沒有一件事，只要一想到就讓你又酸又氣？',q2:'這個怨恨裡，有沒有一部分是在為「那時候受傷的自己」抱不平？',co:'「你會怨恨，是因為那時候的你真的覺得很不公平、很痛。」',tk:'寫一封信給「那時候受傷的自己」，讓他被安慰一次。'},
+  {f:'red',n:13,w:'不服',a:'覺得被看扁，很想證明「我可以」。',q1:'你曾經有覺得被看扁、被低估的時候嗎？是發生什麼事？',q2:'如果要把「不服氣」變成推動自己的力量，你最想在哪一件事上證明自己？',co:'「不服氣，可以變成讓自己長大的燃料。」',tk:'寫下一個你想證明給「自己」看的目標，而不是只為了證明給別人看。'},
+  {f:'red',n:14,w:'報復',a:'氣到想讓對方也不好受。',q1:'你有沒有生氣到想過「我也要讓他難過看看」的時候？那是因為發生了什麼事？',q2:'如果真的照著報復去做，最後受傷的人會是誰？你還有沒有別的選擇？',co:'「想報復代表你受了很深的傷，更需要被好好照顧，而不是再多一個傷。」',tk:'寫下一件「我希望自己可以選擇的做法」，讓自己有機會走上和報復不一樣的路。'}
+];
+
+function getLbl(f,n){return{yellow:'黃',green:'綠',blue:'藍',orange:'橘',purple:'紫',red:'紅'}[f]+'色 '+String(n).padStart(2,'0');}
+function getFName(f){return{yellow:'黃色家族',green:'綠色家族',blue:'藍色家族',orange:'橘色家族',purple:'紫色家族',red:'紅色家族'}[f];}
+
+let dbFamily='all';
+function renderDB(){
+  const filtered=dbFamily==='all'?CARDS:CARDS.filter(c=>c.f===dbFamily);
+  document.getElementById('db-count').textContent=dbFamily==='all'?'顯示全部 84 張':`${getFName(dbFamily)}・顯示 ${filtered.length} 張`;
+  document.getElementById('db-grid').innerHTML=filtered.map(c=>{
+    const fc=FC[c.f];
+    return `<div class="cdb-card" style="background:${fc.bg};border-color:${fc.bd};" onclick="openCard('${c.f}',${c.n})">
+      <div class="cdb-num" style="color:${fc.nc};">${getLbl(c.f,c.n)}</div>
+      <div class="cdb-word" style="color:${fc.wc};">${c.w}</div>
+      <div class="cdb-anc" style="color:${fc.ac};">${c.a}</div>
+    </div>`;
+  }).join('');
+}
+function dbFilter(family,btn){
+  dbFamily=family;
+  document.querySelectorAll('#cards .f-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderDB();
+}
+function openCard(f,n){
+  const c=CARDS.find(x=>x.f===f&&x.n===n);
+  const fc=FC[f];
+  const mb=document.getElementById('cm-badge');
+  mb.textContent=getFName(f); mb.style.background=fc.bbg; mb.style.color=fc.bt;
+  document.getElementById('cm-num').textContent=getLbl(f,n);
+  document.getElementById('cm-word').textContent=c.w;
+  document.getElementById('cm-word').style.color=fc.wc;
+  document.getElementById('cm-anc').textContent=c.a;
+  document.getElementById('cm-anc').style.color=fc.ac;
+  document.getElementById('cm-q1').textContent=c.q1;
+  document.getElementById('cm-q2').textContent=c.q2;
+  document.getElementById('cm-co').textContent=c.co;
+  document.getElementById('cm-tk').textContent=c.tk;
+  document.getElementById('card-modal').style.display='flex';
+}
+renderDB();
+
+// ===== LESSON DATA =====
+const LTYPES={
+  '夥伴':{label:'情緒小夥伴',bg:'#EEEDFE',tc:'#3C3489',bc:'#534AB7'},
+  '光譜':{label:'情緒光譜',bg:'#E6F1FB',tc:'#0C447C',bc:'#185FA5'},
+  '偵探':{label:'情緒小偵探',bg:'#E1F5EE',tc:'#085041',bc:'#1D9E75'},
+  '故事':{label:'故事時間',bg:'#FAECE7',tc:'#712B13',bc:'#D85A30'},
+  '冷靜':{label:'冷靜策略',bg:'#EAF3DE',tc:'#27500A',bc:'#639922'},
+  '正念':{label:'正念體驗',bg:'#EEEDFE',tc:'#3C3489',bc:'#7F77DD'},
+  '綜合':{label:'綜合活動',bg:'#F1EFE8',tc:'#444441',bc:'#888780'},
+};
+const ACTS=[
+  {n:1,t:'情緒小夥伴・開心',k:'夥伴',e:'開心',sel:'自我覺察',goal:'認識並覺察開心的情緒',desc:'播放影片引導學生觀察臉部表情與身體動作，討論開心的感覺，再用學習單畫出開心的表情並用譬喻法描述。'},
+  {n:2,t:'情緒光譜・開心',k:'光譜',e:'開心',sel:'自我覺察',goal:'認識並覺察開心的情緒',desc:'全班共同蒐集「開心」的相似詞與成語，讓學生自選五個詞彙排出由弱到強的情緒光譜，搭配漸層色彩表現強弱。'},
+  {n:3,t:'情緒小偵探・開心',k:'偵探',e:'開心',sel:'自我覺察',goal:'認識並覺察開心的情緒',desc:'學生描述讓自己開心的具體情境，辨識開心的身體線索，練習用完整句型表達：「當我______時，我覺得開心，因為______。」'},
+  {n:4,t:'情緒小夥伴・難過',k:'夥伴',e:'難過',sel:'自我覺察',goal:'認識並覺察難過的情緒',desc:'透過繪本或影片引導學生觀察難過的表情與動作，分享自己難過的經驗，學習辨識難過的身體反應並畫出表情。'},
+  {n:5,t:'情緒光譜・難過',k:'光譜',e:'難過',sel:'自我覺察',goal:'認識並覺察難過的情緒',desc:'蒐集難過的相似詞彙，讓學生排出由輕到重的難過光譜，搭配藍色系漸層色彩，培養細緻的情緒辨識能力。'},
+  {n:6,t:'情緒小偵探・難過',k:'偵探',e:'難過',sel:'自我覺察',goal:'認識並覺察難過的情緒',desc:'學生練習觀察並表達難過的感受，辨識身體線索，使用句型描述讓自己難過的具體情境與原因。'},
+  {n:7,t:'情緒小夥伴・生氣',k:'夥伴',e:'生氣',sel:'自我覺察',goal:'認識並覺察生氣的情緒',desc:'透過情境討論引導學生認識生氣的來源與表現方式，學習辨認讓自己生氣的事件，練習辨識怒氣的身體反應。'},
+  {n:8,t:'情緒光譜・生氣',k:'光譜',e:'生氣',sel:'自我覺察',goal:'認識並覺察生氣的情緒',desc:'蒐集生氣的相似詞彙，排出從輕微不滿到強烈憤怒的光譜，讓學生理解情緒有強弱之分，並思考不同程度的應對方式。'},
+  {n:9,t:'情緒小偵探・生氣',k:'偵探',e:'生氣',sel:'自我覺察',goal:'認識並覺察生氣的情緒',desc:'學生練習辨識引發生氣的情境，覺察身體的生氣訊號，學習以「我訊息」表達：「當______時，我覺得生氣，因為______。」'},
+  {n:10,t:'情緒小夥伴・噁心或厭惡',k:'夥伴',e:'噁心',sel:'自我覺察',goal:'認識並覺察噁心厭惡的情緒',desc:'引導學生認識噁心與厭惡的情緒，分辨對食物、行為或情境的不同反應，學習尊重他人感受的差異。'},
+  {n:11,t:'情緒光譜・噁心或厭惡',k:'光譜',e:'噁心',sel:'自我覺察',goal:'認識並覺察噁心厭惡的情緒',desc:'蒐集噁心厭惡相關詞彙，排出從「有點不舒服」到「極度排斥」的光譜，幫助學生精確表達程度差異。'},
+  {n:12,t:'情緒小偵探・噁心或厭惡',k:'偵探',e:'噁心',sel:'自我覺察',goal:'認識並覺察噁心厭惡的情緒',desc:'學生描述讓自己感到噁心或厭惡的具體情境，覺察身體反應，練習用適當語言表達自己的不適感。'},
+  {n:13,t:'情緒小夥伴・害怕',k:'夥伴',e:'害怕',sel:'自我覺察',goal:'認識並覺察害怕的情緒',desc:'透過討論引導學生分享害怕的經驗，學習辨識恐懼的身體訊號（如心跳加速、手腳發冷），建立對恐懼情緒的正確認識。'},
+  {n:14,t:'情緒光譜・害怕',k:'光譜',e:'害怕',sel:'自我覺察',goal:'認識並覺察害怕的情緒',desc:'蒐集害怕相關詞彙，排出從「有點緊張」到「嚇壞了」的光譜，讓學生理解恐懼的強度，並思考不同程度的因應策略。'},
+  {n:15,t:'情緒小偵探・害怕',k:'偵探',e:'害怕',sel:'自我覺察',goal:'認識並覺察害怕的情緒',desc:'學生描述讓自己害怕的具體情境，辨識身體的恐懼反應，練習表達害怕的感受並思考可以尋求哪些支持。'},
+  {n:16,t:'情緒小夥伴・驚訝或驚喜',k:'夥伴',e:'驚訝',sel:'自我覺察',goal:'認識並覺察驚訝驚喜的情緒',desc:'引導學生區分驚訝（中性）與驚喜（正向）的差異，分享自己的驚訝或驚喜經驗，學習辨識兩者的身體反應。'},
+  {n:17,t:'情緒光譜・驚訝或驚喜',k:'光譜',e:'驚訝',sel:'自我覺察',goal:'認識並覺察驚訝驚喜的情緒',desc:'蒐集驚訝驚喜相關詞彙，排出從「微微意外」到「嚇呆」的光譜，讓學生理解應變反應的強弱差異。'},
+  {n:18,t:'情緒小偵探・驚訝或驚喜',k:'偵探',e:'驚訝',sel:'自我覺察',goal:'認識並覺察驚訝驚喜的情緒',desc:'學生描述驚訝或驚喜的具體情境，覺察身體反應，練習用「停—看—選」的反應策略來應對突發狀況。'},
+  {n:19,t:'認識我的外星夥伴',k:'綜合',e:'',sel:'自我覺察',goal:'建立情緒探索的興趣與動機',desc:'用「外星夥伴」的趣味框架引導學生認識情緒，透過外星人探索地球人的情緒世界，降低學生對情緒課的陌生感。'},
+  {n:20,t:'情緒動物代言人',k:'綜合',e:'',sel:'自我覺察',goal:'用動物比喻加深情緒理解',desc:'學生為自己的情緒選一種動物代言人，並說明選擇原因，透過具象化的比喻加深對情緒特質的理解與記憶。'},
+  {n:21,t:'情緒紅綠燈',k:'綜合',e:'',sel:'自我管理',goal:'覺察情緒對自己的影響並學習調節',desc:'用紅綠燈比喻情緒狀態：紅燈停下來、黃燈慢慢想、綠燈行動，幫助學生建立情緒調節的三步驟思考框架。'},
+  {n:22,t:'情緒遙控器',k:'綜合',e:'',sel:'自我管理',goal:'覺察情緒對自己的影響並學習調節',desc:'用電視遙控器比喻情緒調節能力，引導學生練習「暫停、快轉、倒帶」等情緒調節策略，思考哪些方法能幫助自己回穩。'},
+  {n:23,t:'情緒 Check-in',k:'綜合',e:'',sel:'自我覺察',goal:'覺察情緒並學會情緒調節',desc:'每日固定進行的情緒登記活動，學生用1-5分量表評估當下情緒強度，並說出一個情緒詞，建立日常情緒覺察的習慣。'},
+  {n:24,t:'情緒探索號帶動唱',k:'綜合',e:'',sel:'自我覺察',goal:'覺察情緒並學會情緒調節',desc:'透過歌唱與肢體動作讓學生體驗不同情緒的身體感覺，用帶動唱的方式降低情緒表達的羞澀感，增加課堂活力。'},
+  {n:25,t:'聽聽音樂・情緒流動',k:'綜合',e:'',sel:'自我覺察',goal:'覺察情緒並學會情緒調節',desc:'播放不同風格的音樂，引導學生感受音樂帶來的情緒變化，練習用顏色、圖形或文字描述聽到音樂時的心情。'},
+  {n:26,t:'自由畫畫',k:'綜合',e:'',sel:'自我覺察',goal:'透過藝術表達情緒',desc:'提供自由創作空間，讓學生用畫畫表達當下的情緒或心情，教師引導學生分享作品背後的感受，不評價畫的好壞。'},
+  {n:27,t:'自由書寫',k:'綜合',e:'',sel:'自我覺察',goal:'透過書寫覺察內在感受',desc:'給予固定時間讓學生自由書寫當下的心情與想法，培養透過文字整理情緒的習慣，強調過程不評分、不分享為原則。'},
+  {n:28,t:'冷靜魔法・呼吸小夥伴',k:'冷靜',e:'',sel:'自我管理',goal:'學習呼吸調節作為情緒穩定工具',desc:'教導腹式呼吸法，用可愛的「呼吸小夥伴」角色引導練習，讓學生在情緒激動時有具體的身體調節方法可以使用。'},
+  {n:29,t:'爬爬五指山',k:'冷靜',e:'',sel:'自我管理',goal:'練習情緒調節的身體技巧',desc:'用手指爬山的動作搭配呼吸節奏，提供一個簡單易記的自我調節技巧，適合在課堂中隨時使用。'},
+  {n:30,t:'自創冷靜魔法',k:'冷靜',e:'',sel:'自我管理',goal:'建立個人化的情緒調節策略',desc:'學生在認識多種冷靜技巧後，設計屬於自己的冷靜魔法，畫出步驟圖或寫下說明，讓情緒調節策略更個人化。'},
+  {n:31,t:'找尋每一個人的冷靜空間',k:'冷靜',e:'',sel:'自我管理',goal:'建立個人化的情緒調節策略',desc:'引導學生思考哪個地方、哪些活動或哪些人能幫助自己冷靜，畫出或描述自己的「個人冷靜地圖」。'},
+  {n:32,t:'吹蠟燭呼吸法',k:'冷靜',e:'',sel:'自我管理',goal:'學習呼吸調節作為情緒穩定工具',desc:'用「吹蠟燭」的比喻引導學生練習緩慢吐氣，搭配手勢讓呼吸練習更具象化，幫助學生在情緒高漲時快速穩定。'},
+  {n:33,t:'感受當下・五感回到此刻',k:'正念',e:'',sel:'自我覺察',goal:'練習正念覺察，回到當下',desc:'運用五感（視覺、聽覺、嗅覺、味覺、觸覺）引導學生觀察當下環境，練習將注意力帶回現在，減少焦慮與分心。'},
+  {n:34,t:'傳遞杯子・專注合作練習',k:'綜合',e:'',sel:'人際關係',goal:'透過合作活動練習專注與情緒調節',desc:'分組進行傳遞杯子的合作遊戲，需要專注與默契才能成功，體驗合作帶來的成就感，同時練習在壓力下保持冷靜。'},
+  {n:35,t:'故事時間(一)・掉落的霜淇淋',k:'故事',e:'',sel:'自我覺察',goal:'透過故事情境練習情緒辨識',desc:'閱讀關於霜淇淋掉落的故事，引導學生辨識主角的情緒變化，討論如何調整失落的心情，練習情緒問題的解決思考。'},
+  {n:36,t:'故事時間(二)・弟弟的眼淚',k:'故事',e:'',sel:'社會覺察',goal:'透過故事練習同理心',desc:'透過弟弟哭泣的故事情境，引導學生練習觀察他人情緒、思考對方的感受，並討論如何給予適當的安慰與支持。'},
+  {n:37,t:'故事時間(三)・借不借的兩難',k:'故事',e:'',sel:'負責任決策',goal:'透過故事練習道德決策思考',desc:'面對「要不要借」的兩難情境，引導學生思考不同選擇的後果，練習考慮他人感受後做出負責任的決定。'},
+  {n:38,t:'故事時間(四)・操場上的爭執',k:'故事',e:'',sel:'人際關係',goal:'透過故事練習衝突解決',desc:'透過操場爭執的情境，引導學生辨識衝突中的情緒，練習從不同角度理解事件，並討論和平解決衝突的策略。'},
+  {n:39,t:'故事時間(五)・爭奪遙控器',k:'故事',e:'',sel:'人際關係',goal:'透過故事練習衝突解決',desc:'透過家庭搶遙控器的情境，引導學生討論如何在家庭衝突中表達需求、理解他人立場，練習協商與妥協的技巧。'},
+  {n:40,t:'故事時間(六)・上台的勇氣',k:'故事',e:'',sel:'自我管理',goal:'透過故事練習面對緊張與挑戰',desc:'透過上台前緊張的故事，引導學生認識克服焦慮的方法，討論緊張感的正面意義，練習鼓勵自己的自我對話。'},
+  {n:41,t:'故事時間(七)',k:'故事',e:'',sel:'自我覺察',goal:'透過故事情境練習情緒辨識',desc:'透過故事情境引導學生辨識複雜情緒，練習描述角色的內心世界，發展更細緻的情緒語言能力。'},
+  {n:42,t:'故事時間(八)・變化中的驚喜',k:'故事',e:'',sel:'自我管理',goal:'透過故事練習面對變化與不確定',desc:'透過充滿變化的故事情境，引導學生思考如何面對出乎意料的狀況，練習彈性調整期待，從意外中找到正向意義。'},
+  {n:43,t:'故事時間(九)・等待中的情緒',k:'故事',e:'',sel:'自我管理',goal:'透過故事練習等待與延遲滿足',desc:'透過等待的故事情境，引導學生認識等待時的情緒反應，練習延遲滿足的策略，培養耐心與情緒調節能力。'},
+  {n:44,t:'故事時間(十)・孤單中的努力',k:'故事',e:'',sel:'自我管理',goal:'透過故事練習面對孤單與堅持',desc:'透過孤單奮鬥的故事情境，引導學生討論孤單的感受，練習在困難中找到堅持的力量，發展韌性與自我激勵能力。'},
+  {n:45,t:'心情氣象台',k:'綜合',e:'',sel:'自我覺察',goal:'用氣象比喻表達當下情緒',desc:'用天氣比喻心情（晴天＝開心、烏雲＝難過），學生每天報告自己的「心情氣象」，建立持續的情緒覺察習慣。'},
+  {n:46,t:'情緒溫度計',k:'綜合',e:'',sel:'自我覺察',goal:'學習量化情緒強度',desc:'用溫度計量化情緒強度（0-10分），幫助學生具體感受情緒的輕重程度，並思考不同強度下需要什麼樣的支持。'},
+  {n:47,t:'情緒對對碰・翻出你的感受力',k:'綜合',e:'',sel:'自我覺察',goal:'用遊戲加深情緒詞彙記憶',desc:'以配對翻牌遊戲的方式，讓學生配對情緒詞彙與對應表情或情境，在遊戲中自然增加情緒語言的廣度與記憶。'},
+  {n:48,t:'卡牌故事接龍・情緒故事創作',k:'綜合',e:'',sel:'社會覺察',goal:'透過故事創作練習情緒表達',desc:'學生輪流抽取情緒牌卡，接力創作包含該情緒的故事，練習將情緒融入敘事，提升情緒語言的流暢度與創意。'},
+  {n:49,t:'樂動紓壓5招',k:'冷靜',e:'',sel:'自我管理',goal:'學習多元的身體紓壓方法',desc:'教導5種融合動作的紓壓技巧，透過身體活動幫助情緒調節，提供學生在壓力大時可立即使用的身體調節工具箱。'},
+  {n:50,t:'情緒說書人',k:'綜合',e:'',sel:'社會覺察',goal:'透過說故事練習情緒表達與同理',desc:'學生扮演「情緒說書人」，選一張牌卡並說出一個相關的情緒故事，練習公開表達情感經驗，同時培養傾聽能力。'},
+  {n:51,t:'單腳平衡',k:'正念',e:'',sel:'自我管理',goal:'透過身體挑戰練習專注與穩定',desc:'進行單腳平衡的身體練習，引導學生覺察身體與心理的連結，體驗專注當下如何幫助維持平衡與穩定。'},
+  {n:52,t:'袋子裡面有什麼？',k:'綜合',e:'',sel:'自我覺察',goal:'用具象物品引發情緒討論',desc:'神秘袋中放入與情緒相關的物品，學生觸摸後猜測並分享聯想到的情緒，透過感官刺激開啟情緒對話。'},
+  {n:53,t:'雲冥想',k:'正念',e:'',sel:'自我管理',goal:'練習正念冥想，培養內在平靜',desc:'引導學生閉眼想像自己躺在草地上看雲，讓想法和情緒如雲朵飄過，練習不執著的觀察態度，培養內在平靜感。'},
+  {n:54,t:'正念散步・感官覺察之旅',k:'正念',e:'',sel:'自我覺察',goal:'戶外正念練習，連結自然與情緒',desc:'帶學生到戶外進行慢速散步，引導用五感覺察周圍環境，練習將注意力帶回當下，感受自然環境對情緒的平撫效果。'},
+  {n:55,t:'禪繞靜心繪圖',k:'正念',e:'',sel:'自我管理',goal:'透過靜心繪圖培養專注與平靜',desc:'引導學生進行禪繞畫創作，用重複的幾何線條圖案進行靜心，體驗專注繪圖帶來的放鬆效果，培養自我調節能力。'},
+  {n:56,t:'正念隨身行・戶外五感尋寶',k:'正念',e:'',sel:'自我覺察',goal:'戶外正念練習，深化感官覺察',desc:'在戶外進行五感尋寶活動，學生尋找符合各感官描述的自然物，練習深度覺察，培養與當下環境的連結感。'},
+  {n:57,t:'正念隨身行・跟身體做朋友',k:'正念',e:'',sel:'自我覺察',goal:'身體掃描練習，增進身心連結',desc:'引導學生進行全身掃描的正念練習，從頭到腳覺察身體各部位的感覺，幫助學生建立身體意識，辨識情緒的身體訊號。'},
+  {n:58,t:'情緒迷宮',k:'綜合',e:'',sel:'負責任決策',goal:'透過遊戲練習情緒決策思考',desc:'在情緒迷宮中面對不同情境選擇，學生根據情緒反應選擇路徑，練習思考不同決策的後果，培養負責任的決策能力。'},
+  {n:59,t:'說書人牌卡・情緒故事創作',k:'綜合',e:'',sel:'社會覺察',goal:'創意情緒故事創作',desc:'使用說書人牌卡結合情緒牌卡，創作包含情緒元素的故事，在創作過程中深化對情緒的理解，培養創意表達能力。'},
+  {n:60,t:'情緒建築師',k:'綜合',e:'',sel:'自我管理',goal:'設計個人情緒調節藍圖',desc:'學生扮演「情緒建築師」，設計屬於自己的情緒調節系統，包含觸發點、調節策略與支持資源，建立整合性的情緒管理計畫。'},
+  {n:61,t:'我的情緒機器人',k:'綜合',e:'',sel:'自我管理',goal:'設計情緒調節的具象化工具',desc:'學生設計一個「情緒機器人」，為它設定偵測情緒的感應器和調節情緒的功能，透過具象化設計加深對情緒調節的理解。'},
+  {n:62,t:'友誼動物園',k:'綜合',e:'',sel:'人際關係',goal:'透過動物比喻探索人際互動',desc:'用不同動物比喻不同的人際互動風格，引導學生認識自己的社交特質，練習欣賞不同性格的朋友，建立多元友誼觀。'},
+  {n:63,t:'我的超能力',k:'綜合',e:'',sel:'自我覺察',goal:'發現個人優勢與情緒力量',desc:'引導學生發現自己在情緒覺察或人際互動上的強項，用「超能力」框架正向定義個人特質，建立自我效能感。'},
+  {n:64,t:'我最開心的時刻',k:'綜合',e:'開心',sel:'自我覺察',goal:'深化正向情緒的覺察與記憶',desc:'學生回想並描述最開心的時刻，透過繪畫或書寫記錄這個美好經驗，練習珍視正向情緒記憶，建立情緒資源庫。'},
+  {n:65,t:'心情日記',k:'綜合',e:'',sel:'自我覺察',goal:'建立持續的情緒覺察習慣',desc:'引導學生開始記錄心情日記，每天寫下一個情緒詞、一件發生的事和一個感受，培養日常情緒覺察與反思的習慣。'},
+  {n:66,t:'合作塔',k:'綜合',e:'',sel:'人際關係',goal:'透過合作遊戲練習溝通與團隊情緒',desc:'分組用積木或紙張建造最高的塔，在合作過程中覺察自己的情緒反應，練習在壓力與競爭中維持有效溝通。'},
+  {n:67,t:'未來的自己',k:'綜合',e:'',sel:'負責任決策',goal:'透過想像未來培養自我責任感',desc:'引導學生想像並描述未來的自己，思考現在的情緒管理習慣如何影響未來，培養長期思考與自我負責的態度。'},
+  {n:68,t:'我的選擇清單',k:'綜合',e:'',sel:'負責任決策',goal:'建立個人情緒調節的選擇工具箱',desc:'學生列出在不同情緒狀態下可以做的健康選擇，建立個人化的「情緒調節選單」，提供情緒管理的具體行動指引。'},
+  {n:69,t:'夢想目標樹',k:'綜合',e:'',sel:'負責任決策',goal:'連結情緒力量與個人目標',desc:'學生設計一棵代表自己夢想與目標的樹，根部是情緒力量、樹幹是行動步驟、葉子是未來目標，整合情緒與目標設定。'},
+  {n:70,t:'感恩花園・正向思考',k:'綜合',e:'',sel:'自我管理',goal:'培養感恩與正向思考的習慣',desc:'學生創作感恩花園，將值得感謝的人、事、物畫成花朵，練習主動尋找生活中的正向元素，培養感恩與正向思考習慣。'},
+  {n:71,t:'衝突解決迷宮',k:'綜合',e:'',sel:'人際關係',goal:'練習衝突解決的思考流程',desc:'透過迷宮遊戲的方式，引導學生在衝突情境中思考不同的解決路徑，練習考慮他人感受後做出有建設性的回應。'},
+];
+
+let ltypeF='all', lemoF='all';
+function lGetFiltered(){
+  return ACTS.filter(a=>{
+    const tOk=ltypeF==='all'||a.k===ltypeF;
+    const eOk=lemoF==='all'||a.e===lemoF;
+    return tOk&&eOk;
+  });
+}
+function renderLessons(){
+  const filtered=lGetFiltered();
+  document.getElementById('l-count').textContent=`顯示 ${filtered.length} 個活動`;
+  document.getElementById('l-grid').innerHTML=filtered.map(a=>{
+    const tm=LTYPES[a.k]||LTYPES['綜合'];
+    return `<div class="lesson-card" onclick="openLesson(${a.n})">
+      <div class="lesson-top">
+        <div class="lesson-num">活動 ${String(a.n).padStart(2,'0')}</div>
+        <div class="type-pill" style="background:${tm.bg};color:${tm.tc};border:0.5px solid ${tm.bc};">${tm.label}</div>
+      </div>
+      <div class="lesson-title">${a.t}</div>
+      <div class="lesson-tags">
+        <span class="ltag">${a.sel}</span>
+        ${a.e?`<span class="ltag">${a.e}</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+function lFilter(dim,val,btn){
+  if(dim==='type'){ltypeF=val;document.querySelectorAll('#ltype-bar .f-btn').forEach(b=>b.classList.remove('on'));}
+  else{lemoF=val;document.querySelectorAll('#lemo-bar .f-btn').forEach(b=>b.classList.remove('on'));}
+  btn.classList.add('on');
+  renderLessons();
+}
+function openLesson(n){
+  const a=ACTS.find(x=>x.n===n);
+  const tm=LTYPES[a.k]||LTYPES['綜合'];
+  document.getElementById('lm-num').textContent=`活動 ${String(a.n).padStart(2,'0')}`;
+  document.getElementById('lm-title').textContent=a.t;
+  document.getElementById('lm-tags').innerHTML=`
+    <span class="ltag" style="background:${tm.bg};color:${tm.tc};border:0.5px solid ${tm.bc};">${tm.label}</span>
+    <span class="ltag">${a.sel}</span>
+    ${a.e?`<span class="ltag">${a.e}</span>`:''}
+  `;
+  document.getElementById('lm-goal').textContent=a.goal;
+  document.getElementById('lm-sel').textContent=a.sel;
+  document.getElementById('lm-desc').textContent=a.desc;
+  document.getElementById('lesson-modal').style.display='flex';
+}
+renderLessons();
+
+// ===== FORM =====
+function selRole(el){
+  document.querySelectorAll('#role-tags .ctag').forEach(t=>t.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function handleSubmit(){
+  alert('謝謝您的洽詢！我們通常在 3 個工作天內回覆。');
+}
+</script>
+</body>
+</html>
