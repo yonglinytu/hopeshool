@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HOPE 情緒六大家族牌卡</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --y:#EF9F27;--yl:#FAEEDA;--yd:#633806;--yb:#FAC775;
+  --g:#639922;--gl:#EAF3DE;--gd:#27500A;--gb:#C0DD97;
+  --b:#378ADD;--bl:#E6F1FB;--bd:#0C447C;--bb:#B5D4F4;
+  --o:#D85A30;--ol:#FAECE7;--od:#712B13;--ob:#F5C4B3;
+  --p:#7F77DD;--pl:#EEEDFE;--pd:#3C3489;--pb:#CECBF6;
+  --r:#E24B4A;--rl:#FCEBEB;--rd:#791F1F;--rb:#F7C1C1;
+  --ink:#1c1c1a;--ink2:#3d3d3a;--ink3:#6e6d66;--ink4:#a8a79f;
+  --paper:#faf8f4;--paper2:#f2efe8;--paper3:#e8e4da;
+  --border:rgba(28,28,26,.09);--border2:rgba(28,28,26,.16);
+  --serif:'Noto Serif TC',serif;--sans:'Noto Sans TC',sans-serif;
+  --r8:8px;--r12:12px;--r20:20px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.75;font-size:16px;-webkit-font-smoothing:antialiased}
+
+/* NAV */
+nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(250,248,244,.93);backdrop-filter:blur(14px);
+  border-bottom:.5px solid var(--border);
+  padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;
+}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-logo img{height:36px;width:auto;object-fit:contain}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{font-size:14px;color:var(--ink3);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--ink)}
+.nav-cta{
+  font-size:13px;font-weight:500;padding:8px 20px;border-radius:99px;
+  background:var(--ink);color:#fff;text-decoration:none;transition:opacity .2s;
+}
+.nav-cta:hover{opacity:.8}
+
+/* HERO */
+.hero{
+  padding:6rem 2rem 5rem;max-width:900px;margin:0 auto;
+  display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;
+}
+.hero-eyebrow{
+  display:inline-block;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--pd);background:var(--pl);padding:4px 14px;border-radius:99px;margin-bottom:1.5rem;
+}
+.hero h1{
+  font-family:var(--serif);font-size:clamp(2rem,4vw,3rem);
+  font-weight:700;line-height:1.2;letter-spacing:-.01em;color:var(--ink);margin-bottom:1.25rem;
+}
+.hero h1 em{font-style:normal;color:var(--p)}
+.hero-sub{font-size:16px;color:var(--ink3);line-height:1.85;margin-bottom:2rem}
+.hero-btns{display:flex;gap:10px;flex-wrap:wrap}
+.btn-dark{
+  font-size:14px;font-weight:500;padding:11px 26px;border-radius:99px;
+  background:var(--ink);color:#fff;border:none;cursor:pointer;
+  text-decoration:none;display:inline-block;transition:all .2s;
+}
+.btn-dark:hover{opacity:.8}
+.btn-outline{
+  font-size:14px;padding:11px 26px;border-radius:99px;
+  background:transparent;color:var(--ink);border:1.5px solid var(--border2);
+  cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s;
+}
+.btn-outline:hover{background:var(--paper2)}
+.hero-visual{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;
+}
+.hero-mini-card{
+  border-radius:var(--r12);padding:14px;border:.5px solid;
+  display:flex;flex-direction:column;gap:4px;
+  animation:floatUp .6s ease both;
+}
+.hero-mini-card:nth-child(2){animation-delay:.1s}
+.hero-mini-card:nth-child(3){animation-delay:.2s}
+.hero-mini-card:nth-child(4){animation-delay:.3s}
+@keyframes floatUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.mini-label{font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;opacity:.6}
+.mini-word{font-family:var(--serif);font-size:18px;font-weight:600}
+.mini-anc{font-size:11px;line-height:1.5;opacity:.75;font-style:italic}
+
+/* SECTION */
+section{padding:5rem 2rem}
+.section-inner{max-width:900px;margin:0 auto}
+.section-eyebrow{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink4);margin-bottom:10px}
+.section-title{font-family:var(--serif);font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;color:var(--ink);margin-bottom:.75rem}
+.section-sub{font-size:15px;color:var(--ink3);line-height:1.85;max-width:560px}
+hr.div{border:none;border-top:.5px solid var(--border);margin:0}
+
+/* FAMILIES */
+.families-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:2rem}
+.fam-card{
+  border-radius:var(--r12);padding:1.25rem;border:.5px solid;
+  transition:transform .15s,box-shadow .15s;cursor:default;
+}
+.fam-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.07)}
+.fam-top{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.fam-dot{width:10px;height:10px;border-radius:50%}
+.fam-name{font-size:14px;font-weight:500}
+.fam-position{font-size:12px;font-style:italic;margin-bottom:8px;line-height:1.5;opacity:.75}
+.fam-kw{font-size:11px;display:flex;flex-wrap:wrap;gap:4px}
+.fam-tag{padding:2px 8px;border-radius:99px;font-size:11px;background:rgba(255,255,255,.6);border:.5px solid rgba(0,0,0,.1)}
+
+/* CARD DEMO */
+.demo-section{background:var(--paper2);border-radius:var(--r20);padding:3rem 2.5rem;margin-top:3rem}
+.demo-label{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4);text-align:center;margin-bottom:1rem}
+.family-tabs{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:1.5rem}
+.ftab{
+  font-size:12px;padding:5px 14px;border-radius:99px;
+  border:1.5px solid var(--border2);background:transparent;color:var(--ink3);
+  cursor:pointer;transition:all .15s;font-family:var(--sans);
+}
+.demo-wrap{max-width:480px;margin:0 auto}
+.card-scene{width:100%;height:310px;perspective:1000px;cursor:pointer;margin-bottom:12px}
+.card-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,0,.2,1)}
+.card-scene.flipped .card-inner{transform:rotateY(180deg)}
+.card-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:18px;padding:1.5rem;display:flex;flex-direction:column}
+.card-back{background:#fff;border:.5px solid var(--border);transform:rotateY(180deg);overflow-y:auto}
+.cbadge{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:4px 12px;border-radius:99px;margin-bottom:auto;width:fit-content}
+.cdot{width:8px;height:8px;border-radius:50%}
+.cnum{font-size:12px;margin-bottom:6px}
+.cword{font-family:var(--serif);font-size:30px;font-weight:700;margin-bottom:10px}
+.canchor{font-size:14px;line-height:1.65;font-style:italic}
+.chint{font-size:11px;margin-top:auto;text-align:right;opacity:.5}
+.blabel{font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);margin-bottom:4px;margin-top:10px}
+.blabel:first-child{margin-top:0}
+.btext{font-size:12px;color:var(--ink2);line-height:1.65;margin-bottom:4px}
+.btask{font-size:12px;color:var(--ink2);line-height:1.65;background:var(--paper2);border-radius:8px;padding:9px 11px}
+.bdiv{border:none;border-top:.5px solid var(--border);margin:8px 0}
+.flip-btn{
+  width:100%;padding:10px;font-size:13px;border-radius:var(--r8);
+  background:transparent;cursor:pointer;transition:all .15s;
+  font-family:var(--sans);
+}
+
+/* HOW TO USE */
+.how-blocks{display:flex;flex-direction:column;gap:0;margin-top:2rem;border:.5px solid var(--border);border-radius:var(--r20);overflow:hidden}
+.how-block{
+  display:grid;grid-template-columns:200px 1fr;
+  border-bottom:.5px solid var(--border);
+}
+.how-block:last-child{border-bottom:none}
+.how-time-col{
+  background:var(--paper2);padding:2rem 1.5rem;
+  display:flex;flex-direction:column;justify-content:center;
+  border-right:.5px solid var(--border);
+}
+.how-time{font-family:var(--serif);font-size:2.5rem;font-weight:700;color:var(--ink);line-height:1}
+.how-time-label{font-size:12px;color:var(--ink3);margin-top:4px}
+.how-time-name{font-size:14px;font-weight:500;color:var(--ink);margin-top:8px}
+.how-content{padding:2rem}
+.how-goal{font-size:13px;font-weight:500;color:var(--pd);background:var(--pl);display:inline-block;padding:3px 10px;border-radius:99px;margin-bottom:.75rem}
+.how-steps{list-style:none;display:flex;flex-direction:column;gap:8px}
+.how-step{display:flex;gap:10px;align-items:flex-start}
+.how-step-num{
+  width:22px;height:22px;border-radius:50%;
+  background:var(--ink);color:#fff;
+  font-size:11px;font-weight:500;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;
+}
+.how-step-text{font-size:13px;color:var(--ink2);line-height:1.65}
+.how-tip{font-size:12px;color:var(--ink3);margin-top:10px;padding:8px 12px;background:var(--paper2);border-radius:8px;border-left:3px solid var(--p)}
+
+/* PRINCIPLES */
+.principles-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:2rem}
+.principle-card{
+  background:#fff;border:.5px solid var(--border);border-radius:var(--r12);padding:1.25rem;
+}
+.principle-num{font-family:var(--serif);font-size:2rem;font-weight:700;color:var(--paper3);margin-bottom:8px;line-height:1}
+.principle-title{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:6px}
+.principle-text{font-size:13px;color:var(--ink3);line-height:1.7}
+
+/* FULL DB */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.f-btn{
+  font-size:12px;padding:5px 14px;border-radius:99px;
+  border:1.5px solid var(--border2);background:var(--paper2);color:var(--ink3);
+  cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px;
+  font-family:var(--sans);
+}
+.f-btn.on{font-weight:500}
+.f-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.count-bar{font-size:12px;color:var(--ink4);margin:10px 0 12px;padding-bottom:12px;border-bottom:.5px solid var(--border)}
+.cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.cdb-card{border-radius:var(--r12);padding:14px;border:.5px solid;cursor:pointer;transition:transform .12s}
+.cdb-card:hover{transform:translateY(-2px)}
+.cdb-num{font-size:11px;margin-bottom:4px}
+.cdb-word{font-family:var(--serif);font-size:16px;font-weight:600;margin-bottom:5px}
+.cdb-anc{font-size:11px;line-height:1.5;opacity:.8}
+
+/* CONTACT */
+.contact-box{
+  background:var(--pl);border-radius:var(--r20);padding:3rem;
+  display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;
+  margin-top:2rem;
+}
+.contact-title{font-family:var(--serif);font-size:1.6rem;font-weight:700;color:var(--pd);margin-bottom:.75rem}
+.contact-sub{font-size:14px;color:var(--pd);opacity:.7;line-height:1.8;margin-bottom:1.5rem}
+.contact-links{display:flex;flex-direction:column;gap:12px}
+.contact-link{
+  display:flex;align-items:center;gap:12px;padding:12px 16px;
+  background:#fff;border-radius:var(--r12);border:.5px solid var(--pb);
+  text-decoration:none;color:var(--ink);transition:all .15s;
+}
+.contact-link:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(127,119,221,.15)}
+.contact-link-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+.contact-link-info{display:flex;flex-direction:column}
+.contact-link-label{font-size:11px;color:var(--ink4)}
+.contact-link-value{font-size:13px;font-weight:500;color:var(--pd)}
+.contact-visual{display:flex;flex-direction:column;gap:10px}
+.contact-card-preview{border-radius:var(--r12);padding:16px;border:.5px solid}
+
+/* MODAL */
+.modal-bg{
+  position:fixed;inset:0;background:rgba(28,28,26,.4);
+  display:flex;align-items:center;justify-content:center;z-index:200;padding:16px;
+}
+.modal{
+  background:#fff;border-radius:20px;padding:1.75rem;width:100%;
+  max-width:420px;max-height:88vh;overflow-y:auto;border:.5px solid var(--border);
+}
+.modal-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.m-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:99px}
+.close-btn{font-size:22px;background:none;border:none;cursor:pointer;color:var(--ink3);line-height:1;padding:0}
+.m-num{font-size:11px;color:var(--ink4);margin-bottom:3px}
+.m-word{font-family:var(--serif);font-size:26px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.m-anc{font-size:14px;color:var(--ink3);font-style:italic;line-height:1.65;margin-bottom:14px;padding-bottom:14px;border-bottom:.5px solid var(--border)}
+.m-label{font-size:10px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--ink4);margin-bottom:4px;margin-top:12px}
+.m-text{font-size:13px;color:var(--ink2);line-height:1.65}
+.m-task{font-size:13px;color:var(--ink2);line-height:1.65;background:var(--paper2);border-radius:8px;padding:10px 12px}
+.m-div{border:none;border-top:.5px solid var(--border);margin:10px 0}
+
+/* FOOTER */
+footer{
+  background:var(--ink);color:rgba(255,255,255,.6);
+  padding:3rem 2rem;text-align:center;
+}
+.footer-logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px}
+.footer-logo img{height:32px;filter:brightness(0) invert(1);opacity:.7}
+.footer-name{font-family:var(--serif);font-size:16px;color:rgba(255,255,255,.8)}
+.footer-links{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:1rem 0 1.5rem}
+.footer-link{font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s}
+.footer-link:hover{color:#fff}
+.footer-copy{font-size:12px;color:rgba(255,255,255,.3)}
+
+/* RESPONSIVE */
+@media(max-width:700px){
+  .hero{grid-template-columns:1fr;gap:2rem}
+  .hero-visual{display:none}
+  .families-grid{grid-template-columns:repeat(2,1fr)}
+  .how-block{grid-template-columns:1fr}
+  .how-time-col{border-right:none;border-bottom:.5px solid var(--border);padding:1.25rem 1.5rem}
+  .principles-grid{grid-template-columns:1fr}
+  .cards-grid{grid-template-columns:repeat(2,1fr)}
+  .contact-box{grid-template-columns:1fr;gap:2rem}
+  .contact-visual{display:none}
+  .nav-links{display:none}
+}
+</style>
+</head>
+<body>
+<a href="index.html" style="position:fixed;top:16px;left:16px;z-index:9999;display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.88);backdrop-filter:blur(8px);border:1px solid rgba(0,0,0,0.1);border-radius:20px;padding:7px 16px;font-family:Noto Sans TC,sans-serif;font-size:0.8rem;color:#4a4040;text-decoration:none;box-shadow:0 2px 12px rgba(0,0,0,0.09);transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,1)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='rgba(255,255,255,0.88)';this.style.transform='none'">← 資源中心</a>
+
+<nav>
+  <a class="nav-logo" href="#home"><span style="font-family:var(--serif);font-size:15px;font-weight:700;color:var(--g);letter-spacing:.02em">永齡希望小學｜雲科大分校</span></a>
+  <ul class="nav-links">
+    <li><a href="#families">六大家族</a></li>
+    <li><a href="#demo">認識牌卡</a></li>
+    <li><a href="#howto">怎麼帶</a></li>
+    <li><a href="#cards">全部牌卡</a></li>
+    <li><a href="#contact">聯絡我</a></li>
+  </ul>
+  <a class="nav-cta" href="#contact">聯絡我們</a>
+</nav>
+
+<!-- HERO -->
+<section id="home" style="padding:0">
+<div class="hero">
+  <div class="hero-text">
+    <div class="hero-eyebrow">HOPE 情緒六大家族</div>
+    <h1>把情緒說清楚，<br><em>是一種能力。</em></h1>
+    <p class="hero-sub">84 張情緒牌卡，六個家族，涵蓋從輕微到強烈的完整情緒光譜。每張牌卡只呈現數字、顏色、情緒名稱與一句引導句，極簡設計讓孩子一眼就能找到自己的感受。搭配使用手冊，老師可以進一步引導深度對話。</p>
+    <div class="hero-btns">
+      <a class="btn-dark" href="#demo">翻翻看牌卡 →</a>
+      <a class="btn-outline" href="#howto">怎麼帶？</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-mini-card" style="background:#FAEEDA;border-color:#EF9F27">
+      <div class="mini-label" style="color:#854F0B">黃色 01</div>
+      <div class="mini-word" style="color:#412402">心安</div>
+      <div class="mini-anc" style="color:#633806">心裡安安穩穩的，像被輕輕托住。</div>
+    </div>
+    <div class="hero-mini-card" style="background:#EEEDFE;border-color:#7F77DD">
+      <div class="mini-label" style="color:#534AB7">紫色 07</div>
+      <div class="mini-word" style="color:#26215C">焦慮</div>
+      <div class="mini-anc" style="color:#3C3489">心裡一直拉警報，覺得好像哪裡很不安全。</div>
+    </div>
+    <div class="hero-mini-card" style="background:#FCEBEB;border-color:#E24B4A">
+      <div class="mini-label" style="color:#A32D2D">紅色 05</div>
+      <div class="mini-word" style="color:#501313">生氣</div>
+      <div class="mini-anc" style="color:#791F1F">心裡大聲說：「我很不開心！」</div>
+    </div>
+    <div class="hero-mini-card" style="background:#E6F1FB;border-color:#378ADD">
+      <div class="mini-label" style="color:#185FA5">藍色 07</div>
+      <div class="mini-word" style="color:#042C53">委屈</div>
+      <div class="mini-anc" style="color:#0C447C">明明有話想說卻被誤會，心裡縮起來。</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<hr class="div">
+
+<!-- FAMILIES -->
+<section id="families">
+<div class="section-inner">
+  <div class="section-eyebrow">六大情緒家族</div>
+  <h2 class="section-title">每種情緒都有自己的顏色</h2>
+  <p class="section-sub">六個家族各自對應一類情緒，每個家族 14 張牌，涵蓋從輕微到強烈的完整光譜。孩子可以從顏色快速找到最接近自己感受的那張。</p>
+
+  <div class="families-grid">
+    <div class="fam-card" style="background:#FAEEDA;border-color:#EF9F27">
+      <div class="fam-top"><div class="fam-dot" style="background:#EF9F27"></div><span class="fam-name" style="color:#412402">黃色家族</span></div>
+      <div class="fam-position" style="color:#633806">把心安放好，情緒就有地方回家。</div>
+      <div class="fam-kw">
+        <span class="fam-tag" style="color:#633806">心安</span><span class="fam-tag" style="color:#633806">放鬆</span><span class="fam-tag" style="color:#633806">喜悅</span><span class="fam-tag" style="color:#633806">幸福</span>
+      </div>
+    </div>
+    <div class="fam-card" style="background:#EAF3DE;border-color:#639922">
+      <div class="fam-top"><div class="fam-dot" style="background:#639922"></div><span class="fam-name" style="color:#173404">綠色家族</span></div>
+      <div class="fam-position" style="color:#27500A">穩住節奏，把努力長成力量。</div>
+      <div class="fam-kw">
+        <span class="fam-tag" style="color:#27500A">怪怪的</span><span class="fam-tag" style="color:#27500A">厭煩</span><span class="fam-tag" style="color:#27500A">討厭</span><span class="fam-tag" style="color:#27500A">拒絕</span>
+      </div>
+    </div>
+    <div class="fam-card" style="background:#E6F1FB;border-color:#378ADD">
+      <div class="fam-top"><div class="fam-dot" style="background:#378ADD"></div><span class="fam-name" style="color:#042C53">藍色家族</span></div>
+      <div class="fam-position" style="color:#0C447C">低落不是壞事，它在提醒我需要支持。</div>
+      <div class="fam-kw">
+        <span class="fam-tag" style="color:#0C447C">心悶</span><span class="fam-tag" style="color:#0C447C">失落</span><span class="fam-tag" style="color:#0C447C">委屈</span><span class="fam-tag" style="color:#0C447C">無助</span>
+      </div>
+    </div>
+    <div class="fam-card" style="background:#FAECE7;border-color:#D85A30">
+      <div class="fam-top"><div class="fam-dot" style="background:#D85A30"></div><span class="fam-name" style="color:#4A1B0C">橘色家族</span></div>
+      <div class="fam-position" style="color:#712B13">驚訝讓我停一下，再決定下一步怎麼做。</div>
+      <div class="fam-kw">
+        <span class="fam-tag" style="color:#712B13">好奇</span><span class="fam-tag" style="color:#712B13">驚訝</span><span class="fam-tag" style="color:#712B13">驚喜</span><span class="fam-tag" style="color:#712B13">嚇呆</span>
+      </div>
+    </div>
+    <div class="fam-card" style="background:#EEEDFE;border-color:#7F77DD">
+      <div class="fam-top"><div class="fam-dot" style="background:#7F77DD"></div><span class="fam-name" style="color:#26215C">紫色家族</span></div>
+      <div class="fam-position" style="color:#3C3489">害怕不是弱，是身體在保護我。</div>
+      <div class="fam-kw">
+        <span class="fam-tag" style="color:#3C3489">緊張</span><span class="fam-tag" style="color:#3C3489">不安</span><span class="fam-tag" style="color:#3C3489">害怕</span><span class="fam-tag" style="color:#3C3489">焦慮</span>
+      </div>
+    </div>
+    <div class="fam-card" style="background:#FCEBEB;border-color:#E24B4A">
+      <div class="fam-top"><div class="fam-dot" style="background:#E24B4A"></div><span class="fam-name" style="color:#501313">紅色家族</span></div>
+      <div class="fam-position" style="color:#791F1F">生氣在告訴我：有一個界線被碰到了。</div>
+      <div class="fam-kw">
+        <span class="fam-tag" style="color:#791F1F">心煩</span><span class="fam-tag" style="color:#791F1F">不爽</span><span class="fam-tag" style="color:#791F1F">生氣</span><span class="fam-tag" style="color:#791F1F">氣炸</span>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<hr class="div">
+
+<!-- DEMO -->
+<section id="demo">
+<div class="section-inner">
+  <div class="section-eyebrow">認識牌卡</div>
+  <h2 class="section-title">牌卡設計：簡單，才能說清楚</h2>
+  <p class="section-sub">每張牌卡只有三個元素：編號、情緒名稱、一句引導句。簡單到孩子不需要識字也能感受。翻面後看到的是配套使用手冊的引導內容，老師可以依情況選用。</p>
+
+  <div class="demo-section">
+    <div class="demo-label">選一個家族</div>
+    <div class="family-tabs" id="family-tabs">
+      <button class="ftab" style="border-color:#EF9F27;color:#633806" onclick="sw('y',this)">黃色｜心安</button>
+      <button class="ftab" style="border-color:#639922;color:#27500A" onclick="sw('g',this)">綠色｜拒絕</button>
+      <button class="ftab" style="border-color:#378ADD;color:#0C447C" onclick="sw('b',this)">藍色｜委屈</button>
+      <button class="ftab" style="border-color:#D85A30;color:#712B13" onclick="sw('o',this)">橘色｜驚訝</button>
+      <button class="ftab" style="border-color:#7F77DD;color:#3C3489" onclick="sw('p',this)">紫色｜焦慮</button>
+      <button class="ftab" style="border-color:#E24B4A;color:#791F1F" onclick="sw('r',this)">紅色｜生氣</button>
+    </div>
+    <div class="demo-wrap">
+      <div class="card-scene" id="demo-card" onclick="demoFlip()">
+        <div class="card-inner">
+          <div class="card-face" id="demo-front">
+            <div class="cbadge" id="demo-badge"><span class="cdot" id="demo-dot"></span><span id="demo-fname"></span></div>
+            <div>
+              <div class="cnum" id="demo-num"></div>
+              <div class="cword" id="demo-word"></div>
+              <div class="canchor" id="demo-anc"></div>
+            </div>
+            <div class="chint">點擊看使用手冊的引導內容 →</div>
+          </div>
+          <div class="card-face card-back">
+            <div style="font-size:11px;color:var(--p);font-weight:500;margin-bottom:10px;padding:4px 10px;background:var(--pl);border-radius:99px;display:inline-block">使用手冊引導內容</div>
+            <div class="blabel">深度提問</div><div class="btext" id="demo-q1"></div>
+            <div class="blabel">身體線索</div><div class="btext" id="demo-q2"></div>
+            <hr class="bdiv">
+            <div class="blabel">陪伴句</div><div class="btext" id="demo-co"></div>
+            <hr class="bdiv">
+            <div class="blabel">回穩小任務</div><div class="btask" id="demo-tk"></div>
+          </div>
+        </div>
+      </div>
+      <button class="flip-btn" id="demo-flipbtn" onclick="demoFlip()">翻面 ／ 翻回</button>
+    </div>
+  </div>
+</div>
+</section>
+
+<hr class="div">
+
+<!-- HOW TO USE -->
+<section id="howto">
+<div class="section-inner">
+  <div class="section-eyebrow">怎麼帶</div>
+  <h2 class="section-title">三種帶法，拿到就能用</h2>
+  <p class="section-sub">依照當天的時間和目標選擇模式，每一種都有清楚的步驟，不需要額外備課。</p>
+
+  <div class="how-blocks">
+    <!-- 3分鐘 -->
+    <div class="how-block">
+      <div class="how-time-col">
+        <div class="how-time">3<span style="font-size:1.2rem">分</span></div>
+        <div class="how-time-label">每日可用</div>
+        <div class="how-time-name">情緒快照</div>
+      </div>
+      <div class="how-content">
+        <div class="how-goal">核心目標：快速了解當下情緒狀態，並練習身體覺察</div>
+        <ul class="how-steps">
+          <li class="how-step"><div class="how-step-num">1</div><div class="how-step-text">老師抽出 1–3 張情緒牌卡，唸出情緒名稱給孩子聽</div></li>
+          <li class="how-step"><div class="how-step-num">2</div><div class="how-step-text">請孩子用 1–5 的手勢為當下的情緒強度打分數（1輕微，5強烈）</div></li>
+          <li class="how-step"><div class="how-step-num">3</div><div class="how-step-text">問孩子：「當你有這個感覺時，身體哪個部位最有感覺？」請他指出來</div></li>
+          <li class="how-step"><div class="how-step-num">4</div><div class="how-step-text">引導孩子用一句「我現在需要⋯⋯」做總結，讓情緒有出口</div></li>
+        </ul>
+        <div class="how-tip">適合每日開場或收尾，時間彈性，不需要特別準備。</div>
+      </div>
+    </div>
+    <!-- 15分鐘 -->
+    <div class="how-block">
+      <div class="how-time-col">
+        <div class="how-time">15<span style="font-size:1.2rem">分</span></div>
+        <div class="how-time-label">小團體</div>
+        <div class="how-time-name">情境小劇場</div>
+      </div>
+      <div class="how-content">
+        <div class="how-goal">核心目標：透過角色扮演，練習同理傾聽與表達支持</div>
+        <ul class="how-steps">
+          <li class="how-step"><div class="how-step-num">1</div><div class="how-step-text">兩人一組，各自從牌卡中抽出一張代表最近自己情緒的卡</div></li>
+          <li class="how-step"><div class="how-step-num">2</div><div class="how-step-text">輪流扮演「分享者」與「傾聽者」，傾聽者使用牌卡背面的覺察問題訪談</div></li>
+          <li class="how-step"><div class="how-step-num">3</div><div class="how-step-text">訪談結束後，傾聽者選一句適合的陪伴句說出來，練習給予支持</div></li>
+        </ul>
+        <div class="how-tip">關鍵在於練習「真正的同理」，而不是空泛的安慰。傾聽者的任務是讓對方感到被理解。</div>
+      </div>
+    </div>
+    <!-- 50分鐘 -->
+    <div class="how-block">
+      <div class="how-time-col">
+        <div class="how-time">50<span style="font-size:1.2rem">分</span></div>
+        <div class="how-time-label">完整一堂課</div>
+        <div class="how-time-name">家族主題課</div>
+      </div>
+      <div class="how-content">
+        <div class="how-goal">核心目標：針對特定情緒家族深度探索，建立個人回穩計畫</div>
+        <ul class="how-steps">
+          <li class="how-step"><div class="how-step-num">1</div><div class="how-step-text">選擇一個家族（如紅色家族），將該家族 14 張牌全部攤開</div></li>
+          <li class="how-step"><div class="how-step-num">2</div><div class="how-step-text">引導孩子依強弱排出「情緒光譜」，體驗情緒有輕重之分</div></li>
+          <li class="how-step"><div class="how-step-num">3</div><div class="how-step-text">每人選出 2–3 張生活中最常出現、最有共鳴的情緒卡</div></li>
+          <li class="how-step"><div class="how-step-num">4</div><div class="how-step-text">針對選出的牌卡，運用背面的小任務，設計「我的回穩計畫」</div></li>
+        </ul>
+        <div class="how-tip">初次帶課建議從孩子最熟悉的家族開始，例如紅色（生氣）或紫色（害怕），容易引發共鳴與討論。</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<hr class="div">
+
+<!-- PRINCIPLES -->
+<section>
+<div class="section-inner">
+  <div class="section-eyebrow">安全原則</div>
+  <h2 class="section-title">帶課前，先建立這四件事</h2>
+  <p class="section-sub">這是讓情緒對話真正有效的基礎。不管選哪種帶法，這四個守則都要讓孩子知道。</p>
+
+  <div class="principles-grid">
+    <div class="principle-card">
+      <div class="principle-num">01</div>
+      <div class="principle-title">可以不分享，但不嘲笑</div>
+      <div class="principle-text">每個人選擇分享的程度不同，這沒有對錯。但任何人分享的情緒，都不能成為嘲笑的對象。孩子知道有權保持沉默、不會受傷，才更可能敞開心扉。</div>
+    </div>
+    <div class="principle-card">
+      <div class="principle-num">02</div>
+      <div class="principle-title">不用情緒卡貼標籤</div>
+      <div class="principle-text">情緒是流動的狀態。引導孩子說「我現在『感覺』到生氣」，而不是「我『是』一個愛生氣的人」。情緒不等於個性，避免讓孩子把感受與自我認同混為一談。</div>
+    </div>
+    <div class="principle-card">
+      <div class="principle-num">03</div>
+      <div class="principle-title">情緒越強烈，節奏越放慢</div>
+      <div class="principle-text">當孩子處於高張情緒時，大腦思考功能會暫時關閉。此刻最重要的是放慢節奏——先深呼吸、給予安靜陪伴，等情緒緩和後再開始對話。</div>
+    </div>
+    <div class="principle-card">
+      <div class="principle-num">04</div>
+      <div class="principle-title">以陪伴句收尾</div>
+      <div class="principle-text">每次活動結尾，用一句溫暖、肯定的陪伴句作結。這就像提供安全的降落跑道，讓感受被接納，讓孩子帶著被理解的感覺離開。</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<hr class="div">
+
+<!-- FULL CARD DB -->
+<section id="cards">
+<div class="section-inner">
+  <div class="section-eyebrow">全部牌卡</div>
+  <h2 class="section-title">六大家族・84 張</h2>
+  <p class="section-sub">每張牌只顯示編號、情緒名稱與引導句。點擊任何一張可展開使用手冊的對應引導內容。</p>
+
+  <div style="margin-top:1.5rem">
+    <div class="filter-bar">
+      <button class="f-btn on" style="border-color:var(--ink);color:var(--ink)" onclick="dbFilter('all',this)">全部 84 張</button>
+      <button class="f-btn" onclick="dbFilter('yellow',this)"><span class="f-dot" style="background:#EF9F27"></span>黃色</button>
+      <button class="f-btn" onclick="dbFilter('green',this)"><span class="f-dot" style="background:#639922"></span>綠色</button>
+      <button class="f-btn" onclick="dbFilter('blue',this)"><span class="f-dot" style="background:#378ADD"></span>藍色</button>
+      <button class="f-btn" onclick="dbFilter('orange',this)"><span class="f-dot" style="background:#D85A30"></span>橘色</button>
+      <button class="f-btn" onclick="dbFilter('purple',this)"><span class="f-dot" style="background:#7F77DD"></span>紫色</button>
+      <button class="f-btn" onclick="dbFilter('red',this)"><span class="f-dot" style="background:#E24B4A"></span>紅色</button>
+    </div>
+    <div class="count-bar" id="db-count">顯示全部 84 張</div>
+    <div class="cards-grid" id="db-grid"></div>
+  </div>
+</div>
+</section>
+
+<hr class="div">
+
+<!-- CONTACT -->
+<section id="contact">
+<div class="section-inner">
+  <div class="section-eyebrow">聯絡我們</div>
+  <h2 class="section-title">有任何問題，歡迎找我們</h2>
+
+  <div class="contact-box">
+    <div>
+      <div class="contact-title">想了解更多，或在班級使用？</div>
+      <div class="contact-sub">無論是課程引進、使用方式諮詢，或只是想多了解這套牌卡，都歡迎透過以下方式聯絡我們。</div>
+      <div class="contact-links">
+        <a class="contact-link" href="mailto:yonglinytu@gmail.com">
+          <div class="contact-link-icon" style="background:#EEEDFE">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#534AB7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          </div>
+          <div class="contact-link-info">
+            <span class="contact-link-label">Email</span>
+            <span class="contact-link-value">yonglinytu@gmail.com</span>
+          </div>
+        </a>
+        <a class="contact-link" href="https://www.facebook.com/yonglinytu" target="_blank">
+          <div class="contact-link-icon" style="background:#E6F1FB">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#185FA5"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </div>
+          <div class="contact-link-info">
+            <span class="contact-link-label">Facebook 粉絲專頁</span>
+            <span class="contact-link-value">永齡希望小學雲科大分校</span>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="contact-visual">
+      <div class="contact-card-preview" style="background:#FAEEDA;border-color:#EF9F27">
+        <div style="font-size:11px;color:#854F0B;margin-bottom:4px">黃色 12｜感恩</div>
+        <div style="font-family:var(--serif);font-size:18px;font-weight:700;color:#412402;margin-bottom:6px">感恩</div>
+        <div style="font-size:12px;color:#633806;font-style:italic">心裡裝滿「還好有你／有這件事」。</div>
+      </div>
+      <div class="contact-card-preview" style="background:#EEEDFE;border-color:#7F77DD">
+        <div style="font-size:11px;color:#534AB7;margin-bottom:4px">紫色 01｜緊張</div>
+        <div style="font-family:var(--serif);font-size:18px;font-weight:700;color:#26215C;margin-bottom:6px">緊張</div>
+        <div style="font-size:12px;color:#3C3489;font-style:italic">要做新的事情前，心跟手都有點緊緊的。</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo"><span style="font-family:var(--serif);font-size:16px;color:rgba(255,255,255,.85);letter-spacing:.02em">永齡希望小學｜雲科大分校</span></div>
+  <div class="footer-links">
+    <a class="footer-link" href="#families">六大家族</a>
+    <a class="footer-link" href="#demo">認識牌卡</a>
+    <a class="footer-link" href="#howto">怎麼帶</a>
+    <a class="footer-link" href="#cards">全部牌卡</a>
+    <a class="footer-link" href="mailto:yonglinytu@gmail.com">Email</a>
+    <a class="footer-link" href="https://www.facebook.com/yonglinytu" target="_blank">Facebook</a>
+  </div>
+  <div class="footer-copy">© 2025 HOPE 情緒六大家族・永齡希望小學雲科大分校</div>
+</footer>
+
+<!-- CARD MODAL -->
+<div id="card-modal" style="display:none" class="modal-bg" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal">
+    <div class="modal-top">
+      <div class="m-badge" id="cm-badge"></div>
+      <button class="close-btn" onclick="document.getElementById('card-modal').style.display='none'">×</button>
+    </div>
+    <div class="m-num" id="cm-num"></div>
+    <div class="m-word" id="cm-word"></div>
+    <div class="m-anc" id="cm-anc"></div>
+    <div style="font-size:11px;color:var(--pd);font-weight:500;margin-bottom:8px;padding:3px 10px;background:var(--pl);border-radius:99px;display:inline-block">使用手冊引導內容</div>
+    <div class="m-label">深度提問</div><div class="m-text" id="cm-q1"></div>
+    <div class="m-label">身體線索</div><div class="m-text" id="cm-q2"></div>
+    <hr class="m-div">
+    <div class="m-label">陪伴句</div><div class="m-text" id="cm-co"></div>
+    <hr class="m-div">
+    <div class="m-label">回穩小任務</div><div class="m-task" id="cm-tk"></div>
+  </div>
+</div>
+
+<script>
+const FC={
+  yellow:{name:'黃色家族',bg:'#FAEEDA',bd:'#EF9F27',bbg:'#FAC775',bt:'#412402',dc:'#BA7517',nc:'#854F0B',wc:'#412402',ac:'#633806'},
+  green:{name:'綠色家族',bg:'#EAF3DE',bd:'#639922',bbg:'#C0DD97',bt:'#173404',dc:'#3B6D11',nc:'#3B6D11',wc:'#173404',ac:'#27500A'},
+  blue:{name:'藍色家族',bg:'#E6F1FB',bd:'#378ADD',bbg:'#B5D4F4',bt:'#042C53',dc:'#185FA5',nc:'#185FA5',wc:'#042C53',ac:'#0C447C'},
+  orange:{name:'橘色家族',bg:'#FAECE7',bd:'#D85A30',bbg:'#F5C4B3',bt:'#4A1B0C',dc:'#993C1D',nc:'#993C1D',wc:'#4A1B0C',ac:'#712B13'},
+  purple:{name:'紫色家族',bg:'#EEEDFE',bd:'#7F77DD',bbg:'#CECBF6',bt:'#26215C',dc:'#534AB7',nc:'#534AB7',wc:'#26215C',ac:'#3C3489'},
+  red:{name:'紅色家族',bg:'#FCEBEB',bd:'#E24B4A',bbg:'#F7C1C1',bt:'#501313',dc:'#A32D2D',nc:'#A32D2D',wc:'#501313',ac:'#791F1F'}
+};
+const DEMO={
+  y:{f:'yellow',fname:'黃色家族',num:'黃色 01',word:'心安',anc:'心裡安安穩穩的，像被輕輕托住。',q1:'最近什麼時候，你會覺得心裡比較安穩、不那麼緊張？',q2:'讓你心安的時刻，旁邊通常有誰或哪些小東西陪你？',co:'「你值得待在讓自己覺得安心、踏實的地方和關係裡。」',tk:'寫下三件讓你覺得心安的小事（一個人、一個地方或一個習慣）。'},
+  g:{f:'green',fname:'綠色家族',num:'綠色 14',word:'拒絕',anc:'心裡很清楚：「這個我不要。」',q1:'有沒有一件事，你心裡很清楚不想要，但還是說了好？',q2:'當你說「不要」的時候，身體有什麼感覺？',co:'「你有權利說不，而且不需要解釋太多。」',tk:'練習一句話：「這個我沒辦法，謝謝你的邀請。」大聲說三次。'},
+  b:{f:'blue',fname:'藍色家族',num:'藍色 07',word:'委屈',anc:'明明有話想說卻被誤會，心裡縮起來。',q1:'最近有沒有被誤會的時候？那時心裡最想說什麼？',q2:'覺得委屈時你會沉默還是試著說出來？什麼讓你做這個選擇？',co:'「你的委屈是真實的，你不需要假裝沒事。」',tk:'寫一句「其實我那時候很＿＿，我希望你知道＿＿。」先寫給自己看就好。'},
+  o:{f:'orange',fname:'橘色家族',num:'橘色 05',word:'驚訝',anc:'眼睛突然睜大，腦袋暫時跟不上。',q1:'最近一次「超驚訝」的時刻是什麼？',q2:'那一刻你的身體有什麼反應？（心跳、呼吸、手？）',co:'「當你很驚訝時，給自己一點時間慢慢消化也沒關係。」',tk:'畫出你「最驚訝表情」的漫畫臉，當成認識自己反應的小圖示。'},
+  p:{f:'purple',fname:'紫色家族',num:'紫色 07',word:'焦慮',anc:'心裡一直拉警報，覺得好像哪裡真的很不安全。',q1:'當你覺得「好像哪裡都不太安全」的時候，通常是在什麼情境？',q2:'那時候，你的身體有什麼反應？例如：睡不太好、肚子痛、一直想事情。',co:'「當心裡一直拉警報時，更需要有人陪你一起確認，哪些地方其實是安全的。」',tk:'寫下一份「讓我有一點安全感的東西」清單，例如：一個人、一個地方或一個小物品。'},
+  r:{f:'red',fname:'紅色家族',num:'紅色 05',word:'生氣',anc:'心裡大聲說：「我很不開心！」',q1:'最近哪一件事最讓你想在心裡大喊「我很不開心」？',q2:'如果別人願意聽，你最想怎麼好好說出這個生氣？',co:'「生氣是在幫你告訴別人：有些事情，對你來說不可以。」',tk:'寫下三件「讓我生氣的事」，以及一件你希望別人下次可以怎麼做比較好。'}
+};
+let demoFlipped=false;
+function applyDemo(d){
+  const fc=FC[d.f];
+  const front=document.getElementById('demo-front');
+  front.style.background=fc.bg;front.style.border=`.5px solid ${fc.bd}`;
+  const badge=document.getElementById('demo-badge');badge.style.background=fc.bbg;badge.style.color=fc.bt;
+  document.getElementById('demo-dot').style.background=fc.dc;
+  document.getElementById('demo-fname').textContent=d.fname;
+  const num=document.getElementById('demo-num');num.textContent=d.num;num.style.color=fc.nc;
+  const word=document.getElementById('demo-word');word.textContent=d.word;word.style.color=fc.wc;
+  const anc=document.getElementById('demo-anc');anc.textContent=d.anc;anc.style.color=fc.ac;
+  const fb=document.getElementById('demo-flipbtn');fb.style.borderColor=fc.bd;fb.style.color=fc.wc;
+  document.getElementById('demo-q1').textContent=d.q1;
+  document.getElementById('demo-q2').textContent=d.q2;
+  document.getElementById('demo-co').textContent=d.co;
+  document.getElementById('demo-tk').textContent=d.tk;
+}
+function sw(k,btn){
+  if(demoFlipped){demoFlipped=false;document.getElementById('demo-card').classList.remove('flipped')}
+  applyDemo(DEMO[k]);
+}
+function demoFlip(){demoFlipped=!demoFlipped;document.getElementById('demo-card').classList.toggle('flipped',demoFlipped)}
+applyDemo(DEMO.y);
+
+const CARDS=[
+  {f:'yellow',n:1,w:'心安',a:'心裡安安穩穩的，像被輕輕托住。',q1:'最近什麼時候，你會覺得心裡比較安穩、不那麼緊張？',q2:'讓你心安的時刻，旁邊通常有誰或哪些小東西陪你？',co:'「你值得待在讓自己覺得安心、踏實的地方和關係裡。」',tk:'寫下三件讓你覺得心安的小事（一個人、一個地方或一個習慣）。'},
+  {f:'yellow',n:2,w:'放鬆',a:'身體慢慢軟下來，呼吸也跟著變慢。',q1:'上一次覺得真的有放鬆，是在做什麼？',q2:'放鬆時，身體哪個部位最有感覺？',co:'「放鬆不是偷懶，而是讓自己有力氣再出發。」',tk:'做三次慢慢的深呼吸，感覺身體哪裡變舒服了。'},
+  {f:'yellow',n:3,w:'輕鬆',a:'肩膀變輕了，好像把很重的書包放下。',q1:'什麼事做完後會讓你覺得「終於可以鬆一口氣」？',q2:'輕鬆時和緊繃時的自己，哪裡不一樣？',co:'「你可以在努力之後，好好享受自己變輕的那一刻。」',tk:'「肩膀放假 60 秒」，聳肩→放下做 10 次，最後雙手抱自己 10 秒。'},
+  {f:'yellow',n:4,w:'喜悅',a:'心裡亮亮的，嘴角自己往上。',q1:'最近哪個時刻讓你覺得心裡慢慢亮起來？',q2:'喜悅和單純「好玩」在你心裡有什麼不一樣？',co:'「那種從心裡冒出來的喜悅，是很值得收藏的禮物。」',tk:'寫下一件喜悅的小事，用一個圖案或顏色代表這份感覺。'},
+  {f:'yellow',n:5,w:'開心',a:'一想到這件事，就想笑出聲。',q1:'什麼事情一想到就會讓你忍不住想笑？',q2:'你最想和誰分享這份開心？為什麼？',co:'「你的開心，也可以成為別人的小禮物。」',tk:'閉眼回放一個開心畫面 10 秒，注意身體哪裡變鬆、變暖。'},
+  {f:'yellow',n:6,w:'高興',a:'心裡好像開了一盞小燈。',q1:'最近哪件事讓你覺得心裡被點亮了一點？',q2:'用顏色形容你「高興」時的心，會是什麼顏色？',co:'「那盞小燈一點一滴地亮起來，也是你自己給自己的。」',tk:'畫出一盞屬於你的「心裡小燈」，寫下一件讓它亮起來的事。'},
+  {f:'yellow',n:7,w:'興奮',a:'全身都有電一樣，超想立刻去做。',q1:'什麼活動或計畫會讓你興奮到睡前一直想？',q2:'太興奮時，有沒有哪個時刻需要提醒自己慢一點？',co:'「興奮可以是動力，也可以學著幫它裝上煞車。」',tk:'寫下讓你最興奮的事，再想一個「讓自己慢下來的方法」寫在旁邊。'},
+  {f:'yellow',n:8,w:'有趣',a:'腦袋一直冒出：「再玩一次！」。',q1:'對你來說，「有趣」通常是和誰、在哪裡發生的？',q2:'有沒有可能把「無聊的事」加點創意變得有趣？',co:'「你看見有趣的眼睛，也可以讓生活變得更好玩。」',tk:'選一件平常無聊的小事，加上一個小變化看看。'},
+  {f:'yellow',n:9,w:'得意',a:'想對自己說：「我真的很棒！」。',q1:'最近哪件事讓你很想跟自己擊掌說「你真的不錯」？',q2:'得意和「看不起別人」有什麼不一樣？',co:'「看見自己的好很重要，只要也記得尊重別人就更棒。」',tk:'寫下一句「我做得好的地方是＿＿」，貼在可以經常看見的地方。'},
+  {f:'yellow',n:10,w:'自豪',a:'對自己的努力感到驕傲。',q1:'你為自己哪一個努力或改變感到自豪？',q2:'如果有人問你哪裡做得很好，你最想怎麼回答？',co:'「你可以為自己感到自豪，不只是成績，而是你做人的方式。」',tk:'畫一張「給自己的小小獎狀」，寫上自豪的事情。'},
+  {f:'yellow',n:11,w:'感動',a:'心裡被碰了一下，眼淚有點想掉。',q1:'什麼樣的話或行動，最容易讓你感動？',q2:'你有沒有做過什麼事，可能也悄悄地感動了別人？',co:'「被感動，代表你的心真的有在用力感受世界。」',tk:'寫下一件讓你感動的事情，最後加上一句：「謝謝這個時刻。」'},
+  {f:'yellow',n:12,w:'感恩',a:'心裡裝滿「還好有你／有這件事」。',q1:'今天有哪三件事，是你覺得「還好有」的？',q2:'如果少了其中一件，你的今天會不一樣在哪裡？',co:'「看見值得感謝的地方，是一種很溫柔的力量。」',tk:'寫一句「謝謝＿＿，因為＿＿。」'},
+  {f:'yellow',n:13,w:'滿足',a:'心裡剛剛好，不多也不少。',q1:'什麼時候，你會覺得「這樣就很好了，不需要再更多」？',q2:'滿足和「還想再要更多」在你心裡的感覺有什麼不一樣？',co:'「能說出「這樣就夠了」，是一種很成熟的力量。」',tk:'想一件你已經擁有的東西或關係，對它說：「有你，我覺得很足夠。」'},
+  {f:'yellow',n:14,w:'幸福',a:'心裡像被厚厚抱住，覺得自己被好好愛著。',q1:'如果用一張照片當作「幸福畫面」，你會選什麼場景？',q2:'在那些幸福的時刻，你有沒有也好好對自己溫柔一點？',co:'「你值得被好好地愛、好好地對待，包括被別人愛，也被自己愛。」',tk:'畫出一張「我的幸福畫面」，寫上圖中的人、地點和一句關鍵話。'},
+  {f:'green',n:1,w:'怪怪的',a:'心裡有一點怪怪的，說不上來哪裡不對。',q1:'最近什麼時候，你覺得心裡有點怪怪的？',q2:'這個怪怪的感覺比較像「怕」、「生氣」還是「不喜歡」？',co:'「還說不清楚也沒關係，我們可以一起慢慢找出哪裡怪。」',tk:'在紙上畫一個「怪怪的雷達」，寫下最近一件讓你怪怪的小事。'},
+  {f:'green',n:2,w:'不合拍',a:'感覺跟自己不太合，心裡有一點卡卡的。',q1:'當你覺得跟別人不合拍時，通常是發生在什麼情況下？',q2:'那時候，你比較想勉強跟著，還是先退開一下？',co:'「不合拍不代表誰不好，只是你們現在的節奏不一樣。」',tk:'想一個跟你比較合拍的人或活動，寫下來當成你的小小充電站。'},
+  {f:'green',n:3,w:'看膩',a:'一看到就覺得「又是這個」，好膩喔。',q1:'有哪些事情會讓你一看到就覺得「又是這個，好膩」？',q2:'你覺得自己是因為太常看到，還是心裡想試試別的？',co:'「覺得膩，是在提醒你需要一點新鮮感。」',tk:'挑一件你常覺得很膩的事情，加上一個小小變化看看。'},
+  {f:'green',n:4,w:'厭煩',a:'同一件事一再出現，只想說：「夠了啦。」',q1:'什麼事情一直重複，會讓你很想說「夠了啦」？',q2:'在厭煩的背後，你心裡真正需要的是什麼？',co:'「當你覺得厭煩時，可以試著說：「我現在需要的是＿＿。」',tk:'練習一句話：「我現在覺得很煩，可以請你＿＿嗎？」'},
+  {f:'green',n:5,w:'討厭',a:'一看到就皺眉，完全不想靠近。',q1:'你最常說「好討厭喔」是在面對什麼東西或情況？',q2:'那個「討厭」裡面，有沒有「害怕」或「擔心」藏在裡面？',co:'「覺得討厭本身沒有錯，重要的是你怎麼保護自己和對待別人。」',tk:'在紙上畫兩欄：「我討厭的東西」和「我可以怎麼保護自己」。'},
+  {f:'green',n:6,w:'反感',a:'身體會自己往後退，心裡一直說「不要」。',q1:'什麼樣的動作或說話方式，會讓你全身覺得「好反感」？',q2:'在那個時候，你有試著說「請你不要這樣」嗎？',co:'「覺得反感的時候，常常是在幫自己的界線發聲。」',tk:'練習界線用語：「這樣我會不舒服，可以不要這樣嗎？」'},
+  {f:'green',n:7,w:'嫌棄',a:'覺得超不好，心裡在「哼」的一聲。',q1:'你會在什麼情況下，忍不住露出「嫌棄」的表情？',q2:'當你嫌棄別人或事情時，心裡其實希望它變成什麼樣子？',co:'「有時候嫌棄，是因為你其實很在意好不好。」',tk:'想一件你很想嫌棄的事，試著在心裡加上：「我其實希望可以＿＿。」'},
+  {f:'green',n:8,w:'厭惡',a:'心裡很排斥，一想到就想說「好噁」。',q1:'有沒有哪一種畫面或行為，讓你一想到就覺得「好噁」？',q2:'你覺得這種厭惡是在保護什麼？',co:'「厭惡有時候是在提醒你：「這裡好像不太適合你。」',tk:'畫一張「我的安全距離地圖」，標出你想離遠一點的東西。'},
+  {f:'green',n:9,w:'噁心',a:'胃有點翻，覺得整個噁心。',q1:'你上一次覺得「好噁心」是碰到什麼？',q2:'那時候，你的身體哪一個地方最不舒服？',co:'「當身體覺得噁心時，可以先離開一下，讓自己安全一點。」',tk:'寫下兩件在覺得噁心時，你可以做的小小保護動作。'},
+  {f:'green',n:10,w:'超噁',a:'想馬上轉頭、閉眼，完全不想再看到。',q1:'什麼樣的畫面或事情，會讓你想馬上轉頭、閉上眼睛？',q2:'有沒有可能別人覺得還好，但你特別不能接受？這樣可以嗎？',co:'「每個人能接受的程度不一樣，你不喜歡，就有權利說不。」',tk:'寫下一句話：「我真的無法接受的是＿＿。」'},
+  {f:'green',n:11,w:'想吐',a:'喉嚨卡卡的，好像要吐出來。',q1:'你曾經噁心到差點想吐，是發生了什麼事？',q2:'當你想吐時，身邊有誰可以幫你？',co:'「當你不舒服到想吐時，照顧身體比什麼都重要。」',tk:'畫一個自己的身體輪廓，圈出最不舒服的地方，對自己說：「我先好好照顧你。」'},
+  {f:'green',n:12,w:'反胃',a:'肚子翻來翻去，很不舒服。',q1:'你會在什麼時候覺得肚子翻來翻去、很反胃？',q2:'除了食物，有沒有某些氣氛也會讓你覺得「有點反胃」？',co:'「有時候反胃，不一定只是肚子的事，也可能是心裡太緊張。」',tk:'找一個讓肚子比較舒服的小方法，例如喝溫水或做三次慢呼吸。'},
+  {f:'green',n:13,w:'躲開',a:'很想離遠一點，找一個安全的地方。',q1:'遇到什麼人或事情時，你最想「趕快躲開」？',q2:'你覺得「躲開」是在逃避，還是先保護自己？',co:'「先躲開，有時候是在幫自己找一個比較安全的位置。」',tk:'在紙上畫一個「安全角落」，寫下當你覺得很不舒服時，可以去哪裡待一下。'},
+  {f:'green',n:14,w:'拒絕',a:'心裡很清楚：「這個我不要。」',q1:'有沒有一件事，你心裡很清楚不想要，但還是說了好？',q2:'當你說「不要」的時候，身體有什麼感覺？',co:'「你有權利說不，而且不需要解釋太多。」',tk:'練習一句話：「這個我沒辦法，謝謝你的邀請。」大聲說三次。'},
+  {f:'blue',n:1,w:'心悶',a:'心裡有一小塊陰影，不太開心。',q1:'最近什麼事讓你心裡好像多了一小塊陰影？',q2:'心悶時比較想說出來還是先安靜？',co:'「有時候心裡悶悶的很正常，我願意陪你一起看看這塊小陰影。」',tk:'畫一個代表「心悶」的小雲朵，寫上一句話：「我看到你了。」'},
+  {f:'blue',n:2,w:'失落',a:'沒做到或沒得到，心有點空空的。',q1:'最近哪件「沒如願」的事讓你覺得心裡空空的？',q2:'失落時，什麼人或事可以讓空空的感覺好一點？',co:'「你會失落，是因為你很在乎，那個在乎很重要。」',tk:'寫下一件失落的事，再寫一件「還好我還有＿＿」的小安慰。'},
+  {f:'blue',n:3,w:'小難過',a:'有點想嘆氣，心裡暖暖的變涼了。',q1:'什麼小事會讓你有一點點難過、想嘆氣？',q2:'這種小難過你通常怎麼讓自己好一點？',co:'「就算只是小小的難過，也值得被溫柔對待。」',tk:'如果出現「小難過」，幫自己做一件小小好事（如喝水、深呼吸）。'},
+  {f:'blue',n:4,w:'難過',a:'心裡沉沉的，好像背著一顆石頭。',q1:'最近一次覺得心裡很沉是因為什麼事？',q2:'如果那顆「石頭」可以說話，它會說什麼？',co:'「當你心裡很沉的時候，不需要假裝沒事，可以讓人陪你。」',tk:'畫一顆「心裡的石頭」，在旁邊寫一個可以讓它變輕一點點的小方法。'},
+  {f:'blue',n:5,w:'傷心',a:'在意的人或事變糟時，眼淚有點想掉。',q1:'最近哪一件事讓你傷心到很想哭？',q2:'傷心時你最希望別人怎麼對你？',co:'「傷心的時候，眼淚不需要藏起來，它是心在說話。」',tk:'寫下一件讓你傷心的事，在最後加一句：「我值得被好好安慰。」'},
+  {f:'blue',n:6,w:'心酸',a:'一想到那件事，心裡酸酸的、有點痛。',q1:'什麼事情一想到會讓你心裡酸酸的？',q2:'心酸裡有沒有藏著「想被看見」或「想被理解」？',co:'「你的心酸是真實的，那份感受值得被好好看見。」',tk:'寫一句：「其實那時候我很＿＿，希望有人可以＿＿。」'},
+  {f:'blue',n:7,w:'委屈',a:'明明有話想說卻被誤會，心裡縮起來。',q1:'最近有沒有被誤會的時候？那時心裡最想說什麼？',q2:'覺得委屈時你會沉默還是試著說出來？',co:'「你的委屈是真實的，你不需要假裝沒事。」',tk:'寫一句「其實我那時候很＿＿，我希望你知道＿＿。」先寫給自己看就好。'},
+  {f:'blue',n:8,w:'寂寞',a:'周圍很安靜，好像只有自己一個人。',q1:'什麼時候你會覺得世界好安靜、只剩下你一個人？',q2:'有什麼東西在你寂寞時可以陪你？',co:'「即使現在很安靜，你不是一個人，有人在想著你。」',tk:'寫下一個在你寂寞時你可以聯絡的人，想像跟他說：「我有點想你。」'},
+  {f:'blue',n:9,w:'孤單',a:'明明有人在旁邊，卻覺得沒有人懂我。',q1:'你有沒有過「明明有人在還是覺得很孤單」的經驗？',q2:'如果有人能真正懂你，你最希望他懂你哪一件事？',co:'「覺得孤單不代表你不好，而是你很需要被真正理解。」',tk:'寫下一句你希望別人對你說的話，如：「我懂你現在的感覺。」'},
+  {f:'blue',n:10,w:'失望',a:'期待的事沒有發生，像氣球慢慢漏氣。',q1:'最近哪件事讓你從很期待變成很失望？',q2:'在失望裡有沒有藏著「我其實很想要＿＿」的心願？',co:'「你會失望，是因為你曾經很用力期待。」',tk:'畫一個「心願氣球」，寫下一個你仍然想守護的希望。'},
+  {f:'blue',n:11,w:'沮喪',a:'覺得怎麼努力都沒用，好像被按下暫停鍵。',q1:'有沒有一件事讓你覺得「不管怎麼做都一樣」而很沮喪？',q2:'沮喪時，你最需要別人陪你做什麼？',co:'「當你覺得好像怎麼做都沒用時，更需要有人陪你慢慢找出路。」',tk:'寫下一件曾經「明明很難但後來有一點進步」的經驗提醒自己。'},
+  {f:'blue',n:12,w:'低落',a:'做什麼都提不起勁，只想靜靜的。',q1:'通常在什麼時候會覺得整個人「提不起勁」？',q2:'低落時如果只能做一件最小的事，你願意為自己做什麼？',co:'「有時候能做的只有一點點也沒關係，那一點點也是在照顧自己。」',tk:'若覺得低落，只需完成一件小事（如喝水），然後對自己說：「這樣就夠好了。」'},
+  {f:'blue',n:13,w:'心碎',a:'好像心被重重摔了一下，碎成很多片。',q1:'有沒有哪一件事讓你覺得心被重重摔了一下？',q2:'在那個故事裡最讓你痛的地方是什麼？',co:'「當你覺得心碎的時候，不需要假裝沒事，你值得被好好抱一抱。」',tk:'畫出「破掉的心」，在旁邊畫幾個小貼布，寫上覺得有幫助的人或事。'},
+  {f:'blue',n:14,w:'無助',a:'很想有人幫忙，卻不知道能找誰。',q1:'什麼時候你會覺得「我自己一個人真的撐不住了」？',q2:'如果你可以開口求助，你最想請誰幫你什麼？',co:'「開口說「我需要幫忙」，是一種需要練習的勇敢。」',tk:'寫下一個你可以求助的人，練習說：「我最近有點撐不住，可以跟你說說嗎？」'},
+  {f:'orange',n:1,w:'好奇',a:'很想知道「後面會怎樣？」。',q1:'最近什麼事讓你一直很好奇後面會怎樣發展？',q2:'好奇時你的眼睛、身體或表情會變成什麼樣子？',co:'「你的好奇心，是一個很重要的學習超能力。」',tk:'選一個「小小好奇問題」，查資料或問人滿足一下好奇心。'},
+  {f:'orange',n:2,w:'小驚喜',a:'比想像中好一點，心裡亮一下。',q1:'最近有沒有發生過「比想像中好一點」的小事？',q2:'這個小驚喜裡最讓你開心的是什麼？',co:'「日常裡的小驚喜，很適合慢慢收集起來。」',tk:'寫下一件今天發生的「小驚喜」。'},
+  {f:'orange',n:3,w:'意外',a:'跟原本想的不一樣，有點出乎意料。',q1:'最近遇過什麼「跟原本想的不一樣」的事？',q2:'那個意外讓你比較開心還是困惑？為什麼？',co:'「意外有時候會打亂計畫，但也可能帶來新的可能。」',tk:'想一個曾經發生的「小意外」，找出裡面一個小小的學習或收穫。'},
+  {f:'orange',n:4,w:'想不到',a:'心裡說：「咦？想不到竟然是這樣！」。',q1:'最近哪件事讓你心裡大喊「想不到竟然是這樣」？',q2:'下次再遇到類似狀況，你會不會比較有準備？',co:'「每一個「想不到」，都在幫你認識這個世界更多一點。」',tk:'寫下一件讓你「想不到」的事，在旁邊寫：「原來世界也可以這樣。」'},
+  {f:'orange',n:5,w:'驚訝',a:'眼睛突然睜大，腦袋暫時跟不上。',q1:'最近一次「超驚訝」的時刻是什麼？',q2:'那一刻你的身體有什麼反應？',co:'「當你很驚訝時，給自己一點時間慢慢消化也沒關係。」',tk:'畫出你「最驚訝表情」的漫畫臉，當成認識自己反應的小圖示。'},
+  {f:'orange',n:6,w:'讚嘆',a:'心裡一直「哇～」，覺得超厲害。',q1:'最近有沒有對誰或什麼東西產生「哇～好厲害」的感覺？',q2:'那個「厲害」讓你最佩服的是什麼？',co:'「會讚嘆別人，也代表你看得見美好和努力。」',tk:'選一個你佩服的人或作品，寫下一句「我讚嘆的是＿＿。」'},
+  {f:'orange',n:7,w:'驚豔',a:'又美又特別，讓人捨不得移開視線。',q1:'你看過什麼畫面或作品會讓你一直想多看幾眼？',q2:'那個讓你驚豔的東西跟一般的比起來有什麼不一樣？',co:'「你能被美好的東西打動，是一件很珍貴的事。」',tk:'今天找一樣讓你覺得「好美好特別」的東西，安靜看它 30 秒。'},
+  {f:'orange',n:8,w:'欣喜',a:'開心得很暖，嘴角一直收不起來。',q1:'最近哪件事讓你有「從心裡冒出來的開心」？',q2:'欣喜和一般的開心感覺有什麼不同？',co:'「那種從裡面慢慢冒出來的開心，很值得被記住。」',tk:'寫下一件讓你欣喜的事，加上一句：「謝謝這個美好的瞬間。」'},
+  {f:'orange',n:9,w:'狂喜',a:'開心到想跳起來大叫：「太好了！」。',q1:'你有沒有「開心到想大叫」的經驗？',q2:'狂喜時會不會忘記旁邊人的感受？以後可以怎麼拿捏？',co:'「你能那麼開心很棒，也可以慢慢學會照顧到身邊的人。」',tk:'想一個讓你超開心的回憶，寫下來並在心裡幫那時的自己比個讚。'},
+  {f:'orange',n:10,w:'嚇一跳',a:'突然被嚇一下，心臟「咚」地跳，發現沒事就笑出來。',q1:'你曾經被嚇一跳後來發現沒事而笑出來嗎？',q2:'當你嚇一跳又發現沒事時，心裡從「緊張」變成什麼感覺？',co:'「嚇一跳再笑出來，也是一種很可愛的放鬆方式。」',tk:'回想一次你「先被嚇到後來覺得好笑」的經驗，寫成三行小故事。'},
+  {f:'orange',n:11,w:'傻眼',a:'實在太扯，只能在心裡說：「蛤？」。',q1:'有沒有什麼事讓你當下只想說「也太扯了」或「蛤？」？',q2:'傻眼時比較想笑還是比較生氣或無言？',co:'「覺得傻眼的時候，可以先給自己幾秒鐘，不急著做反應。」',tk:'畫出專屬的「傻眼表情」，當成提醒自己先冷靜一下的小圖示。'},
+  {f:'orange',n:12,w:'超驚喜',a:'又驚又喜，覺得「也太好了吧！」。',q1:'你有沒有收過讓你覺得「也太好了吧！」的驚喜？',q2:'如果你要幫別人準備一個「超驚喜」，你最想帶給他什麼感覺？',co:'「你值得被用心準備驚喜，也有力量為別人創造驚喜。」',tk:'想一個你可以為身邊的人做的小驚喜，寫下來找一天實現。'},
+  {f:'orange',n:13,w:'大吃一驚',a:'完全沒預料到，一下子說不出話。',q1:'你曾經有過「完全沒預料到」的經驗嗎？',q2:'那時候你心裡的第一個想法是什麼？',co:'「當你大吃一驚時，先停下來確認狀況，是很重要的一步。」',tk:'畫一個「驚訝表情的自己」，旁邊寫：「我可以先看清楚，再決定要怎麼反應。」'},
+  {f:'orange',n:14,w:'嚇呆',a:'被結果嚇到，一時間愣在那裡，腦袋短暫當機。',q1:'你有沒有一次被結果嚇到愣住的經驗？',q2:'後來你是怎麼讓自己慢慢恢復、想清楚的？',co:'「當你嚇呆時，大腦只是暫停一下，很快就會慢慢恢復。」',tk:'想像下一次被嚇呆，可以先做一個小動作（如深呼吸）提醒自己「我還在這裡」。'},
+  {f:'purple',n:1,w:'緊張',a:'要做新的事情前，心跟手都有點緊緊的。',q1:'最近什麼事讓你一想到就有點緊張？',q2:'當你緊張的時候，身體哪裡最有感覺？',co:'「會緊張，是因為這件事對你很重要。」',tk:'在一件重要事情開始前，做三次慢慢的深呼吸，觀察緊張有沒有小一點。'},
+  {f:'purple',n:2,w:'不安',a:'好像有事要發生，卻說不出是哪一件。',q1:'你什麼時候會覺得心裡怪怪的、好像有事要發生？',q2:'那種不安感比較像是擔心自己，還是擔心別人或事情？',co:'「感到不安的時候，可以先停一下，讓心有機會慢慢說話。」',tk:'寫下一句：「我現在有點不安，因為我在想＿＿。」試著把感覺說出來。'},
+  {f:'purple',n:3,w:'擔心',a:'一直在想「如果出事怎麼辦」。',q1:'最近你最常擔心的一件事是什麼？',q2:'在你擔心的事情裡，有沒有哪一部分是你可以做一點點準備的？',co:'「擔心可以提醒我們小心，但不用一個人扛全部。」',tk:'畫出兩格：「我能做的」和「我不能控制的」，把你擔心的事分開寫進去。'},
+  {f:'purple',n:4,w:'煩惱',a:'腦袋一直轉來轉去，想很多又停不下來。',q1:'你通常在什麼時候最容易開始一直煩惱、停不下來？',q2:'煩惱裡有沒有藏著「其實我很在意＿＿」這樣的心願？',co:'「會煩惱，是因為你很認真在面對自己的生活。」',tk:'幫自己的煩惱設定一個「思考時間」，例如 5 分鐘，時間到就對自己說：「今天先想這樣就好。」'},
+  {f:'purple',n:5,w:'怕被罵',a:'做錯事時，心裡一直想大人會不會生氣。',q1:'什麼情況下，你最容易怕被罵？',q2:'當你怕被罵時，你通常會選擇躲起來、說謊，還是說實話？',co:'「你會怕被罵，是因為你在乎別人怎麼看你，也在乎這段關係。」',tk:'寫下一句你希望大人在你做錯事時可以說的話。'},
+  {f:'purple',n:6,w:'怕失敗',a:'很怕做不好，別人會笑我或失望。',q1:'哪一種事情最容易讓你很怕失敗？',q2:'在「怕失敗」裡，你最怕的是別人笑你、失望，還是你自己會很難過？',co:'「害怕失敗，不代表你做不到，而是你很想把事情做好。」',tk:'想一件你曾經「有一點失敗，但也有學到東西」的經驗，把學到的寫下來。'},
+  {f:'purple',n:7,w:'焦慮',a:'心裡一直拉警報，覺得好像哪裡真的很不安全。',q1:'當你覺得「好像哪裡都不太安全」的時候，通常是在什麼情境？',q2:'那時候，你的身體有什麼反應？例如：睡不太好、肚子痛、一直想事情。',co:'「當心裡一直拉警報時，更需要有人陪你一起確認，哪些地方其實是安全的。」',tk:'寫下一份「讓我有一點安全感的東西」清單，例如：一個人、一個地方或一個小物品。'},
+  {f:'purple',n:8,w:'害怕',a:'覺得可能會發生不好的事。',q1:'你最近最害怕的事情是什麼？它真的有那麼容易發生嗎？',q2:'當你害怕時，有沒有什麼方式可以讓自己安全一點、放心一點？',co:'「害怕會出現，是在提醒你要小心，而不是要你什麼都不敢做。」',tk:'畫一個「害怕量表」從 0 到 10，想一件讓你害怕的事，幫它在量表上畫一個圈。'},
+  {f:'purple',n:9,w:'心慌',a:'心跳變快，手腳有點不知道放哪裡。',q1:'你上一次心慌，是因為發生了什麼事？',q2:'心慌的時候，你有注意過自己的呼吸或心跳變成什麼樣子嗎？',co:'「心慌的時候，先不用想那麼多，只要慢慢把注意力帶回呼吸就好。」',tk:'試試看「4-4-4 呼吸」：吸氣數 4 下、停住數 4 下、慢慢吐氣數 4 下，做三輪。'},
+  {f:'purple',n:10,w:'驚嚇',a:'突然發生一件事，心臟「砰」地跳很大一下。',q1:'你有沒有被突然的聲音或畫面嚇到過？那時發生了什麼？',q2:'事後你花了多久才慢慢覺得沒那麼害怕？有什麼幫助到你？',co:'「被嚇一跳很正常，身體只是突然在保護你。」',tk:'回想一次你被嚇到但最後沒事的經驗，寫上：「原來我最後是安全的。」'},
+  {f:'purple',n:11,w:'驚恐',a:'覺得很危險，腦袋只想著「快逃走」。',q1:'你有沒有哪一次覺得「好危險，我只想快點離開」？那時發生了什麼？',q2:'那時候，有沒有哪一個人或哪一件事，讓你覺得比較有被保護一點？',co:'「當你覺得很恐怖、只想逃走時，你並不奇怪，你是在保護自己。」',tk:'畫一個保護自己的「安全盾牌」，想一想在害怕時可以用哪三種方法來保護自己。'},
+  {f:'purple',n:12,w:'恐懼',a:'一直躲著那件事，光想到就不敢面對。',q1:'有沒有一件你一直很害怕、不太敢面對的事情？',q2:'如果這件事有 10 個部分，有沒有哪一個最小、最不那麼可怕的部分可以先面對？',co:'「恐懼不會一下子消失，可以一點一點、按自己的步伐慢慢來。」',tk:'把你害怕的事情分成三個小階段，寫下「也許我可以先做到的第一小步」。'},
+  {f:'purple',n:13,w:'超害怕',a:'怕到全身發抖，聲音都變小了。',q1:'你有沒有一次害怕到全身發抖、講話講不太出來的經驗？',q2:'事情過去之後，你花了多久才慢慢覺得比較好一點？什麼最有幫助？',co:'「當你害怕到說不出話時，更需要有人用溫柔的方式陪在旁邊。」',tk:'寫下一句你希望在「超害怕」時有人對你說的話，留在筆記本裡當成你的安心句。'},
+  {f:'purple',n:14,w:'嚇壞',a:'被嚇到腦袋一片空白，好幾秒都動不了。',q1:'如果你曾經被嚇壞過，那一次最讓你害怕的是什麼？',q2:'現在回頭看，你會想對那個被嚇壞的自己說什麼話？',co:'「那時候你真的很害怕，不是你太脆弱，而是那件事真的嚇人。」',tk:'畫出那個「被嚇壞的自己」，在旁邊畫一個現在的你，寫上一句想對他說的安慰話。'},
+  {f:'red',n:1,w:'悶悶',a:'心裡卡卡的，說不出哪裡怪。',q1:'最近有沒有哪一件事，讓你說不上來哪裡怪，但就是不太舒服？',q2:'這個「悶悶」比較像是生氣、難過，還是覺得不被理解？',co:'「還說不出來也沒關係，我們可以一起慢慢幫這個感覺取名字。」',tk:'畫一個代表「悶悶」的小符號，旁邊寫一句：「我知道你在這裡。」'},
+  {f:'red',n:2,w:'心煩',a:'腦袋很多事，一點小聲音都覺得吵。',q1:'你通常在什麼時候會覺得「超煩」，連小聲音都覺得吵？',q2:'在那些心煩的時候，有沒有一件事可以讓你稍微安靜一點？',co:'「當你覺得心裡好亂好煩時，很需要給自己一點空間。」',tk:'幫自己找一個「安靜一小會」的角落，做三次慢呼吸，什麼都先不用做。'},
+  {f:'red',n:3,w:'不爽',a:'臉臭臭的，就是覺得哪裡不對勁。',q1:'最近有沒有讓你「臉臭起來」的時刻？那時發生什麼事？',q2:'如果可以用一句話說出你的不爽，你會想說什麼？',co:'「你覺得不爽，背後一定有你在意的地方。」',tk:'寫下一句「其實我不爽的是＿＿」，讓自己有機會看見真正的原因。'},
+  {f:'red',n:4,w:'惱火',a:'好像被一直戳，火慢慢被點起來。',q1:'什麼樣的行為，會讓你覺得「被一直戳」，火越來越上來？',q2:'在火還沒燒很大之前，有沒有什麼方法可以先退一步或說出來？',co:'「當你開始惱火時，是一個很重要的提醒點。」',tk:'想一句你可以在「快爆發前」說的話，例如：「我現在有點不舒服，可以先停一下嗎？」'},
+  {f:'red',n:5,w:'生氣',a:'心裡大聲說：「我很不開心！」',q1:'最近哪一件事最讓你想在心裡大喊「我很不開心」？',q2:'如果別人願意聽，你最想怎麼好好說出這個生氣？',co:'「生氣是在幫你告訴別人：有些事情，對你來說不可以。」',tk:'寫下三件「讓我生氣的事」，以及一件你希望別人下次可以怎麼做比較好。'},
+  {f:'red',n:6,w:'氣憤',a:'覺得事情超不公平，越想越氣。',q1:'你曾經有覺得「超不公平」的時候嗎？是什麼事？',q2:'如果要讓事情變得比較公平一點，你覺得可以怎麼做或跟誰說？',co:'「你會為不公平而生氣，也代表你心裡有很重要的公平感。」',tk:'寫下你心中的「公平小願望」，例如：「希望大家＿＿的時候，可以＿＿。」'},
+  {f:'red',n:7,w:'火大',a:'像胸口有火在燒，很想大聲吼。',q1:'你什麼時候會氣到好像胸口有火在燒？',q2:'如果那團火可以變小一點，你覺得什麼會有幫助？',co:'「當你火大時，不用急著把火丟出去，可以先想怎麼把火降溫。」',tk:'畫出你胸口的「怒火」，在旁邊畫三種幫它降溫的方法。'},
+  {f:'red',n:8,w:'怒氣',a:'全身都是怒氣，眉頭皺得很緊。',q1:'當你全身都是怒氣時，你最不想聽到別人說什麼話？',q2:'如果別人願意幫你，你希望他在你很生氣時怎麼陪你比較好？',co:'「在怒氣最大聲的時候，你更需要被好好對待，而不是被否定。」',tk:'想一想：下次當你很生氣時，可以先做哪一個小動作來保護自己和別人？'},
+  {f:'red',n:9,w:'憤怒',a:'心裡像打雷，什麼都不想聽。',q1:'你什麼時候會氣到「完全不想聽任何人說話」？',q2:'等雷聲比較小之後，你會不會比較有可能聽一點點別人的想法？',co:'「當你憤怒到不想聽時，可以先讓自己安靜一下，等雷聲小一點再說。」',tk:'寫下一句「當我現在很生氣時，可以先＿＿」，幫自己設定一個暫停鍵。'},
+  {f:'red',n:10,w:'氣炸',a:'覺得快爆掉了，一點就會炸開。',q1:'你記得自己哪一次真的快氣炸了嗎？那時候是發生什麼事？',q2:'在快要「炸掉」之前，有沒有可能先離開那個地方一下下？',co:'「當你快要氣炸的時候，先保護自己離開，比留在那裡更重要。」',tk:'幫自己想一個「情緒紅燈」暗號，例如在心裡說：「我需要離開一下。」'},
+  {f:'red',n:11,w:'怨氣',a:'那口氣吞不下去，一直卡在心裡。',q1:'你心裡有沒有一件事，想到時會覺得那口氣還卡在那裡？',q2:'這口怨氣裡，有沒有你想說但還沒說出口的句子？',co:'「怨氣常常是在提醒：有一些委屈還沒被好好聽見。」',tk:'寫下一句「其實我一直很在意＿＿」，先寫給自己看就好。'},
+  {f:'red',n:12,w:'怨恨',a:'一想到那件事，心裡就又酸又氣。',q1:'有沒有一件事，只要一想到就讓你又酸又氣？',q2:'這個怨恨裡，有沒有一部分是在為「那時候受傷的自己」抱不平？',co:'「你會怨恨，是因為那時候的你真的覺得很不公平、很痛。」',tk:'寫一封信給「那時候受傷的自己」，讓他被安慰一次。'},
+  {f:'red',n:13,w:'不服',a:'覺得被看扁，很想證明「我可以」。',q1:'你曾經有覺得被看扁、被低估的時候嗎？是發生什麼事？',q2:'如果要把「不服氣」變成推動自己的力量，你最想在哪一件事上證明自己？',co:'「不服氣，可以變成讓自己長大的燃料。」',tk:'寫下一個你想證明給「自己」看的目標，而不是只為了證明給別人看。'},
+  {f:'red',n:14,w:'報復',a:'氣到想讓對方也不好受。',q1:'你有沒有生氣到想過「我也要讓他難過看看」的時候？那是因為發生了什麼事？',q2:'如果真的照著報復去做，最後受傷的人會是誰？你還有沒有別的選擇？',co:'「想報復代表你受了很深的傷，更需要被好好照顧，而不是再多一個傷。」',tk:'寫下一件「我希望自己可以選擇的做法」，讓自己有機會走上和報復不一樣的路。'}
+];
+
+function getLbl(f,n){return{yellow:'黃',green:'綠',blue:'藍',orange:'橘',purple:'紫',red:'紅'}[f]+'色 '+String(n).padStart(2,'0')}
+function getFName(f){return FC[f].name}
+
+let dbFamily='all';
+function renderDB(){
+  const filtered=dbFamily==='all'?CARDS:CARDS.filter(c=>c.f===dbFamily);
+  document.getElementById('db-count').textContent=dbFamily==='all'?'顯示全部 84 張':`${getFName(dbFamily)}・顯示 ${filtered.length} 張`;
+  document.getElementById('db-grid').innerHTML=filtered.map(c=>{
+    const fc=FC[c.f];
+    return `<div class="cdb-card" style="background:${fc.bg};border-color:${fc.bd}" onclick="openCard('${c.f}',${c.n})">
+      <div class="cdb-num" style="color:${fc.nc}">${getLbl(c.f,c.n)}</div>
+      <div class="cdb-word" style="color:${fc.wc}">${c.w}</div>
+      <div class="cdb-anc" style="color:${fc.ac}">${c.a}</div>
+    </div>`;
+  }).join('');
+}
+function dbFilter(family,btn){
+  dbFamily=family;
+  document.querySelectorAll('#cards .f-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderDB();
+}
+function openCard(f,n){
+  const c=CARDS.find(x=>x.f===f&&x.n===n);
+  const fc=FC[f];
+  const mb=document.getElementById('cm-badge');
+  mb.textContent=getFName(f);mb.style.background=fc.bbg;mb.style.color=fc.bt;
+  document.getElementById('cm-num').textContent=getLbl(f,n);
+  const w=document.getElementById('cm-word');w.textContent=c.w;w.style.color=fc.wc;
+  const a=document.getElementById('cm-anc');a.textContent=c.a;a.style.color=fc.ac;
+  document.getElementById('cm-q1').textContent=c.q1;
+  document.getElementById('cm-q2').textContent=c.q2;
+  document.getElementById('cm-co').textContent=c.co;
+  document.getElementById('cm-tk').textContent=c.tk;
+  document.getElementById('card-modal').style.display='flex';
+}
+renderDB();
+</script>
+</body>
+</html>
