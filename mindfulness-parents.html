@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>正念隨身行｜家長實踐指南</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #faf6f0;
+    --warm-white: #fdf9f4;
+    --sage: #8aab8a;
+    --sage-light: #b8d4b8;
+    --sage-dark: #5a7a5a;
+    --peach: #e8a882;
+    --peach-light: #f2c8ad;
+    --sky: #8fb8d4;
+    --lavender: #c4aed4;
+    --gold: #c8a85a;
+    --text-dark: #3a3028;
+    --text-mid: #6b5c4e;
+    --text-light: #9a8878;
+    --card-bg: #ffffff;
+    --shadow: 0 4px 24px rgba(58,48,40,0.08);
+    --shadow-hover: 0 8px 40px rgba(58,48,40,0.14);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--cream);
+    color: var(--text-dark);
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    min-height: 100vh;
+    background: linear-gradient(160deg, #e8f0e8 0%, #f5ede4 40%, #ede8f5 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 24px 80px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(138,171,138,0.15) 0%, transparent 70%);
+    top: -100px; left: -150px;
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,168,90,0.1) 0%, transparent 70%);
+    bottom: 0; right: -80px;
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: rgba(138,171,138,0.2);
+    border: 1px solid rgba(138,171,138,0.4);
+    color: var(--sage-dark);
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    padding: 6px 18px;
+    border-radius: 20px;
+    margin-bottom: 32px;
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+
+  .hero h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(2.2rem, 7vw, 3.8rem);
+    font-weight: 300;
+    color: var(--text-dark);
+    line-height: 1.3;
+    margin-bottom: 16px;
+    letter-spacing: 0.05em;
+  }
+
+  .hero h1 span {
+    color: var(--sage-dark);
+    font-weight: 600;
+  }
+
+  .hero-subtitle {
+    font-size: clamp(0.95rem, 3vw, 1.15rem);
+    color: var(--text-mid);
+    max-width: 480px;
+    margin: 0 auto 48px;
+    font-weight: 300;
+  }
+
+  .jar-visual {
+    width: 90px; height: 110px;
+    position: relative;
+    margin: 0 auto 32px;
+    animation: float 4s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .jar-svg { width: 100%; height: 100%; }
+
+  .hero-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .hero-nav a {
+    background: white;
+    color: var(--text-mid);
+    text-decoration: none;
+    padding: 10px 22px;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    border: 1px solid rgba(58,48,40,0.1);
+    box-shadow: var(--shadow);
+    transition: all 0.25s;
+  }
+
+  .hero-nav a:hover {
+    background: var(--sage);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  /* ===== SECTION BASE ===== */
+  section {
+    padding: 80px 24px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    color: var(--text-light);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .section-label::before {
+    content: '';
+    width: 24px; height: 1px;
+    background: var(--text-light);
+  }
+
+  .section-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
+    font-weight: 400;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+    line-height: 1.35;
+  }
+
+  .section-desc {
+    color: var(--text-mid);
+    font-size: 0.95rem;
+    margin-bottom: 40px;
+    max-width: 560px;
+  }
+
+  /* ===== DIVIDER ===== */
+  .wave-divider {
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    margin: 0;
+  }
+  .wave-divider svg { display: block; width: 100%; }
+
+  /* ===== SITUATION SELECTOR ===== */
+  #situation {
+    background: linear-gradient(135deg, #f0f5f0 0%, #f5f0eb 100%);
+    max-width: 100%;
+    padding: 80px 24px;
+  }
+
+  .situation-inner {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .situation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .situation-btn {
+    background: white;
+    border: 2px solid transparent;
+    border-radius: 16px;
+    padding: 18px 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.25s;
+    box-shadow: var(--shadow);
+    font-family: 'Noto Sans TC', sans-serif;
+  }
+
+  .situation-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .situation-btn.active {
+    border-color: var(--sage);
+    background: linear-gradient(135deg, #e8f2e8, #f0f8f0);
+  }
+
+  .situation-btn .icon { font-size: 2rem; margin-bottom: 8px; display: block; }
+  .situation-btn .label { font-size: 0.85rem; color: var(--text-mid); line-height: 1.4; }
+
+  .recommendation-box {
+    background: white;
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: var(--shadow);
+    display: none;
+    animation: fadeUp 0.4s ease;
+  }
+
+  .recommendation-box.visible { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .rec-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.1rem;
+    color: var(--text-dark);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .rec-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  .rec-card {
+    border-radius: 14px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+
+  .rec-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+
+  .rec-card.nature { background: linear-gradient(135deg, #e8f5e8, #f0faf0); }
+  .rec-card.animal { background: linear-gradient(135deg, #fdf0e8, #fff5ee); }
+
+  .rec-card-name {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+  }
+
+  .rec-card-purpose {
+    font-size: 0.82rem;
+    color: var(--text-mid);
+    line-height: 1.5;
+  }
+
+  .rec-card-tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    padding: 2px 10px;
+    border-radius: 10px;
+    margin-top: 10px;
+    font-weight: 500;
+  }
+
+  .rec-card.nature .rec-card-tag { background: rgba(138,171,138,0.2); color: var(--sage-dark); }
+  .rec-card.animal .rec-card-tag { background: rgba(232,168,130,0.2); color: #b06030; }
+
+  /* ===== BREATHING LIBRARY ===== */
+  .tab-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    padding: 9px 22px;
+    border-radius: 25px;
+    border: 2px solid var(--sage-light);
+    background: transparent;
+    color: var(--text-mid);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tab-btn.active {
+    background: var(--sage);
+    border-color: var(--sage);
+    color: white;
+  }
+
+  .tab-btn:hover:not(.active) {
+    background: var(--sage-light);
+    color: var(--sage-dark);
+  }
+
+  .breathing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px;
+  }
+
+  .breath-card {
+    background: white;
+    border-radius: 18px;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: all 0.25s;
+    border: 2px solid transparent;
+  }
+
+  .breath-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--sage-light);
+  }
+
+  .breath-card-header {
+    padding: 20px 18px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .breath-icon {
+    font-size: 2rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .breath-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-dark);
+    line-height: 1.4;
+  }
+
+  .breath-type-bar {
+    height: 4px;
+    width: 100%;
+  }
+
+  .nature-bar { background: linear-gradient(90deg, var(--sage-light), var(--sage)); }
+  .animal-bar { background: linear-gradient(90deg, var(--peach-light), var(--peach)); }
+
+  .breath-detail {
+    display: none;
+    padding: 0 18px 18px;
+    animation: fadeUp 0.3s ease;
+  }
+
+  .breath-detail.open { display: block; }
+
+  .breath-situation {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-bottom: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(0,0,0,0.08);
+  }
+
+  .breath-mantra {
+    background: var(--cream);
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 0.88rem;
+    color: var(--text-mid);
+    line-height: 1.7;
+    font-style: italic;
+  }
+
+  .breath-timer-btn {
+    margin-top: 12px;
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    background: var(--sage);
+    color: white;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .breath-timer-btn:hover { background: var(--sage-dark); }
+
+  /* ===== TIMER MODAL ===== */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(30,20,15,0.6);
+    backdrop-filter: blur(6px);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .timer-modal {
+    background: white;
+    border-radius: 28px;
+    padding: 40px 32px;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.2);
+  }
+
+  .timer-close {
+    position: absolute;
+    top: 16px; right: 20px;
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: var(--text-light);
+    line-height: 1;
+  }
+
+  .timer-breath-name {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.3rem;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+  }
+
+  .timer-mantra {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-bottom: 32px;
+    font-style: italic;
+  }
+
+  .breath-circle {
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #e8f5e8, #c8e8c8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--sage-dark);
+    transition: all 1.5s ease-in-out;
+    box-shadow: 0 0 0 0 rgba(138,171,138,0.4);
+  }
+
+  .breath-circle.inhale {
+    transform: scale(1.3);
+    box-shadow: 0 0 0 20px rgba(138,171,138,0.1);
+  }
+
+  .breath-circle.exhale {
+    transform: scale(0.85);
+  }
+
+  .timer-count {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 2.5rem;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+  }
+
+  .timer-phase {
+    font-size: 0.9rem;
+    color: var(--text-mid);
+    height: 24px;
+    margin-bottom: 24px;
+  }
+
+  .timer-start-btn {
+    background: var(--sage);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 14px 40px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .timer-start-btn:hover { background: var(--sage-dark); transform: translateY(-1px); }
+
+  /* ===== SENSES SECTION ===== */
+  #senses {
+    background: linear-gradient(135deg, #f5f0eb 0%, #eef5ee 100%);
+    max-width: 100%;
+    padding: 80px 24px;
+  }
+
+  .senses-inner { max-width: 900px; margin: 0 auto; }
+
+  .senses-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+
+  .sense-tab {
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: 2px solid transparent;
+    background: white;
+    cursor: pointer;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.88rem;
+    color: var(--text-mid);
+    box-shadow: var(--shadow);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .sense-tab:hover { transform: translateY(-2px); }
+
+  .sense-tab.active {
+    background: var(--peach);
+    color: white;
+    border-color: var(--peach);
+  }
+
+  .task-list {
+    display: none;
+    animation: fadeUp 0.3s ease;
+  }
+
+  .task-list.active { display: block; }
+
+  .task-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: white;
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 12px rgba(58,48,40,0.05);
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .task-item:hover { transform: translateX(4px); }
+
+  .task-item.done { opacity: 0.6; }
+
+  .task-checkbox {
+    width: 24px; height: 24px;
+    border-radius: 8px;
+    border: 2px solid var(--peach-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+  }
+
+  .task-item.done .task-checkbox {
+    background: var(--peach);
+    border-color: var(--peach);
+    color: white;
+  }
+
+  .task-text {
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    line-height: 1.6;
+    padding-top: 1px;
+  }
+
+  .task-item.done .task-text { text-decoration: line-through; color: var(--text-light); }
+
+  .convo-prompts {
+    background: white;
+    border-radius: 20px;
+    padding: 28px;
+    margin-top: 28px;
+    box-shadow: var(--shadow);
+  }
+
+  .convo-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1rem;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .convo-q {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px dashed rgba(0,0,0,0.07);
+    font-size: 0.9rem;
+    color: var(--text-mid);
+  }
+
+  .convo-q:last-child { border-bottom: none; }
+  .convo-q .num { color: var(--peach); font-weight: 600; flex-shrink: 0; }
+
+  .download-strip {
+    background: linear-gradient(135deg, var(--sage-light), var(--sage));
+    border-radius: 16px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 28px;
+  }
+
+  .download-text {
+    color: white;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .download-text strong { display: block; font-size: 1rem; margin-bottom: 2px; }
+
+  .download-btn {
+    background: white;
+    color: var(--sage-dark);
+    text-decoration: none;
+    padding: 10px 22px;
+    border-radius: 20px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .download-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
+
+  /* ===== DAILY TIPS ===== */
+  .tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .tip-card {
+    background: white;
+    border-radius: 20px;
+    padding: 28px 22px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.25s;
+  }
+
+  .tip-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+
+  .tip-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 5px;
+  }
+
+  .tip-card.green::before { background: linear-gradient(90deg, var(--sage-light), var(--sage)); }
+  .tip-card.peach::before { background: linear-gradient(90deg, var(--peach-light), var(--peach)); }
+  .tip-card.sky::before { background: linear-gradient(90deg, #c4e4f4, var(--sky)); }
+  .tip-card.lavender::before { background: linear-gradient(90deg, #ddd0ea, var(--lavender)); }
+  .tip-card.gold::before { background: linear-gradient(90deg, #ead8a0, var(--gold)); }
+
+  .tip-icon { font-size: 2rem; margin-bottom: 14px; display: block; }
+
+  .tip-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1rem;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+  }
+
+  .tip-body {
+    font-size: 0.85rem;
+    color: var(--text-mid);
+    line-height: 1.8;
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: var(--text-dark);
+    color: rgba(255,255,255,0.6);
+    text-align: center;
+    padding: 40px 24px;
+    font-size: 0.82rem;
+    line-height: 1.8;
+  }
+
+  footer strong { color: rgba(255,255,255,0.9); display: block; margin-bottom: 4px; font-family: 'Noto Serif TC', serif; font-size: 1rem; }
+
+  /* ===== HIDDEN TABS ===== */
+  .breath-tab-content { display: none; }
+  .breath-tab-content.active { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+
+  /* ===== PROGRESS BAR ===== */
+  .progress-wrap { margin-top: 16px; }
+  .progress-label { font-size: 0.8rem; color: var(--text-light); margin-bottom: 6px; display: flex; justify-content: space-between; }
+  .progress-bar { height: 6px; background: rgba(0,0,0,0.06); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--peach-light), var(--peach)); border-radius: 3px; transition: width 0.4s ease; }
+
+  /* ===== SCROLL FADE ===== */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+</head>
+<body>
+<a href="index.html" style="position:fixed;top:16px;left:16px;z-index:9999;display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.88);backdrop-filter:blur(8px);border:1px solid rgba(0,0,0,0.1);border-radius:20px;padding:7px 16px;font-family:Noto Sans TC,sans-serif;font-size:0.8rem;color:#4a4040;text-decoration:none;box-shadow:0 2px 12px rgba(0,0,0,0.09);transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,1)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='rgba(255,255,255,0.88)';this.style.transform='none'">← 資源中心</a>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">正念隨身行 · 家長實踐指南</div>
+
+  <div class="jar-visual">
+    <svg class="jar-svg" viewBox="0 0 90 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="28" y="4" width="34" height="10" rx="5" fill="#c8d8c8" opacity="0.7"/>
+      <rect x="18" y="14" width="54" height="82" rx="14" fill="white" opacity="0.85"/>
+      <rect x="18" y="14" width="54" height="82" rx="14" fill="url(#jarGrad)" opacity="0.4"/>
+      <ellipse cx="45" cy="68" rx="18" ry="8" fill="#b8d4b8" opacity="0.6"/>
+      <ellipse cx="45" cy="56" rx="10" ry="5" fill="#e8a882" opacity="0.5"/>
+      <ellipse cx="38" cy="74" rx="6" ry="3" fill="#c4aed4" opacity="0.6"/>
+      <ellipse cx="54" cy="48" rx="7" ry="4" fill="#8fb8d4" opacity="0.5"/>
+      <rect x="18" y="14" width="54" height="82" rx="14" stroke="#8aab8a" stroke-width="2" fill="none" opacity="0.5"/>
+      <rect x="28" y="4" width="34" height="10" rx="5" stroke="#8aab8a" stroke-width="1.5" fill="none" opacity="0.4"/>
+      <defs>
+        <linearGradient id="jarGrad" x1="18" y1="14" x2="72" y2="96" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#e8f5e8"/>
+          <stop offset="100%" stop-color="#f5e8f5"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+
+  <h1>為孩子的心靈<br><span>裝滿無形寶藏</span></h1>
+  <p class="hero-subtitle">正念不是要孩子安靜，而是陪伴他們帶著善意，把注意力投入當下。每一次呼吸，都是一顆珍珠。</p>
+
+  <nav class="hero-nav">
+    <a href="#situation">現在怎麼了？</a>
+    <a href="#breathing">呼吸法圖書館</a>
+    <a href="#senses">五感尋寶</a>
+    <a href="#tips">日常小錦囊</a>
+  </nav>
+</div>
+
+<!-- SITUATION SELECTOR -->
+<div id="situation">
+  <div class="situation-inner">
+    <div class="section-label fade-in">使用時機推薦</div>
+    <h2 class="section-title fade-in">孩子現在怎麼了？</h2>
+    <p class="section-desc fade-in">選擇當下的情境，我來推薦最合適的呼吸法。</p>
+
+    <div class="situation-grid fade-in">
+      <button class="situation-btn" data-situation="sleep" onclick="selectSituation(this)">
+        <span class="icon">🌙</span>
+        <span class="label">睡前靜不<br>下來</span>
+      </button>
+      <button class="situation-btn" data-situation="stress" onclick="selectSituation(this)">
+        <span class="icon">😤</span>
+        <span class="label">壓力大、<br>功課很多</span>
+      </button>
+      <button class="situation-btn" data-situation="emotion" onclick="selectSituation(this)">
+        <span class="icon">🌊</span>
+        <span class="label">情緒爆發<br>很亂</span>
+      </button>
+      <button class="situation-btn" data-situation="outdoor" onclick="selectSituation(this)">
+        <span class="icon">🌿</span>
+        <span class="label">戶外活動<br>出發前</span>
+      </button>
+      <button class="situation-btn" data-situation="focus" onclick="selectSituation(this)">
+        <span class="icon">📚</span>
+        <span class="label">需要專注<br>收心</span>
+      </button>
+      <button class="situation-btn" data-situation="tense" onclick="selectSituation(this)">
+        <span class="icon">😣</span>
+        <span class="label">身體僵硬<br>緊繃</span>
+      </button>
+    </div>
+
+    <div class="recommendation-box" id="recBox">
+      <div class="rec-title">✨ 推薦呼吸法</div>
+      <div class="rec-cards" id="recCards"></div>
+    </div>
+  </div>
+</div>
+
+<!-- BREATHING LIBRARY -->
+<section id="breathing">
+  <div class="section-label fade-in">十六種呼吸法</div>
+  <h2 class="section-title fade-in">呼吸法圖書館</h2>
+  <p class="section-desc fade-in">點開任一卡片查看動作口訣，並可啟動引導計時器一起練習。</p>
+
+  <div class="tab-bar fade-in">
+    <button class="tab-btn active" onclick="switchBreathTab('nature', this)">🌸 情境想像（8種）</button>
+    <button class="tab-btn" onclick="switchBreathTab('animal', this)">🐢 動物模仿（8種）</button>
+  </div>
+
+  <div id="breathNature" class="breath-tab-content active"></div>
+  <div id="breathAnimal" class="breath-tab-content"></div>
+</section>
+
+<!-- SENSES QUEST -->
+<div id="senses">
+  <div class="senses-inner">
+    <div class="section-label fade-in">大自然正念</div>
+    <h2 class="section-title fade-in">親子五感尋寶任務</h2>
+    <p class="section-desc fade-in">出發去公園吧！選擇感官類別，陪孩子逐一打勾完成任務。</p>
+
+    <div class="senses-tabs fade-in">
+      <button class="sense-tab active" onclick="switchSense('vision', this)">👀 視覺</button>
+      <button class="sense-tab" onclick="switchSense('hearing', this)">👂 聽覺</button>
+      <button class="sense-tab" onclick="switchSense('smell', this)">👃 嗅覺</button>
+      <button class="sense-tab" onclick="switchSense('touch', this)">🖐 觸覺</button>
+    </div>
+
+    <div id="taskVision" class="task-list active"></div>
+    <div id="taskHearing" class="task-list"></div>
+    <div id="taskSmell" class="task-list"></div>
+    <div id="taskTouch" class="task-list"></div>
+
+    <div class="progress-wrap fade-in" id="progressWrap">
+      <div class="progress-label">
+        <span>今日尋寶進度</span>
+        <span id="progressText">0 / 15</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    </div>
+
+    <div class="convo-prompts fade-in">
+      <div class="convo-title">💬 尋寶後的覺察對話</div>
+      <div class="convo-q"><span class="num">1</span><span>「你現在身體有什麼感覺？」</span></div>
+      <div class="convo-q"><span class="num">2</span><span>「你現在的心情如何？」</span></div>
+      <div class="convo-q"><span class="num">3</span><span>「今天尋寶最喜歡哪一個部分？」</span></div>
+    </div>
+
+    <div class="download-strip fade-in">
+      <div class="download-text">
+        <strong>🌿 正念隨身行牌卡</strong>
+        下載實體牌卡，帶去戶外使用更方便！
+      </div>
+      <a href="https://drive.google.com/drive/folders/1iBObt8-2eHgeSYt3XBOZ_Fn8Gcyt0a9V?usp=drive_link" target="_blank" class="download-btn">⬇ 下載牌卡</a>
+    </div>
+  </div>
+</div>
+
+<!-- DAILY TIPS -->
+<section id="tips">
+  <div class="section-label fade-in">日常整合</div>
+  <h2 class="section-title fade-in">每天的正念小儀式</h2>
+  <p class="section-desc fade-in">不需要特別的時間，把正念融入家庭日常。</p>
+
+  <div class="tips-grid fade-in">
+    <div class="tip-card green">
+      <span class="tip-icon">🙏</span>
+      <div class="tip-title">餐桌感恩時光</div>
+      <div class="tip-body">晚餐時，每人說出「今天三個美好的事物」。即使遇到挫折，也能練習同時感受困難與感謝。</div>
+    </div>
+    <div class="tip-card peach">
+      <span class="tip-icon">🧸</span>
+      <div class="tip-title">睡前呼吸小夥伴</div>
+      <div class="tip-body">讓孩子躺著，把玩偶放肚子上。吸氣時肚子鼓起讓玩偶上升，吐氣時下降，像在哄小夥伴睡覺。</div>
+    </div>
+    <div class="tip-card sky">
+      <span class="tip-icon">🍬</span>
+      <div class="tip-title">慢食點心遊戲</div>
+      <div class="tip-body">把吃點心變成感官遊戲，引導孩子放慢速度，細細品味氣味、質地與味道，練習活在當下。</div>
+    </div>
+    <div class="tip-card lavender">
+      <span class="tip-icon">✨</span>
+      <div class="tip-title">靜心瓶 DIY</div>
+      <div class="tip-body">與孩子一起做亮片瓶。看著亮片慢慢沉澱，這是「心靈逐漸平靜」的具體視覺象徵。</div>
+    </div>
+    <div class="tip-card gold">
+      <span class="tip-icon">✈️</span>
+      <div class="tip-title">父母的氧氣罩法則</div>
+      <div class="tip-body">在幫助孩子之前，先為自己戴好氧氣罩。接納不完美、回應前先暫停——你就是最好的正念榜樣。</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <strong>正念隨身行｜家長日常實踐與引導手冊</strong>
+  永齡希望小學雲科大分校 · 社會情緒學習課程<br>
+  本網頁為課程延伸資源，供家庭日常使用
+</footer>
+
+<!-- TIMER MODAL -->
+<div class="modal-overlay" id="timerModal" onclick="closeTimerOnOverlay(event)">
+  <div class="timer-modal">
+    <button class="timer-close" onclick="closeTimer()">✕</button>
+    <div class="timer-breath-name" id="timerName"></div>
+    <div class="timer-mantra" id="timerMantra"></div>
+    <div class="breath-circle" id="breathCircle">準備好了嗎</div>
+    <div class="timer-count" id="timerCount">5</div>
+    <div class="timer-phase" id="timerPhase">點擊開始</div>
+    <button class="timer-start-btn" id="timerStartBtn" onclick="startTimer()">開始練習</button>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const breathingData = {
+  nature: [
+    { name: "幸福光呼吸", situation: "心裡覺得孤單或冷冷的時候", mantra: "暖暖吸一口陽光，輕輕吐一口擁抱，把溫暖放進心裡。", icon: "☀️" },
+    { name: "彩虹傘呼吸", situation: "覺得害怕或不被理解時", mantra: "想像頭上有把傘守護自己，輕輕吸一口彩虹，慢慢吐一口安心。", icon: "🌈" },
+    { name: "泡泡防護罩呼吸", situation: "需要保護自己、設立界線時", mantra: "慢慢吸一口力量，輕輕吐一個泡泡，讓它變大變亮。", icon: "🫧" },
+    { name: "棉花雲呼吸", situation: "腦袋好忙、心跳很快時", mantra: "輕輕吸一口白雲，慢慢吐一口安靜，讓身體慢慢飄起來。", icon: "☁️" },
+    { name: "海浪搖搖呼吸", situation: "心裡有好多情緒像浪花湧上時", mantra: "吸一口海裡吹來的風，吐一口藏在心裡的浪，讓浪花輕輕退回海裡。", icon: "🌊" },
+    { name: "大自然呼吸", situation: "覺得亂糟糟、心裡打結時", mantra: "吸一口樹的風，吐一口雲的夢，讓整個世界陪你一起呼吸。", icon: "🌳" },
+    { name: "森林呼吸", situation: "想要放鬆、與大自然連結時", mantra: "想像走進森林裡，吸一口樹的香，吐一口風吹涼。", icon: "🌲" },
+    { name: "花開花謝呼吸", situation: "一整天好忙、呼吸快起來時", mantra: "花兒張開吸口氣，慢慢合起吐口氣，一開一合慢慢來。", icon: "🌸" },
+  ],
+  animal: [
+    { name: "烏龜呼吸", situation: "想要放慢步調，練習慢慢來", mantra: "低下頭想像躲進殼裡；慢慢吸氣將頭抬起、脖子拉長；再慢慢吐氣把頭縮回。", icon: "🐢" },
+    { name: "企鵝搖搖呼吸", situation: "想要放鬆身體僵硬時", mantra: "吸氣時雙手放兩側站直；吐氣時輕輕左右搖一搖；再吸氣回到中間站好。", icon: "🐧" },
+    { name: "天鵝脖子呼吸", situation: "需要找回優雅與穩定時", mantra: "坐好將手輕放頸後；吸氣時慢慢抬頭伸展脖子；吐氣時收回並恢復姿勢。", icon: "🦢" },
+    { name: "小兔耳朵呼吸", situation: "上課鐘響或需要專注靜聽時", mantra: "雙手豎起模仿兔耳；吸氣時豎起手臂集中注意；吐氣時手慢慢放下進入靜心。", icon: "🐰" },
+    { name: "刺蝟捲捲呼吸", situation: "面臨壓力、需要自我保護時", mantra: "吸氣時雙手抱膝低頭蜷縮；吐氣時身體打開，感受從「緊」到「放」的對比。", icon: "🦔" },
+    { name: "小鴨拍拍呼吸", situation: "精神不濟、需要啟動活力時", mantra: "吸氣時雙手舉高像拍翅膀；吐氣時手往下拍膝蓋，跟著一吸一拍的活潑節奏。", icon: "🐥" },
+    { name: "大象鼻子呼吸", situation: "有壓力或重擔、需要釋放時", mantra: "雙手交握垂下當象鼻；吸氣時舉起象鼻繞圈；吐氣時再慢慢放下象鼻。", icon: "🐘" },
+    { name: "貓咪伸展呼吸", situation: "久坐後需要放鬆身體時", mantra: "吸氣時雙手舉高像伸懶腰；吐氣時慢慢往前彎身，感受背部放鬆。", icon: "🐱" },
+  ]
+};
+
+const situationMap = {
+  sleep: {
+    label: "睡前靜不下來",
+    recs: [
+      { type: "nature", idx: 3, note: "放慢腦袋節奏" },
+      { type: "animal", idx: 0, note: "練習慢慢來" },
+    ]
+  },
+  stress: {
+    label: "壓力大、功課很多",
+    recs: [
+      { type: "animal", idx: 4, note: "由緊到放的對比" },
+      { type: "animal", idx: 6, note: "釋放重擔" },
+    ]
+  },
+  emotion: {
+    label: "情緒爆發很亂",
+    recs: [
+      { type: "nature", idx: 4, note: "讓情緒退潮" },
+      { type: "nature", idx: 5, note: "梳理混亂感" },
+    ]
+  },
+  outdoor: {
+    label: "戶外活動出發前",
+    recs: [
+      { type: "nature", idx: 6, note: "與大自然連結" },
+      { type: "nature", idx: 1, note: "建立安心感" },
+    ]
+  },
+  focus: {
+    label: "需要專注收心",
+    recs: [
+      { type: "animal", idx: 3, note: "靜聽與專注" },
+      { type: "nature", idx: 7, note: "緩和急躁" },
+    ]
+  },
+  tense: {
+    label: "身體僵硬緊繃",
+    recs: [
+      { type: "animal", idx: 1, note: "放鬆身體" },
+      { type: "animal", idx: 7, note: "久坐後伸展" },
+    ]
+  }
+};
+
+const senseTasks = {
+  vision: [
+    "找找看，能不能蒐集到五種「不同的綠色」？",
+    "找一片有洞的葉子，或抬頭找一朵長得像小動物的雲。",
+    "找找螞蟻軍團在哪裡？",
+    "蒐集五顆大小不一的石頭，試著把它們疊高。",
+    "在大自然中找找看，有沒有長得像字母「C」與「V」的東西？"
+  ],
+  hearing: [
+    "木頭人遊戲：一起停止動作 40 秒，閉上眼睛專心聽——誰聽到的聲音最多？",
+    "蒐集五種不同的聲音。",
+    "找找看，正在唱歌的昆蟲在哪裡？"
+  ],
+  smell: [
+    "找一片有香味的葉子，閉上眼睛聞聞看。",
+    "找一朵喜歡的花，閉上眼睛聞聞看。",
+    "閉上眼睛深呼吸，仰起頭曬曬太陽——太陽是什麼味道呢？"
+  ],
+  touch: [
+    "赤腳探險：脫掉鞋子，閉上眼睛慢慢走，感受腳踩在草地上的觸感。",
+    "找一個軟軟的東西，摸摸看。",
+    "找一個濕濕的東西，摸摸看。",
+    "找一片喜歡的葉子，閉上眼睛用手指仔細摸摸它的紋路。"
+  ]
+};
+
+// ===== STATE =====
+let taskDone = {};
+let timerInterval = null;
+let currentTimerData = null;
+
+// ===== INIT =====
+function init() {
+  renderBreathing();
+  renderSenseTasks();
+  setupScrollFade();
+}
+
+// ===== BREATHING =====
+function renderBreathing() {
+  ['nature', 'animal'].forEach(type => {
+    const container = document.getElementById(type === 'nature' ? 'breathNature' : 'breathAnimal');
+    breathingData[type].forEach((item, i) => {
+      const card = document.createElement('div');
+      card.className = 'breath-card';
+      card.innerHTML = `
+        <div class="breath-type-bar ${type}-bar"></div>
+        <div class="breath-card-header" onclick="toggleBreath(this)">
+          <span class="breath-icon">${item.icon}</span>
+          <span class="breath-name">${item.name}</span>
+        </div>
+        <div class="breath-detail">
+          <div class="breath-situation">適用：${item.situation}</div>
+          <div class="breath-mantra">${item.mantra}</div>
+          <button class="breath-timer-btn" onclick="openTimer('${item.name}', '${item.mantra.replace(/'/g, "\\'")}')">
+            ⏱ 計時練習
+          </button>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  });
+}
+
+function toggleBreath(header) {
+  const detail = header.parentElement.querySelector('.breath-detail');
+  const isOpen = detail.classList.contains('open');
+  document.querySelectorAll('.breath-detail.open').forEach(d => d.classList.remove('open'));
+  if (!isOpen) detail.classList.add('open');
+}
+
+function switchBreathTab(type, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.breath-tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById(type === 'nature' ? 'breathNature' : 'breathAnimal').classList.add('active');
+}
+
+// ===== SITUATION =====
+function selectSituation(btn) {
+  document.querySelectorAll('.situation-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const key = btn.dataset.situation;
+  const data = situationMap[key];
+  const box = document.getElementById('recBox');
+  const cards = document.getElementById('recCards');
+  cards.innerHTML = '';
+  data.recs.forEach(rec => {
+    const item = breathingData[rec.type][rec.idx];
+    const card = document.createElement('div');
+    card.className = `rec-card ${rec.type}`;
+    card.innerHTML = `
+      <div class="rec-card-name">${item.icon} ${item.name}</div>
+      <div class="rec-card-purpose">${item.situation}</div>
+      <div class="rec-card-tag">${rec.note}</div>
+    `;
+    card.onclick = () => {
+      const tabType = rec.type;
+      document.querySelectorAll('.tab-btn').forEach((b, i) => {
+        b.classList.toggle('active', i === (tabType === 'nature' ? 0 : 1));
+      });
+      document.querySelectorAll('.breath-tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById(tabType === 'nature' ? 'breathNature' : 'breathAnimal').classList.add('active');
+      document.getElementById('breathing').scrollIntoView({ behavior: 'smooth' });
+    };
+    cards.appendChild(card);
+  });
+  box.classList.add('visible');
+}
+
+// ===== SENSES =====
+function renderSenseTasks() {
+  const senseIds = { vision: 'taskVision', hearing: 'taskHearing', smell: 'taskSmell', touch: 'taskTouch' };
+  let totalTasks = 0;
+  Object.entries(senseTasks).forEach(([sense, tasks]) => {
+    const container = document.getElementById(senseIds[sense]);
+    tasks.forEach((task, i) => {
+      totalTasks++;
+      const key = `${sense}_${i}`;
+      const item = document.createElement('div');
+      item.className = 'task-item';
+      item.id = `task_${key}`;
+      item.onclick = () => toggleTask(key, totalTasks);
+      item.innerHTML = `
+        <div class="task-checkbox" id="check_${key}"></div>
+        <div class="task-text">${task}</div>
+      `;
+      container.appendChild(item);
+    });
+  });
+  updateProgress();
+}
+
+function toggleTask(key, total) {
+  taskDone[key] = !taskDone[key];
+  const item = document.getElementById(`task_${key}`);
+  const check = document.getElementById(`check_${key}`);
+  item.classList.toggle('done', taskDone[key]);
+  check.textContent = taskDone[key] ? '✓' : '';
+  updateProgress();
+}
+
+function updateProgress() {
+  const totalTasks = Object.values(senseTasks).reduce((a, b) => a + b.length, 0);
+  const done = Object.values(taskDone).filter(Boolean).length;
+  document.getElementById('progressText').textContent = `${done} / ${totalTasks}`;
+  document.getElementById('progressFill').style.width = `${(done / totalTasks) * 100}%`;
+}
+
+function switchSense(sense, btn) {
+  document.querySelectorAll('.sense-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.task-list').forEach(l => l.classList.remove('active'));
+  const map = { vision: 'taskVision', hearing: 'taskHearing', smell: 'taskSmell', touch: 'taskTouch' };
+  document.getElementById(map[sense]).classList.add('active');
+}
+
+// ===== TIMER =====
+function openTimer(name, mantra) {
+  currentTimerData = { name, mantra };
+  document.getElementById('timerName').textContent = name;
+  document.getElementById('timerMantra').textContent = mantra.length > 50 ? mantra.slice(0, 50) + '…' : mantra;
+  document.getElementById('timerCount').textContent = '5';
+  document.getElementById('timerPhase').textContent = '點擊開始';
+  document.getElementById('breathCircle').textContent = '準備好了嗎';
+  document.getElementById('breathCircle').className = 'breath-circle';
+  document.getElementById('timerStartBtn').style.display = 'inline-block';
+  document.getElementById('timerModal').classList.add('open');
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+}
+
+function closeTimer() {
+  document.getElementById('timerModal').classList.remove('open');
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+}
+
+function closeTimerOnOverlay(e) {
+  if (e.target === document.getElementById('timerModal')) closeTimer();
+}
+
+function startTimer() {
+  document.getElementById('timerStartBtn').style.display = 'none';
+  let totalSeconds = 60;
+  let breathPhase = 'inhale';
+  let phaseSeconds = 4;
+
+  const circle = document.getElementById('breathCircle');
+  const countEl = document.getElementById('timerCount');
+  const phaseEl = document.getElementById('timerPhase');
+
+  const phases = [
+    { label: '吸氣…', cls: 'inhale', sec: 4 },
+    { label: '吐氣…', cls: 'exhale', sec: 5 },
+  ];
+  let phaseIdx = 0;
+  let phaseLeft = phases[0].sec;
+
+  countEl.textContent = totalSeconds;
+  circle.className = `breath-circle ${phases[0].cls}`;
+  circle.textContent = phases[0].label;
+  phaseEl.textContent = phases[0].label;
+
+  timerInterval = setInterval(() => {
+    totalSeconds--;
+    phaseLeft--;
+    countEl.textContent = totalSeconds;
+
+    if (phaseLeft <= 0) {
+      phaseIdx = (phaseIdx + 1) % phases.length;
+      phaseLeft = phases[phaseIdx].sec;
+      circle.className = `breath-circle ${phases[phaseIdx].cls}`;
+      circle.textContent = phases[phaseIdx].label;
+      phaseEl.textContent = phases[phaseIdx].label;
+    }
+
+    if (totalSeconds <= 0) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      circle.className = 'breath-circle';
+      circle.textContent = '🌟 很棒！';
+      phaseEl.textContent = '練習完成！';
+      countEl.textContent = '0';
+      document.getElementById('timerStartBtn').textContent = '再練一次';
+      document.getElementById('timerStartBtn').style.display = 'inline-block';
+      document.getElementById('timerStartBtn').onclick = () => openTimer(currentTimerData.name, currentTimerData.mantra);
+    }
+  }, 1000);
+}
+
+// ===== SCROLL FADE =====
+function setupScrollFade() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+}
+
+// ===== RUN =====
+init();
+</script>
+</body>
+</html>
