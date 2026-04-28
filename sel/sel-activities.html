@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HOPE 情緒六大家族｜SEL 課程地圖</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    /* ── 六色家族（保留原色）── */
+    --yellow: #EF9F27;
+    --yellow-light: #FAEEDA;
+    --yellow-dark: #633806;
+    --green: #639922;
+    --green-light: #EAF3DE;
+    --green-dark: #2a5c0a;
+    --blue: #378ADD;
+    --blue-light: #E6F1FB;
+    --blue-dark: #042C53;
+    --orange: #D85A30;
+    --orange-light: #FAECE7;
+    --orange-dark: #4A1B0C;
+    --purple: #7F77DD;
+    --purple-light: #EEEDFE;
+    --purple-dark: #26215C;
+    --red: #E24B4A;
+    --red-light: #FCEBEB;
+    --red-dark: #501313;
+    --gray: #888780;
+    --gray-light: #F1EFE8;
+    --gray-dark: #2C2C2A;
+
+    /* ── 奶油底色系統 ── */
+    --bg:    #faf6f0;
+    --bg2:   #f3ede4;
+    --bg3:   #ebe3d8;
+    --white: #ffffff;
+    --text:  #2a2018;
+    --text2: #5c4e40;
+    --text3: #9a8878;
+    --border:  rgba(42,32,24,0.09);
+    --border2: rgba(42,32,24,0.18);
+    --radius: 14px;
+    --radius-sm: 9px;
+    --shadow: 0 2px 8px rgba(42,32,24,0.07), 0 6px 20px rgba(42,32,24,0.06);
+    --shadow-hover: 0 6px 24px rgba(42,32,24,0.13);
+  }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  /* ── Layout ── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── Top bar ── */
+  .topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(250,246,240,0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+    height: 56px;
+  }
+  .topbar-logo {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 15px; font-weight: 600; color: var(--text);
+    letter-spacing: 0.02em;
+  }
+  .topbar-logo span { color: var(--text3); font-weight: 300; }
+  .back-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--white); border: 1px solid var(--border2);
+    border-radius: 20px; padding: 5px 14px; cursor: pointer;
+    font-size: 13px; color: var(--text2); font-family: 'Noto Sans TC', sans-serif;
+    transition: all 0.18s; box-shadow: 0 1px 4px rgba(42,32,24,0.07);
+  }
+  .back-btn:hover { background: var(--bg2); color: var(--text); transform: translateY(-1px); }
+  .topbar-right { margin-left: auto; font-size: 12px; color: var(--text3); letter-spacing: 0.04em; }
+
+  /* ── Home page ── */
+  .home-inner { max-width: 1100px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+
+  .hero { margin-bottom: 2rem; }
+  .hero h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 28px; font-weight: 400; color: var(--text);
+    letter-spacing: 0.02em; line-height: 1.35;
+  }
+  .hero p { font-size: 14px; color: var(--text2); margin-top: 6px; line-height: 1.75; }
+
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.75rem; }
+  .stat {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 14px 16px; text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .stat-n {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 26px; font-weight: 400; color: var(--text);
+  }
+  .stat-l { font-size: 11px; color: var(--text3); margin-top: 3px; letter-spacing: 0.04em; }
+
+  .filter-section { margin-bottom: 1.5rem; }
+  .filter-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 10px; }
+  .filter-label { font-size: 11px; color: var(--text3); min-width: 60px; letter-spacing: 0.06em; }
+
+  .pill {
+    font-size: 12px; padding: 5px 14px; border-radius: 20px; cursor: pointer;
+    border: 1px solid var(--border2); background: var(--white);
+    color: var(--text2); transition: all 0.18s; user-select: none;
+    font-family: 'Noto Sans TC', sans-serif;
+    box-shadow: 0 1px 3px rgba(42,32,24,0.05);
+  }
+  .pill:hover { background: var(--bg2); transform: translateY(-1px); }
+  .pill.active { font-weight: 500; border-width: 1.5px; }
+
+  .pill-all.active    { background: var(--bg3); border-color: var(--text3); color: var(--text); }
+  .pill-yellow.active { background: var(--yellow-light); border-color: var(--yellow); color: var(--yellow-dark); }
+  .pill-green.active  { background: var(--green-light);  border-color: var(--green);  color: var(--green-dark); }
+  .pill-blue.active   { background: var(--blue-light);   border-color: var(--blue);   color: var(--blue-dark); }
+  .pill-orange.active { background: var(--orange-light); border-color: var(--orange); color: var(--orange-dark); }
+  .pill-purple.active { background: var(--purple-light); border-color: var(--purple); color: var(--purple-dark); }
+  .pill-red.active    { background: var(--red-light);    border-color: var(--red);    color: var(--red-dark); }
+  .pill-rainbow.active { background: var(--gray-light);  border-color: var(--gray);   color: var(--gray-dark); }
+  .sel-pill.active    { background: var(--bg3); border-color: var(--text2); color: var(--text); }
+
+  /* ── Card grid ── */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+
+  .card {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px 16px 16px 20px;
+    cursor: pointer; transition: all 0.2s; position: relative;
+    overflow: hidden; box-shadow: var(--shadow);
+  }
+  .card:hover { border-color: var(--border2); box-shadow: var(--shadow-hover); transform: translateY(-3px); }
+  .card-accent { position: absolute; left: 0; top: 0; bottom: 0; width: 5px; }
+  .card-num { font-size: 11px; color: var(--text3); margin-bottom: 6px; letter-spacing: 0.06em; }
+  .card-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 14px; font-weight: 400; color: var(--text); line-height: 1.45;
+  }
+  .card-subtitle { font-size: 11px; color: var(--text2); margin-top: 3px; line-height: 1.5; }
+  .card-meta { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 12px; }
+
+  .badge {
+    font-size: 10px; padding: 2px 9px; border-radius: 20px; font-weight: 500;
+  }
+  .badge-time { background: var(--bg2); color: var(--text3); border: 1px solid var(--border); }
+
+  .family-yellow .card-accent { background: var(--yellow); }
+  .family-green  .card-accent { background: var(--green); }
+  .family-blue   .card-accent { background: var(--blue); }
+  .family-orange .card-accent { background: var(--orange); }
+  .family-purple .card-accent { background: var(--purple); }
+  .family-red    .card-accent { background: var(--red); }
+  .family-rainbow .card-accent { background: linear-gradient(180deg,#EF9F27 0%,#639922 30%,#378ADD 50%,#7F77DD 70%,#E24B4A 100%); }
+
+  .sel-自我覺察     { background: #FFF3E0; color: #7B4000; border: 1px solid #EF9F27; }
+  .sel-社會覺察     { background: var(--green-light);  color: var(--green-dark);  border: 1px solid var(--green); }
+  .sel-自我管理     { background: var(--blue-light);   color: var(--blue-dark);   border: 1px solid var(--blue); }
+  .sel-人際技巧     { background: var(--purple-light); color: var(--purple-dark); border: 1px solid var(--purple); }
+  .sel-負責任的決策 { background: var(--orange-light); color: var(--orange-dark); border: 1px solid var(--orange); }
+
+  .empty-state { grid-column: 1/-1; text-align: center; padding: 4rem; color: var(--text3); font-size: 14px; }
+
+  /* ── Detail page ── */
+  .detail-inner { max-width: 760px; margin: 0 auto; padding: 2rem 1.5rem 5rem; }
+
+  .detail-hero {
+    border-radius: var(--radius); padding: 2rem 2rem 1.75rem;
+    margin-bottom: 1.5rem; position: relative; overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .detail-hero-stripe { position: absolute; left: 0; top: 0; bottom: 0; width: 6px; }
+  .detail-family-tag {
+    font-size: 12px; font-weight: 500; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 6px; color: var(--text2);
+  }
+  .detail-num { font-size: 12px; opacity: 0.55; }
+  .detail-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 26px; font-weight: 400; line-height: 1.35; letter-spacing: 0.02em;
+  }
+  .detail-subtitle { font-size: 15px; opacity: 0.65; margin-top: 6px; }
+  .detail-meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; align-items: center; }
+  .detail-badge { font-size: 12px; padding: 4px 13px; border-radius: 20px; font-weight: 500; }
+
+  /* Section blocks */
+  .section {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 12px; overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .section-header {
+    padding: 15px 18px; display: flex; align-items: center; gap: 10px;
+    cursor: pointer; user-select: none;
+    border-bottom: 1px solid transparent; transition: background 0.15s;
+  }
+  .section-header:hover { background: var(--bg); }
+  .section-header.open { border-bottom-color: var(--border); }
+  .section-icon {
+    width: 30px; height: 30px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0; background: var(--bg2);
+  }
+  .section-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 14px; font-weight: 400; color: var(--text); flex: 1;
+  }
+  .section-toggle { font-size: 12px; color: var(--text3); transition: transform 0.2s; }
+  .section-toggle.open { transform: rotate(180deg); }
+  .section-body { padding: 20px; display: none; }
+  .section-body.open { display: block; }
+
+  .steps-list { list-style: none; }
+  .steps-list li {
+    display: flex; gap: 12px; padding: 11px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px; line-height: 1.7; color: var(--text);
+  }
+  .steps-list li:last-child { border-bottom: none; padding-bottom: 0; }
+  .step-num {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--bg2); color: var(--text2);
+    font-size: 11px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 2px;
+  }
+
+  .quote-block {
+    background: var(--bg); border-left: 3px solid var(--border2);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 14px 18px; font-size: 14px; line-height: 1.8;
+    color: var(--text2); font-style: italic;
+  }
+
+  .reminder-block {
+    background: #FFFBF0; border: 1px solid #F5D87A;
+    border-radius: var(--radius-sm); padding: 14px 16px;
+    font-size: 14px; line-height: 1.75; color: #5C4500;
+  }
+
+  .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .action-card {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px; font-size: 13px; line-height: 1.7; color: var(--text2);
+  }
+  .action-card-title {
+    font-size: 10px; font-weight: 600; color: var(--text3);
+    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;
+  }
+
+  .cards-used { display: flex; flex-wrap: wrap; gap: 6px; }
+  .card-chip {
+    font-size: 12px; padding: 4px 11px; border-radius: 20px;
+    background: var(--bg2); border: 1px solid var(--border2); color: var(--text2);
+  }
+
+  @media (max-width: 600px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .action-grid { grid-template-columns: 1fr; }
+    .grid { grid-template-columns: 1fr 1fr; }
+    .detail-title { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+<a href="index.html" style="position:fixed;top:16px;left:16px;z-index:9999;display:inline-flex;align-items:center;gap:7px;background:rgba(250,246,240,0.92);backdrop-filter:blur(8px);border:1px solid rgba(42,32,24,0.12);border-radius:20px;padding:7px 16px;font-family:'Noto Sans TC',sans-serif;font-size:0.8rem;color:#4a4040;text-decoration:none;box-shadow:0 2px 12px rgba(42,32,24,0.09);transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,1)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='rgba(250,246,240,0.92)';this.style.transform='none'">← 資源中心</a>
+
+<!-- ══════════════ HOME PAGE ══════════════ -->
+<div id="page-home" class="page active">
+  <div class="topbar">
+    <div class="topbar-logo">HOPE <span>情緒六大家族</span></div>
+    <div class="topbar-right">SEL 課程地圖</div>
+  </div>
+  <div class="home-inner">
+    <div class="hero">
+      <h1>41 個 SEL 小活動教案</h1>
+      <p>國小學生適用・每次 10–40 分鐘・含行動轉化・點擊卡片查看完整教案</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat"><div class="stat-n">41</div><div class="stat-l">活動總數</div></div>
+      <div class="stat"><div class="stat-n">6+1</div><div class="stat-l">情緒家族</div></div>
+      <div class="stat"><div class="stat-n">5</div><div class="stat-l">SEL 核心能力</div></div>
+      <div class="stat"><div class="stat-n" id="showing-count">41</div><div class="stat-l">目前顯示</div></div>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-row">
+        <span class="filter-label">情緒家族</span>
+        <button class="pill pill-all active" data-family="all">全部</button>
+        <button class="pill pill-yellow" data-family="yellow">💛 黃色</button>
+        <button class="pill pill-green" data-family="green">💚 綠色</button>
+        <button class="pill pill-blue" data-family="blue">💙 藍色</button>
+        <button class="pill pill-orange" data-family="orange">🧡 橘色</button>
+        <button class="pill pill-purple" data-family="purple">💜 紫色</button>
+        <button class="pill pill-red" data-family="red">❤️ 紅色</button>
+        <button class="pill pill-rainbow" data-family="rainbow">🌈 彩虹</button>
+      </div>
+      <div class="filter-row">
+        <span class="filter-label">SEL 能力</span>
+        <button class="pill sel-pill active" data-sel="all">全部</button>
+        <button class="pill sel-pill" data-sel="自我覺察">自我覺察</button>
+        <button class="pill sel-pill" data-sel="社會覺察">社會覺察</button>
+        <button class="pill sel-pill" data-sel="自我管理">自我管理</button>
+        <button class="pill sel-pill" data-sel="人際技巧">人際技巧</button>
+        <button class="pill sel-pill" data-sel="負責任的決策">負責任的決策</button>
+      </div>
+    </div>
+
+    <div class="grid" id="card-grid"></div>
+  </div>
+</div>
+
+<!-- ══════════════ DETAIL PAGE ══════════════ -->
+<div id="page-detail" class="page">
+  <div class="topbar">
+    <button class="back-btn" onclick="goHome()">← 返回課程地圖</button>
+    <div class="topbar-right" id="detail-topbar-info"></div>
+  </div>
+  <div class="detail-inner" id="detail-content"></div>
+</div>
+
+<script>
+const ACTIVITIES = [
+  {
+    id:1, title:"安心地圖", subtitle:"找到讓我心安的地方",
+    family:"yellow", familyName:"💛 黃色家族", time:10,
+    sel:["自我覺察"],
+    cards:"黃色家族：心安（1）、放鬆（2）、輕鬆（3）",
+    goal:"擴充正向情緒詞彙，連結身體放鬆感受，練習命名「心安」情緒。",
+    steps:["展示「心安」卡，請孩子用手指出現在身體哪裡感覺最放鬆。","發給每人一張紙（或學習單），畫出三個讓自己心安的地方或人。","兩兩配對，輪流分享：「當我想到＿＿，我的肩膀就放鬆了。」","全班分享一兩個，老師用「心安」卡在黑板上做情緒命名。","以陪伴句收尾：「你值得待在讓自己覺得安心、踏實的地方。」"],
+    guide:"現在閉上眼睛，想一個讓你覺得很放鬆、很安全的地方——可能是你家的某個角落、奶奶家的廚房、操場的某棵樹下……感受一下那裡的溫度和聲音。",
+    reminder:"若有孩子說不出來，可先示範老師自己的安心地方。不強迫分享，只需完成自己的學習單即可。",
+    action_child:"今天回家後，找一個讓你覺得最安心的角落，靜靜坐 1 分鐘，感受身體哪裡放鬆了。明天可以把那個感覺用一句話或一張圖記錄下來。",
+    action_teacher:"可在下次課前請 1–2 位孩子分享「安心角落」，延伸討論：這週有沒有需要讓自己平靜的時刻，你有沒有想到那個地方？也可發展為課前例行活動：「今天你的心安放在哪裡？」"
+  },
+  {
+    id:2, title:"喜悅存摺", subtitle:"收集今天的好事",
+    family:"yellow", familyName:"💛 黃色家族", time:15,
+    sel:["自我覺察"],
+    cards:"黃色家族：喜悅（4）、開心（5）、感恩（12）、滿足（13）",
+    goal:"練習辨識喜悅、開心、感恩等正向情緒，建立感恩日記習慣。",
+    steps:["展示四張卡，請孩子說說這四種感覺有什麼不同。","每人拿一張便利貼，寫下今天讓自己「心裡亮亮的」一件小事。","貼到全班「喜悅存摺」的海報上。","老師隨機抽讀幾張，問：「這件事對你來說，最像哪張情緒卡？」","以陪伴句收尾：「那種從心裡冒出來的喜悅，很值得收藏。」"],
+    guide:"今天有沒有什麼小事——不一定是大事，可能是朋友對你笑、午餐很好吃、或是終於看懂一題數學——讓你心裡有一點點亮亮的感覺？",
+    reminder:"海報可持續使用，每週選出班上票數最多的「本週最暖小事」，培養正向班級文化。",
+    action_child:"今晚睡前，在心裡回想今天一件讓你感覺好的事，把它說給自己聽，或寫在筆記本上。連續做三天，看看你的「喜悅存摺」會變得多豐富。",
+    action_teacher:"可設置班級「喜悅牆」持續累積，每隔兩週做一次回顧，讓孩子感受正向情緒的累積。也可延伸討論：喜悅可以分享嗎？分享之後喜悅會變多還是變少？"
+  },
+  {
+    id:3, title:"給自己的獎狀", subtitle:"",
+    family:"yellow", familyName:"💛 黃色家族", time:10,
+    sel:["自我覺察"],
+    cards:"黃色家族：得意（9）、自豪（10）、感動（11）",
+    goal:"練習自我肯定，辨識「得意」與「自豪」的差別，發展成長型思維。",
+    steps:["展示「得意」和「自豪」卡，討論兩者的不同：得意是今天做到的，自豪是長期努力的。","發給每人空白獎狀（可用A5紙折一下），設計獎狀並填上：我這學期（或這個星期）最努力的一件事是＿＿。","孩子分組輪流展示與分享，同組的傾聽者說一句：「我覺得你的這件事讓我感動，因為＿＿。」","收回全部的獎狀，老師整理後可以展示在公佈欄（可匿名）。","以陪伴句收尾：「你可以為自己感到自豪，不只是成績，而是你做人的方式。」"],
+    guide:"現在我們不是在比誰最厲害，而是要看見自己真的有在努力的地方——可能很小，可能別人沒注意到，但你自己知道。",
+    reminder:"提醒孩子不一定要寫學科或跟學習相關，也可以是：我努力不亂生氣、我練習每天運動。",
+    action_child:"把你的獎狀帶回家，念給家人聽，或放在你看得到的地方。接下來一週，每天睡前問自己：「今天有沒有一件值得給自己掌聲的事？」",
+    action_teacher:"一個月後可做「獎狀升級」：請孩子回顧當初寫的努力，看看有什麼新的成長。也可鼓勵親師合作，請家長在獎狀背面寫一句給孩子的話。"
+  },
+  {
+    id:4, title:"我的舒適圈", subtitle:"界線雷達",
+    family:"green", familyName:"💚 綠色家族", time:15,
+    sel:["自我覺察"],
+    cards:"綠色家族：怪怪的（1）、不合拍（2）、反感（6）、討厭（5）",
+    goal:"辨識界線被侵犯時的身體訊號，練習用語言取代身體推拒反應。",
+    steps:["展示「怪怪的」卡，問：「有沒有過心裡怪怪的、說不上來哪裡不對的感覺？那時身體哪裡有感覺？」","畫出人體輪廓，請孩子說出身體警報器在哪裡（肩膀緊、肚子翻、喉嚨卡）。","小組討論：在哪些情境下，你的身體會發出這個訊號？（被人碰觸、被嘲笑、被迫表演…）","介紹「界線用語」：「這樣我感覺不舒服，可以不要這樣嗎？」全班練習說一次。","以陪伴句收尾：「你的身體在保護你，那個怪怪的感覺很重要。」"],
+    guide:"你的身體是你最誠實的朋友——它會在你還沒想清楚之前，先告訴你『這裡不太對』。我們今天要學會聽懂它說的話。",
+    reminder:"若孩子說出具體被侵犯的情境，需謹慎回應，必要時依輔導機制處理。活動聚焦在「辨識」，不深入挖掘個人創傷。",
+    action_child:"這週留意一次身體的「警報感覺」，記下：是什麼情境？身體哪裡有感覺？你後來怎麼做？下次課可以和老師或同學分享（自願）。",
+    action_teacher:"後續可設計「界線情境卡」讓孩子練習如何開口。也可連結生命教育或健康課，討論身體自主權的概念，強化孩子說「不」的信心。"
+  },
+  {
+    id:5, title:"拒絕句練習站", subtitle:"",
+    family:"green", familyName:"💚 綠色家族", time:10,
+    sel:["人際技巧"],
+    cards:"綠色家族：拒絕（14）、躲開（13）、反感（6）",
+    goal:"降低拒絕的焦慮感，練習至少三種不同語氣的拒絕表達。",
+    steps:["展示「拒絕」卡，問：「有沒有過明明不想卻不好意思說不要的經驗？」","老師示範三種拒絕語氣：硬式（「不要！」）、軟式（「謝謝你，但我不要。」）、理由式（「我現在不方便，可以下次嗎？」）。","兩兩配對進行角色扮演，一人提出請求，一人用不同語氣練習拒絕。","交換角色，感受被拒絕是什麼感覺。","全班討論：哪種拒絕方式你最常用？哪種你會想多練習？"],
+    guide:"說『不』是很重要的能力，但很多人從小就覺得說不會讓別人不高興。今天我們要練習——拒絕不是不禮貌，是在照顧自己。",
+    reminder:"配對時讓孩子自己選場景，如：同學借東西、被邀請做不想做的事等，才更有真實感。",
+    action_child:"這週試試看，當有人提出你不想答應的要求時，練習用今天學到的其中一種拒絕方式，並試著說出口。說完之後注意自己的感覺——是不是沒有你想的那麼可怕？",
+    action_teacher:"可設計「拒絕情境卡」，每隔一週抽一張進行快速角色扮演。也可引導孩子討論：被拒絕的感受和拒絕別人的感受，哪個比較難？為什麼？"
+  },
+  {
+    id:6, title:"委屈翻譯機", subtitle:"",
+    family:"blue", familyName:"💙 藍色家族", time:15,
+    sel:["社會覺察"],
+    cards:"藍色家族：委屈（7）、孤單（9）、心酸（6）",
+    goal:"將難以說出口的委屈情緒轉化為語言，練習「被聽見」與「真正聆聽」兩種能力。",
+    steps:["展示「委屈」卡，請孩子用身體表演一下「委屈」的樣子（不需說話）。","老師示範：「我最近有一件委屈的事，其實我想說的是：＿＿。」","孩子寫在紙上（不需唸出）：「最近讓我感到委屈的是＿＿，其實我想說的是＿＿。」","兩兩配對，選擇是否願意分享；傾聽者只能說：「我聽到了，你＿＿（重複剛剛聽到的話），是嗎？」","以陪伴句收尾：「你覺得委屈，是因為你心裡有很重要的話想被聽見。」"],
+    guide:"委屈很難說清楚，所以很多人選擇放棄，乾脆不說。但今天我們要來幫委屈翻譯一下——讓那個說不出口的感覺，變成別人可以懂的話。",
+    reminder:"傾聽者的任務只有一個：「說回去讓對方知道你聽到了。」這是最基本的同理心練習，比直接給建議更重要。",
+    action_child:"下次當你心裡有委屈的時候，先不要悶著，試著在紙上寫：「讓我委屈的是＿＿，我真正想說的是＿＿。」寫出來之後，決定要不要說給某個人聽。",
+    action_teacher:"可在班級設置「委屈信箱」，讓孩子匿名投入，老師定期回應。也可每月做一次「翻譯練習」，讓孩子練習把同學描述的委屈翻譯成清楚的語言。"
+  },
+  {
+    id:7, title:"我的求救名單", subtitle:"",
+    family:"blue", familyName:"💙 藍色家族", time:15,
+    sel:["自我管理"],
+    cards:"藍色家族：無助（14）、低落（12）、沮喪（11）",
+    goal:"辨識可信任的求助對象，降低求助的心理障礙，建立安全感。",
+    steps:["展示「無助」卡，問：「覺得無助的時候，你最希望有誰在旁邊？」","發給孩子一張手掌形狀的紙，五根手指各寫上一個「可以找的人」。","討論：找不同的人，做哪些不同的事？（找媽媽說心裡話、找同學一起抱怨、找老師詢問建議）","老師提示：求助不一定要說完整的事，也可以說：「我現在覺得不太好，可以陪我一下嗎？」","以陪伴句收尾：「你覺得無助的時候，不代表真的沒有人在，你只是還在找路。」"],
+    guide:"有沒有過一種感覺：很想有人幫忙，但又不知道要找誰、要怎麼求救？今天我們要先想好，如果我現在很無助，可以找誰幫忙？",
+    reminder:"手掌圖可以讓孩子保留，貼在聯絡簿內側或書包裡，成為實際可用的「情感支持提醒卡」。",
+    action_child:"把你的手掌名單帶回家，貼在你常常看到的地方。這週試著主動跟名單上的一個人說說話，不一定要說很重要的事，就只是分享生活中的事件。",
+    action_teacher:"可在期初讓孩子製作手掌名單，學期中再更新一次，觀察孩子的支持網絡是否有所變化。也可連結輔導機制，確保每個孩子在學校時，至少有一位信任的大人。"
+  },
+  {
+    id:8, title:"情緒許可證", subtitle:"",
+    family:"blue", familyName:"💙 藍色家族", time:15,
+    sel:["自我管理"],
+    cards:"藍色家族：心悶（1）、小難過（3）、難過（4）、傷心（5）",
+    goal:"理解有負向情緒是正常的，學習允許自己有感覺，並溫柔對待自己。",
+    steps:["展示四張卡，請孩子排排看哪個程度最深。","老師分享：「我曾經覺得難過時，我做的第一件事是＿＿。（示範誠實分享）」","請孩子畫一個「當我難過時的樣子」（臉會變成怎樣？身體哪裡有感覺？可以用顏色或線條表現）。","寫一張給自己的「情緒許可證」：「我允許自己難過，因為那表示我很在乎＿＿。」","以陪伴句收尾：「就算只是小小的難過，也值得被溫柔對待。」"],
+    guide:"你有沒有過這種經驗——難過的時候，馬上有人說：『別哭了、這又沒有什麼大不了』，結果心裡反而更悶了？今天我們要練習一件事：讓難過好好被溫柔對待，再慢慢變好。",
+    reminder:"老師的誠實分享是建立信任的關鍵。不需要說很私密的事，但要真實。",
+    action_child:"把你的「情緒許可證」收好。當你下次難過時，可以試試：拿出來看看，並對自己說：「我現在很難過，這是可以的」，給自己 5 分鐘，好好感覺一下，準備好之後，再慢慢往前走。",
+    action_teacher:"可將孩子的「情緒許可證」護貝，讓孩子隨身保存或放在固定位置。同時在班級中持續營造「難過也沒關係」的氛圍，設置安靜角，讓孩子在情緒低落時，有一個可以暫時停下來的地方。"
+  },
+  {
+    id:9, title:"表情漫畫家", subtitle:"",
+    family:"orange", familyName:"🧡 橘色家族", time:10,
+    sel:["自我管理"],
+    cards:"橘色家族：驚訝（5）、傻眼（11）、嚇一跳（10）、嚇呆（14）",
+    goal:"認識驚訝情緒家族，練習在突發情況下先停頓再反應的策略。",
+    steps:["老師念出一個橘色情緒詞，孩子在 15 秒內快速畫出那個情緒的表情。","展示幾張讓全班猜是哪個詞，笑著討論。","介紹「停看選」：停下來→看清楚發生什麼→選一個反應。","角色扮演：老師突然說「明天要抽考！」，孩子練習「停→深呼吸→看」。","以陪伴句收尾：「當你很驚訝時，給自己一點時間慢慢消化也沒關係。」"],
+    guide:"你有沒有被嚇到後，馬上做出一個後來有點後悔的反應？像是大叫、大笑，或不小心把東西推倒……。今天我們要學一個很有用的能力：先停一下，讓大腦跟上身體。",
+    reminder:"畫表情的過程常會帶來笑聲，是很好的暖身活動。進行前可先和孩子約定：我們可以一起笑，但不嘲笑別人的作品，每一張畫都很棒。",
+    action_child:"引導學生在突發情境中運用「停—看—選」策略，透過暫停與呼吸降低自動反應，提升情境判斷與行為選擇能力，並以紀錄方式促進反思。",
+    action_teacher:"可製作「停看選」提示卡，張貼於教室顯眼處，作為即時提醒工具。當班級出現突發事件時，老師可引導孩子一起運用「停看選」策略進行練習。"
+  },
+  {
+    id:10, title:"好奇心偵探", subtitle:"",
+    family:"orange", familyName:"🧡 橘色家族", time:15,
+    sel:["自我覺察"],
+    cards:"橘色家族：好奇（1）、驚豔（7）、讚嘆（6）、小驚喜（2）",
+    goal:"將好奇情緒連結到主動學習動力，練習用語言描述驚豔感受。",
+    steps:["展示「好奇」卡，請孩子說出最近一個讓他一直想知道答案的問題。","小組分享：「我最好奇的事是＿＿，因為＿＿。」（可加一句）：「我猜答案可能是＿＿。」","老師帶出幾個有趣小知識（如：章魚有三顆心臟），孩子用「驚豔」卡打分 1-5。","孩子寫下今天最讓自己「哇」的一件事，並完成句子：「原來＿＿，世界也可以這樣！」","以陪伴句收尾：「你的好奇心，是一個很重要的學習超能力。」"],
+    guide:"世界上有太多很奇怪、很厲害、很奇妙的事在等著你去發現——但你得先打開那個好奇的開關。今天我們來找找，你的好奇開關在哪裡？",
+    reminder:"可連結到孩子正在學習的任何科目，幫助他們體驗「知識本身可以很驚豔」。",
+    action_child:"這週請找一個你一直很好奇的問題，試著去找答案。你可以用這些方法：問大人、查書，或上網查。找到之後，下次上課和大家分享你的發現。",
+    action_teacher:"可在班級設立「好奇牆」，讓孩子將自己想知道的問題貼上去，並由老師或同學一起協助尋找答案。"
+  },
+  {
+    id:11, title:"身體的警報器", subtitle:"我的害怕地圖",
+    family:"purple", familyName:"💜 紫色家族", time:15,
+    sel:["自我覺察"],
+    cards:"紫色家族（害怕、緊張、不安相關卡）",
+    goal:"理解害怕是正常的情緒，辨識自己身體出現的害怕訊號，並學習保護自己的方法。",
+    steps:["問：「你有沒有特別害怕的東西？」請孩子先在紙上悄悄寫下，不需要分享。","說明：「害怕不是弱，而是你的身體在提醒你：這裡可能有危險，需要注意。」","請孩子在人體輪廓上，用顏色標出：當我害怕時，身體哪裡最有感覺。","問：「當那個地方有感覺時，它在提醒你什麼？」","兩兩分享，傾聽者說：「我聽到你說，當你＿＿時，身體＿＿會有感覺，對嗎？」","以陪伴句收尾：「害怕不是弱，是身體在保護我。」"],
+    guide:"很多人以為勇敢就是不會害怕，但其實真正的勇敢，是知道自己在害怕什麼，還願意慢慢往前。今天我們要一起來認識：當我害怕的時候，我的身體在告訴我什麼。",
+    reminder:"孩子可能分享不同程度的害怕。請以接納與不評價的態度回應，避免比較或過度解讀。",
+    action_child:"把你的「害怕地圖」帶回家，找一位你信任的大人，分享你的身體感覺。可以這樣說：「我害怕的時候，身體這裡最有感覺。」不一定需要說出害怕的內容，只要分享身體的感覺就可以。",
+    action_teacher:"可在課堂中定期安排「勇氣分享時間」，邀請孩子分享自己曾經害怕但仍然嘗試的經驗。若觀察到孩子有較強烈或持續的恐懼反應，建議連結心理師或相關專業資源。"
+  },
+  {
+    id:12, title:"我的安全盾牌", subtitle:"",
+    family:"purple", familyName:"💜 紫色家族", time:15,
+    sel:["自我管理"],
+    cards:"紫色家族（不安、緊張、擔心等相關卡）",
+    goal:"建立具體可操作的個人安全計畫，強化自我保護與情緒回穩的能力。",
+    steps:["發給孩子 A5 空白紙，請他們畫出自己心目中「盾牌」的形狀。","盾牌分四格：①讓我安心的人；②讓我安心的話；③讓我安心的行動；④讓我安心的地點。","各自填寫，可以畫也可以寫。","兩兩分享其中一格。","老師說：「這張盾牌是你的，當你很不安的時候，可以在心裡把它拿出來。」","以陪伴句收尾：「你的盾牌一直都在，你自己就帶著它。」"],
+    guide:"每個人都有時候會覺得不安全、很緊張。當這種感覺出現時，我們最需要的是能快速想到：我可以找誰？我可以做什麼？我可以去哪裡？今天，我們要把這些方法整理起來，放進自己的安全盾牌裡。",
+    reminder:"盾牌可護貝或讓孩子貼在聯絡簿，成為真實的「情緒急救工具」。",
+    action_child:"把你的盾牌護貝或貼在你常看到的地方。這週試試看：當你感覺有點不安的時候，在心裡把盾牌拿出來，想一想裡面的內容，看看有沒有幫助。",
+    action_teacher:"期末可做「盾牌更新」活動：請孩子重新填寫，比較學期初和期末的不同，作為成長記錄。也可邀請家長參與，讓家長在盾牌上加寫一格「家人的話」。"
+  },
+  {
+    id:13, title:"怒火溫度計", subtitle:"我的情緒溫度",
+    family:"red", familyName:"❤️ 紅色家族", time:15,
+    sel:["自我管理"],
+    cards:"紅色家族（心煩、不耐、惱火、火大、氣炸等相關卡）",
+    goal:"辨識憤怒光譜從輕微到強烈，理解憤怒背後的界線訊號，設計個人降溫行動。",
+    steps:["在黑板上畫出一個 0 到 10 的情緒溫度計，邀請孩子上台，將不同的憤怒情緒詞放在合適的位置。","問：「你上次情緒很強烈的時候，大概是幾度？通常到幾度時，你會開始覺得比較難控制自己？」","孩子設計個人「降溫計畫」：在幾度要做什麼行動？（如：7 度以上先走出去深呼吸）","兩兩分享降溫計畫，互相給建議。","練習說界線用語：「我現在有點不舒服，可以先停一下嗎？」","以陪伴句收尾：「生氣是在提醒你：有一個重要的界線被碰到了。」"],
+    guide:"生氣不是你的問題。生氣是你的身體在提醒你：「這裡有一條重要的界線被碰到了。」真正重要的，不是有沒有生氣，而是我們怎麼回應這個感覺。",
+    reminder:"降溫計畫要具體（哪個動作、幾分鐘），才能在真的氣到 7 度時想得起來用。",
+    action_child:"把你的降溫計畫寫在一張小紙條上，放在書包裡。這週如果遇到覺得自己情緒快要升高的時候，先在心裡問自己：「我現在是幾度？」接著試著啟動你的降溫方法。",
+    action_teacher:"可在教室設置「情緒溫度計」海報，讓孩子每天早上貼上代表自己狀態的溫度貼紙。老師可透過整體分布，快速掌握班級的情緒狀態。"
+  },
+  {
+    id:14, title:"界線用語工廠", subtitle:"",
+    family:"red", familyName:"❤️ 紅色家族", time:15,
+    sel:["人際技巧"],
+    cards:"紅色家族（不耐、惱火、憤怒等相關卡）",
+    goal:"建立多樣且合適的界線表達語句，並能在情緒升高前，嘗試用語言表達自己的需求與不舒服。",
+    steps:["老師提供三個常見衝突情境，請孩子討論「可以怎麼說」。先說明原則：用說的表達，不攻擊、不責備、不動手。","界線語言教學，介紹句型：「我不喜歡你＿＿，我希望你＿＿。」","小組接龍練習：每人提出一個情境，並說出一句界線用語。目標不是比多，而是比「清楚又合適」。","全班票選「最不容易說出口的一句話」，討論為什麼這句話很難說。","老師帶著全班一起說：「我現在需要一點空間，等我平靜一下我們再談。」"],
+    guide:"你有沒有這樣的經驗：明明很生氣，但又知道不能動手、也不想罵人，卻一時不知道可以說什麼。今天我們要一起設計一個「界線工具箱」，把一些在生氣時也能說得出來的話，放進去。",
+    reminder:"接龍遊戲能讓孩子在輕鬆與笑聲中練習，比單純反覆說明更容易投入與記住。活動結束前，請確認每位孩子至少記住並能說出一句適合的界線用語。",
+    action_child:"從今天練習的句子中，選出一句你最想多用的話，寫下來貼在書桌前。這週找一個合適的時機，試著用一次。",
+    action_teacher:"可定期進行「語言工具箱補充」，每隔幾週邀請孩子再想出五句新的界線用語，加入班級的語言工具箱海報。"
+  },
+  {
+    id:15, title:"情緒光譜排隊", subtitle:"",
+    family:"rainbow", familyName:"🌈 彩虹綜合", time:15,
+    sel:["自我覺察"],
+    cards:"任選一個家族的全部 14 張卡（建議先從紅色或黃色開始）",
+    goal:"建立情緒強度的具體概念，擴充情緒詞彙，練習精準命名自己的感受。",
+    steps:["小組各拿一套家族卡（14 張），攤開在桌上。","討論並排成情緒光譜：從最輕微排到最強烈，說出排序理由。","完成後展示給其他組看，比較哪裡排法不同，討論為什麼。","問：「你今天的狀態在這個光譜的哪個位置？」","以陪伴句收尾（隨當天選的家族選擇對應陪伴句）。"],
+    guide:"我們今天要做一件有趣的事，幫這些情緒排隊。就像辣度有一顆辣椒到五顆辣椒，情緒也有不同的程度。你可以想一想：有點煩，和快要氣炸，中間差了幾格呢？",
+    reminder:"不同組可能排法不同，這很好！讓孩子理解情緒感受是主觀的，沒有標準答案。重點在討論過程。",
+    action_child:"這週試著用今天學到的情緒詞更精準地描述自己的感覺，不只說「我很難過」，而是說「我現在是第幾格的難過」。",
+    action_teacher:"可將光譜排隊發展為每日晨間 Check-in：「今天你在第幾格？」幫助孩子每天練習精準的情緒命名。"
+  },
+  {
+    id:16, title:"今天我在哪個家族的家", subtitle:"",
+    family:"rainbow", familyName:"🌈 彩虹綜合", time:10,
+    sel:["自我覺察"],
+    cards:"六個家族各取 1–2 張代表性卡片，共展示 6–12 張",
+    goal:"培養每日情緒覺察習慣，練習用情緒語言自我介紹。",
+    steps:["展示六個家族的代表卡，老師說明每個家族的核心關鍵字。","孩子各自在白板（或紙上）寫下：今天我在「＿＿色家族」的家，最像的是「＿＿」。","舉起來讓老師掃視一下（不需全班唸出，保護隱私）。","老師觀察班級今天的整體情緒分布，分享觀察。","問一兩個願意的孩子：「今天你選這張卡，是因為發生了什麼嗎？」"],
+    guide:"現在的你，覺得自己比較像住在哪個情緒家族的家？不需要完全一樣，只要選一個最接近的感覺就可以。這不是考試，沒有對錯。",
+    reminder:"這個活動可以成為每天開場的固定環節（只要 5 分鐘），長期下來孩子的情緒語言會明顯增加。",
+    action_child:"今天回家後，和家人分享：你今天比較像住在哪個情緒家族的家。也可以試著說說看，為什麼你會有這樣的感覺。",
+    action_teacher:"建議將此活動固定安排在課前進行，作為每週一次的情緒覺察練習。可設計「本週住最久的情緒家族」回顧時間。"
+  },
+  {
+    id:17, title:"情境小劇場", subtitle:"你怎麼了？",
+    family:"rainbow", familyName:"🌈 彩虹綜合", time:20,
+    sel:["社會覺察"],
+    cards:"依情境選擇對應家族卡，建議使用藍色或紅色家族",
+    goal:"練習同理傾聽，學會分辨能真正幫助他人的陪伴方式，與只是表面安慰的差別。",
+    steps:["老師展示一張卡，描述一個情境（如：「一個孩子抽到藍色12低落，他是因為被好朋友排擠了。」）","兩兩配對，一人扮演「有感覺的人」，一人扮演「朋友」。","朋友只能用學過的陪伴句，不能說：「沒事啦、你想太多了、忘掉就好」。","演完後交換角色，換一個情境。","全班分享：哪句話讓你感受到被懂的感覺？哪句最沒有用？"],
+    guide:"當朋友很難過、很生氣的時候，我們常常不知道該說什麼，有時候還會不小心說出讓對方更不舒服的話。今天我們要練習一件很重要的事：怎麼好好陪伴一個人，而不是只說表面的安慰。",
+    reminder:"在討論「哪句話最沒有幫助」時，孩子常會提出像「不就是這樣嗎」、「算了啦」這類回應。這是一個很好的反思機會。",
+    action_child:"這週當朋友遇到困難時，試著用今天學到的陪伴方式：先聽對方說，再用自己的話回應，讓對方知道你有聽到，不急著給建議。",
+    action_teacher:"可定期進行「陪伴句更新」，邀請孩子分享自己覺得有效的陪伴語句，整理後加入班級的陪伴語言庫。"
+  },
+  {
+    id:18, title:"回穩工具箱", subtitle:"我的情緒急救包",
+    family:"rainbow", familyName:"🌈 彩虹綜合", time:15,
+    sel:["自我管理"],
+    cards:"各家族代表性卡片，重點在「回穩小任務」部分",
+    goal:"建立適合自己的情緒調節方法，並能在需要時選擇使用，照顧自己的感受。",
+    steps:["老師介紹「回穩小任務」的概念，每張卡背後都有一個可以馬上做的小動作。","展示幾個例子：放鬆卡的「三次深呼吸」、委屈卡的「寫下其實我想說的是＿＿」、憤怒卡的「先走開 60 秒」。","孩子在紙上設計自己的「情緒急救包」，挑選 4 個最喜歡的回穩行動，可以加上圖示。","兩兩分享，互相補充。","以陪伴句收尾：「你已經有工具了，剩下的是練習在需要的時候想起用它。」"],
+    guide:"當我們很難受的時候，大腦有時會一下子變得亂亂的，想不到可以怎麼做。所以我們要在平靜的時候，先準備好一些方法。",
+    reminder:"可將「情緒急救包」製作成小卡片或貼紙，讓孩子隨身攜帶，例如放在聯絡簿或書包中。",
+    action_child:"把你的情緒急救包做成一張小卡，放在書包裡或貼在書桌旁。這週試著使用其中一個方法。",
+    action_teacher:"可定期進行「情緒工具箱升級」，每學期引導孩子檢視並更新自己最有效的調節方法。"
+  },
+  {
+    id:19, title:"給情緒的一封信", subtitle:"",
+    family:"rainbow", familyName:"🌈 彩虹綜合", time:20,
+    sel:["自我覺察"],
+    cards:"孩子自選一張最近最有感覺的卡片",
+    goal:"提升對自己情緒的理解，學會把內在的感受用語言說出來，並練習用文字表達情緒。",
+    steps:["請每位孩子自由翻閱情緒牌卡，選出一張最符合自己最近狀態的卡片。","老師示範：「親愛的＿＿，你最近常常來找我。你通常在＿＿的時候出現。你來的時候，我會＿＿。我覺得你是在提醒我＿＿。」","孩子自由書寫「給這個情緒的一封信」，5–8 分鐘，不限格式。","自願者分享 1–2 句（完全自願，可以只聽）。","以陪伴句收尾：「你的感受值得被好好說出來，就算只是寫給自己看，也很重要。」"],
+    guide:"如果你的情緒是一個人，你會想對它說什麼？你可以抱怨它、謝謝它，或問它一些問題。今天，試著把你想說的話寫給它聽。",
+    reminder:"情緒書寫是很私密的歷程，需明確讓孩子知道，不會被強迫分享，也可以自行決定是否讓老師閱讀。",
+    action_child:"這週再選一個你常常出現的情緒，試著寫一封信給它。你可以問它：「你為什麼一直來找我？」也可以謝謝它，曾經在某些時候保護過你。",
+    action_teacher:"可發展為學期性的情緒書寫計畫，每月引導孩子選擇一種情緒進行書寫，學期末彙整成個人的「情緒書信集」。"
+  },
+  {
+    id:20, title:"情緒抽卡說故事", subtitle:"",
+    family:"rainbow", familyName:"🌈 彩虹綜合", time:15,
+    sel:["自我覺察"],
+    cards:"混合六個家族，抽取 3 張",
+    goal:"在創意遊戲中練習使用情緒詞彙，提升表達情緒的流暢度與多樣性。",
+    steps:["將所有牌卡混合，放在桌上（正面朝下）。","每組 2–3 人，輪流抽 3 張牌。","用抽到的 3 個情緒詞，編一個 30 秒的即興小故事（可以很荒謬）。","其他人猜哪個場景對應哪張卡。","玩完後問：「今天哪個情緒詞你以前從來沒有說過？」"],
+    guide:"我們今天要玩一個有點特別的遊戲。你會抽到三個情緒，然後把它們編成一個故事。這個故事可以很奇怪、很好笑，也可以很離奇。最重要的是，讓大家聽得出來，你用了哪三個情緒。",
+    reminder:"低壓力的關鍵，在於允許孩子創作出「不需要合理」的故事。當故事可以荒謬、有趣，孩子更容易投入，也更敢表達。",
+    action_child:"回家後，把今天玩的遊戲教給家人，一起抽三張情緒卡來說故事。過程中可以觀察：家人對哪些情緒詞比較不熟悉，你可以試著幫他們解釋。",
+    action_teacher:"可發展成「情緒說故事活動」，每月進行一次，讓孩子在持續練習中，逐漸提升情緒詞彙的運用與表達能力。"
+  },
+  {
+    id:21, title:"感恩三明治", subtitle:"把謝謝說清楚",
+    family:"yellow", familyName:"💛 黃色家族", time:15,
+    sel:["社會覺察"],
+    cards:"黃色家族：感恩（12）、感動（11）、幸福（14）",
+    goal:"能說出自己感謝的人或事情，並用一句或幾句話描述原因與感受。",
+    steps:["展示「感恩」卡，問：最近有沒有人做了一件事，讓你想對他說謝謝？那是什麼事？","感恩三明治句型：謝謝你＿＿（你做了什麼），因為＿＿（對我有什麼影響），這讓我感覺＿＿（我的感受）。","每人在便利貼上寫一張感恩三明治，對象可以是人，也可以是事物。","兩兩讀給對方聽，傾聽者回應：「聽到你說這些，我覺得＿＿。」","自願者可把便利貼貼到班級「感謝牆」，老師以陪伴句收尾。"],
+    guide:"說「謝謝」其實不難，但如果沒有說清楚在謝什麼，對方有時不一定感受得到。當我們把「為什麼謝謝」說清楚，對方就更能感受到你的心意。今天我們要練習一件事：把謝謝說得更清楚，也更有溫度。",
+    reminder:"感謝的對象不一定是人，也可以是生活中的各種事物，例如天氣、一首歌，或一頓讓人感到滿足的餐點。",
+    action_child:"今天試著把你的感恩三明治，說給真正想感恩的對象。說完之後，請留意兩件事：對方的反應是什麼？你自己心裡的感覺有什麼變化？",
+    action_teacher:"可發展為「感恩三明治週」，每週固定時段讓孩子寫一張感謝卡給班上同學，重點在具體表達與真誠連結。"
+  },
+  {
+    id:22, title:"幸福快照", subtitle:"我的美好瞬間相簿",
+    family:"yellow", familyName:"💛 黃色家族", time:10,
+    sel:["自我管理"],
+    cards:"黃色家族：幸福（14）、感動（11）、喜悅（4）",
+    goal:"引導學生運用正向記憶進行情緒調節，並覺察自我安撫歷程中的身體感受變化。",
+    steps:["請孩子輕輕閉上眼睛，慢慢呼吸。老師引導：「想一個讓你覺得很舒服、很幸福的畫面，可以是任何時刻。」","停留約 15 秒後，引導：在這個畫面裡，注意你的身體。哪一個地方最有感覺，是暖暖的、輕輕的，還是放鬆的。","請孩子睜開眼睛，把剛剛的畫面畫下來。不需要畫得漂亮，只要自己看得懂就可以。","寫上：「我的幸福快照：＿＿＿，我的身體感受：＿＿＿。」","老師說：「這個畫面其實一直都在你心裡。當你覺得難過、緊張或不舒服的時候，可以再想起它，讓自己慢慢穩下來。」"],
+    guide:"我們要一起走進你心裡的相簿，找一張讓你感到溫暖的照片。那可能是一個地方，一個人，或一個特別的時刻。請你慢慢停在那裡，感受一下那個畫面。我們一起停留十五秒。",
+    reminder:"可將此活動發展為一種「情緒急救法」，引導孩子在焦慮或難過時，主動使用回想正向畫面的方式進行自我安撫。",
+    action_child:"把你的幸福快照放在書桌上或書包裡。當你心情不好、緊張或難過時，試著先停一下，拿出你的幸福快照，輕輕閉上眼睛，回到那個畫面，停留大約十五秒。",
+    action_teacher:"可發展為「幸福快照相簿」，每月引導孩子新增一張快照，學期末彙整成個人的情緒資源集。"
+  },
+  {
+    id:23, title:"鼓勵信", subtitle:"寫給一個月後的自己",
+    family:"yellow", familyName:"💛 黃色家族", time:12,
+    sel:["自我覺察"],
+    cards:"黃色家族：自豪（10）、幸福（14）、興奮（7）",
+    goal:"引導學生透過書寫進行正向自我對話，連結當下經驗與未來時間點，培養自我覺察與成長意識。",
+    steps:["問：「如果一個月後的你，回頭看現在的自己，他會想對你說什麼？」","老師示範：「親愛的現在的我，你一定沒想到，這個月你慢慢做到了＿＿。有些時候你很辛苦，但你還是撐過來了。」","孩子自由書寫，5 分鐘，不限格式。（現在的我＿＿，我想對未來的自己說＿＿，未來的你，請記得＿＿）","放入信封，老師收存，一個月後發回。","以陪伴句收尾：「你現在寫下的這些話，會成為未來支持你的力量。」"],
+    guide:"想像一下，一個月後的你，已經慢慢長大了一點點。那個更成熟一點的你，會想對現在的你說什麼？",
+    reminder:"一個月後發回信件時，請孩子對照當初的內容，回想與現在的自己有什麼不同。",
+    action_child:"寫完信之後，在信封背面畫或寫下一件「這個月我想做到的事」，讓未來的自己可以回來對照看看。",
+    action_teacher:"在發回信件的同時，引導孩子立即寫下一封給「兩個月後的自己」的新信，形成持續的自我對話循環。"
+  },
+  {
+    id:24, title:"怪怪的雷達", subtitle:"身體小提醒",
+    family:"green", familyName:"💚 綠色家族", time:15,
+    sel:["自我覺察"],
+    cards:"綠色家族：怪怪的（1）、不合拍（2）、看膩（3）",
+    goal:"引導學生覺察細微情緒與身體訊號，建立早期辨識與自我覺察能力，促進後續情緒調節的前置歷程。",
+    steps:["問孩子：「怪怪的」是什麼感覺？先不要用生氣或難過這些詞，試著用自己的方式來形容。","小組討論：哪些情況最容易讓你覺得怪怪的？（有人靠太近、某種說話方式、氣氛變得不太一樣）","每人畫一個「怪怪的雷達圖」，在圓的四周寫下會出現這種感覺的情境。","兩兩分享，討論：當這個感覺出現時，通常接下來會發生什麼？","以陪伴句收尾：「有些感覺一開始說不清楚也沒關係，那個「怪怪的」本身，就是在提醒你一些重要的事。」"],
+    guide:"你有沒有過一種感覺，說不太出來哪裡不對，但就是覺得有點怪怪的。有時候我們會忽略這種小小的不對勁，但其實，那個感覺是在提醒我們一些事情。今天，我們要學會一件很重要的能力：把這個「怪怪的」當成一個提醒，開始注意它。",
+    reminder:"雷達圖完成後可讓孩子自行保留，作為未來辨識情境與自我覺察的參照工具。",
+    action_child:"這週請留意一次出現「怪怪的」感覺的時刻。事後想一想：當時發生了什麼事？那個感覺可能在提醒你什麼？",
+    action_teacher:"以「怪怪的雷達圖」為基礎，發展個人化的情緒敏感情境紀錄，幫助孩子理解自己的觸發點。"
+  },
+  {
+    id:25, title:"從怪怪的，到慢慢懂自己", subtitle:"",
+    family:"green", familyName:"💚 綠色家族", time:15,
+    sel:["人際技巧"],
+    cards:"綠色家族：不合拍（2）、厭煩（4）、躲開（13）",
+    goal:"透過情境覺察與語言轉化歷程，促進學生在人際互動中辨識低強度不適感受並進行適切表達，強化衝突預防與關係調節能力。",
+    steps:["展示「不合拍」卡，問：「你有沒有跟某個人或某個團體在一起時，覺得有點怪怪卡卡的，但說不上是誰的問題。」","老師說明：不合拍不代表誰不好，而是彼此的節奏或方式不一樣，就像不是每首歌都適合每個心情。","角色扮演：一人說出「我最近在這個小組有點不合拍」，另一人練習回應，重點放在先接住對方的感受。","討論：當不合拍出現，可以怎麼說出來？練習：「我覺得我們現在節奏有點不一樣，可以一起聊一下嗎？」","以陪伴句收尾：「當你感覺不合拍時，願意說出來，是在照顧自己，也是在保護彼此的關係。」"],
+    guide:"有時候跟別人相處，會出現一種卡卡的感覺，不是誰做錯了什麼，而是好像有哪裡對不上。這種感覺其實很正常，但如果一直不說出來，就可能會越來越悶。",
+    reminder:"這個活動特別適合在班級重新分組或換座位後進行，能協助孩子覺察與表達人際互動中的不適感。",
+    action_child:"這週如果你在小組或和朋友相處時，感覺有一點不合拍，試著用今天練習的句子說出來。說完之後，留意看看氣氛有沒有什麼改變。",
+    action_teacher:"在換組或換座位後的第一週，可安排一次「不合拍 Check-in」，引導孩子分享新互動中的小小不適與需要調整的地方。"
+  },
+  {
+    id:26, title:"感覺翻譯機", subtitle:"",
+    family:"blue", familyName:"💙 藍色家族", time:15,
+    sel:["自我管理"],
+    cards:"藍色家族：低落（12）、沮喪（11）、心悶（1）",
+    goal:"將模糊或負向的情緒轉化為具體的需求語言，並能說出自己需要什麼，提升自我照顧與求助能力。",
+    steps:["展示三張卡，問：「當你有這些感覺的時候，你心裡最想要的是什麼？」","老師帶出四種常見需求：被聽見、被陪伴、被幫助、被留一點空間，並舉簡單例子。","孩子在紙上寫：「當我感到＿＿，我需要的是＿＿。」（建議寫兩到三個）","兩兩分享，傾聽者練習回應，將原句優化為更具體，例如「好，我可以先聽你說」。","討論：為什麼說出需求這麼難？如果不說，通常會發生什麼？"],
+    guide:"當你很難過的時候，有沒有人問過你：你現在需要什麼？如果有，那是一件很幸運的事。但如果沒有，你也可以慢慢學會，先問自己這個問題，然後把答案說出來。",
+    reminder:"許多孩子其實從未真正想過「自己需要什麼」，因此光是能開始覺察並說出需求，本身就是一個重要的進展。",
+    action_child:"今天試著告訴家人一個你現在的需求，使用句型「我需要＿＿」。不需要說很多，只要說出一件真實的需要就可以。",
+    action_teacher:"可設計「需求小卡」，讓孩子寫下當下的需要，並放在老師桌上或指定位置，作為一種低壓力的求助方式。"
+  },
+  {
+    id:27, title:"心願氣球", subtitle:"",
+    family:"blue", familyName:"💙 藍色家族", time:12,
+    sel:["自我管理"],
+    cards:"藍色家族：失望（10）、失落（2）、沮喪（11）",
+    goal:"接納失望感，並在其中找到一點仍存在的期待，培養情緒韌性。",
+    steps:["展示「失望」卡，問：「最近有沒有一件你期待很久，但沒有發生或沒有如願的事？」","老師示範分享一件自己的失望經驗，示範「有失望，但還在意」的狀態。","孩子在氣球形狀的紙上寫：「我失望的是＿＿，但我仍然在意的是＿＿」。","小組輪流分享，其他人只做一件事：回應「我聽到了，你仍然在乎＿＿」。","以陪伴句收尾：「你會失望，是因為你曾經很用力在意，那份在意本身就很珍貴。」"],
+    guide:"有一種難受叫做失望，它不是最強烈的痛，但會讓人覺得有點洩氣、提不起勁。不過，失望裡其實藏著一個重要的訊息：它在告訴你，有一件事情，你曾經很在乎。今天我們要一起做的，是把那個「在乎」找出來。",
+    reminder:"使用氣球形狀的紙，可以增加活動的趣味與參與感，象徵原本充滿期待的心願慢慢消氣，但並沒有完全消失。",
+    action_child:"把你的氣球紙帶回家，放在一個你平常看得到的地方。當你再次感到失望的時候，可以拿出來看一看，提醒自己那些重要的東西其實還在。",
+    action_teacher:"可在期末安排回顧活動，邀請孩子重新看看當初寫下的氣球內容，並思考：那個當時仍然在意的事情，後來有沒有改變或機會實現。"
+  },
+  {
+    id:28, title:"好好聽你說", subtitle:"",
+    family:"blue", familyName:"💙 藍色家族", time:15,
+    sel:["社會覺察"],
+    cards:"藍色家族：心酸（6）、委屈（7）、寂寞（8）",
+    goal:"學會好好聽別人說話，說出讓人感覺被理解的話。",
+    steps:["展示「心酸、委屈、寂寞」牌卡，引導孩子想一想這些情緒背後最需要的是什麼。","呈現兩種回應句讓孩子比較，例如「你想太多了」與「我聽到你說……」，請孩子投票並說明哪一個比較讓人感覺被懂。","介紹三個傾聽技巧：說回去（我聽到你說…）、確認感受（那一定很…）、不急著給建議。","兩兩練習：分享者選一張牌卡或說一件相關經驗，傾聽者只用三個技巧回應，不給建議，之後交換角色。","分享感受：哪一句話讓你在那個情緒下最被理解？","以陪伴句收尾：「被好好聽見，常常比馬上被解決，更能讓人感覺安心。」"],
+    guide:"我們今天要練習一件不太容易，但很重要的事。當朋友在說話的時候，我們先不急著回應，不評判、不給建議，只專心做一件事——好好聽，讓對方知道：我在這裡，我有在聽你說。",
+    reminder:"「不急著給建議」通常是最困難的部分，因為孩子和大人一樣，看到別人不舒服時會自然想幫忙。先讓孩子討論為什麼會想立刻給建議，這本身就是很好的覺察練習。",
+    action_child:"這週試著當一次「好的傾聽者」，當朋友跟你分享困擾時，先不急著給建議，只練習兩件事：說回去和確認感受。",
+    action_teacher:"可設計「傾聽挑戰週」：讓孩子每天記錄一次傾聽的經驗，下週分享心得。"
+  },
+  {
+    id:29, title:"意外來了怎麼辦", subtitle:"停看選練習",
+    family:"orange", familyName:"🧡 橘色家族", time:10,
+    sel:["負責任的決策"],
+    cards:"橘色家族：意外（3）、嚇一跳（10）、想不到（4）",
+    goal:"練習在突發情境中停下來思考，理解發生了什麼，並做出較合適的反應選擇。",
+    steps:["引導孩子回想一個讓自己「嚇一跳，但後來覺得還好」的小意外。","老師介紹「停看選」三步驟：先停下來讓身體慢下來，再看清楚發生了什麼，最後選擇一個比較合適的反應。","孩子在紙上畫三格漫畫：第一格畫意外發生的情境，第二格畫自己停下來的動作（例如深呼吸），第三格畫自己當時或重新選擇的反應。","兩兩分享漫畫內容，說一說當時自己做了什麼反應，也可以想一想，如果再來一次，會不會有不同的選擇。","以陪伴句收尾：「每一次「想不到」，都是在幫你學會怎麼選擇。」"],
+    guide:"我們在遇到意外的時候，身體和大腦常常會很快做出反應，可能會大叫、愣住，或說出自己其實不太想說的話。這不是做錯，而是反應太快了。今天我們要練習一件事：在那一瞬間先讓自己停一下，給自己一點點時間，再來選擇怎麼做。",
+    reminder:"三格漫畫可以有效降低書寫壓力，讓孩子用圖像表達經驗，特別適合不同語言能力的學生參與。",
+    action_child:"這週如果遇到讓你感到很意外的事情，可以在事後畫一張三格漫畫，第一格畫發生了什麼，第二格畫你當下的反應，第三格畫如果再來一次，你希望自己怎麼做。",
+    action_teacher:"可收集孩子的三格漫畫，定期整理與展示「改寫成功故事」，讓孩子看見同學如何從原本的反應轉變為更好的選擇。"
+  },
+  {
+    id:30, title:"我發現的哇世界", subtitle:"",
+    family:"orange", familyName:"🧡 橘色家族", time:15,
+    sel:["自我覺察"],
+    cards:"橘色家族：驚豔（7）、讚嘆（6）、欣喜（8）",
+    goal:"主動覺察生活中的驚豔時刻，並說出帶來的感受，培養對美好事物的注意力與連結能力。",
+    steps:["展示「驚豔」牌卡，問：最近有沒有一個畫面、聲音或事情，讓你忍不住多看一眼或想再感受一次？","老師分享一個自己的驚豔時刻，描述具體情境與感受。","孩子在紙上寫下「我的驚豔清單」，列出最近三件讓自己覺得「哇」的事。","兩兩分享，傾聽者從中選出一件最有感的內容，回應「你說的＿＿讓我也有一點哇」。","老師蒐集並整理班級的「哇清單」，帶領孩子一起閱讀與欣賞。","老師引導：當我們開始注意生活中的這些小小驚豔，會發現原來日常裡有很多值得開心與好奇的地方。"],
+    guide:"你有沒有過這樣的感覺：突然被一個畫面、一句歌詞，或某個瞬間吸引住，好像整個人停下來，只想再多看一下、多感受一下？那一刻讓你覺得很特別、很有感覺，這種感覺就叫做驚豔。今天我們要一起來找找看，你的生活裡有哪些這樣的時刻。",
+    reminder:"每個孩子感到「哇」的地方都會很不一樣，這樣的差異正是很好的學習素材。",
+    action_child:"從今天開始，每天睡前想一件今天讓你覺得「哇」的事，試著連續記錄七天，看看一週後你的驚豔清單變得多豐富。",
+    action_teacher:"可在教室設置「驚豔牆」，讓孩子在有感覺的時候隨時補充新的哇時刻，每週安排一段時間一起閱讀與欣賞。"
+  },
+  {
+    id:31, title:"煩惱分類站", subtitle:"",
+    family:"purple", familyName:"💜 紫色家族", time:15,
+    sel:["負責任的決策"],
+    cards:"紫色家族（擔心、不安、緊張相關卡）",
+    goal:"學會把煩惱分開，找到自己可以做的一件小事，以降低焦慮並提升自我效能感。",
+    steps:["引導孩子在心中想一件最近讓自己擔心或不安的事情，強調不用說出來，先在心裡想就好。","老師在黑板畫出兩個圓，大圓代表「我擔心的事」，小圓代表「我可以做的事」。","每個孩子在紙上寫下一個煩惱，再進一步寫出自己「可以做的一步」。","小組輪流分享「可以做的那一步」，不需要說出煩惱本身。","老師帶領全班回顧，強調當我們把注意力放在「可以做的事」時，心裡通常會比較穩定。以陪伴句收尾：「擔心會出現很正常，但我們可以把力氣放在自己做得到的地方。」"],
+    guide:"有些煩惱，是我們怎麼努力都很難改變的，例如天氣、別人的想法或心情；也有一些煩惱，是我們可以做一點點事情去影響的。今天我們要練習把這兩種分開，把力氣放在自己做得到的地方。",
+    reminder:"有些孩子可能會提到比較沉重的煩惱，這時需要先接納與理解，而不是急著轉換。可以回應：「這件事情確實不容易改變。」再溫和引導。",
+    action_child:"這週當你開始擔心某件事情時，可以先停一下，問自己：「這件事在我能控制的範圍裡嗎？」如果是，寫下一個你現在可以做的小步驟，然後試著去做它。",
+    action_teacher:"可設計「控制圈工作單」，讓孩子在日常或特定情境中使用。特別適合在考試前一週進行，引導孩子區分「可以準備的部分」與「無法控制的結果」。"
+  },
+  {
+    id:32, title:"緊張小貓來了，我知道怎麼辦", subtitle:"",
+    family:"purple", familyName:"💜 紫色家族", time:15,
+    sel:["自我管理"],
+    cards:"紫色家族（緊張、不安相關卡）",
+    goal:"覺察緊張時的身體反應，並運用簡單步驟幫助自己穩定下來，建立面對挑戰的信心。",
+    steps:["引導孩子回想上台或考試前緊張的經驗，並說說當時身體哪裡最有感覺。","介紹「緊張小貓」五步驟：①腳踩地感受地板→②聳肩放下 3 次→③深呼吸 4-7-8 節奏→④對自己說一句話→⑤微笑。","帶領全班一起做一次完整的五步驟，節奏放慢，讓孩子實際感受身體的變化。","設計簡單上台情境，讓孩子輪流到前面，先做五步驟準備，再說一句話即可。","引導孩子分享練習後的感受。以陪伴句收尾：「緊張出現的時候，我知道怎麼幫助自己慢慢穩下來。」"],
+    guide:"當我們感到緊張的時候，身體其實正在啟動一種保護模式，例如心跳變快、手心出汗，這些反應不是壞事，而是在幫助我們準備面對接下來的挑戰。今天我們不是要把緊張趕走，而是學會在緊張出現時，讓身體慢慢穩下來。",
+    reminder:"4-7-8 呼吸法：吸氣 4 秒→憋氣 7 秒→吐氣 8 秒。對國小孩子可簡化成：吸 4→憋 4→吐 6，重點放在吐氣比吸氣更長，幫助身體從緊繃慢慢轉向放鬆。",
+    action_child:"在下一次你需要上台或考試前，提前練習「緊張小貓」五步驟至少三次。事後記錄：有沒有比平常緊張少一點？哪一步最有幫助？",
+    action_teacher:"可在班級重要表演或考試前帶全班一起做，建立集體的「準備儀式感」。也可讓孩子設計屬於自己的「上台前咒語」，張貼在班級顯眼處互相鼓勵。"
+  },
+  {
+    id:33, title:"生氣小偵探", subtitle:"",
+    family:"red", familyName:"❤️ 紅色家族", time:15,
+    sel:["自我覺察"],
+    cards:"紅色家族（心煩、不耐、惱火相關卡）",
+    goal:"覺察生氣背後的真實感受與在乎的事，並學會用語言表達，而不是用攻擊方式回應。",
+    steps:["展示由輕到重的紅色家族牌卡，引導孩子回想最近一次生氣的經驗，並用「情緒溫度」概念說說大概是幾度。","老師說明生氣通常不是只有表面情緒，背後常藏著更深的感受，例如被誤解、覺得不公平或很在乎某件事。","孩子在紙上完成句型：「我生氣是因為＿＿，但在生氣背後，我其實在乎的是＿＿。」","兩兩分享內容，傾聽者不評論、不給建議，只回應「我聽到你說，你在乎的是＿＿」。","老師帶領全班整理，強調當我們看見生氣背後的在乎，就更有機會用說的來表達。以陪伴句收尾：「生氣不是壞事，它是在提醒你，有一件重要的事被碰到了。」"],
+    guide:"今天我們要來玩一個偵探遊戲，不是去找誰做錯了什麼，而是去找出「生氣背後藏著的感覺」。很多時候，生氣像一個外殼，看起來很硬、很大，但裡面其實藏著比較柔軟的感覺，例如在乎、難過或被忽略。",
+    reminder:"孩子在辨識「憤怒背後的感受」時，常常需要具體提示，可以提供幾個常見連結：被忽視可能是渴望被看見，被誤會可能是希望被理解，失去某樣東西可能代表很在乎那件事。",
+    action_child:"下次當你感到生氣時，可以先讓自己稍微停一下，等情緒比較穩定後，再問問自己：「我背後真正在乎的是什麼？」",
+    action_teacher:"可設計「偵探日記本」，讓孩子在每次情緒事件後，記錄當時的生氣情境與背後在乎的原因，並定期安排簡短回顧。"
+  },
+  {
+    id:34, title:"好好說對不起", subtitle:"",
+    family:"red", familyName:"❤️ 紅色家族", time:12,
+    sel:["人際技巧"],
+    cards:"紅色家族（火大、惱火等相關卡），搭配藍色家族委屈（7）",
+    goal:"學會用具體方式道歉，理解自己的行為對他人的影響，並嘗試修復關係。",
+    steps:["引導孩子回想曾經想道歉卻不知道怎麼說，或說了對不起但對方還是生氣的經驗。","介紹有效道歉三步驟：①說清楚自己做了什麼→②承認對對方造成的影響（我知道這讓你…）→③說出下次會怎麼做。","老師示範一個不完整或敷衍的道歉，以及一個包含三步驟的有效道歉，引導孩子比較哪一種讓人比較願意接受。","提供簡單情境，讓孩子兩兩或小組進行角色扮演，練習三步驟道歉，並交換角色體驗感受。","老師統整重點，強調道歉不是只說對不起，而是讓對方知道你理解發生了什麼、在乎他的感受，並願意做出改變。以陪伴句收尾：「願意好好道歉，是在為這段關係再做一次努力。」"],
+    guide:"『對不起』這三個字說起來很簡單，但有時候說完之後，對方反而更不開心，因為那個道歉沒有讓人感覺被真正理解。今天我們要學的，不只是說對不起，而是學會一種能讓人感覺被看見、被在乎的道歉方式。",
+    reminder:"在三步驟道歉中，最困難也最關鍵的是第一步：清楚說出自己做了什麼，而不是用模糊或條件式的說法，例如「如果你覺得受傷我很抱歉」。",
+    action_child:"如果這週有一件你一直沒有說出口的道歉，可以試著用三步驟把它說出來：先說清楚自己做了什麼，再說這件事帶來的影響，最後說你下次會怎麼做。",
+    action_teacher:"當班級中出現衝突時，可以引導相關孩子使用三步驟進行道歉，並由老師在旁協助釐清語句，確保表達具體且不帶指責。"
+  },
+  {
+    id:35, title:"情緒觀察員", subtitle:"今天的班級情緒天氣",
+    family:"rainbow", familyName:"🌈 彩虹綜合", time:15,
+    sel:["社會覺察"],
+    cards:"六個家族各一張代表卡（共 6 張展示）",
+    goal:"學會從他人的表情、動作與語氣中觀察情緒線索，提升理解他人感受的能力。",
+    steps:["老師用誇張但不說名稱的方式表演一種情緒，請孩子觀察並猜測，同時追問「你是從哪裡看出來的」。","整理孩子的回答，介紹「情緒線索」包括表情、姿勢、說話速度、聲音大小與眼神。","兩兩一組輪流進行，一人表演一種情緒，另一人先說出觀察到的線索，再做出猜測。","全班討論哪些線索最容易判斷，哪些情緒比較難辨識。","老師引導思考當我們看見別人有情緒時，可以怎麼回應，例如先關心或給空間。","強調觀察他人情緒不是為了評斷對錯。以陪伴句收尾：「當你看見對方的情緒線索，就更有機會用合適的方式靠近他。」"],
+    guide:"每個人的臉和身體其實都在不停地表達訊息，只是我們有時候沒有注意到。今天我們要練習一個很重要的能力：讀懂情緒，從別人的表情、動作和聲音中，看見他現在的感覺。",
+    reminder:"這個活動本身輕鬆有趣，很適合在班級氣氛稍微緊繃時進行，透過笑聲與互動重新建立連結。需要先提醒孩子，觀察別人的情緒是出於理解與關心，而不是模仿或嘲笑。",
+    action_child:"今天回家後，試著觀察家人的情緒，想一想他們現在比較像哪一個情緒家族，並留意你是從哪些線索看出來的。若要說出你的觀察，可以用溫和的方式表達，例如「我看到你好像有點累，是因為今天很忙嗎」。",
+    action_teacher:"可在班級中設置每週輪流的「情緒觀察員」，負責觀察整體氛圍，並在週五用簡短的方式分享班級的「情緒天氣」。"
+  },
+  {
+    id:36, title:"情緒自畫像", subtitle:"",
+    family:"rainbow", familyName:"🌈 彩虹綜合", time:20,
+    sel:["自我覺察"],
+    cards:"全六個家族，孩子各自選出「最像自己的卡」",
+    goal:"統整情緒學習，建立個人化的情緒自我認識，作為期末反思。",
+    steps:["引導孩子回顧最近一段時間的情緒經驗，從六個家族中各選一張最常出現或最有感覺的情緒卡。","發下空白紙，請孩子進行情緒自畫像創作，透過顏色、圖案與簡單文字呈現自己的狀態。","完成後，引導孩子寫下三個重點：①我最常出現的情緒；②哪一種情緒讓我感覺有力量；③我接下來想練習的一個情緒能力。","兩兩分享作品，傾聽者不評論、不建議，只回應一個具體觀察。","老師帶領回顧，強調每個人的情緒樣貌都不同，而能夠看懂自己的情緒，就是很重要的能力。以陪伴句收尾：「當你開始看懂自己的情緒，你就在慢慢學會照顧自己。」"],
+    guide:"今天我們要做一件很特別的事，不是畫你的外表，而是畫出你的情緒樣子，也就是你的心是什麼樣的顏色、感覺和樣貌。這沒有標準答案，每一個人的畫都會不一樣，因為每個人的情緒世界本來就不一樣。",
+    reminder:"這個活動很適合安排在學期末進行，讓孩子回顧並整合整段時間的情緒學習經驗。完成的作品可以展示在教室中。",
+    action_child:"把你的情緒自畫像帶回家，找一個時間和家人分享，可以這樣說：「這是我現在的情緒＿＿，我最常有的情緒是＿＿，我這學期學到最重要的一件事是＿＿。」",
+    action_teacher:"可在下學期開學初安排孩子再次進行情緒自畫像創作，並與上學期作品進行對照，引導孩子觀察自己的情緒變化與成長。"
+  },
+  {
+    id:37, title:"身體掃描", subtitle:"",
+    family:"rainbow", familyName:"🌈 彩虹綜合", time:15,
+    sel:["自我覺察"],
+    cards:"各家族中涉及身體感受的卡（如黃色放鬆、紫色害怕、紅色火大等）",
+    goal:"深化身體覺察能力，練習用身體感受作為情緒辨識的起點。",
+    steps:["引導孩子找一個舒服的位置坐好或坐正，輕輕閉上眼睛，提醒過程中不需要做任何表現，只要安靜感受自己的身體。","老師以穩定、緩慢的語速帶領身體掃描，從頭到腳依序移動注意力（頭→肩膀→胸→肚子→腿→腳），每個部位停留約 2–3 秒。","孩子睜開眼後，在人體輪廓圖上圈出「最有感覺的地方」，並用顏色、符號或簡單文字標記。","引導孩子對照牌卡，思考這個身體感覺最接近哪一個情緒家族。","兩兩分享觀察結果，傾聽者先回應觀察到的內容，例如「我聽到你說你的肩膀很緊」，再輕問「這個感覺對你來說像是在提醒什麼」。","老師帶領收斂，強調身體常常會比情緒更早出現訊號。以陪伴句收尾：「當你開始聽見身體的訊號，你就更靠近自己一點。」"],
+    guide:"我們的身體其實很敏感，常常在我們還沒搞清楚自己在想什麼、感覺什麼之前，就已經先有一些反應了，像是緊緊的、熱熱的、或有點不舒服。今天我們要練習一件事：慢慢把注意力放在身體上，聽一聽它在告訴我們什麼。",
+    reminder:"身體掃描需要相對安靜與穩定的環境，如果班級當下較難進入安靜狀態，可以簡化流程，先帶孩子只專注在「肩膀、胸口、肚子」三個部位。",
+    action_child:"今天睡前可以找一個安靜的時刻，輕輕閉上眼睛，從頭到腳做一次簡單的身體掃描，感受哪個地方最緊、哪個地方最放鬆，然後在心裡問自己：「今天這個感覺在說什麼？」",
+    action_teacher:"可將身體掃描發展為班級固定的「正念時間」，例如每週一次 5 分鐘，讓孩子逐漸熟悉將注意力帶回身體的經驗。"
+  },
+  {
+    id:38, title:"交換情緒便利貼", subtitle:"",
+    family:"rainbow", familyName:"🌈 彩虹綜合", time:15,
+    sel:["社會覺察"],
+    cards:"黃色家族（感恩12、感動11）、橘色家族（讚嘆6、驚豔7）",
+    goal:"練習用情緒語言表達對他人的感謝與欣賞，強化班級正向連結。",
+    steps:["先展示「感恩、感動、讚嘆、驚豔」牌卡，引導孩子想一想，最近有沒有哪位同學做了讓你覺得被幫助、被感動或很欣賞的事情。","發給每人三張不同顏色的便利貼，示範簡單句型，例如謝謝你曾經幫我、你的某個行為讓我覺得很溫暖。","孩子安靜完成三張便利貼，重點是內容具體、真實。","老師統一收集後重新分發，確保每位孩子至少收到一張。孩子默讀收到的便利貼，感受內容帶來的情緒變化。","邀請有意願的孩子分享自己的感受或印象深刻的一句話。老師統整，強調每個人都有被看見的地方，也都有能力帶給他人好的感受。以陪伴句收尾：「當你把好的感受說出來，就在幫彼此的關係多加一點溫度。」"],
+    guide:"有時候我們心裡其實有很多想對別人說的話，可能是謝謝、欣賞，或是一句讓人溫暖的感受，但平常不一定有機會說出口。今天我們用便利貼，把這些話慢慢寫下來，安靜地送給對方，讓那些好的感覺有機會被看見。",
+    reminder:"在分發便利貼之前，建議老師先快速檢視內容，確保沒有出現傷害性或不適當的文字，維持活動的安全與正向氛圍。",
+    action_child:"把你收到的便利貼好好保存起來，可以放在書包、鉛筆盒或一個固定的小盒子裡。當你心情低落、覺得自己不夠好或不被看見的時候，拿出來看一看。",
+    action_teacher:"可每學期安排一次「交換情緒便利貼」活動，讓孩子持續累積屬於自己的「被看見收藏」，形成長期的正向資源。"
+  },
+  {
+    id:39, title:"我的情緒小故事", subtitle:"",
+    family:"rainbow", familyName:"🌈 彩虹綜合", time:20,
+    sel:["負責任的決策"],
+    cards:"從六個家族中各抽一張，共六張（可分組各自抽）",
+    goal:"整合情緒詞彙學習，培養情緒敘事能力，用故事幫助情緒理解。",
+    steps:["小組從六個情緒家族中抽取 4–5 張牌卡，說明這些情緒都需要出現在故事中。","小組共同討論故事內容，包含主角是誰、發生了什麼事件，以及情緒如何隨著情節發展而改變。","將 A4 紙折成四格小書，每一格代表一個情節，畫出故事畫面並在旁標註對應的情緒詞。","各組輪流上台說故事，其他組一邊聆聽，一邊猜測故事中使用了哪些情緒牌卡。","老師引導全班思考故事結尾，例如主角學到了什麼、遇到情緒時可以怎麼做。","總結活動重點，強調情緒會隨著事件改變。以陪伴句收尾：「當你能說出情緒的故事，就更能看懂自己的選擇。」"],
+    guide:"每個人的生活裡，其實都在慢慢寫著一本屬於自己的情緒故事書，有開心、有困難，也有很多轉變。今天我們要一起合作寫其中一頁，讓不同的情緒出現在同一個故事裡。記得，好的故事不會只有一種感覺，有高有低、有轉折，才會更真實，也更像我們的生活。",
+    reminder:"若時間有限，可以將「製作小書」調整為「口頭說故事」，讓孩子直接用說的方式呈現情節與情緒變化。",
+    action_child:"把你們小組完成的情緒小書帶回家，找一個時間說給家人聽，說完之後可以問家人：「如果你是故事裡的主角，你會怎麼做？」",
+    action_teacher:"可收集各組完成的情緒小書，在教室中設置一個「情緒書展」，讓孩子有機會閱讀彼此的作品。"
+  },
+  {
+    id:40, title:"情緒成長紀錄", subtitle:"",
+    family:"rainbow", familyName:"🌈 彩虹綜合", time:15,
+    sel:["自我覺察"],
+    cards:"孩子自選對自己影響最深的三張卡",
+    goal:"回顧情緒學習歷程，覺察自己的改變，建立成長感與自我肯定。",
+    steps:["引導孩子從整套牌卡中挑選三張「對自己最有感、最有影響」的卡，提醒不一定是最喜歡的，而是讓自己有改變或印象最深的。","在每張卡旁寫下兩件事：這張卡讓我發現了什麼，以及我現在和以前不一樣的地方。","輪流分享，每人約 90 秒，其他人專心傾聽，不評論。","老師提問：在這段學習中，有沒有哪一個改變是你自己也覺得意外的？","引導孩子思考：如果情緒課可以再多一堂，你還想學什麼？老師統整，強調每個人的改變速度與方式都不同。以陪伴句收尾：「當你開始看見自己的改變，就正在慢慢成為更了解自己的人。」"],
+    guide:"今天我們來到這段情緒學習旅程的一個小小終點，也是一個回頭看的時刻。你可以想一想，還記得一開始上課的時候，你是怎麼說情緒的嗎？現在的你，和那時候有沒有哪裡不一樣？",
+    reminder:"在課程結尾詢問孩子「接下來還想學什麼」，是一個很關鍵的步驟，能讓孩子感受到自己不只是學習者，也是課程的一部分。",
+    action_child:"把你選的三張情緒卡抄寫回家，找一個時間和家人分享，可以這樣說：「這學期讓我改變最多的三個情緒是＿＿、＿＿、＿＿」，再說一小段自己的故事。",
+    action_teacher:"將孩子回饋的「還想再學什麼」整理成主題清單，作為下一階段課程設計的重要依據。"
+  },
+  {
+    id:41, title:"情緒解碼大作戰", subtitle:"",
+    family:"rainbow", familyName:"🌈 彩虹綜合", time:40,
+    sel:["自我覺察","社會覺察","負責任的決策"],
+    cards:"六大家族全部牌卡混合使用（建議每人發 5 張，剩餘置中為牌堆）",
+    goal:"從客觀事件中推測可能的情緒，並用具體語言說出判斷與理由，培養情緒理解與多元觀點的能力。",
+    steps:["每位孩子（或每組）發 5 張情緒牌卡，其餘牌卡置中作為牌堆，說明遊戲目標是根據情境推測情緒並說出理由，而不是找標準答案。","老師說出一段只有事件、沒有情緒的客觀情境，讓孩子自行判斷。","孩子檢視手中的牌卡，選出一張最符合自己想法的情緒，並用句型說出：「我覺得他可能是＿＿，因為＿＿」，強調理由比答案更重要。","只要理由合理即可出牌成功；若手牌沒有適合的，可選擇棄一張並從牌堆補一張。","老師逐步延伸或改變情境內容，讓故事產生轉折，孩子需依新資訊重新判斷與出牌。","當有人出完手牌後暫停遊戲，邀請幾位孩子分享自己的判斷與理由。","老師引導全班討論：為什麼同一個情境會有不同的情緒判斷，強調每個人的經驗與想法不同。以陪伴句收尾：「同一件事，可以有不同感受，而說出理由，能幫助我們更理解彼此。」"],
+    guide:"今天這個活動沒有標準答案，也不是在比誰猜得最準，因為同一件事情，每個人的感覺本來就可能不一樣。你要做的只有一件事：選一個你覺得合理的情緒，然後說出你的理由，只要你的想法說得通，就是一個很好的答案。",
+    reminder:"在活動開始前，需要特別強調「沒有標準答案」這個核心規則，幫助孩子建立安全與開放的表達空間；同時建議預留至少五分鐘進行最後的全班討論。",
+    action_child:"這週當你看到同學或家人出現情緒反應時，可以在心裡練習用今天的句型想一想：「他可能是＿＿，因為＿＿。」不需要說出來，也不用急著猜對，只是練習多一點理解別人的可能感受。",
+    action_teacher:"可建立班級「情境故事庫」，邀請孩子輪流提供生活中的客觀事件情境，累積成可持續使用的教學素材。也可連結品德教育或班會課，將「同一件事有不同感受」的概念應用在衝突情境中。"
+  }
+];
+
+const FAMILY_COLORS = {
+  yellow: { accent: '#EF9F27', bg: '#FAEEDA', text: '#633806', border: '#EF9F27' },
+  green:  { accent: '#639922', bg: '#EAF3DE', text: '#173404', border: '#639922' },
+  blue:   { accent: '#378ADD', bg: '#E6F1FB', text: '#042C53', border: '#378ADD' },
+  orange: { accent: '#D85A30', bg: '#FAECE7', text: '#4A1B0C', border: '#D85A30' },
+  purple: { accent: '#7F77DD', bg: '#EEEDFE', text: '#26215C', border: '#7F77DD' },
+  red:    { accent: '#E24B4A', bg: '#FCEBEB', text: '#501313', border: '#E24B4A' },
+  rainbow:{ accent: '#888780', bg: '#F1EFE8', text: '#2C2C2A', border: '#888780' }
+};
+
+const SEL_COLORS = {
+  '自我覺察':   { bg: '#FFF3E0', text: '#7B4000', border: '#EF9F27' },
+  '社會覺察':   { bg: '#EAF3DE', text: '#173404', border: '#639922' },
+  '自我管理':   { bg: '#E6F1FB', text: '#042C53', border: '#378ADD' },
+  '人際技巧':   { bg: '#EEEDFE', text: '#26215C', border: '#7F77DD' },
+  '負責任的決策': { bg: '#FAECE7', text: '#4A1B0C', border: '#D85A30' }
+};
+
+const SECTION_ICONS = { goal:'🎯', steps:'📋', guide:'💬', reminder:'⚠️', action:'🌱' };
+
+let activeFamily = 'all';
+let activeSel = 'all';
+
+function renderGrid() {
+  const grid = document.getElementById('card-grid');
+  const filtered = ACTIVITIES.filter(a => {
+    const fOk = activeFamily === 'all' || a.family === activeFamily;
+    const sOk = activeSel === 'all' || a.sel.includes(activeSel);
+    return fOk && sOk;
+  });
+  document.getElementById('showing-count').textContent = filtered.length;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="empty-state">沒有符合條件的活動</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(a => {
+    const fc = FAMILY_COLORS[a.family];
+    const selBadges = a.sel.map(s => {
+      const sc = SEL_COLORS[s];
+      return `<span class="badge" style="background:${sc.bg};color:${sc.text};border:1px solid ${sc.border};">${s}</span>`;
+    }).join('');
+    return `
+      <div class="card family-${a.family}" onclick="showDetail(${a.id})">
+        <div class="card-accent"></div>
+        <div class="card-num">#${String(a.id).padStart(2,'0')} · ${a.familyName}</div>
+        <div class="card-title">${a.title}</div>
+        ${a.subtitle ? `<div class="card-subtitle">${a.subtitle}</div>` : ''}
+        <div class="card-meta">
+          ${selBadges}
+          <span class="badge badge-time">⏱ ${a.time} 分鐘</span>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function showDetail(id) {
+  const a = ACTIVITIES.find(x => x.id === id);
+  if (!a) return;
+  const fc = FAMILY_COLORS[a.family];
+
+  document.getElementById('detail-topbar-info').textContent = `#${String(a.id).padStart(2,'0')} · ${a.familyName}`;
+
+  const selBadges = a.sel.map(s => {
+    const sc = SEL_COLORS[s];
+    return `<span class="detail-badge" style="background:${sc.bg};color:${sc.text};border:1px solid ${sc.border};">${s}</span>`;
+  }).join('');
+
+  const stepsHTML = a.steps.map((s, i) =>
+    `<li><span class="step-num">${i+1}</span><span>${s}</span></li>`
+  ).join('');
+
+  document.getElementById('detail-content').innerHTML = `
+    <div class="detail-hero" style="background:${fc.bg}; border: 1px solid ${fc.border}30;">
+      <div class="detail-hero-stripe" style="background:${fc.accent};"></div>
+      <div class="detail-family-tag" style="color:${fc.text};">
+        <span>${a.familyName}</span>
+        <span class="detail-num">· 活動 #${String(a.id).padStart(2,'0')}</span>
+      </div>
+      <div class="detail-title" style="color:${fc.text};">${a.title}</div>
+      ${a.subtitle ? `<div class="detail-subtitle" style="color:${fc.text};">${a.subtitle}</div>` : ''}
+      <div class="detail-meta-row">
+        ${selBadges}
+        <span class="detail-badge" style="background:rgba(0,0,0,0.06);color:${fc.text};">⏱ ${a.time} 分鐘</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header open" onclick="toggleSection(this)">
+        <div class="section-icon" style="background:${fc.bg};font-size:14px;">${SECTION_ICONS.goal}</div>
+        <span class="section-title">活動目標</span>
+        <span class="section-toggle open">▾</span>
+      </div>
+      <div class="section-body open" style="font-size:14px;color:var(--text2);line-height:1.75;">
+        <p style="margin-bottom:10px;">${a.goal}</p>
+        <div class="cards-used">
+          <span style="font-size:12px;color:var(--text3);margin-right:4px;">使用牌卡：</span>
+          <span style="font-size:13px;color:var(--text2);">${a.cards}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header open" onclick="toggleSection(this)">
+        <div class="section-icon" style="background:${fc.bg};">${SECTION_ICONS.steps}</div>
+        <span class="section-title">活動步驟</span>
+        <span class="section-toggle open">▾</span>
+      </div>
+      <div class="section-body open">
+        <ul class="steps-list">${stepsHTML}</ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header open" onclick="toggleSection(this)">
+        <div class="section-icon" style="background:${fc.bg};">${SECTION_ICONS.guide}</div>
+        <span class="section-title">引導語建議</span>
+        <span class="section-toggle open">▾</span>
+      </div>
+      <div class="section-body open">
+        <div class="quote-block">${a.guide}</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header open" onclick="toggleSection(this)">
+        <div class="section-icon" style="background:${fc.bg};">${SECTION_ICONS.reminder}</div>
+        <span class="section-title">老師小提醒</span>
+        <span class="section-toggle open">▾</span>
+      </div>
+      <div class="section-body open">
+        <div class="reminder-block">${a.reminder}</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header open" onclick="toggleSection(this)">
+        <div class="section-icon" style="background:${fc.bg};">${SECTION_ICONS.action}</div>
+        <span class="section-title">行動轉化</span>
+        <span class="section-toggle open">▾</span>
+      </div>
+      <div class="section-body open">
+        <div class="action-grid">
+          <div class="action-card">
+            <div class="action-card-title">孩子的任務</div>
+            <div>${a.action_child}</div>
+          </div>
+          <div class="action-card">
+            <div class="action-card-title">老師的延伸</div>
+            <div>${a.action_teacher}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('page-home').classList.remove('active');
+  document.getElementById('page-detail').classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function goHome() {
+  document.getElementById('page-detail').classList.remove('active');
+  document.getElementById('page-home').classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function toggleSection(header) {
+  header.classList.toggle('open');
+  const toggle = header.querySelector('.section-toggle');
+  const body = header.nextElementSibling;
+  toggle.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+document.querySelectorAll('.pill[data-family]').forEach(p => {
+  p.addEventListener('click', () => {
+    document.querySelectorAll('.pill[data-family]').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+    activeFamily = p.dataset.family;
+    renderGrid();
+  });
+});
+
+document.querySelectorAll('.sel-pill').forEach(p => {
+  p.addEventListener('click', () => {
+    document.querySelectorAll('.sel-pill').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+    activeSel = p.dataset.sel;
+    renderGrid();
+  });
+});
+
+renderGrid();
+</script>
+</body>
+</html>

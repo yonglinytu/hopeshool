@@ -23,6 +23,8 @@
     --c3-pale: #daeef0;
     --c4: #8a6aaa;   /* 親子覺察對話 — lavender */
     --c4-pale: #ece4f4;
+    --c5: #c0923a;   /* SEL 活動地圖 — amber */
+    --c5-pale: #faf0dc;
 
     --shadow: 0 6px 32px rgba(42,32,24,0.09);
     --shadow-hover: 0 16px 56px rgba(42,32,24,0.16);
@@ -126,6 +128,7 @@
   .icon-dot:nth-child(2) { background: var(--c2); animation-delay: 0.4s; }
   .icon-dot:nth-child(3) { background: var(--c3); animation-delay: 0.8s; }
   .icon-dot:nth-child(4) { background: var(--c4); animation-delay: 1.2s; }
+  .icon-dot:nth-child(5) { background: var(--c5); animation-delay: 1.6s; }
 
   @keyframes pulse {
     0%, 100% { transform: scale(1); opacity: 0.4; }
@@ -174,6 +177,7 @@
   .card-2 .card-bar { background: linear-gradient(90deg, #f0c098, var(--c2)); }
   .card-3 .card-bar { background: linear-gradient(90deg, #9acece, var(--c3)); }
   .card-4 .card-bar { background: linear-gradient(90deg, #c8b0e4, var(--c4)); }
+  .card-5 .card-bar { background: linear-gradient(90deg, #e8c880, var(--c5)); }
 
   .card-body {
     padding: 28px 28px 24px;
@@ -204,6 +208,7 @@
   .card-2 .card-icon-wrap { background: var(--c2-pale); }
   .card-3 .card-icon-wrap { background: var(--c3-pale); }
   .card-4 .card-icon-wrap { background: var(--c4-pale); }
+  .card-5 .card-icon-wrap { background: var(--c5-pale); }
 
   .card-meta { flex: 1; }
 
@@ -221,6 +226,7 @@
   .card-2 .card-tag { background: var(--c2-pale); color: #7a4020; }
   .card-3 .card-tag { background: var(--c3-pale); color: #1e5050; }
   .card-4 .card-tag { background: var(--c4-pale); color: #4a2a7a; }
+  .card-5 .card-tag { background: var(--c5-pale); color: #6a4a10; }
 
   .card-title {
     font-family: 'Noto Serif TC', serif;
@@ -288,11 +294,13 @@
   .card-2 .card-cta { background: var(--c2-pale); color: #7a4020; }
   .card-3 .card-cta { background: var(--c3-pale); color: #1e5050; }
   .card-4 .card-cta { background: var(--c4-pale); color: #4a2a7a; }
+  .card-5 .card-cta { background: var(--c5-pale); color: #6a4a10; }
 
   .card-1:hover .card-cta { background: var(--c1); color: white; }
   .card-2:hover .card-cta { background: var(--c2); color: white; }
   .card-3:hover .card-cta { background: var(--c3); color: white; }
   .card-4:hover .card-cta { background: var(--c4); color: white; }
+  .card-5:hover .card-cta { background: var(--c5); color: white; }
 
   .card-arrow { transition: transform 0.2s; }
 
@@ -327,6 +335,7 @@
   .fade-in:nth-child(2) { transition-delay: 0.08s; }
   .fade-in:nth-child(3) { transition-delay: 0.16s; }
   .fade-in:nth-child(4) { transition-delay: 0.24s; }
+  .fade-in:nth-child(5) { transition-delay: 0.32s; }
 </style>
 </head>
 <body>
@@ -348,6 +357,7 @@
   </p>
 
   <div class="icon-row">
+    <div class="icon-dot"></div>
     <div class="icon-dot"></div>
     <div class="icon-dot"></div>
     <div class="icon-dot"></div>
@@ -452,6 +462,31 @@
       </div>
       <div class="card-footer">
         <span class="card-audience">👨‍👩‍👧 家長</span>
+        <span class="card-cta">前往 <span class="card-arrow">→</span></span>
+      </div>
+    </div>
+  </a>
+
+  <!-- Card 5: SEL 活動地圖 -->
+  <a class="resource-card card-5 fade-in" href="sel-activities.html">
+    <div class="card-bar"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div class="card-icon-wrap">🗺️</div>
+        <div class="card-meta">
+          <span class="card-tag">SEL 活動</span>
+          <div class="card-title">HOPE SEL 課程活動地圖</div>
+        </div>
+      </div>
+      <p class="card-desc">41 個 SEL 小活動教案，涵蓋五大核心能力。依情緒家族與 SEL 能力篩選，點擊查看完整步驟與行動轉化建議。</p>
+      <div class="card-features">
+        <span class="feature-chip">41 個活動</span>
+        <span class="feature-chip">五大 SEL 能力</span>
+        <span class="feature-chip">六大情緒家族</span>
+        <span class="feature-chip">行動轉化</span>
+      </div>
+      <div class="card-footer">
+        <span class="card-audience">👩‍🏫 教師</span>
         <span class="card-cta">前往 <span class="card-arrow">→</span></span>
       </div>
     </div>
