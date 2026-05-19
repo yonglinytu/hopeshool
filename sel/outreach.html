@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEL 外展服務合作邀約｜永齡希望小學雲科大分校</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f2ee;
+    --white: #ffffff;
+    --text-dark: #2a2018;
+    --text-mid: #5c4e40;
+    --text-light: #9a8878;
+    --c1: #7aaa7a;
+    --c1-pale: #e4f0e4;
+    --c2: #d4834a;
+    --c2-pale: #faeade;
+    --c3: #4a8c8c;
+    --c3-pale: #daeef0;
+    --brand: #3a6a7a;
+    --brand-pale: #eef5f7;
+    --shadow: 0 6px 32px rgba(42,32,24,0.09);
+    --shadow-hover: 0 16px 56px rgba(42,32,24,0.16);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--text-dark);
+    min-height: 100vh;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 10% 15%, rgba(74,140,140,0.07) 0%, transparent 45%),
+      radial-gradient(circle at 90% 80%, rgba(122,170,122,0.06) 0%, transparent 45%),
+      radial-gradient(circle at 60% 5%, rgba(138,106,170,0.05) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  header {
+    position: relative; z-index: 1;
+    padding: 60px 24px 0;
+    text-align: center;
+  }
+  .school-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(42,32,24,0.1);
+    border-radius: 24px; padding: 7px 18px;
+    font-size: 0.78rem; color: var(--text-mid);
+    letter-spacing: 0.06em; margin-bottom: 32px;
+  }
+  .school-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--c1), var(--c3));
+  }
+  .hero-label {
+    display: inline-block;
+    font-size: 0.75rem; letter-spacing: 0.14em;
+    color: var(--brand); background: var(--brand-pale);
+    border: 1px solid rgba(58,106,122,0.2);
+    border-radius: 6px; padding: 4px 14px;
+    margin-bottom: 20px; font-weight: 500;
+  }
+  .site-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(1.8rem, 5.5vw, 3rem);
+    font-weight: 300; line-height: 1.35;
+    letter-spacing: 0.04em; color: var(--text-dark);
+    margin-bottom: 10px;
+  }
+  .site-title strong {
+    font-weight: 600;
+    background: linear-gradient(135deg, #3a6a7a, #4a8c5a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .site-subtitle {
+    font-size: clamp(0.85rem, 2.4vw, 1rem);
+    color: var(--text-mid); font-weight: 300;
+    max-width: 560px; margin: 0 auto 16px; line-height: 2;
+  }
+
+  .section-divider {
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px; margin: 40px auto 48px; max-width: 200px;
+  }
+  .div-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(58,106,122,0.25));
+  }
+  .div-line.rev {
+    background: linear-gradient(90deg, rgba(58,106,122,0.25), transparent);
+  }
+  .div-dots { display: flex; gap: 5px; }
+  .div-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  .div-dot:nth-child(1) { background: var(--c1); animation-delay: 0s; }
+  .div-dot:nth-child(2) { background: var(--c3); animation-delay: 0.4s; }
+  .div-dot:nth-child(3) { background: #8a6aaa; animation-delay: 0.8s; }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.4; }
+    50% { transform: scale(1.5); opacity: 0.9; }
+  }
+
+  .intro-section {
+    position: relative; z-index: 1;
+    max-width: 760px; margin: 0 auto; padding: 0 24px;
+  }
+  .intro-card {
+    background: var(--white); border-radius: 24px;
+    padding: 40px 44px; box-shadow: var(--shadow);
+    border-left: 4px solid var(--brand);
+    position: relative; overflow: hidden;
+  }
+  .intro-card::before {
+    content: ''; position: absolute; top: 0; right: 0;
+    width: 180px; height: 180px;
+    background: radial-gradient(circle, rgba(58,106,122,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .intro-card-label {
+    font-size: 0.72rem; letter-spacing: 0.12em;
+    color: var(--brand); font-weight: 500;
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .intro-card-label::after {
+    content: ''; flex: 1; height: 1px;
+    background: rgba(58,106,122,0.15);
+  }
+  .intro-card p {
+    font-size: 0.96rem; color: var(--text-mid);
+    line-height: 2; font-weight: 300;
+  }
+  .intro-card p strong { color: var(--text-dark); font-weight: 500; }
+  .dual-track {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--brand-pale);
+    border: 1px solid rgba(58,106,122,0.18);
+    border-radius: 8px; padding: 2px 12px;
+    font-size: 0.88rem; color: var(--brand);
+    font-weight: 500; vertical-align: middle;
+  }
+
+  .section-title {
+    position: relative; z-index: 1;
+    text-align: center; padding: 56px 24px 0;
+  }
+  .section-title h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(1.1rem, 3vw, 1.4rem);
+    font-weight: 400; color: var(--text-dark);
+    letter-spacing: 0.05em; margin-bottom: 8px;
+  }
+  .section-title p {
+    font-size: 0.84rem; color: var(--text-light);
+    font-weight: 300; letter-spacing: 0.03em;
+  }
+
+  .cards-wrap {
+    position: relative; z-index: 1;
+    max-width: 960px; margin: 0 auto;
+    padding: 32px 20px 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  @media (max-width: 780px) {
+    .cards-wrap { grid-template-columns: 1fr; }
+  }
+  .service-card {
+    background: var(--white); border-radius: 24px;
+    overflow: hidden; box-shadow: var(--shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex; flex-direction: column;
+  }
+  .service-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-hover);
+  }
+  .card-bar { height: 5px; width: 100%; }
+  .s1 .card-bar { background: linear-gradient(90deg, #f0c098, var(--c2)); }
+  .s2 .card-bar { background: linear-gradient(90deg, #9acece, var(--c3)); }
+  .s3 .card-bar { background: linear-gradient(90deg, #a8d4a8, var(--c1)); }
+
+  .card-body {
+    padding: 26px 26px;
+    flex: 1; display: flex; flex-direction: column;
+  }
+  .card-top {
+    display: flex; align-items: flex-start;
+    gap: 14px; margin-bottom: 14px;
+  }
+  .card-thumb {
+    width: 64px; height: 64px;
+    border-radius: 14px; object-fit: cover;
+    flex-shrink: 0;
+    box-shadow: 0 3px 12px rgba(42,32,24,0.12);
+  }
+  .card-meta { flex: 1; }
+  .card-tag {
+    font-size: 0.7rem; letter-spacing: 0.1em;
+    padding: 3px 10px; border-radius: 8px;
+    display: inline-block; margin-bottom: 6px; font-weight: 500;
+  }
+  .s1 .card-tag { background: #faeade; color: #7a4020; }
+  .s2 .card-tag { background: var(--c3-pale); color: #1e5050; }
+  .s3 .card-tag { background: var(--c1-pale); color: #3a6a3a; }
+
+  .card-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.02rem; font-weight: 400;
+    color: var(--text-dark); line-height: 1.5;
+  }
+  .card-tagline {
+    font-size: 0.78rem; color: var(--brand);
+    font-weight: 500; margin-bottom: 14px;
+    letter-spacing: 0.02em;
+  }
+  .card-features { list-style: none; margin-bottom: 18px; flex: 1; }
+  .card-features li {
+    font-size: 0.82rem; color: var(--text-mid);
+    line-height: 1.7; padding: 5px 0;
+    border-bottom: 1px solid rgba(42,32,24,0.05);
+    display: flex; gap: 8px; align-items: flex-start;
+  }
+  .card-features li:last-child { border-bottom: none; }
+  .feat-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    flex-shrink: 0; margin-top: 7px;
+  }
+  .s1 .feat-dot { background: var(--c2); }
+  .s2 .feat-dot { background: var(--c3); }
+  .s3 .feat-dot { background: var(--c1); }
+  .card-audience {
+    font-size: 0.74rem; color: var(--text-light);
+    padding-top: 14px;
+    border-top: 1px solid rgba(42,32,24,0.06);
+  }
+
+  .cta-section {
+    position: relative; z-index: 1;
+    max-width: 760px; margin: 64px auto 0; padding: 0 24px;
+  }
+  .cta-card {
+    background: var(--white); border-radius: 28px;
+    padding: 52px 48px; box-shadow: var(--shadow);
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .cta-card::before {
+    content: ''; position: absolute;
+    top: -60px; left: 50%; transform: translateX(-50%);
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(58,106,122,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cta-ornament {
+    display: flex; justify-content: center;
+    gap: 8px; margin-bottom: 24px;
+  }
+  .cta-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .cta-dot:nth-child(1) { background: var(--c2); }
+  .cta-dot:nth-child(2) { background: var(--c3); }
+  .cta-dot:nth-child(3) { background: var(--c1); }
+  .cta-card h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(1.2rem, 3.5vw, 1.6rem);
+    font-weight: 400; color: var(--text-dark);
+    margin-bottom: 14px; line-height: 1.6;
+  }
+  .cta-card > p {
+    font-size: 0.9rem; color: var(--text-mid);
+    line-height: 2; font-weight: 300;
+    max-width: 460px; margin: 0 auto 32px;
+  }
+  .cta-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, #3a6a7a, #4a8c5a);
+    color: white;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 1rem; font-weight: 500;
+    padding: 16px 40px; border-radius: 50px;
+    text-decoration: none; letter-spacing: 0.05em;
+    box-shadow: 0 8px 32px rgba(58,106,122,0.28);
+    transition: all 0.3s ease; position: relative; z-index: 1;
+  }
+  .cta-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 44px rgba(58,106,122,0.38);
+    background: linear-gradient(135deg, #2e5a6a, #3a7a4a);
+  }
+  .cta-btn-arrow { font-size: 1.1rem; transition: transform 0.2s; }
+  .cta-btn:hover .cta-btn-arrow { transform: translateX(4px); }
+  .cta-note {
+    margin-top: 20px; font-size: 0.76rem;
+    color: var(--text-light); letter-spacing: 0.03em;
+  }
+
+  footer {
+    position: relative; z-index: 1;
+    text-align: center; padding: 48px 24px;
+    margin-top: 60px; font-size: 0.78rem;
+    color: var(--text-light); line-height: 2;
+    border-top: 1px solid rgba(42,32,24,0.07);
+  }
+  footer strong {
+    display: block; color: var(--text-mid);
+    font-size: 0.85rem; margin-bottom: 4px;
+    font-family: 'Noto Serif TC', serif;
+  }
+
+  .fade-in {
+    opacity: 0; transform: translateY(22px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+  .fade-in:nth-child(2) { transition-delay: 0.1s; }
+  .fade-in:nth-child(3) { transition-delay: 0.2s; }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.8rem;
+    color: var(--text-light);
+    text-decoration: none;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(42,32,24,0.12);
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(6px);
+    transition: all 0.2s ease;
+    letter-spacing: 0.04em;
+    margin-bottom: 24px;
+  }
+  .back-btn:hover {
+    color: var(--brand);
+    border-color: rgba(58,106,122,0.3);
+    background: rgba(255,255,255,0.9);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="back-btn">
+    <span>←</span> 回 SEL 資源中心
+  </a>
+  <div class="school-badge">
+    <span class="school-dot"></span>
+    永齡希望小學雲科大分校
+  </div>
+  <div class="hero-label">SEL 外展服務 · 合作邀約</div>
+  <h1 class="site-title">
+    讓每個角落的孩子<br>
+    都能被<strong>好好照顧</strong>
+  </h1>
+  <p class="site-subtitle">
+    我們帶著課程走進社區，<br>
+    陪孩子從情緒出發，找到自己的力量。
+  </p>
+</header>
+
+<div class="section-divider">
+  <div class="div-line"></div>
+  <div class="div-dots">
+    <div class="div-dot"></div>
+    <div class="div-dot"></div>
+    <div class="div-dot"></div>
+  </div>
+  <div class="div-line rev"></div>
+</div>
+
+<section class="intro-section fade-in">
+  <div class="intro-card">
+    <div class="intro-card-label">關於我們</div>
+    <p>
+      <strong>永齡希望小學雲科大分校</strong>，以
+      <span class="dual-track">專業課輔 × 社工支持</span>
+      雙軌並行，免費扶助家庭經濟弱勢、學習成就落後的國小孩童。<br><br>
+      我們提供的不只是學科上的補救教學，更透過 <strong>SEL 社會情緒學習</strong>、多元課程與生活陪伴，協助孩子重建信心、點亮潛能。<br><br>
+      在這裡，每個孩子都值得被看見、被相信、被好好教養。
+    </p>
+  </div>
+</section>
+
+<div class="section-title">
+  <h2>三大外展服務模組</h2>
+  <p>依對象與需求彈性搭配，歡迎與我們討論最適合的合作方式</p>
+</div>
+
+<div class="cards-wrap">
+
+  <div class="service-card s1 fade-in">
+    <div class="card-bar"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <img class="card-thumb" src="data:image/jpeg;base64,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" alt="SEL 親職講座">
+        <div class="card-meta">
+          <span class="card-tag">家長講座</span>
+          <div class="card-title">SEL 親職講座</div>
+        </div>
+      </div>
+      <div class="card-tagline">陪孩子走過情緒，打造幸福家庭</div>
+      <ul class="card-features">
+        <li><span class="feat-dot"></span>腦科學 × 情緒教育 × 親子實作</li>
+        <li><span class="feat-dot"></span>學習陪伴與情緒調節技巧</li>
+        <li><span class="feat-dot"></span>建立正向親子溝通方式</li>
+        <li><span class="feat-dot"></span>現場互動練習，立即可用</li>
+        <li><span class="feat-dot"></span>提供家庭 SEL 工具與活動範例</li>
+      </ul>
+      <div class="card-audience">👨‍👩‍👧 國小學童家長・照顧者・社區民眾</div>
+    </div>
+  </div>
+
+  <div class="service-card s2 fade-in">
+    <div class="card-bar"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <img class="card-thumb" src="data:image/jpeg;base64,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" alt="SEL 情緒課程">
+        <div class="card-meta">
+          <span class="card-tag">學生課程</span>
+          <div class="card-title">SEL 情緒課程</div>
+        </div>
+      </div>
+      <div class="card-tagline">認識情緒 × 管理情緒 × 建立良好關係</div>
+      <ul class="card-features">
+        <li><span class="feat-dot"></span>結合影片、繪本與故事情境引導</li>
+        <li><span class="feat-dot"></span>情緒臉譜・情緒光譜・呼吸卡等教具</li>
+        <li><span class="feat-dot"></span>正念活動、角色扮演與討論練習</li>
+        <li><span class="feat-dot"></span>將情緒學習延伸至校園與家庭生活</li>
+      </ul>
+      <div class="card-audience">👦 國小學生（需提升情緒表達與自我調節能力）</div>
+    </div>
+  </div>
+
+  <div class="service-card s3 fade-in">
+    <div class="card-bar"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <img class="card-thumb" src="data:image/jpeg;base64,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" alt="SEL 積木課程">
+        <div class="card-meta">
+          <span class="card-tag">體驗課程</span>
+          <div class="card-title">SEL 積木課程</div>
+        </div>
+      </div>
+      <div class="card-tagline">動手建構 × 情緒覺察 × 團隊合作</div>
+      <ul class="card-features">
+        <li><span class="feat-dot"></span>透過作品表達想法與情緒（自我覺察）</li>
+        <li><span class="feat-dot"></span>任務挑戰中練習等待與堅持（自我管理）</li>
+        <li><span class="feat-dot"></span>理解夥伴想法，學習同理與尊重（社會覺察）</li>
+        <li><span class="feat-dot"></span>合作建構中溝通協調（人際關係技巧）</li>
+        <li><span class="feat-dot"></span>嘗試解決問題，為選擇負責（負責任決策）</li>
+      </ul>
+      <div class="card-audience">👦 國小學生（需提升合作能力與情緒覺察）</div>
+    </div>
+  </div>
+
+</div>
+
+<section class="cta-section fade-in">
+  <div class="cta-card">
+    <div class="cta-ornament">
+      <div class="cta-dot"></div>
+      <div class="cta-dot"></div>
+      <div class="cta-dot"></div>
+    </div>
+    <h2>歡迎與我們攜手合作<br>一起讓更多孩子被好好照顧</h2>
+    <p>
+      若您代表學校、社區組織或相關單位，<br>
+      對 SEL 外展服務有興趣，歡迎填寫合作邀約表單，<br>
+      我們將盡快與您聯繫，共同討論最適合的合作方式。
+    </p>
+    <a href="https://forms.gle/Hx5X6wYpZLZBePhv8" target="_blank" rel="noopener" class="cta-btn">
+      填寫合作邀約表單
+      <span class="cta-btn-arrow">→</span>
+    </a>
+    <p class="cta-note">表單填寫約需 3–5 分鐘，我們將於收到後盡快回覆</p>
+  </div>
+</section>
+
+<footer>
+  <strong>永齡希望小學雲科大分校 SEL 外展服務</strong>
+  社會情緒學習課程 · 親職講座 · 積木體驗課程<br>
+  免費外展扶助，讓情緒教育走入每個需要的角落
+</footer>
+
+<script>
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

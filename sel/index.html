@@ -25,6 +25,8 @@
     --c4-pale: #ece4f4;
     --c5: #c0923a;   /* SEL 活動地圖 — amber */
     --c5-pale: #faf0dc;
+    --c6: #3a6a7a;   /* SEL 外展服務 — teal blue */
+    --c6-pale: #ddeef2;
 
     --shadow: 0 6px 32px rgba(42,32,24,0.09);
     --shadow-hover: 0 16px 56px rgba(42,32,24,0.16);
@@ -178,6 +180,7 @@
   .card-3 .card-bar { background: linear-gradient(90deg, #9acece, var(--c3)); }
   .card-4 .card-bar { background: linear-gradient(90deg, #c8b0e4, var(--c4)); }
   .card-5 .card-bar { background: linear-gradient(90deg, #e8c880, var(--c5)); }
+  .card-6 .card-bar { background: linear-gradient(90deg, #9acede, var(--c6)); }
 
   .card-body {
     padding: 28px 28px 24px;
@@ -209,6 +212,7 @@
   .card-3 .card-icon-wrap { background: var(--c3-pale); }
   .card-4 .card-icon-wrap { background: var(--c4-pale); }
   .card-5 .card-icon-wrap { background: var(--c5-pale); }
+  .card-6 .card-icon-wrap { background: var(--c6-pale); }
 
   .card-meta { flex: 1; }
 
@@ -227,6 +231,7 @@
   .card-3 .card-tag { background: var(--c3-pale); color: #1e5050; }
   .card-4 .card-tag { background: var(--c4-pale); color: #4a2a7a; }
   .card-5 .card-tag { background: var(--c5-pale); color: #6a4a10; }
+  .card-6 .card-tag { background: var(--c6-pale); color: #1e4a5a; }
 
   .card-title {
     font-family: 'Noto Serif TC', serif;
@@ -295,12 +300,14 @@
   .card-3 .card-cta { background: var(--c3-pale); color: #1e5050; }
   .card-4 .card-cta { background: var(--c4-pale); color: #4a2a7a; }
   .card-5 .card-cta { background: var(--c5-pale); color: #6a4a10; }
+  .card-6 .card-cta { background: var(--c6-pale); color: #1e4a5a; }
 
   .card-1:hover .card-cta { background: var(--c1); color: white; }
   .card-2:hover .card-cta { background: var(--c2); color: white; }
   .card-3:hover .card-cta { background: var(--c3); color: white; }
   .card-4:hover .card-cta { background: var(--c4); color: white; }
   .card-5:hover .card-cta { background: var(--c5); color: white; }
+  .card-6:hover .card-cta { background: var(--c6); color: white; }
 
   .card-arrow { transition: transform 0.2s; }
 
@@ -335,8 +342,7 @@
   .fade-in:nth-child(2) { transition-delay: 0.08s; }
   .fade-in:nth-child(3) { transition-delay: 0.16s; }
   .fade-in:nth-child(4) { transition-delay: 0.24s; }
-  .fade-in:nth-child(5) { transition-delay: 0.32s; }
-</style>
+  .fade-in:nth-child(5) { transition-delay: 0.32s; }</style>
 </head>
 <body>
 
@@ -487,6 +493,31 @@
       </div>
       <div class="card-footer">
         <span class="card-audience">👩‍🏫 教師</span>
+        <span class="card-cta">前往 <span class="card-arrow">→</span></span>
+      </div>
+    </div>
+  </a>
+
+  <!-- Card 6: SEL 外展服務 -->
+  <a class="resource-card card-6 fade-in" href="outreach.html">
+    <div class="card-bar"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div class="card-icon-wrap">🤝</div>
+        <div class="card-meta">
+          <span class="card-tag">外展服務</span>
+          <div class="card-title">SEL 外展服務合作邀約</div>
+        </div>
+      </div>
+      <p class="card-desc">將 SEL 課程帶進社區——親職講座、情緒課程、積木體驗三大模組，免費扶助弱勢學童，歡迎學校與社區組織洽談合作。</p>
+      <div class="card-features">
+        <span class="feature-chip">親職講座</span>
+        <span class="feature-chip">情緒課程</span>
+        <span class="feature-chip">積木體驗</span>
+        <span class="feature-chip">免費外展</span>
+      </div>
+      <div class="card-footer">
+        <span class="card-audience">🏫 學校 · 社區組織</span>
         <span class="card-cta">前往 <span class="card-arrow">→</span></span>
       </div>
     </div>
