@@ -517,23 +517,17 @@ body {
 
 <script>
 (function(){
-  const KEY = 'sel_auth';
-  const HASH = '1b14e200a08bbe35510f106a1eb60a7834c3672a40a794009cb871b1910058f4';
-  async function sha256(msg){
-    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
-    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-  }
-  async function checkPw(){
-    const val = document.getElementById('pwInput').value;
-    const h = await sha256(val);
-    if(h === HASH){
+  var KEY = 'sel_auth';
+  function checkPw(){
+    var val = document.getElementById('pwInput').value;
+    if(val === 'hopeschool'){
       sessionStorage.setItem(KEY, '1');
       document.getElementById('pwGate').style.display = 'none';
     } else {
-      const err = document.getElementById('pwError');
+      var err = document.getElementById('pwError');
       err.textContent = '密碼錯誤，請再試一次';
       document.getElementById('pwInput').style.borderColor = '#c0503a';
-      setTimeout(()=>{ err.textContent=''; document.getElementById('pwInput').style.borderColor='rgba(42,32,24,0.15)'; }, 2500);
+      setTimeout(function(){ err.textContent=''; document.getElementById('pwInput').style.borderColor='rgba(42,32,24,0.15)'; }, 2500);
     }
   }
   window.checkPw = checkPw;
@@ -544,8 +538,10 @@ body {
 <\/script>
 <!-- ===== END PASSWORD GATE ===== -->
 
+<a href="index.html" style="position:fixed;top:16px;left:16px;z-index:9999;display:inline-flex;align-items:center;gap:7px;background:rgba(250,246,240,0.92);backdrop-filter:blur(8px);border:1px solid rgba(42,32,24,0.12);border-radius:20px;padding:7px 16px;font-family:'Noto Sans TC',sans-serif;font-size:0.8rem;color:#4a4040;text-decoration:none;box-shadow:0 2px 12px rgba(42,32,24,0.09);transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,1)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='rgba(250,246,240,0.92)';this.style.transform='none'">← 資源中心</a>
+
 <header class="site-header">
-  <a href="index.html">← 資源中心</a>
+  <span style="visibility:hidden;">← 資源中心</span>
   <span class="sep">／</span>
   <span>SEL 活動教案</span>
 </header>
