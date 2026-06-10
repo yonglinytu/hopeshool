@@ -495,6 +495,54 @@ body {
 </style>
 </head>
 <body>
+<!-- ===== PASSWORD GATE ===== -->
+<div id="pwGate" style="position:fixed;inset:0;z-index:99999;background:#f5f0e8;display:flex;align-items:center;justify-content:center;padding:24px;">
+  <div style="background:white;border-radius:24px;padding:48px 40px;max-width:380px;width:100%;box-shadow:0 8px 40px rgba(42,32,24,0.12);text-align:center;">
+    <div style="width:56px;height:56px;border-radius:16px;background:#e4f0e4;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:1.6rem;">&#x1F512;</div>
+    <div style="font-family:'Noto Serif TC',serif;font-size:1.3rem;font-weight:400;color:#2a2018;margin-bottom:8px;">請輸入密碼</div>
+    <div style="font-family:'Noto Sans TC',sans-serif;font-size:0.85rem;color:#9a8878;margin-bottom:32px;line-height:1.7;">此資源僅供永齡希望小學雲科大分校<br>教師使用</div>
+    <input id="pwInput" type="password" placeholder="請輸入密碼"
+      style="width:100%;padding:12px 18px;border:1.5px solid rgba(42,32,24,0.15);border-radius:12px;font-family:'Noto Sans TC',sans-serif;font-size:0.95rem;color:#2a2018;background:#faf6f0;outline:none;margin-bottom:12px;transition:border-color 0.2s;"
+      onfocus="this.style.borderColor='#4a8c8c'"
+      onblur="this.style.borderColor='rgba(42,32,24,0.15)'"
+      onkeydown="if(event.key==='Enter')checkPw()">
+    <div id="pwError" style="font-size:0.8rem;color:#c0503a;margin-bottom:12px;height:18px;font-family:'Noto Sans TC',sans-serif;"></div>
+    <button onclick="checkPw()"
+      style="width:100%;padding:13px;border-radius:12px;border:none;background:#4a8c8c;color:white;font-family:'Noto Sans TC',sans-serif;font-size:0.95rem;cursor:pointer;transition:background 0.2s;"
+      onmouseover="this.style.background='#2d6464'"
+      onmouseout="this.style.background='#4a8c8c'">進入</button>
+    <div style="margin-top:20px;font-size:0.75rem;color:#c8b8a8;font-family:'Noto Sans TC',sans-serif;">永齡希望小學雲科大分校 SEL 資源中心</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const KEY = 'sel_auth';
+  const HASH = '1b14e200a08bbe35510f106a1eb60a7834c3672a40a794009cb871b1910058f4';
+  async function sha256(msg){
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  }
+  async function checkPw(){
+    const val = document.getElementById('pwInput').value;
+    const h = await sha256(val);
+    if(h === HASH){
+      sessionStorage.setItem(KEY, '1');
+      document.getElementById('pwGate').style.display = 'none';
+    } else {
+      const err = document.getElementById('pwError');
+      err.textContent = '密碼錯誤，請再試一次';
+      document.getElementById('pwInput').style.borderColor = '#c0503a';
+      setTimeout(()=>{ err.textContent=''; document.getElementById('pwInput').style.borderColor='rgba(42,32,24,0.15)'; }, 2500);
+    }
+  }
+  window.checkPw = checkPw;
+  if(sessionStorage.getItem(KEY) === '1'){
+    document.getElementById('pwGate').style.display = 'none';
+  }
+})();
+<\/script>
+<!-- ===== END PASSWORD GATE ===== -->
 
 <header class="site-header">
   <a href="index.html">← 資源中心</a>
