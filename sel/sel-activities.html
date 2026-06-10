@@ -516,29 +516,25 @@ body {
 </div>
 
 <script>
-(function(){
-  var KEY = 'sel_auth';
-  function checkPw(){
-    var val = document.getElementById('pwInput').value;
-    if(val === 'hopeschool'){
-      sessionStorage.setItem(KEY, '1');
-      document.getElementById('pwGate').style.display = 'none';
-    } else {
-      var err = document.getElementById('pwError');
-      err.textContent = '密碼錯誤，請再試一次';
-      document.getElementById('pwInput').style.borderColor = '#c0503a';
-      setTimeout(function(){ err.textContent=''; document.getElementById('pwInput').style.borderColor='rgba(42,32,24,0.15)'; }, 2500);
-    }
-  }
-  window.checkPw = checkPw;
-  if(sessionStorage.getItem(KEY) === '1'){
+function checkPw(){
+  var val = document.getElementById('pwInput').value;
+  if(val === 'hopeschool'){
+    sessionStorage.setItem('sel_auth','1');
     document.getElementById('pwGate').style.display = 'none';
+  } else {
+    var err = document.getElementById('pwError');
+    err.textContent = '密碼錯誤，請再試一次';
+    document.getElementById('pwInput').style.borderColor = '#c0503a';
+    setTimeout(function(){ err.textContent=''; document.getElementById('pwInput').style.borderColor='rgba(42,32,24,0.15)'; }, 2500);
   }
-})();
-<\/script>
+}
+if(sessionStorage.getItem('sel_auth')==='1'){
+  document.getElementById('pwGate').style.display='none';
+}
+</script>
 <!-- ===== END PASSWORD GATE ===== -->
 
-<a href="index.html" style="position:fixed;top:16px;left:16px;z-index:9999;display:inline-flex;align-items:center;gap:7px;background:rgba(250,246,240,0.92);backdrop-filter:blur(8px);border:1px solid rgba(42,32,24,0.12);border-radius:20px;padding:7px 16px;font-family:'Noto Sans TC',sans-serif;font-size:0.8rem;color:#4a4040;text-decoration:none;box-shadow:0 2px 12px rgba(42,32,24,0.09);transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,1)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='rgba(250,246,240,0.92)';this.style.transform='none'">← 資源中心</a>
+<a href="index.html" style="position:fixed;top:16px;left:16px;z-index:9998;display:inline-flex;align-items:center;gap:7px;background:rgba(250,246,240,0.92);backdrop-filter:blur(8px);border:1px solid rgba(42,32,24,0.12);border-radius:20px;padding:7px 16px;font-family:'Noto Sans TC',sans-serif;font-size:0.8rem;color:#4a4040;text-decoration:none;box-shadow:0 2px 12px rgba(42,32,24,0.09);">← 資源中心</a>
 
 <header class="site-header">
   <span style="visibility:hidden;">← 資源中心</span>
