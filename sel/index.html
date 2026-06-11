@@ -27,6 +27,8 @@
     --c5-pale: #faf0dc;
     --c6: #3a6a7a;   /* SEL 外展服務 — teal blue */
     --c6-pale: #ddeef2;
+    --c7: #7a5a8a;   /* 情緒牌卡陪伴練習 — muted violet */
+    --c7-pale: #ede4f4;
 
     --shadow: 0 6px 32px rgba(42,32,24,0.09);
     --shadow-hover: 0 16px 56px rgba(42,32,24,0.16);
@@ -131,6 +133,8 @@
   .icon-dot:nth-child(3) { background: var(--c3); animation-delay: 0.8s; }
   .icon-dot:nth-child(4) { background: var(--c4); animation-delay: 1.2s; }
   .icon-dot:nth-child(5) { background: var(--c5); animation-delay: 1.6s; }
+  .icon-dot:nth-child(6) { background: var(--c6); animation-delay: 2.0s; }
+  .icon-dot:nth-child(7) { background: var(--c7); animation-delay: 2.4s; }
 
   @keyframes pulse {
     0%, 100% { transform: scale(1); opacity: 0.4; }
@@ -181,6 +185,7 @@
   .card-4 .card-bar { background: linear-gradient(90deg, #c8b0e4, var(--c4)); }
   .card-5 .card-bar { background: linear-gradient(90deg, #e8c880, var(--c5)); }
   .card-6 .card-bar { background: linear-gradient(90deg, #9acede, var(--c6)); }
+  .card-7 .card-bar { background: linear-gradient(90deg, #c8aee0, var(--c7)); }
 
   .card-body {
     padding: 28px 28px 24px;
@@ -213,6 +218,7 @@
   .card-4 .card-icon-wrap { background: var(--c4-pale); }
   .card-5 .card-icon-wrap { background: var(--c5-pale); }
   .card-6 .card-icon-wrap { background: var(--c6-pale); }
+  .card-7 .card-icon-wrap { background: var(--c7-pale); }
 
   .card-meta { flex: 1; }
 
@@ -232,6 +238,7 @@
   .card-4 .card-tag { background: var(--c4-pale); color: #4a2a7a; }
   .card-5 .card-tag { background: var(--c5-pale); color: #6a4a10; }
   .card-6 .card-tag { background: var(--c6-pale); color: #1e4a5a; }
+  .card-7 .card-tag { background: var(--c7-pale); color: #4a2a6a; }
 
   .card-title {
     font-family: 'Noto Serif TC', serif;
@@ -301,6 +308,7 @@
   .card-4 .card-cta { background: var(--c4-pale); color: #4a2a7a; }
   .card-5 .card-cta { background: var(--c5-pale); color: #6a4a10; }
   .card-6 .card-cta { background: var(--c6-pale); color: #1e4a5a; }
+  .card-7 .card-cta { background: var(--c7-pale); color: #4a2a6a; }
 
   .card-1:hover .card-cta { background: var(--c1); color: white; }
   .card-2:hover .card-cta { background: var(--c2); color: white; }
@@ -308,6 +316,7 @@
   .card-4:hover .card-cta { background: var(--c4); color: white; }
   .card-5:hover .card-cta { background: var(--c5); color: white; }
   .card-6:hover .card-cta { background: var(--c6); color: white; }
+  .card-7:hover .card-cta { background: var(--c7); color: white; }
 
   .card-arrow { transition: transform 0.2s; }
 
@@ -363,6 +372,8 @@
   </p>
 
   <div class="icon-row">
+    <div class="icon-dot"></div>
+    <div class="icon-dot"></div>
     <div class="icon-dot"></div>
     <div class="icon-dot"></div>
     <div class="icon-dot"></div>
@@ -523,12 +534,43 @@
     </div>
   </a>
 
-</div>
+  <!-- Card 7: 情緒牌卡陪伴練習 (公開版) -->
+  <a class="resource-card card-7 fade-in" href="../emotion-cards.html">
+    <div class="card-bar"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div class="card-icon-wrap">🎴</div>
+        <div class="card-meta">
+          <span class="card-tag">情緒牌卡 · 公開版</span>
+          <div class="card-title">情緒家族牌卡 × 41 個陪伴練習</div>
+        </div>
+      </div>
+      <p class="card-desc">六大情緒家族，41 個可立即使用的陪伴活動。含完整步驟、引導語建議與行動轉化，適合教師、家長與輔導工作者，公開授權免費使用。</p>
+      <div class="card-features">
+        <span class="feature-chip">41 個活動</span>
+        <span class="feature-chip">六大情緒家族</span>
+        <span class="feature-chip">行動轉化</span>
+        <span class="feature-chip">CC BY-NC-SA</span>
+      </div>
+      <div class="card-footer">
+        <span class="card-audience">👩‍🏫 教師 · 👨‍👩‍👧 家長 · 🧑‍💼 輔導工作者</span>
+        <span class="card-cta">前往 <span class="card-arrow">→</span></span>
+      </div>
+    </div>
+  </a>
 
-<footer>
+</div>
   <strong>永齡希望小學雲科大分校 SEL 資源中心</strong>
   社會情緒學習課程 · 情緒教育工具包<br>
   本平台資源供師生與家庭日常使用
+  <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(42,32,24,0.08);font-size:0.75rem;color:#9a8878;line-height:1.9;">
+    © 永齡希望小學雲科大分校<br>
+    本作品採用
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hant" target="_blank" rel="noopener"
+       style="color:#7a8878;text-decoration:underline;text-underline-offset:2px;">
+      創用 CC 姓名標示－非商業性－相同方式分享 4.0
+    </a> 授權・使用請保留出處標示
+  </div>
 </footer>
 
 <script>
