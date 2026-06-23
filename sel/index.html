@@ -29,6 +29,8 @@
     --c6-pale: #ddeef2;
     --c7: #7a5a8a;   /* 情緒牌卡陪伴練習 — muted violet */
     --c7-pale: #ede4f4;
+    --c8: #b85c5c;   /* 暑假營隊規劃 — dusty rose */
+    --c8-pale: #f5e0e0;
 
     --shadow: 0 6px 32px rgba(42,32,24,0.09);
     --shadow-hover: 0 16px 56px rgba(42,32,24,0.16);
@@ -135,6 +137,7 @@
   .icon-dot:nth-child(5) { background: var(--c5); animation-delay: 1.6s; }
   .icon-dot:nth-child(6) { background: var(--c6); animation-delay: 2.0s; }
   .icon-dot:nth-child(7) { background: var(--c7); animation-delay: 2.4s; }
+  .icon-dot:nth-child(8) { background: var(--c8); animation-delay: 2.8s; }
 
   @keyframes pulse {
     0%, 100% { transform: scale(1); opacity: 0.4; }
@@ -186,6 +189,7 @@
   .card-5 .card-bar { background: linear-gradient(90deg, #e8c880, var(--c5)); }
   .card-6 .card-bar { background: linear-gradient(90deg, #9acede, var(--c6)); }
   .card-7 .card-bar { background: linear-gradient(90deg, #c8aee0, var(--c7)); }
+  .card-8 .card-bar { background: linear-gradient(90deg, #e0a8a8, var(--c8)); }
 
   .card-body {
     padding: 28px 28px 24px;
@@ -219,6 +223,7 @@
   .card-5 .card-icon-wrap { background: var(--c5-pale); }
   .card-6 .card-icon-wrap { background: var(--c6-pale); }
   .card-7 .card-icon-wrap { background: var(--c7-pale); }
+  .card-8 .card-icon-wrap { background: var(--c8-pale); }
 
   .card-meta { flex: 1; }
 
@@ -239,6 +244,7 @@
   .card-5 .card-tag { background: var(--c5-pale); color: #6a4a10; }
   .card-6 .card-tag { background: var(--c6-pale); color: #1e4a5a; }
   .card-7 .card-tag { background: var(--c7-pale); color: #4a2a6a; }
+  .card-8 .card-tag { background: var(--c8-pale); color: #7a3030; }
 
   .card-title {
     font-family: 'Noto Serif TC', serif;
@@ -309,6 +315,7 @@
   .card-5 .card-cta { background: var(--c5-pale); color: #6a4a10; }
   .card-6 .card-cta { background: var(--c6-pale); color: #1e4a5a; }
   .card-7 .card-cta { background: var(--c7-pale); color: #4a2a6a; }
+  .card-8 .card-cta { background: var(--c8-pale); color: #7a3030; }
 
   .card-1:hover .card-cta { background: var(--c1); color: white; }
   .card-2:hover .card-cta { background: var(--c2); color: white; }
@@ -317,6 +324,7 @@
   .card-5:hover .card-cta { background: var(--c5); color: white; }
   .card-6:hover .card-cta { background: var(--c6); color: white; }
   .card-7:hover .card-cta { background: var(--c7); color: white; }
+  .card-8:hover .card-cta { background: var(--c8); color: white; }
 
   .card-arrow { transition: transform 0.2s; }
 
@@ -351,7 +359,10 @@
   .fade-in:nth-child(2) { transition-delay: 0.08s; }
   .fade-in:nth-child(3) { transition-delay: 0.16s; }
   .fade-in:nth-child(4) { transition-delay: 0.24s; }
-  .fade-in:nth-child(5) { transition-delay: 0.32s; }</style>
+  .fade-in:nth-child(5) { transition-delay: 0.32s; }
+  .fade-in:nth-child(6) { transition-delay: 0.40s; }
+  .fade-in:nth-child(7) { transition-delay: 0.48s; }
+  .fade-in:nth-child(8) { transition-delay: 0.56s; }</style>
 </head>
 <body>
 
@@ -372,6 +383,7 @@
   </p>
 
   <div class="icon-row">
+    <div class="icon-dot"></div>
     <div class="icon-dot"></div>
     <div class="icon-dot"></div>
     <div class="icon-dot"></div>
@@ -554,6 +566,29 @@
       </div>
       <div class="card-footer">
         <span class="card-audience">👩‍🏫 教師 · 👨‍👩‍👧 家長 · 🧑‍💼 輔導工作者</span>
+        <span class="card-cta">前往 <span class="card-arrow">→</span></span>
+      </div>
+    </div>
+  <!-- Card 8: 暑假 26 天 SEL 課程規劃 -->
+  <a class="resource-card card-8 fade-in" href="summer-camp-26days.html">
+    <div class="card-bar"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div class="card-icon-wrap">☀️</div>
+        <div class="card-meta">
+          <span class="card-tag">營隊規劃</span>
+          <div class="card-title">暑假 26 天 SEL 課程規劃</div>
+        </div>
+      </div>
+      <p class="card-desc">以課程活動地圖排出的密集營隊行程——早場牌卡深度學習、午場統整舒緩，六大情緒家族由淺入深，含積木收尾日與彈性備用工具箱。</p>
+      <div class="card-features">
+        <span class="feature-chip">26 天 × 2 時段</span>
+        <span class="feature-chip">六大家族排序</span>
+        <span class="feature-chip">積木收尾日</span>
+        <span class="feature-chip">備用工具箱</span>
+      </div>
+      <div class="card-footer">
+        <span class="card-audience">👩‍🏫 教師</span>
         <span class="card-cta">前往 <span class="card-arrow">→</span></span>
       </div>
     </div>
