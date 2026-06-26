@@ -32,7 +32,6 @@ nav{
   padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;
 }
 .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.nav-logo img{height:36px;width:auto;object-fit:contain}
 .nav-links{display:flex;gap:2rem;list-style:none}
 .nav-links a{font-size:14px;color:var(--ink3);text-decoration:none;transition:color .2s}
 .nav-links a:hover{color:var(--ink)}
@@ -185,7 +184,7 @@ hr.div{border:none;border-top:.5px solid var(--border);margin:0}
   cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px;
   font-family:var(--sans);
 }
-.f-btn.on{font-weight:500}
+.f-btn.on{font-weight:500;border-color:var(--ink);color:var(--ink);background:#fff}
 .f-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .count-bar{font-size:12px;color:var(--ink4);margin:10px 0 12px;padding-bottom:12px;border-bottom:.5px solid var(--border)}
 .cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
@@ -243,7 +242,6 @@ footer{
   padding:3rem 2rem;text-align:center;
 }
 .footer-logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px}
-.footer-logo img{height:32px;filter:brightness(0) invert(1);opacity:.7}
 .footer-name{font-family:var(--serif);font-size:16px;color:rgba(255,255,255,.8)}
 .footer-links{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:1rem 0 1.5rem}
 .footer-link{font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s}
@@ -252,32 +250,78 @@ footer{
 
 /* RESPONSIVE */
 @media(max-width:700px){
-  .hero{grid-template-columns:1fr;gap:2rem}
-  .hero-visual{display:none}
+  .hero{grid-template-columns:1fr;gap:2rem;padding-top:4.5rem}
+  .hero-visual{display:flex;overflow-x:auto;gap:12px;padding-bottom:10px;scroll-snap-type:x mandatory}
+  .hero-mini-card{min-width:190px;scroll-snap-align:start}
   .families-grid{grid-template-columns:repeat(2,1fr)}
   .how-block{grid-template-columns:1fr}
   .how-time-col{border-right:none;border-bottom:.5px solid var(--border);padding:1.25rem 1.5rem}
   .principles-grid{grid-template-columns:1fr}
-  .cards-grid{grid-template-columns:repeat(2,1fr)}
+  .quick-grid,.scenario-grid{grid-template-columns:1fr}
+  .cards-grid{grid-template-columns:1fr}
+  .card-tools{align-items:stretch}
+  .random-btn{width:100%}
   .contact-box{grid-template-columns:1fr;gap:2rem}
   .contact-visual{display:none}
   .nav-links{display:none}
 }
+
+
+/* OPTIMIZED ADDITIONS */
+.nav-brand-wrap{display:flex;align-items:center;gap:14px;min-width:260px}
+.nav-back{font-size:12px;color:var(--ink3);text-decoration:none;border:1px solid var(--border2);border-radius:99px;padding:5px 12px;background:rgba(255,255,255,.45);transition:all .15s;white-space:nowrap}
+.nav-back:hover{color:var(--ink);background:#fff;transform:translateY(-1px)}
+.hero{max-width:1040px;gap:3.5rem}
+.hero-note{font-size:13px;color:var(--ink3);margin-top:1.2rem;padding-left:14px;border-left:3px solid var(--p);line-height:1.7}
+.hero-spectrum{position:relative;grid-template-columns:repeat(3,1fr);gap:12px}
+.hero-spectrum::before{content:'';position:absolute;inset:10% 4%;background:radial-gradient(circle at 50% 50%,rgba(127,119,221,.13),transparent 62%);border-radius:999px;z-index:-1}
+.hero-spectrum .hero-mini-card{min-height:138px;justify-content:space-between;box-shadow:0 12px 28px rgba(28,28,26,.06)}
+.quick-section{background:linear-gradient(180deg,var(--paper),var(--paper2))}
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:2rem}
+.quick-card{display:block;text-align:left;background:#fff;border:.5px solid var(--border);border-radius:var(--r20);padding:1.35rem;text-decoration:none;color:var(--ink);transition:transform .16s,box-shadow .16s,border-color .16s;font-family:var(--sans);cursor:pointer;min-height:164px}
+.quick-card:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(28,28,26,.08);border-color:var(--border2)}
+.quick-random{width:100%;border-style:dashed;background:var(--pl)}
+.quick-time{font-size:12px;color:var(--pd);font-weight:500;background:var(--pl);display:inline-flex;border-radius:99px;padding:4px 10px;margin-bottom:12px}
+.quick-random .quick-time{background:#fff}
+.quick-title{font-family:var(--serif);font-size:18px;font-weight:700;margin-bottom:8px;color:var(--ink)}
+.quick-text{font-size:13px;color:var(--ink3);line-height:1.65}
+.scenario-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:2rem}
+.scenario-card{background:#fff;border:.5px solid var(--border);border-radius:var(--r12);padding:1.15rem;min-height:128px}
+.scenario-card span{display:inline-block;font-size:13px;font-weight:500;color:var(--pd);background:var(--pl);border-radius:99px;padding:3px 10px;margin-bottom:10px}
+.scenario-card p{font-size:13px;color:var(--ink3);line-height:1.7}
+.card-tools{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin:12px 0 8px}
+.search-wrap{flex:1;min-width:260px;display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--ink4)}
+.search-wrap input{width:100%;border:1.5px solid var(--border2);background:#fff;border-radius:12px;padding:11px 14px;font-family:var(--sans);font-size:14px;color:var(--ink);outline:none;transition:border-color .15s,box-shadow .15s}
+.search-wrap input:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(127,119,221,.12)}
+.random-btn{border:1.5px solid var(--p);background:var(--pl);color:var(--pd);border-radius:12px;padding:11px 18px;font-family:var(--sans);font-size:14px;cursor:pointer;transition:all .15s}
+.random-btn:hover{background:#fff;transform:translateY(-1px)}
+.cdb-card mark{background:rgba(255,255,255,.65);border-radius:5px;padding:0 2px;color:inherit}
+.empty-state{grid-column:1/-1;background:#fff;border:.5px dashed var(--border2);border-radius:var(--r12);padding:2rem;text-align:center;color:var(--ink3);font-size:14px}
+
+@media(max-width:900px){
+  .quick-grid{grid-template-columns:repeat(2,1fr)}
+  .scenario-grid{grid-template-columns:repeat(2,1fr)}
+  nav{padding:0 1rem}
+  .nav-brand-wrap{min-width:auto}
+  .nav-back{display:none}
+}
+
 </style>
 </head>
 <body>
-<a href="index.html" style="position:fixed;top:68px;left:16px;z-index:9999;display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.88);backdrop-filter:blur(8px);border:1px solid rgba(0,0,0,0.1);border-radius:20px;padding:7px 16px;font-family:Noto Sans TC,sans-serif;font-size:0.8rem;color:#4a4040;text-decoration:none;box-shadow:0 2px 12px rgba(0,0,0,0.09);transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,1)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='rgba(255,255,255,0.88)';this.style.transform='none'">← 資源中心</a>
-
 <nav>
-  <a class="nav-logo" href="#home"><span style="font-family:var(--serif);font-size:15px;font-weight:700;color:var(--g);letter-spacing:.02em">永齡希望小學｜雲科大分校</span></a>
+  <div class="nav-brand-wrap">
+    <a class="nav-back" href="index.html">← SEL 資源中心</a>
+    <a class="nav-logo" href="#home"><span style="font-family:var(--serif);font-size:15px;font-weight:700;color:var(--g);letter-spacing:.02em">永齡希望小學｜雲科大分校</span></a>
+  </div>
   <ul class="nav-links">
+    <li><a href="#quick-use">快速使用</a></li>
     <li><a href="#families">六大家族</a></li>
     <li><a href="#demo">認識牌卡</a></li>
     <li><a href="#howto">怎麼帶</a></li>
     <li><a href="#cards">全部牌卡</a></li>
-    <li><a href="#contact">聯絡我</a></li>
   </ul>
-  <a class="nav-cta" href="#contact">聯絡我們</a>
+  <a class="nav-cta" href="#cards">找牌卡</a>
 </nav>
 
 <!-- HERO -->
@@ -285,35 +329,78 @@ footer{
 <div class="hero">
   <div class="hero-text">
     <div class="hero-eyebrow">HOPE 情緒六大家族</div>
-    <h1>把情緒說清楚，<br><em>是一種能力。</em></h1>
-    <p class="hero-sub">84 張情緒牌卡，六個家族，涵蓋從輕微到強烈的完整情緒光譜。每張牌卡只呈現數字、顏色、情緒名稱與一句引導句，極簡設計讓孩子一眼就能找到自己的感受。搭配使用手冊，老師可以進一步引導深度對話。</p>
+    <h1>陪孩子把感覺說清楚，<br><em>也把心慢慢安頓好。</em></h1>
+    <p class="hero-sub">84 張情緒牌卡，六個家族，從心安、界線、低落、驚訝、害怕到生氣，陪孩子練習辨認感覺、說出需要，也讓老師能快速帶進課輔班、親子對話與團體活動。</p>
     <div class="hero-btns">
-      <a class="btn-dark" href="#demo">翻翻看牌卡 →</a>
-      <a class="btn-outline" href="#howto">怎麼帶？</a>
-      <a class="btn-outline" href="https://drive.google.com/drive/folders/115iXsf9pOxNVYu_JFA1acNhdOXbCFUN6?usp=drive_link" target="_blank" style="display:inline-flex;align-items:center;gap:6px;">⬇ 下載牌卡</a>
+      <a class="btn-dark" href="#quick-use">我是老師，快速使用 →</a>
+      <a class="btn-outline" href="#demo">翻翻看牌卡</a>
+      <a class="btn-outline" href="#cards">搜尋牌卡</a>
+      <a class="btn-outline" href="https://drive.google.com/drive/folders/115iXsf9pOxNVYu_JFA1acNhdOXbCFUN6?usp=drive_link" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;">⬇ 下載牌卡</a>
     </div>
+    <div class="hero-note">把情緒說清楚，是一種能力；讓孩子被理解，是一種環境。</div>
   </div>
-  <div class="hero-visual">
+  <div class="hero-visual hero-spectrum" aria-label="六色情緒牌卡預覽">
     <div class="hero-mini-card" style="background:#FAEEDA;border-color:#EF9F27">
       <div class="mini-label" style="color:#854F0B">黃色 01</div>
       <div class="mini-word" style="color:#412402">心安</div>
       <div class="mini-anc" style="color:#633806">心裡安安穩穩的，像被輕輕托住。</div>
     </div>
-    <div class="hero-mini-card" style="background:#EEEDFE;border-color:#7F77DD">
-      <div class="mini-label" style="color:#534AB7">紫色 07</div>
-      <div class="mini-word" style="color:#26215C">焦慮</div>
-      <div class="mini-anc" style="color:#3C3489">心裡一直拉警報，覺得好像哪裡很不安全。</div>
-    </div>
-    <div class="hero-mini-card" style="background:#FCEBEB;border-color:#E24B4A">
-      <div class="mini-label" style="color:#A32D2D">紅色 05</div>
-      <div class="mini-word" style="color:#501313">生氣</div>
-      <div class="mini-anc" style="color:#791F1F">心裡大聲說：「我很不開心！」</div>
+    <div class="hero-mini-card" style="background:#EAF3DE;border-color:#639922">
+      <div class="mini-label" style="color:#3B6D11">綠色 14</div>
+      <div class="mini-word" style="color:#173404">拒絕</div>
+      <div class="mini-anc" style="color:#27500A">心裡很清楚：「這個我不要。」</div>
     </div>
     <div class="hero-mini-card" style="background:#E6F1FB;border-color:#378ADD">
       <div class="mini-label" style="color:#185FA5">藍色 07</div>
       <div class="mini-word" style="color:#042C53">委屈</div>
       <div class="mini-anc" style="color:#0C447C">明明有話想說卻被誤會，心裡縮起來。</div>
     </div>
+    <div class="hero-mini-card" style="background:#FAECE7;border-color:#D85A30">
+      <div class="mini-label" style="color:#993C1D">橘色 05</div>
+      <div class="mini-word" style="color:#4A1B0C">驚訝</div>
+      <div class="mini-anc" style="color:#712B13">眼睛突然睜大，腦袋暫時跟不上。</div>
+    </div>
+    <div class="hero-mini-card" style="background:#EEEDFE;border-color:#7F77DD">
+      <div class="mini-label" style="color:#534AB7">紫色 07</div>
+      <div class="mini-word" style="color:#26215C">焦慮</div>
+      <div class="mini-anc" style="color:#3C3489">心裡一直拉警報，覺得好像哪裡真的很不安全。</div>
+    </div>
+    <div class="hero-mini-card" style="background:#FCEBEB;border-color:#E24B4A">
+      <div class="mini-label" style="color:#A32D2D">紅色 05</div>
+      <div class="mini-word" style="color:#501313">生氣</div>
+      <div class="mini-anc" style="color:#791F1F">心裡大聲說：「我很不開心！」</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- QUICK USE -->
+<section id="quick-use" class="quick-section">
+<div class="section-inner">
+  <div class="section-eyebrow">老師快速使用</div>
+  <h2 class="section-title">今天有多少時間？直接選一種帶法</h2>
+  <p class="section-sub">把「教材介紹」變成「現場工具」。課輔老師可以依照班級狀態，直接選 3 分鐘、15 分鐘或完整一堂課。</p>
+  <div class="quick-grid">
+    <a class="quick-card" href="#howto">
+      <div class="quick-time">3 分鐘</div>
+      <div class="quick-title">情緒快照</div>
+      <div class="quick-text">開場或收尾使用，讓孩子快速選一張最接近現在的情緒。</div>
+    </a>
+    <a class="quick-card" href="#howto">
+      <div class="quick-time">15 分鐘</div>
+      <div class="quick-title">小組對話</div>
+      <div class="quick-text">兩人一組，練習分享、傾聽與一句陪伴句。</div>
+    </a>
+    <a class="quick-card" href="#howto">
+      <div class="quick-time">50 分鐘</div>
+      <div class="quick-title">家族主題課</div>
+      <div class="quick-text">攤開一個家族，排出情緒光譜，完成個人回穩計畫。</div>
+    </a>
+    <button class="quick-card quick-random" type="button" onclick="randomCard()">
+      <div class="quick-time">不知道怎麼開始</div>
+      <div class="quick-title">隨機抽一張牌</div>
+      <div class="quick-text">讓牌卡帶出今天的第一個情緒對話。</div>
+    </button>
   </div>
 </div>
 </section>
@@ -325,7 +412,7 @@ footer{
 <div class="section-inner">
   <div class="section-eyebrow">六大情緒家族</div>
   <h2 class="section-title">每種情緒都有自己的顏色</h2>
-  <p class="section-sub">六個家族各自對應一類情緒，每個家族 14 張牌，涵蓋從輕微到強烈的完整光譜。孩子可以從顏色快速找到最接近自己感受的那張。</p>
+  <p class="section-sub">六個家族各自對應一類情緒，每個家族 14 張牌，涵蓋從輕微到強烈的完整光譜。孩子可以從顏色快速找到最接近自己感受的那張，也能慢慢說出「我現在需要什麼」。</p>
 
   <div class="families-grid">
     <div class="fam-card" style="background:#FAEEDA;border-color:#EF9F27">
@@ -337,7 +424,7 @@ footer{
     </div>
     <div class="fam-card" style="background:#EAF3DE;border-color:#639922">
       <div class="fam-top"><div class="fam-dot" style="background:#639922"></div><span class="fam-name" style="color:#173404">綠色家族</span></div>
-      <div class="fam-position" style="color:#27500A">穩住節奏，把努力長成力量。</div>
+      <div class="fam-position" style="color:#27500A">當心裡說「怪怪的、不想靠近」，它正在提醒我需要保護界線。</div>
       <div class="fam-kw">
         <span class="fam-tag" style="color:#27500A">怪怪的</span><span class="fam-tag" style="color:#27500A">厭煩</span><span class="fam-tag" style="color:#27500A">討厭</span><span class="fam-tag" style="color:#27500A">拒絕</span>
       </div>
@@ -403,7 +490,7 @@ footer{
               <div class="cword" id="demo-word"></div>
               <div class="canchor" id="demo-anc"></div>
             </div>
-            <div class="chint">點擊看使用手冊的引導內容 →</div>
+            <div class="chint">點一下牌卡，看老師可以怎麼問 →</div>
           </div>
           <div class="card-face card-back">
             <div style="font-size:11px;color:var(--p);font-weight:500;margin-bottom:10px;padding:4px 10px;background:var(--pl);border-radius:99px;display:inline-block">使用手冊引導內容</div>
@@ -491,6 +578,25 @@ footer{
 
 <hr class="div">
 
+<!-- USE SCENARIOS -->
+<section id="scenarios">
+<div class="section-inner">
+  <div class="section-eyebrow">適合使用情境</div>
+  <h2 class="section-title">不只是一套牌卡，也是一個情緒對話入口</h2>
+  <p class="section-sub">依照不同場域，把牌卡變成開場、修復、觀察與親子對話的工具。</p>
+  <div class="scenario-grid">
+    <div class="scenario-card"><span>課輔班開場</span><p>每人選一張今天的心情，老師快速掌握班級狀態。</p></div>
+    <div class="scenario-card"><span>衝突後修復</span><p>找出剛剛最接近的情緒，先理解，再討論下一步。</p></div>
+    <div class="scenario-card"><span>親子對話</span><p>用牌卡代替直接追問，降低孩子被逼問的感覺。</p></div>
+    <div class="scenario-card"><span>老師觀察</span><p>記錄孩子常出現的情緒家族，作為後續陪伴線索。</p></div>
+    <div class="scenario-card"><span>團體活動</span><p>排出情緒光譜，練習分辨情緒強弱與身體反應。</p></div>
+    <div class="scenario-card"><span>月聚會／培訓</span><p>讓老師先練習覺察自己，再把情緒語言帶回班級。</p></div>
+  </div>
+</div>
+</section>
+
+<hr class="div">
+
 <!-- PRINCIPLES -->
 <section>
 <div class="section-inner">
@@ -534,13 +640,20 @@ footer{
 
   <div style="margin-top:1.5rem">
     <div class="filter-bar">
-      <button class="f-btn on" style="border-color:var(--ink);color:var(--ink)" onclick="dbFilter('all',this)">全部 84 張</button>
+      <button class="f-btn on" onclick="dbFilter('all',this)">全部 84 張</button>
       <button class="f-btn" onclick="dbFilter('yellow',this)"><span class="f-dot" style="background:#EF9F27"></span>黃色</button>
       <button class="f-btn" onclick="dbFilter('green',this)"><span class="f-dot" style="background:#639922"></span>綠色</button>
       <button class="f-btn" onclick="dbFilter('blue',this)"><span class="f-dot" style="background:#378ADD"></span>藍色</button>
       <button class="f-btn" onclick="dbFilter('orange',this)"><span class="f-dot" style="background:#D85A30"></span>橘色</button>
       <button class="f-btn" onclick="dbFilter('purple',this)"><span class="f-dot" style="background:#7F77DD"></span>紫色</button>
       <button class="f-btn" onclick="dbFilter('red',this)"><span class="f-dot" style="background:#E24B4A"></span>紅色</button>
+    </div>
+    <div class="card-tools">
+      <label class="search-wrap" for="card-search">
+        <span>搜尋情緒</span>
+        <input id="card-search" type="search" placeholder="例如：生氣、委屈、焦慮、感恩、拒絕" oninput="dbSearch(this.value)">
+      </label>
+      <button class="random-btn" type="button" onclick="randomCard()">隨機抽一張</button>
     </div>
     <div class="count-bar" id="db-count">顯示全部 84 張</div>
     <div class="cards-grid" id="db-grid"></div>
@@ -561,7 +674,7 @@ footer{
       <div class="contact-title">想了解更多，或在班級使用？</div>
       <div class="contact-sub">無論是課程引進、使用方式諮詢，或只是想多了解這套牌卡，都歡迎透過以下方式聯絡我們。</div>
       <div class="contact-links">
-        <a class="contact-link" href="https://drive.google.com/drive/folders/115iXsf9pOxNVYu_JFA1acNhdOXbCFUN6?usp=drive_link" target="_blank">
+        <a class="contact-link" href="https://drive.google.com/drive/folders/115iXsf9pOxNVYu_JFA1acNhdOXbCFUN6?usp=drive_link" target="_blank" rel="noopener">
           <div class="contact-link-icon" style="background:#E6F7EC">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2d7a4a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           </div>
@@ -579,7 +692,7 @@ footer{
             <span class="contact-link-value">yonglinytu@gmail.com</span>
           </div>
         </a>
-        <a class="contact-link" href="https://www.facebook.com/yonglinytu" target="_blank">
+        <a class="contact-link" href="https://www.facebook.com/yonglinytu" target="_blank" rel="noopener">
           <div class="contact-link-icon" style="background:#E6F1FB">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="#185FA5"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
           </div>
@@ -615,7 +728,7 @@ footer{
     <a class="footer-link" href="#howto">怎麼帶</a>
     <a class="footer-link" href="#cards">全部牌卡</a>
     <a class="footer-link" href="mailto:yonglinytu@gmail.com">Email</a>
-    <a class="footer-link" href="https://www.facebook.com/yonglinytu" target="_blank">Facebook</a>
+    <a class="footer-link" href="https://www.facebook.com/yonglinytu" target="_blank" rel="noopener">Facebook</a>
   </div>
   <div class="footer-copy">© 永齡希望小學雲科大分校・本作品採用
     <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hant" target="_blank" rel="noopener"
@@ -626,11 +739,11 @@ footer{
 </footer>
 
 <!-- CARD MODAL -->
-<div id="card-modal" style="display:none" class="modal-bg" onclick="if(event.target===this)this.style.display='none'">
-  <div class="modal">
+<div id="card-modal" style="display:none" class="modal-bg" onclick="if(event.target===this)closeModal()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="cm-word">
     <div class="modal-top">
       <div class="m-badge" id="cm-badge"></div>
-      <button class="close-btn" onclick="document.getElementById('card-modal').style.display='none'">×</button>
+      <button class="close-btn" aria-label="關閉" onclick="closeModal()">×</button>
     </div>
     <div class="m-num" id="cm-num"></div>
     <div class="m-word" id="cm-word"></div>
@@ -777,17 +890,43 @@ function getLbl(f,n){return{yellow:'黃',green:'綠',blue:'藍',orange:'橘',pur
 function getFName(f){return FC[f].name}
 
 let dbFamily='all';
+let dbQuery='';
+function escHTML(str){return String(str).replace(/[&<>'"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[ch]))}
+function hi(str){
+  const safe=escHTML(str);
+  const q=dbQuery.trim();
+  if(!q)return safe;
+  const re=new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`,'gi');
+  return safe.replace(re,'<mark>$1</mark>');
+}
+function cardMatches(c){
+  if(dbFamily!=='all'&&c.f!==dbFamily)return false;
+  const q=dbQuery.trim().toLowerCase();
+  if(!q)return true;
+  return [c.w,c.a,c.q1,c.q2,c.co,c.tk,getLbl(c.f,c.n),getFName(c.f)].some(v=>String(v).toLowerCase().includes(q));
+}
 function renderDB(){
-  const filtered=dbFamily==='all'?CARDS:CARDS.filter(c=>c.f===dbFamily);
-  document.getElementById('db-count').textContent=dbFamily==='all'?'顯示全部 84 張':`${getFName(dbFamily)}・顯示 ${filtered.length} 張`;
-  document.getElementById('db-grid').innerHTML=filtered.map(c=>{
+  const filtered=CARDS.filter(cardMatches);
+  const familyText=dbFamily==='all'?'全部牌卡':getFName(dbFamily);
+  const queryText=dbQuery.trim()?`，搜尋「${dbQuery.trim()}」`:'';
+  document.getElementById('db-count').textContent=`${familyText}${queryText}・顯示 ${filtered.length} 張`;
+  const grid=document.getElementById('db-grid');
+  if(!filtered.length){
+    grid.innerHTML='<div class="empty-state">找不到符合的牌卡，可以換一個情緒詞試試看。</div>';
+    return;
+  }
+  grid.innerHTML=filtered.map(c=>{
     const fc=FC[c.f];
     return `<div class="cdb-card" style="background:${fc.bg};border-color:${fc.bd}" onclick="openCard('${c.f}',${c.n})">
       <div class="cdb-num" style="color:${fc.nc}">${getLbl(c.f,c.n)}</div>
-      <div class="cdb-word" style="color:${fc.wc}">${c.w}</div>
-      <div class="cdb-anc" style="color:${fc.ac}">${c.a}</div>
+      <div class="cdb-word" style="color:${fc.wc}">${hi(c.w)}</div>
+      <div class="cdb-anc" style="color:${fc.ac}">${hi(c.a)}</div>
     </div>`;
   }).join('');
+}
+function dbSearch(value){
+  dbQuery=value;
+  renderDB();
 }
 function dbFilter(family,btn){
   dbFamily=family;
@@ -795,9 +934,16 @@ function dbFilter(family,btn){
   btn.classList.add('on');
   renderDB();
 }
+function randomCard(){
+  const pool=CARDS.filter(c=>dbFamily==='all'||c.f===dbFamily);
+  if(!pool.length)return;
+  const c=pool[Math.floor(Math.random()*pool.length)];
+  openCard(c.f,c.n);
+}
 function openCard(f,n){
   const c=CARDS.find(x=>x.f===f&&x.n===n);
   const fc=FC[f];
+  if(!c||!fc)return;
   const mb=document.getElementById('cm-badge');
   mb.textContent=getFName(f);mb.style.background=fc.bbg;mb.style.color=fc.bt;
   document.getElementById('cm-num').textContent=getLbl(f,n);
@@ -809,6 +955,12 @@ function openCard(f,n){
   document.getElementById('cm-tk').textContent=c.tk;
   document.getElementById('card-modal').style.display='flex';
 }
+function closeModal(){
+  document.getElementById('card-modal').style.display='none';
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&document.getElementById('card-modal').style.display==='flex')closeModal();
+});
 renderDB();
 </script>
 </body>

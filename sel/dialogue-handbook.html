@@ -4,495 +4,503 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>親子覺察對話手冊｜永齡希望小學雲科大分校</title>
-<meta name="description" content="五個時間點 × 50 個問題 × 接話建議，讓日常聊天成為素養教育。永齡希望小學雲科大分校 SEL 課程資源。">
+<meta name="description" content="五個時間點 × 50 個問題 × 接話建議，讓日常聊天成為素養教育。含搜尋、情境篩選與隨機抽題。">
+<meta property="og:title" content="親子覺察對話手冊">
+<meta property="og:description" content="五個時間點 × 50 個問題 × 接話建議，陪大人把日常聊天變成溫柔的 SEL 對話。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600&family=Noto+Sans+TC:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --s1: #E8F4F0; --s1a: #2D7D62; --s1b: #1a5c47;
-    --s2: #EEF2FB; --s2a: #3D5FA3; --s2b: #2a4480;
-    --s3: #FEF6EE; --s3a: #C06A1A; --s3b: #8f4e12;
-    --s4: #F2EEF8; --s4a: #7A4DB0; --s4b: #5a3585;
-    --s5: #F0F0F8; --s5a: #3A4A8A; --s5b: #28366a;
-    --warn: #FEF9EE; --warna: #B07A1A;
-    --bg: #FAFAF8;
-    --bg2: #F5F4F0;
-    --border: rgba(0,0,0,0.08);
-    --border2: rgba(0,0,0,0.14);
-    --text: #1A1A18;
-    --text2: #5A5A55;
-    --text3: #9A9990;
-    --white: #FFFFFF;
-    --r: 12px;
-    --serif: 'Noto Serif TC', 'Georgia', serif;
-    --sans: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
-    --shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+    --s1:#E8F4F0; --s1a:#2D7D62; --s1b:#1A5C47;
+    --s2:#EEF2FB; --s2a:#3D5FA3; --s2b:#2A4480;
+    --s3:#FEF6EE; --s3a:#C06A1A; --s3b:#8F4E12;
+    --s4:#F2EEF8; --s4a:#7A4DB0; --s4b:#5A3585;
+    --s5:#F0F0F8; --s5a:#3A4A8A; --s5b:#28366A;
+    --paper:#FAFAF7; --paper2:#F3F1EA; --paper3:#E7E2D8;
+    --surface:#FFFFFF; --ink:#1B1B18; --ink2:#55554F; --ink3:#8D8A80;
+    --border:rgba(27,27,24,.10); --border2:rgba(27,27,24,.18);
+    --shadow:0 10px 32px rgba(42,39,30,.09), 0 2px 8px rgba(42,39,30,.05);
+    --r8:8px; --r12:12px; --r18:18px; --r24:24px;
+    --serif:'Noto Serif TC','Georgia',serif; --sans:'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif;
+  }
+  html { scroll-behavior:smooth; }
+  body {
+    font-family:var(--sans); background:var(--paper); color:var(--ink);
+    min-height:100vh; line-height:1.75; -webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(circle at 10% 6%, rgba(45,125,98,.08), transparent 26%),
+      radial-gradient(circle at 92% 10%, rgba(122,77,176,.08), transparent 24%),
+      linear-gradient(180deg, #fffdfa 0%, var(--paper) 42%, #f7f6f1 100%);
+  }
+  a { color:inherit; }
+  button, input { font-family:inherit; }
+
+  .topnav {
+    position:sticky; top:0; z-index:80; height:62px; padding:0 1.4rem;
+    display:flex; align-items:center; gap:12px; background:rgba(255,255,252,.92);
+    border-bottom:1px solid var(--border); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  }
+  .home-link {
+    display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:999px;
+    text-decoration:none; border:1px solid var(--border2); color:var(--ink2); font-size:13px; background:rgba(255,255,255,.65);
+    transition:.16s;
+  }
+  .home-link:hover { transform:translateY(-1px); background:#fff; color:var(--ink); }
+  .brand { display:flex; flex-direction:column; min-width:0; }
+  .brand-title { font-family:var(--serif); font-weight:700; font-size:16px; letter-spacing:.02em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .brand-sub { font-size:11px; color:var(--ink3); line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .nav-actions { margin-left:auto; display:flex; gap:8px; }
+  .mini-btn {
+    border:1px solid var(--border2); background:var(--surface); color:var(--ink2); border-radius:999px;
+    padding:7px 13px; font-size:12px; cursor:pointer; transition:.16s; white-space:nowrap;
+  }
+  .mini-btn:hover { transform:translateY(-1px); color:var(--ink); box-shadow:0 5px 14px rgba(0,0,0,.06); }
+
+  .hero { max-width:1120px; margin:0 auto; padding:4.2rem 1.6rem 2rem; display:grid; grid-template-columns:minmax(0,1.12fr) minmax(280px,.88fr); gap:2.2rem; align-items:center; }
+  .eyebrow { display:inline-flex; align-items:center; gap:8px; font-size:12px; font-weight:700; letter-spacing:.1em; color:var(--s1b); text-transform:uppercase; background:var(--s1); border:1px solid rgba(45,125,98,.18); padding:6px 13px; border-radius:999px; margin-bottom:1.15rem; }
+  .hero h1 { font-family:var(--serif); font-size:clamp(2.05rem,5vw,4rem); line-height:1.18; letter-spacing:-.03em; font-weight:700; color:var(--ink); }
+  .hero h1 span { color:var(--s1a); }
+  .hero-desc { color:var(--ink2); font-size:16px; line-height:1.9; max-width:680px; margin-top:1.1rem; }
+  .hero-cta { display:flex; gap:10px; flex-wrap:wrap; margin-top:1.6rem; }
+  .primary-btn, .outline-btn {
+    border-radius:999px; padding:11px 19px; font-size:14px; font-weight:600; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:8px; transition:.16s;
+  }
+  .primary-btn { background:var(--ink); color:#fff; border:1px solid var(--ink); }
+  .outline-btn { background:rgba(255,255,255,.7); color:var(--ink); border:1px solid var(--border2); }
+  .primary-btn:hover, .outline-btn:hover { transform:translateY(-2px); box-shadow:var(--shadow); }
+
+  .hero-panel { background:rgba(255,255,255,.72); border:1px solid var(--border); border-radius:var(--r24); padding:1.2rem; box-shadow:var(--shadow); }
+  .panel-label { font-size:12px; color:var(--ink3); margin-bottom:10px; letter-spacing:.06em; text-transform:uppercase; }
+  .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px; }
+  .stat { border:1px solid var(--border); background:#fff; border-radius:var(--r18); padding:13px 10px; text-align:center; }
+  .stat-num { font-size:27px; font-weight:800; line-height:1; }
+  .stat-name { font-size:11px; color:var(--ink3); margin-top:4px; }
+  .tip-stack { display:grid; gap:8px; }
+  .tip-card { border:1px solid var(--border); border-radius:var(--r12); padding:11px 12px; background:#fff; display:flex; gap:10px; align-items:flex-start; cursor:pointer; transition:.16s; }
+  .tip-card:hover { transform:translateY(-1px); border-color:var(--border2); }
+  .tip-ico { font-size:18px; line-height:1.2; }
+  .tip-title { font-size:13px; font-weight:700; color:var(--ink); }
+  .tip-body { font-size:12px; color:var(--ink3); line-height:1.55; margin-top:2px; }
+
+  .tool-section { max-width:1120px; margin:0 auto; padding:0 1.6rem 1.8rem; }
+  .toolbox { background:rgba(255,255,255,.86); border:1px solid var(--border); border-radius:var(--r24); padding:1rem; box-shadow:0 8px 24px rgba(27,27,24,.05); }
+  .tool-row { display:grid; grid-template-columns:minmax(220px,1fr) auto; gap:12px; align-items:center; }
+  .search-wrap { position:relative; }
+  .search-wrap::before { content:'🔎'; position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:14px; opacity:.55; }
+  #searchInput { width:100%; border:1px solid var(--border2); border-radius:999px; padding:12px 16px 12px 40px; background:#fff; color:var(--ink); outline:none; font-size:14px; }
+  #searchInput:focus { border-color:var(--s1a); box-shadow:0 0 0 4px rgba(45,125,98,.08); }
+  .quick-actions { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+  .chip-row { display:flex; gap:8px; overflow-x:auto; padding:12px 2px 2px; scrollbar-width:none; }
+  .chip-row::-webkit-scrollbar { display:none; }
+  .filter-chip, .keyword-chip {
+    flex-shrink:0; border:1px solid var(--border); background:#fff; border-radius:999px; padding:7px 13px; font-size:12px; cursor:pointer; color:var(--ink2); transition:.16s;
+  }
+  .filter-chip:hover, .keyword-chip:hover { border-color:var(--border2); transform:translateY(-1px); }
+  .filter-chip.active { font-weight:700; border-color:var(--active, var(--ink3)); background:var(--active-bg, var(--paper2)); color:var(--active-text, var(--ink)); }
+  .keyword-chip { background:var(--paper2); }
+
+  .overview { max-width:1120px; margin:0 auto; padding:0 1.6rem 1.5rem; }
+  .section-title { display:flex; align-items:end; justify-content:space-between; gap:1rem; margin-bottom:12px; }
+  .section-title h2 { font-family:var(--serif); font-size:1.35rem; }
+  .count-text { font-size:12px; color:var(--ink3); white-space:nowrap; }
+  .scenario-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }
+  .scenario-card { border:1px solid var(--border); background:#fff; border-radius:var(--r18); padding:14px; cursor:pointer; transition:.16s; position:relative; overflow:hidden; }
+  .scenario-card::after { content:''; position:absolute; inset:auto -20px -30px auto; width:80px; height:80px; border-radius:50%; background:var(--sc-bg); opacity:.55; }
+  .scenario-card:hover { transform:translateY(-3px); box-shadow:var(--shadow); }
+  .sc-emoji { font-size:22px; margin-bottom:6px; }
+  .sc-name { font-size:14px; font-weight:800; color:var(--sc-text); }
+  .sc-sub { font-size:12px; color:var(--ink3); line-height:1.45; margin-top:3px; }
+  .sc-core { font-size:11px; color:var(--ink2); line-height:1.55; margin-top:9px; }
+
+  .insight-card { border:1px solid var(--border); background:#fff; border-left:5px solid var(--s1a); border-radius:var(--r18); padding:1.05rem 1.2rem; margin-top:12px; display:none; }
+  .insight-card.open { display:block; animation:fadeIn .2s ease; }
+  .insight-intro { color:var(--ink2); font-size:13px; line-height:1.85; margin-bottom:12px; font-style:italic; }
+  .insight-list { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .insight-item { background:var(--paper); border:1px solid var(--border); border-radius:var(--r12); padding:12px; }
+  .insight-item h3 { font-size:13px; margin-bottom:4px; }
+  .insight-item p { font-size:12px; color:var(--ink2); line-height:1.7; }
+
+  .main { max-width:1120px; margin:0 auto; padding:0 1.6rem 4rem; }
+  .cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; }
+  .question-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r18); padding:1rem; cursor:pointer; transition:.16s; min-height:182px; display:flex; flex-direction:column; position:relative; overflow:hidden; }
+  .question-card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:var(--accent); }
+  .question-card:hover { transform:translateY(-3px); box-shadow:var(--shadow); border-color:var(--border2); }
+  .q-meta { display:flex; justify-content:space-between; gap:8px; align-items:center; margin-bottom:10px; }
+  .q-badge { display:inline-flex; gap:5px; align-items:center; background:var(--scenario-bg); color:var(--scenario-text); border:1px solid var(--scenario-border); border-radius:999px; padding:3px 9px; font-size:11px; font-weight:700; }
+  .q-num { font-size:11px; color:var(--ink3); font-weight:700; letter-spacing:.06em; }
+  .q-text { font-family:var(--serif); font-size:16px; line-height:1.65; color:var(--ink); margin-bottom:14px; }
+  .q-foot { margin-top:auto; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .q-tags { display:flex; flex-wrap:wrap; gap:5px; }
+  .tiny-tag { font-size:10px; border-radius:999px; background:var(--paper2); color:var(--ink3); padding:2px 8px; }
+  .see-more { font-size:12px; color:var(--scenario-text); font-weight:700; white-space:nowrap; }
+  .empty { grid-column:1/-1; text-align:center; color:var(--ink3); padding:4rem 1rem; border:1px dashed var(--border2); border-radius:var(--r18); background:rgba(255,255,255,.55); }
+
+  .modal-overlay { display:none; position:fixed; inset:0; z-index:200; background:rgba(18,18,15,.45); padding:1rem; align-items:center; justify-content:center; }
+  .modal-overlay.open { display:flex; }
+  .modal-box { width:min(760px,100%); max-height:90vh; overflow:hidden; background:#fff; border-radius:22px; box-shadow:0 24px 80px rgba(0,0,0,.22); border:1px solid rgba(255,255,255,.5); display:flex; flex-direction:column; animation:pop .18s ease; }
+  @keyframes pop { from { opacity:0; transform:translateY(8px) scale(.98); } to { opacity:1; transform:none; } }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(-5px); } to { opacity:1; transform:none; } }
+  .modal-head { padding:1rem 1.2rem; border-bottom:1px solid var(--border); display:flex; align-items:flex-start; gap:12px; }
+  .modal-title-wrap { flex:1; min-width:0; }
+  .modal-eyebrow { font-size:12px; color:var(--ink3); font-weight:700; margin-bottom:4px; }
+  .modal-title { font-family:var(--serif); font-size:1.3rem; line-height:1.55; color:var(--ink); }
+  .close-btn { border:none; background:var(--paper2); width:36px; height:36px; border-radius:999px; font-size:22px; cursor:pointer; color:var(--ink3); flex-shrink:0; }
+  .close-btn:hover { color:var(--ink); }
+  .modal-body { padding:1rem 1.2rem 1.3rem; overflow:auto; }
+  .answer-card { border:1px solid var(--border); border-radius:var(--r14, 14px); padding:13px; margin-bottom:10px; background:var(--paper); }
+  .answer-label { font-size:13px; font-weight:700; color:var(--ink); line-height:1.6; margin-bottom:7px; display:flex; gap:7px; }
+  .answer-label::before { content:''; width:7px; height:7px; border-radius:50%; background:var(--modal-accent); flex-shrink:0; margin-top:8px; }
+  .response { font-family:var(--serif); font-size:15px; color:var(--ink); line-height:1.75; background:#fff; border-radius:10px; padding:10px 12px; margin-bottom:7px; }
+  .why { font-size:12px; color:var(--ink2); line-height:1.75; }
+  .avoid { background:#fff8e8; border:1px solid rgba(176,122,26,.25); border-left:4px solid #B07A1A; border-radius:12px; padding:12px; margin-top:13px; }
+  .avoid strong { color:#8f5e0c; font-size:12px; display:block; margin-bottom:4px; }
+  .avoid p { color:#6b4a13; font-size:13px; line-height:1.7; }
+  .modal-actions { display:flex; gap:8px; flex-wrap:wrap; padding-top:8px; }
+
+  .toast { position:fixed; left:50%; bottom:22px; transform:translateX(-50%) translateY(20px); background:var(--ink); color:#fff; border-radius:999px; padding:9px 16px; font-size:13px; opacity:0; pointer-events:none; transition:.2s; z-index:300; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+  .footer { border-top:1px solid var(--border); background:#fff; padding:2rem 1.6rem; text-align:center; }
+  .footer strong { font-size:13px; color:var(--ink); }
+  .footer p { font-size:12px; color:var(--ink3); line-height:1.8; margin-top:6px; }
+  .footer a { color:var(--ink2); text-underline-offset:2px; }
+
+  @media (max-width:900px) {
+    .hero { grid-template-columns:1fr; padding-top:2.8rem; }
+    .scenario-grid { grid-template-columns:repeat(2,1fr); }
+    .insight-list { grid-template-columns:1fr; }
+    .tool-row { grid-template-columns:1fr; }
+    .quick-actions { justify-content:flex-start; }
+  }
+  @media (max-width:640px) {
+    .topnav { height:auto; min-height:60px; padding:.65rem .9rem; }
+    .brand-sub { display:none; }
+    .nav-actions { display:none; }
+    .hero, .tool-section, .overview, .main { padding-left:1rem; padding-right:1rem; }
+    .hero { padding-top:2rem; gap:1.2rem; }
+    .hero h1 { font-size:2.15rem; }
+    .stats-grid { grid-template-columns:repeat(3,1fr); }
+    .scenario-grid { display:flex; overflow-x:auto; gap:10px; scrollbar-width:none; }
+    .scenario-grid::-webkit-scrollbar { display:none; }
+    .scenario-card { min-width:210px; }
+    .cards-grid { grid-template-columns:1fr; }
+    .modal-overlay { padding:.6rem; align-items:flex-end; }
+    .modal-box { max-height:92vh; border-radius:22px 22px 0 0; }
+    .modal-title { font-size:1.08rem; }
+  }
+  @media print {
+    .topnav,.hero-panel,.tool-section,.overview,.modal-overlay,.toast,.footer { display:none !important; }
+    body { background:#fff; }
+    .hero { display:block; padding:1rem 0; }
+    .main { padding:0; max-width:none; }
+    .cards-grid { display:block; }
+    .question-card { break-inside:avoid; margin-bottom:10px; box-shadow:none; }
+  }
+
+
+  /* ═══════════════════════════════════════════════════════════
+     色彩優化版｜奶油紙感 × 柔霧彩色情境
+     保留原本功能，只調整整體色票、層次、卡片質感
+  ═══════════════════════════════════════════════════════════ */
+  :root {
+    --s1:#E4F7EE; --s1a:#2F9B77; --s1b:#14604C;
+    --s2:#E6F2FF; --s2a:#4F86D9; --s2b:#24558F;
+    --s3:#FFF0DF; --s3a:#E4893D; --s3b:#884812;
+    --s4:#F2E8FF; --s4a:#8B68D9; --s4b:#5740A4;
+    --s5:#ECEEFF; --s5a:#5B66C8; --s5b:#333C8A;
+    --paper:#FFF9F0;
+    --paper2:#F7EFE4;
+    --paper3:#E9DDCE;
+    --surface:#FFFDF9;
+    --ink:#27221B;
+    --ink2:#62584C;
+    --ink3:#9A9081;
+    --border:rgba(103,80,50,.12);
+    --border2:rgba(103,80,50,.22);
+    --shadow:0 16px 42px rgba(99,76,43,.13), 0 3px 10px rgba(78,58,32,.06);
   }
 
   body {
-    font-family: var(--sans);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
+    background-color:var(--paper);
+    background-image:
+      radial-gradient(circle at 8% 8%, rgba(47,155,119,.16), transparent 30%),
+      radial-gradient(circle at 86% 10%, rgba(139,104,217,.15), transparent 28%),
+      radial-gradient(circle at 18% 88%, rgba(228,137,61,.13), transparent 34%),
+      radial-gradient(circle at 88% 80%, rgba(79,134,217,.12), transparent 30%),
+      linear-gradient(180deg,#FFFDF7 0%,#FFF8EE 42%,#F7EFE4 100%);
   }
 
-  /* ── HEADER ── */
-  .site-header {
-    background: var(--white);
-    border-bottom: 1px solid var(--border);
-    padding: 1.6rem 2rem 1.4rem;
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+  .topnav {
+    background:linear-gradient(90deg, rgba(255,253,248,.94), rgba(255,248,239,.9));
+    border-bottom:1px solid rgba(144,108,61,.14);
+    box-shadow:0 8px 24px rgba(95,72,38,.06);
   }
-  .hd-school {
-    font-size: 11px;
-    color: var(--text3);
-    letter-spacing: 0.08em;
-    margin-bottom: 5px;
+  .brand-title { color:#376458; }
+  .brand-sub { color:#A08F78; }
+  .home-link, .mini-btn {
+    background:rgba(255,255,255,.72);
+    border-color:rgba(139,113,76,.22);
+    color:#6B604F;
   }
-  .hd-title {
-    font-family: var(--serif);
-    font-size: 22px;
-    font-weight: 600;
-    letter-spacing: 0.03em;
-    color: var(--text);
-    margin-bottom: 3px;
-  }
-  .hd-sub {
-    font-size: 12px;
-    color: var(--text2);
-    line-height: 1.6;
+  .home-link:hover, .mini-btn:hover {
+    background:#FFFDF9;
+    border-color:rgba(47,155,119,.35);
+    color:#2F6656;
   }
 
-  /* ── TIPS BAR ── */
-  .tips-bar {
-    background: var(--bg2);
-    border-bottom: 1px solid var(--border);
-    padding: 0.75rem 2rem;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+  .hero {
+    position:relative;
+    isolation:isolate;
   }
-  .tips-bar::-webkit-scrollbar { display: none; }
-  .tips-label {
-    font-size: 11px;
-    color: var(--text3);
-    white-space: nowrap;
-    flex-shrink: 0;
+  .hero::before {
+    content:'';
+    position:absolute;
+    inset:2.1rem 1rem .5rem;
+    z-index:-1;
+    border-radius:32px;
+    background:
+      linear-gradient(135deg,rgba(255,255,255,.88),rgba(255,246,233,.62)),
+      radial-gradient(circle at 20% 24%,rgba(47,155,119,.18),transparent 36%),
+      radial-gradient(circle at 86% 25%,rgba(139,104,217,.16),transparent 34%),
+      radial-gradient(circle at 50% 92%,rgba(228,137,61,.13),transparent 38%);
+    border:1px solid rgba(139,113,76,.12);
+    box-shadow:0 18px 60px rgba(121,87,43,.09);
   }
-  .tip-pill {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 5px 13px;
-    border-radius: 20px;
-    border: 1px solid var(--border2);
-    background: var(--white);
-    font-size: 11px;
-    font-family: var(--sans);
-    white-space: nowrap;
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: all 0.15s;
-    color: var(--text);
+  .eyebrow {
+    background:rgba(255,255,255,.76);
+    color:#2F7D65;
+    border-color:rgba(47,155,119,.22);
+    box-shadow:0 8px 18px rgba(47,155,119,.08);
   }
-  .tip-pill:hover { background: var(--bg2); border-color: var(--border2); }
-  .tip-icon { font-size: 14px; }
-
-  /* ── NAV ── */
-  .scenario-nav {
-    background: var(--white);
-    border-bottom: 1px solid var(--border);
-    padding: 0.9rem 2rem;
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+  .hero h1 { color:#2A241C; }
+  .hero h1 span {
+    color:transparent;
+    background:linear-gradient(90deg,#2F9B77 0%,#4F86D9 48%,#8B68D9 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
   }
-  .scenario-nav::-webkit-scrollbar { display: none; }
-  .nav-btn {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 7px 15px;
-    border-radius: var(--r);
-    border: 1px solid var(--border);
-    background: var(--white);
-    font-size: 12px;
-    font-family: var(--sans);
-    cursor: pointer;
-    white-space: nowrap;
-    flex-shrink: 0;
-    transition: all 0.18s;
-    color: var(--text2);
+  .hero-desc { color:#64594B; }
+  .primary-btn {
+    background:linear-gradient(135deg,#2F9B77 0%,#4F86D9 100%);
+    border:none;
+    box-shadow:0 12px 24px rgba(47,155,119,.20);
   }
-  .nav-btn:hover { border-color: var(--border2); color: var(--text); }
-  .nav-btn.active { border-width: 1.5px; font-weight: 500; }
-  .nav-btn.n1.active { background: var(--s1); border-color: var(--s1a); color: var(--s1b); }
-  .nav-btn.n2.active { background: var(--s2); border-color: var(--s2a); color: var(--s2b); }
-  .nav-btn.n3.active { background: var(--s3); border-color: var(--s3a); color: var(--s3b); }
-  .nav-btn.n4.active { background: var(--s4); border-color: var(--s4a); color: var(--s4b); }
-  .nav-btn.n5.active { background: var(--s5); border-color: var(--s5a); color: var(--s5b); }
-
-  /* ── MAIN ── */
-  .main-content {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 1.8rem 2rem 4rem;
+  .primary-btn:hover { box-shadow:0 18px 36px rgba(47,155,119,.24); }
+  .outline-btn {
+    background:rgba(255,255,255,.72);
+    border-color:rgba(139,113,76,.22);
+    color:#4E463A;
   }
 
-  /* ── SCENARIO HEADER ── */
-  .sh-wrap { margin-bottom: 1.6rem; }
-
-  .sh-card {
-    padding: 1.1rem 1.4rem;
-    border-radius: var(--r);
-    border-left: 3px solid;
-    cursor: pointer;
-    user-select: none;
-    transition: opacity 0.15s;
+  .hero-panel, .toolbox {
+    background:rgba(255,253,249,.82);
+    border-color:rgba(139,113,76,.15);
+    box-shadow:0 20px 56px rgba(119,86,43,.11), inset 0 1px 0 rgba(255,255,255,.86);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
   }
-  .sh-card:hover { opacity: 0.92; }
-  .sh-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
-  .sh-card h2 { font-family: var(--serif); font-size: 17px; font-weight: 600; margin-bottom: 3px; }
-  .sh-card .core { font-size: 12px; line-height: 1.6; }
-
-  .sh1 { background: var(--s1); border-color: var(--s1a); }
-  .sh1 h2 { color: var(--s1b); } .sh1 .core { color: var(--s1a); }
-  .sh2 { background: var(--s2); border-color: var(--s2a); }
-  .sh2 h2 { color: var(--s2b); } .sh2 .core { color: var(--s2a); }
-  .sh3 { background: var(--s3); border-color: var(--s3a); }
-  .sh3 h2 { color: var(--s3b); } .sh3 .core { color: var(--s3a); }
-  .sh4 { background: var(--s4); border-color: var(--s4a); }
-  .sh4 h2 { color: var(--s4b); } .sh4 .core { color: var(--s4a); }
-  .sh5 { background: var(--s5); border-color: var(--s5a); }
-  .sh5 h2 { color: var(--s5b); } .sh5 .core { color: var(--s5a); }
-
-  .enc-btn {
-    font-size: 11px;
-    font-weight: 500;
-    padding: 4px 11px;
-    border-radius: 20px;
-    border: 1px solid;
-    white-space: nowrap;
-    flex-shrink: 0;
-    cursor: pointer;
-    background: transparent;
-    transition: all 0.15s;
-    font-family: var(--sans);
+  .panel-label, .count-text { color:#A08F78; }
+  .stat {
+    background:linear-gradient(180deg,#FFFFFF,#FFF9F0);
+    border-color:rgba(139,113,76,.13);
   }
-  .sh1 .enc-btn { border-color: var(--s1a); color: var(--s1a); }
-  .sh2 .enc-btn { border-color: var(--s2a); color: var(--s2a); }
-  .sh3 .enc-btn { border-color: var(--s3a); color: var(--s3a); }
-  .sh4 .enc-btn { border-color: var(--s4a); color: var(--s4a); }
-  .sh5 .enc-btn { border-color: var(--s5a); color: var(--s5a); }
-  .enc-btn:hover { opacity: 0.75; }
-
-  /* ── ENCYCLOPEDIA ── */
-  .encyclopedia {
-    display: none;
-    margin-top: 10px;
-    padding: 1.1rem 1.3rem;
-    border-radius: var(--r);
-    border: 1px solid var(--border);
-    background: var(--white);
-    animation: fadeIn 0.2s ease;
+  .stat-num { color:#2F7D65; }
+  .tip-card {
+    background:linear-gradient(180deg,#FFFFFF,#FFF9F2);
+    border-color:rgba(139,113,76,.13);
   }
-  .encyclopedia.open { display: block; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+  .tip-card:nth-child(1) { box-shadow:inset 4px 0 0 rgba(47,155,119,.34); }
+  .tip-card:nth-child(2) { box-shadow:inset 4px 0 0 rgba(79,134,217,.34); }
+  .tip-card:nth-child(3) { box-shadow:inset 4px 0 0 rgba(139,104,217,.34); }
 
-  .enc-intro {
-    font-size: 12.5px;
-    color: var(--text2);
-    line-height: 1.75;
-    margin-bottom: 12px;
-    font-style: italic;
+  #searchInput {
+    background:#FFFEFB;
+    border-color:rgba(139,113,76,.22);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.8);
   }
-  .enc-item { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
-  .enc-dot { width: 3px; border-radius: 2px; flex-shrink: 0; margin-top: 3px; align-self: stretch; min-height: 14px; }
-  .enc-body { flex: 1; }
-  .enc-title { font-size: 12.5px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
-  .enc-text { font-size: 12px; color: var(--text2); line-height: 1.7; }
-
-  /* ── CARD GRID ── */
-  .questions-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 14px;
+  #searchInput:focus {
+    border-color:#2F9B77;
+    box-shadow:0 0 0 4px rgba(47,155,119,.12), 0 8px 18px rgba(47,155,119,.08);
+  }
+  .filter-chip, .keyword-chip {
+    background:rgba(255,253,249,.88);
+    border-color:rgba(139,113,76,.16);
+    color:#6C6154;
+  }
+  .filter-chip:hover, .keyword-chip:hover { background:#fff; border-color:rgba(47,155,119,.28); }
+  .filter-chip.active {
+    box-shadow:0 8px 20px rgba(111,83,45,.08);
   }
 
-  /* ── FLIP CARD ── */
-  .card-wrapper {
-    perspective: 900px;
-    height: 216px;
-    cursor: pointer;
+  .scenario-card {
+    background:
+      linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,253,249,.88) 46%,var(--sc-bg) 185%);
+    border-color:rgba(139,113,76,.14);
+    box-shadow:0 6px 22px rgba(99,76,43,.06);
   }
-  .card-inner {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    transform-style: preserve-3d;
-    transition: transform 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+  .scenario-card::before {
+    content:'';
+    position:absolute;
+    inset:0 0 auto 0;
+    height:4px;
+    background:var(--sc-text);
+    opacity:.62;
   }
-  .card-wrapper.flipped .card-inner { transform: rotateY(180deg); }
+  .scenario-card::after {
+    opacity:.82;
+    filter:blur(.3px);
+  }
+  .scenario-card:hover { box-shadow:0 16px 36px rgba(99,76,43,.14); }
+  .sc-name { letter-spacing:.01em; }
 
-  .card-front, .card-back {
-    position: absolute;
-    inset: 0;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    border-radius: var(--r);
-    border: 1px solid var(--border);
-    padding: 1rem 1.2rem;
-    display: flex;
-    flex-direction: column;
-    box-shadow: var(--shadow);
+  .insight-card {
+    background:rgba(255,253,249,.9);
+    box-shadow:0 10px 28px rgba(99,76,43,.07);
+    border-color:rgba(139,113,76,.14);
   }
-  .card-back {
-    transform: rotateY(180deg);
-    background: var(--white);
-    overflow: hidden;
-  }
-  .card-back-scroll {
-    overflow-y: auto;
-    flex: 1;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border2) transparent;
-  }
-  .card-back-scroll::-webkit-scrollbar { width: 4px; }
-  .card-back-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
-
-  .card-front {
-    background: var(--white);
-    justify-content: space-between;
-  }
-  .card-front:hover { border-color: var(--border2); }
-
-  .card-q-num {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    margin-bottom: 8px;
-  }
-  .card-q-text {
-    font-family: var(--serif);
-    font-size: 13.5px;
-    line-height: 1.7;
-    flex: 1;
-    color: var(--text);
-  }
-  .card-hint {
-    font-size: 10px;
-    color: var(--text3);
-    margin-top: 10px;
-    text-align: right;
+  .insight-item {
+    background:linear-gradient(180deg,#FFFFFF,#FFF9F0);
+    border-color:rgba(139,113,76,.12);
   }
 
-  .c1 .card-q-num { color: var(--s1a); }
-  .c2 .card-q-num { color: var(--s2a); }
-  .c3 .card-q-num { color: var(--s3a); }
-  .c4 .card-q-num { color: var(--s4a); }
-  .c5 .card-q-num { color: var(--s5a); }
+  .question-card {
+    background:
+      linear-gradient(180deg,#FFFFFF 0%,#FFFDF9 58%,var(--scenario-bg) 220%);
+    border-color:rgba(139,113,76,.14);
+    box-shadow:0 6px 20px rgba(99,76,43,.055);
+  }
+  .question-card::before { height:5px; opacity:.82; }
+  .question-card:hover {
+    box-shadow:0 18px 42px rgba(99,76,43,.14);
+    border-color:rgba(139,113,76,.24);
+  }
+  .q-badge {
+    background:rgba(255,255,255,.58);
+    backdrop-filter:blur(6px);
+    -webkit-backdrop-filter:blur(6px);
+  }
+  .q-text { color:#2A241C; }
+  .tiny-tag {
+    background:rgba(247,239,228,.8);
+    color:#9A8B78;
+  }
 
-  .c1 .card-front { border-top: 2.5px solid var(--s1a); }
-  .c2 .card-front { border-top: 2.5px solid var(--s2a); }
-  .c3 .card-front { border-top: 2.5px solid var(--s3a); }
-  .c4 .card-front { border-top: 2.5px solid var(--s4a); }
-  .c5 .card-front { border-top: 2.5px solid var(--s5a); }
-
-  /* ── CARD BACK ── */
-  .back-top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-  .back-q-num { font-size: 10px; font-weight: 500; color: var(--text3); letter-spacing: 0.08em; }
-  .back-close { font-size: 10px; color: var(--text3); }
-
-  .answer-block { margin-bottom: 10px; }
-  .answer-label {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--text2);
-    margin-bottom: 3px;
-    display: flex;
-    align-items: flex-start;
-    gap: 5px;
-    line-height: 1.4;
-  }
-  .answer-dot {
-    width: 5px; height: 5px;
-    border-radius: 50%;
-    margin-top: 4px;
-    flex-shrink: 0;
-  }
-  .d1 { background: var(--s1a); }
-  .d2 { background: var(--s2a); }
-  .d3 { background: var(--s3a); }
-  .d4 { background: var(--s4a); }
-  .d5 { background: var(--s5a); }
-
-  .answer-response {
-    font-family: var(--serif);
-    font-size: 12.5px;
-    line-height: 1.65;
-    color: var(--text);
-    background: var(--bg2);
-    border-radius: 6px;
-    padding: 6px 10px;
-    margin-bottom: 3px;
-  }
-  .answer-why {
-    font-size: 11px;
-    color: var(--text2);
-    line-height: 1.55;
-    padding: 0 2px;
-  }
-  .avoid-block {
-    margin-top: 10px;
-    padding: 7px 10px;
-    border-radius: 6px;
-    background: var(--warn);
-    border-left: 2px solid var(--warna);
-  }
-  .avoid-label {
-    font-size: 10px;
-    font-weight: 500;
-    color: var(--warna);
-    margin-bottom: 2px;
-  }
-  .avoid-text { font-size: 11px; color: #7D5010; line-height: 1.55; }
-
-  /* ── TIP MODAL ── */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.3);
-    z-index: 200;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-  }
-  .modal-overlay.open { display: flex; }
+  .modal-overlay { background:rgba(45,36,25,.48); }
   .modal-box {
-    background: var(--white);
-    border-radius: var(--r);
-    border: 1px solid var(--border);
-    padding: 1.6rem;
-    max-width: 340px;
-    width: 100%;
-    position: relative;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-    animation: fadeIn 0.18s ease;
+    background:linear-gradient(180deg,#FFFDF9 0%,#FFFFFF 38%,#FFF9F0 100%);
+    box-shadow:0 28px 90px rgba(55,42,25,.28);
   }
-  .modal-close {
-    position: absolute;
-    top: 12px; right: 14px;
-    font-size: 20px;
-    cursor: pointer;
-    color: var(--text3);
-    background: none;
-    border: none;
-    line-height: 1;
-    font-family: var(--sans);
+  .modal-head {
+    background:linear-gradient(90deg,rgba(255,255,255,.92),rgba(255,248,238,.78));
   }
-  .modal-close:hover { color: var(--text); }
-  .modal-icon { font-size: 24px; margin-bottom: 8px; }
-  .modal-title { font-family: var(--serif); font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--text); }
-  .modal-body { font-size: 13px; line-height: 1.75; color: var(--text2); }
+  .close-btn { background:#F7EFE4; color:#9A9081; }
+  .answer-card {
+    background:linear-gradient(180deg,#FFFDF9,#FFF9F0);
+    border-color:rgba(139,113,76,.13);
+  }
+  .response {
+    background:#FFFFFF;
+    border:1px solid rgba(139,113,76,.10);
+  }
+  .avoid {
+    background:#FFF5E0;
+    border-color:rgba(228,137,61,.25);
+    border-left-color:#E4893D;
+  }
+  .avoid strong { color:#884812; }
 
-  /* ── FOOTER ── */
-  .site-footer {
-    padding: 1.5rem 2rem;
-    border-top: 1px solid var(--border);
-    text-align: center;
-    background: var(--white);
-  }
-  .footer-school { font-size: 12px; color: var(--text3); letter-spacing: 0.05em; }
-  .footer-copy { font-size: 11px; color: var(--text3); margin-top: 3px; }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 640px) {
-    .site-header { padding: 1.2rem 1.2rem 1rem; }
-    .tips-bar { padding: 0.65rem 1.2rem; }
-    .scenario-nav { padding: 0.75rem 1.2rem; }
-    .main-content { padding: 1.2rem 1.2rem 3rem; }
-    .questions-grid { grid-template-columns: 1fr; }
-    .hd-title { font-size: 19px; }
+  .footer {
+    background:linear-gradient(180deg,#FFFDF9,#F7EFE4);
+    border-top-color:rgba(139,113,76,.16);
   }
 
-  @media (max-width: 480px) {
-    .card-wrapper { height: 230px; }
+  @media (max-width:640px) {
+    .hero::before { inset:1.05rem .6rem .2rem; border-radius:26px; }
+    .topnav { background:rgba(255,253,249,.95); }
   }
+
 </style>
 </head>
 <body>
-<a href="index.html" style="position:fixed;top:16px;left:16px;z-index:9999;display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.88);backdrop-filter:blur(8px);border:1px solid rgba(0,0,0,0.1);border-radius:20px;padding:7px 16px;font-family:Noto Sans TC,sans-serif;font-size:0.8rem;color:#4a4040;text-decoration:none;box-shadow:0 2px 12px rgba(0,0,0,0.09);transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,1)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='rgba(255,255,255,0.88)';this.style.transform='none'">← 資源中心</a>
+<nav class="topnav">
+  <a class="home-link" href="index.html">← 資源中心</a>
+  <div class="brand">
+    <div class="brand-title">親子覺察對話手冊</div>
+    <div class="brand-sub">五個時間點 × 50 個問題 × 接話建議</div>
+  </div>
+  <div class="nav-actions">
+    <button class="mini-btn" onclick="scrollToTools()">搜尋問題</button>
+    <button class="mini-btn" onclick="randomQuestion()">隨機抽題</button>
+  </div>
+</nav>
 
-<!-- HEADER -->
-<header class="site-header">
-  <div class="hd-school">永齡希望小學雲科大分校　社會情緒學習課程</div>
-  <div class="hd-title">親子覺察對話手冊</div>
-  <div class="hd-sub">五個時間點 × 50 個問題 × 接話建議　讓日常聊天成為素養教育</div>
+<header class="hero">
+  <div>
+    <div class="eyebrow">SEL Dialogue Handbook</div>
+    <h1>把日常聊天，變成<br><span>看見孩子的時刻。</span></h1>
+    <p class="hero-desc">從放學接送、陪伴功課、餐桌對話、螢幕遊戲到睡前時刻，提供 50 個親子覺察問題與接話建議。家長不用急著說教，只要多聽一點、接住一點，孩子就會更願意說。</p>
+    <div class="hero-cta">
+      <button class="primary-btn" onclick="scrollToTools()">開始找一句可以問的話 →</button>
+      <button class="outline-btn" onclick="randomQuestion()">🎲 今天隨機抽一題</button>
+    </div>
+  </div>
+  <aside class="hero-panel">
+    <div class="panel-label">手冊快速掌握</div>
+    <div class="stats-grid">
+      <div class="stat"><div class="stat-num">5</div><div class="stat-name">生活情境</div></div>
+      <div class="stat"><div class="stat-num">50</div><div class="stat-name">覺察提問</div></div>
+      <div class="stat"><div class="stat-num">3</div><div class="stat-name">接話心法</div></div>
+    </div>
+    <div class="tip-stack" id="tipStack"></div>
+  </aside>
 </header>
 
-<!-- TIPS BAR -->
-<div class="tips-bar">
-  <span class="tips-label">三個心法：</span>
-  <button class="tip-pill" onclick="openTip(0)"><span class="tip-icon">🤐</span> 傾聽的藝術</button>
-  <button class="tip-pill" onclick="openTip(1)"><span class="tip-icon">🪞</span> 鏡像反應</button>
-  <button class="tip-pill" onclick="openTip(2)"><span class="tip-icon">🚪</span> 接受句點</button>
-</div>
+<section class="tool-section" id="tools">
+  <div class="toolbox">
+    <div class="tool-row">
+      <div class="search-wrap"><input id="searchInput" type="search" placeholder="搜尋：不公平、功課、螢幕、睡前、抱抱、累、朋友……" oninput="setSearch(this.value)"></div>
+      <div class="quick-actions">
+        <button class="mini-btn" onclick="randomQuestion()">🎲 隨機抽題</button>
+        <button class="mini-btn" onclick="clearFilters()">清除篩選</button>
+      </div>
+    </div>
+    <div class="chip-row" id="scenarioChips"></div>
+  </div>
+</section>
 
-<!-- SCENARIO NAV -->
-<nav class="scenario-nav" id="scenarioNav" aria-label="情境選擇"></nav>
+<section class="overview">
+  <div class="section-title"><h2 id="overviewTitle">五個生活情境</h2><span class="count-text" id="countText">顯示全部 50 題</span></div>
+  <div class="scenario-grid" id="scenarioCards"></div>
+  <div class="insight-card" id="insightCard"></div>
+</section>
 
-<!-- MAIN -->
-<main class="main-content">
-  <div id="scenarioHeader"></div>
-  <div class="questions-grid" id="questionsGrid"></div>
+<main class="main">
+  <div class="cards-grid" id="cardsGrid"></div>
 </main>
 
-<!-- FOOTER -->
-<footer class="site-footer">
-  <div class="footer-school">永齡希望小學雲科大分校</div>
-  <div class="footer-copy">親子覺察對話手冊　社會情緒學習 SEL 課程資源</div>
-  <div style="margin-top:10px;font-size:0.75rem;color:#9a8878;line-height:1.9;">
-    © 永齡希望小學雲科大分校<br>
-    本作品採用
-    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hant" target="_blank" rel="noopener"
-       style="color:#7a8878;text-decoration:underline;text-underline-offset:2px;">
-      創用 CC 姓名標示－非商業性－相同方式分享 4.0
-    </a> 授權・使用請保留出處標示
-  </div>
+<footer class="footer">
+  <strong>永齡希望小學雲科大分校</strong>
+  <p>親子覺察對話手冊｜社會情緒學習 SEL 課程資源<br>
+  本作品採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hant" target="_blank" rel="noopener">創用 CC 姓名標示－非商業性－相同方式分享 4.0</a> 授權，使用請保留出處標示。</p>
 </footer>
 
-<!-- TIP MODAL -->
-<div class="modal-overlay" id="tipModal" onclick="if(event.target===this)closeTip()">
-  <div class="modal-box" role="dialog" aria-modal="true">
-    <button class="modal-close" onclick="closeTip()" aria-label="關閉">×</button>
-    <div class="modal-icon" id="tipIcon"></div>
-    <div class="modal-title" id="tipTitle"></div>
-    <div class="modal-body" id="tipBody"></div>
+<div class="modal-overlay" id="questionModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-head">
+      <div class="modal-title-wrap">
+        <div class="modal-eyebrow" id="modalEyebrow"></div>
+        <div class="modal-title" id="modalTitle"></div>
+      </div>
+      <button class="close-btn" onclick="closeModal()" aria-label="關閉">×</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
   </div>
 </div>
+<div class="toast" id="toast">已複製</div>
 
 <script>
-// ── DATA ──────────────────────────────────────────────────
-
 const TIPS = [
   { icon: '🤐', title: '傾聽的藝術', body: '孩子回答時，家長練習多聽 5 秒鐘，不要急著說「很好」或「不對」。給孩子繼續說話的空間，是最好的傾聽。' },
   { icon: '🪞', title: '鏡像反應', body: '當孩子說「心裡怪怪的」，家長只要重複「喔，所以那時候你覺得心裡怪怪的啊……」，孩子通常會自動說出更多。' },
@@ -632,143 +640,175 @@ const SCENARIOS = [
   },
 ];
 
-// ── STATE ──────────────────────────────────────────────────
-let currentScenario = 0;
-let flippedCards = new Set();
-let encOpen = false;
+const state = { scenario:'all', query:'' };
+const scenarioTheme = {
+  1: {bg:'var(--s1)', accent:'var(--s1a)', text:'var(--s1b)'},
+  2: {bg:'var(--s2)', accent:'var(--s2a)', text:'var(--s2b)'},
+  3: {bg:'var(--s3)', accent:'var(--s3a)', text:'var(--s3b)'},
+  4: {bg:'var(--s4)', accent:'var(--s4a)', text:'var(--s4b)'},
+  5: {bg:'var(--s5)', accent:'var(--s5a)', text:'var(--s5b)'}
+};
+let allQuestions = [];
+let questionMap = new Map();
 
-// ── MODAL ──────────────────────────────────────────────────
+function esc(v) {
+  return String(v ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function buildIndex() {
+  allQuestions = [];
+  let global = 1;
+  SCENARIOS.forEach((s, si) => {
+    s.questions.forEach((q, qi) => {
+      const item = {...q, key:`${si}-${qi}`, scenario:s, scenarioIndex:si, localIndex:qi+1, globalIndex:global++};
+      allQuestions.push(item);
+      questionMap.set(item.key, item);
+    });
+  });
+}
+function textBlob(q) {
+  return [q.q, q.scenario.label, q.scenario.sub, q.scenario.core, q.answers.map(a => [a.label,a.resp,a.why].join(' ')).join(' '), q.avoid].join(' ');
+}
+function filteredQuestions() {
+  const kw = state.query.trim().toLowerCase();
+  return allQuestions.filter(q => {
+    const matchScenario = state.scenario === 'all' || String(q.scenario.id) === String(state.scenario);
+    const matchKw = !kw || textBlob(q).toLowerCase().includes(kw);
+    return matchScenario && matchKw;
+  });
+}
+function scrollToTools() { document.getElementById('tools').scrollIntoView({behavior:'smooth', block:'start'}); }
+function setSearch(v) { state.query = v; render(); }
+function clearFilters() {
+  state.scenario = 'all'; state.query = '';
+  document.getElementById('searchInput').value = '';
+  render();
+}
+function setScenario(id) {
+  state.scenario = id;
+  render();
+  document.getElementById('tools').scrollIntoView({behavior:'smooth', block:'start'});
+}
+function showToast(msg='已複製') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1400);
+}
+function copyText(text) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => showToast('已複製這題')).catch(() => showToast('可手動複製'));
+  } else { showToast('可手動複製'); }
+}
+function randomQuestion() {
+  const list = filteredQuestions();
+  if (!list.length) { showToast('目前沒有符合的題目'); return; }
+  const q = list[Math.floor(Math.random()*list.length)];
+  openQuestion(q.key);
+}
 function openTip(i) {
   const t = TIPS[i];
-  document.getElementById('tipIcon').textContent = t.icon;
-  document.getElementById('tipTitle').textContent = t.title;
-  document.getElementById('tipBody').textContent = t.body;
-  document.getElementById('tipModal').classList.add('open');
+  document.getElementById('modalEyebrow').textContent = '親子對話心法';
+  document.getElementById('modalTitle').textContent = `${t.icon} ${t.title}`;
+  document.getElementById('modalBody').innerHTML = `<p style="font-size:15px;line-height:1.9;color:var(--ink2)">${esc(t.body)}</p>`;
+  document.getElementById('questionModal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
-function closeTip() {
-  document.getElementById('tipModal').classList.remove('open');
+function openQuestion(key) {
+  const q = questionMap.get(key); if(!q) return;
+  const s = q.scenario; const theme = scenarioTheme[s.id];
+  document.documentElement.style.setProperty('--modal-accent', theme.accent);
+  document.getElementById('modalEyebrow').textContent = `${s.emoji} ${s.label}｜Q${q.localIndex}`;
+  document.getElementById('modalTitle').textContent = `「${q.q}」`;
+  document.getElementById('modalBody').innerHTML = `
+    ${q.answers.map((a, idx) => `
+      <div class="answer-card">
+        <div class="answer-label">${esc(a.label)}</div>
+        <div class="response">${esc(a.resp)}</div>
+        <div class="why">${esc(a.why)}</div>
+      </div>
+    `).join('')}
+    <div class="avoid"><strong>⚠ 避免說</strong><p>${esc(q.avoid)}</p></div>
+    <div class="modal-actions">
+      <button class="mini-btn" onclick="copyText('Q${q.localIndex}：${esc(q.q).replace(/'/g, '\&#39;')}')">複製問題</button>
+      <button class="mini-btn" onclick="randomQuestion()">再抽一題</button>
+    </div>`;
+  document.getElementById('questionModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('questionModal').classList.remove('open');
   document.body.style.overflow = '';
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTip(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
 
-// ── NAV ────────────────────────────────────────────────────
-function renderNav() {
-  const nav = document.getElementById('scenarioNav');
-  nav.innerHTML = SCENARIOS.map((s, i) => `
-    <button class="nav-btn ${s.navClass} ${i === currentScenario ? 'active' : ''}"
-            onclick="switchScenario(${i})"
-            aria-pressed="${i === currentScenario}">
-      ${s.emoji} ${s.label}
+function renderTips() {
+  document.getElementById('tipStack').innerHTML = TIPS.map((t,i) => `
+    <button class="tip-card" onclick="openTip(${i})">
+      <span class="tip-ico">${t.icon}</span>
+      <span><span class="tip-title">${esc(t.title)}</span><span class="tip-body">${esc(t.body).slice(0,38)}……</span></span>
     </button>
   `).join('');
 }
-
-function switchScenario(i) {
-  currentScenario = i;
-  flippedCards.clear();
-  encOpen = false;
-  renderNav();
-  renderScenario();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+function renderScenarioChips() {
+  const chips = [`<button class="filter-chip ${state.scenario==='all'?'active':''}" onclick="setScenario('all')">全部情境</button>`];
+  SCENARIOS.forEach(s => {
+    const t = scenarioTheme[s.id];
+    chips.push(`<button class="filter-chip ${String(state.scenario)===String(s.id)?'active':''}" style="--active:${t.accent};--active-bg:${t.bg};--active-text:${t.text}" onclick="setScenario('${s.id}')">${s.emoji} ${esc(s.label)}</button>`);
+  });
+  document.getElementById('scenarioChips').innerHTML = chips.join('');
 }
-
-// ── ENCYCLOPEDIA ───────────────────────────────────────────
-function toggleEnc(e) {
-  e.stopPropagation();
-  encOpen = !encOpen;
-  const enc = document.getElementById('encyclopedia');
-  const btn = document.getElementById('encBtn');
-  enc.classList.toggle('open', encOpen);
-  btn.textContent = encOpen ? '收起 ↑' : '🧭 覺察小百科';
-}
-
-// ── CARDS ──────────────────────────────────────────────────
-function toggleCard(idx) {
-  const wrapper = document.getElementById('card-' + idx);
-  if (flippedCards.has(idx)) {
-    flippedCards.delete(idx);
-    wrapper.classList.remove('flipped');
+function renderScenarioCards() {
+  const wrap = document.getElementById('scenarioCards');
+  const insight = document.getElementById('insightCard');
+  document.getElementById('overviewTitle').textContent = state.scenario === 'all' ? '五個生活情境' : '情境覺察小百科';
+  if (state.scenario === 'all') {
+    insight.classList.remove('open');
+    wrap.style.display = '';
+    wrap.innerHTML = SCENARIOS.map(s => {
+      const t = scenarioTheme[s.id];
+      return `<article class="scenario-card" onclick="setScenario('${s.id}')" style="--sc-bg:${t.bg};--sc-text:${t.text}">
+        <div class="sc-emoji">${s.emoji}</div>
+        <div class="sc-name">${esc(s.label)}</div>
+        <div class="sc-sub">${esc(s.sub)}</div>
+        <div class="sc-core">${esc(s.core)}</div>
+      </article>`;
+    }).join('');
   } else {
-    flippedCards.add(idx);
-    wrapper.classList.add('flipped');
+    const s = SCENARIOS.find(x => String(x.id) === String(state.scenario));
+    const t = scenarioTheme[s.id];
+    wrap.innerHTML = '';
+    wrap.style.display = 'none';
+    insight.style.borderLeftColor = t.accent;
+    insight.innerHTML = `
+      <p class="insight-intro">${esc(s.enc.intro)}</p>
+      <div class="insight-list">
+        ${s.enc.items.map(item => `<div class="insight-item"><h3 style="color:${t.text}">${esc(item.title)}</h3><p>${esc(item.body)}</p></div>`).join('')}
+      </div>`;
+    insight.classList.add('open');
   }
 }
-
-// ── RENDER ─────────────────────────────────────────────────
-function renderScenario() {
-  const s = SCENARIOS[currentScenario];
-
-  // Header
-  document.getElementById('scenarioHeader').innerHTML = `
-    <div class="sh-wrap">
-      <div class="sh-card ${s.shClass}">
-        <div class="sh-top">
-          <div>
-            <h2>${s.emoji} ${s.label}・${s.sub}</h2>
-            <div class="core">核心：${s.core}</div>
-          </div>
-          <button class="enc-btn" id="encBtn" onclick="toggleEnc(event)">🧭 覺察小百科</button>
-        </div>
-      </div>
-      <div class="encyclopedia" id="encyclopedia">
-        <p class="enc-intro">${s.enc.intro}</p>
-        ${s.enc.items.map(item => `
-          <div class="enc-item">
-            <div class="enc-dot" style="background:${s.accentColor}"></div>
-            <div class="enc-body">
-              <div class="enc-title">${item.title}</div>
-              <div class="enc-text">${item.body}</div>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `;
-
-  // Cards
-  document.getElementById('questionsGrid').innerHTML = s.questions.map((q, qi) => `
-    <div class="card-wrapper ${s.cardClass}" id="card-${qi}" onclick="toggleCard(${qi})"
-         role="button" tabindex="0" aria-label="Q${qi+1} 點擊翻轉查看接話建議"
-         onkeydown="if(event.key==='Enter'||event.key===' ')toggleCard(${qi})">
-      <div class="card-inner">
-        <div class="card-front">
-          <div>
-            <div class="card-q-num">Q${qi + 1}</div>
-            <div class="card-q-text">「${q.q}」</div>
-          </div>
-          <div class="card-hint">點擊看接話建議 →</div>
-        </div>
-        <div class="card-back">
-          <div class="back-top-bar">
-            <span class="back-q-num">Q${qi + 1} 接話建議</span>
-            <span class="back-close">再點一下收起</span>
-          </div>
-          <div class="card-back-scroll">
-            ${q.answers.map(a => `
-              <div class="answer-block">
-                <div class="answer-label">
-                  <span class="answer-dot ${s.dotClass}"></span>
-                  <span>${a.label}</span>
-                </div>
-                <div class="answer-response">${a.resp}</div>
-                <div class="answer-why">${a.why}</div>
-              </div>
-            `).join('')}
-            <div class="avoid-block">
-              <div class="avoid-label">⚠ 避免說</div>
-              <div class="avoid-text">${q.avoid}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `).join('');
+function renderCards() {
+  const list = filteredQuestions();
+  document.getElementById('countText').textContent = `顯示 ${list.length} / ${allQuestions.length} 題`;
+  const grid = document.getElementById('cardsGrid');
+  if(!list.length) {
+    grid.innerHTML = `<div class="empty">找不到符合的問題。可以換個關鍵字，或按「清除篩選」。</div>`;
+    return;
+  }
+  grid.innerHTML = list.map(q => {
+    const s = q.scenario; const t = scenarioTheme[s.id];
+    const firstAvoid = q.avoid ? '避免說' : '';
+    return `<article class="question-card" onclick="openQuestion('${q.key}')" style="--accent:${t.accent};--scenario-bg:${t.bg};--scenario-text:${t.text};--scenario-border:${t.accent}">
+      <div class="q-meta"><span class="q-badge">${s.emoji} ${esc(s.label)}</span><span class="q-num">Q${q.localIndex}</span></div>
+      <div class="q-text">「${esc(q.q)}」</div>
+      <div class="q-foot"><div class="q-tags"><span class="tiny-tag">3 種接話</span><span class="tiny-tag">${firstAvoid}</span></div><span class="see-more">看建議 →</span></div>
+    </article>`;
+  }).join('');
 }
+function render() { renderScenarioChips(); renderScenarioCards(); renderCards(); }
 
-// ── INIT ───────────────────────────────────────────────────
-renderNav();
-renderScenario();
+buildIndex();
+renderTips();
+render();
 </script>
 </body>
 </html>

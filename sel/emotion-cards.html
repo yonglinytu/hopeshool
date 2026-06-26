@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>情緒家族牌卡 × 41 個陪伴練習 ｜ 永齡希望小學雲科大分校</title>
+<title>情緒家族牌卡 × 41 個 SEL 陪伴活動｜互動工具版</title>
 <meta name="description" content="情緒六大家族 × 41 個 SEL 陪伴練習活動，適合教師、家長與輔導工作者使用。永齡希望小學雲科大分校製作。">
 <meta property="og:title" content="情緒家族牌卡 × 41 個陪伴練習">
 <meta property="og:description" content="情緒六大家族 × 41 個 SEL 陪伴練習，含完整步驟、引導語與行動轉化。">
@@ -358,20 +358,209 @@ body {
 .footer-copy-text a { color: var(--ink3); text-decoration: underline; text-underline-offset: 2px; }
 
 /* responsive */
+/* ═════════════ OPTIMIZED UI ADD-ON ═════════════ */
+:root{
+  --hope-green:#5E9D5A;
+  --hope-green-dark:#2F6F46;
+  --hope-cream:#FFF8EA;
+  --hope-sun:#F6BD4A;
+  --hope-coral:#F28F7A;
+  --hope-blue:#6FA8DC;
+}
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(circle at 12% 8%, rgba(246,189,74,.22), transparent 26%),
+    radial-gradient(circle at 86% 14%, rgba(111,168,220,.22), transparent 24%),
+    linear-gradient(180deg,#FFFDF7 0%,#F4F7EF 45%,#EEF1FA 100%);
+}
+.topbar{
+  height:64px;
+  box-shadow:0 6px 24px rgba(18,23,42,.05);
+}
+.topbar-title{font-weight:700}
+.topbar-nav{display:flex;gap:6px;align-items:center;margin-left:auto}
+.topbar-nav a{
+  color:var(--ink2);text-decoration:none;font-size:12px;padding:6px 10px;
+  border-radius:999px;transition:.15s;background:transparent;
+}
+.topbar-nav a:hover{background:var(--bg2);color:var(--ink)}
+.topbar-right{margin-left:0}
+.hero-section{
+  max-width:1180px;
+  grid-template-columns:minmax(0,1.05fr) minmax(360px,.95fr);
+  align-items:center;
+  padding:4.6rem 2rem 2.2rem;
+}
+.hero-copy-card{
+  background:rgba(255,255,255,.72);
+  border:1px solid rgba(255,255,255,.88);
+  box-shadow:0 20px 70px rgba(18,23,42,.09);
+  border-radius:28px;
+  padding:2.2rem;
+  position:relative;
+  overflow:hidden;
+}
+.hero-copy-card::before{
+  content:"";position:absolute;inset:auto -60px -70px auto;width:190px;height:190px;border-radius:50%;
+  background:rgba(94,157,90,.12);pointer-events:none;
+}
+.hero-title{font-weight:400}
+.hero-title strong{color:var(--hope-green-dark)}
+.hero-desc{max-width:620px}
+.hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:1.45rem}
+.cta-btn{
+  display:inline-flex;align-items:center;gap:7px;text-decoration:none;border:1px solid var(--border2);
+  border-radius:999px;padding:10px 16px;font-size:13px;color:var(--ink2);background:#fff;
+  cursor:pointer;font-family:inherit;transition:.15s;
+}
+.cta-btn:hover{transform:translateY(-1px);box-shadow:var(--shadow);color:var(--ink)}
+.cta-primary{background:var(--hope-green-dark);border-color:var(--hope-green-dark);color:#fff}
+.cta-primary:hover{color:#fff}
+.hero-visual{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  align-items:stretch;
+}
+.hero-tool-card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:18px;
+  min-height:136px;
+  box-shadow:var(--shadow);
+  position:relative;
+  overflow:hidden;
+}
+.hero-tool-card::after{
+  content:attr(data-mark);
+  position:absolute;right:-8px;bottom:-18px;font-size:72px;font-weight:900;opacity:.055;
+}
+.hero-tool-card:nth-child(1){background:linear-gradient(135deg,#FFF7DA,#fff)}
+.hero-tool-card:nth-child(2){background:linear-gradient(135deg,#EAF3DE,#fff)}
+.hero-tool-card:nth-child(3){background:linear-gradient(135deg,#EEEDFE,#fff)}
+.hero-tool-card:nth-child(4){background:linear-gradient(135deg,#FCEBEB,#fff)}
+.hero-tool-num{font-size:28px;font-weight:800;line-height:1;color:var(--ink)}
+.hero-tool-label{font-size:12px;color:var(--ink3);margin-top:6px}
+.hero-tool-text{font-size:13px;color:var(--ink2);line-height:1.55;margin-top:12px}
+.quick-section{
+  max-width:1180px;margin:0 auto 1.25rem;padding:0 2rem;
+}
+.quick-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+}
+.quick-card{
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.78);
+  border-radius:20px;
+  padding:18px;
+  box-shadow:var(--shadow);
+  cursor:pointer;
+  transition:.15s;
+}
+.quick-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);border-color:var(--hope-green)}
+.quick-kicker{font-size:11px;color:var(--ink3);letter-spacing:.08em;text-transform:uppercase}
+.quick-title{font-weight:800;font-size:18px;margin-top:6px;color:var(--ink)}
+.quick-desc{font-size:12px;color:var(--ink2);line-height:1.65;margin-top:7px}
+.tool-panel{
+  max-width:1180px;margin:0 auto 1.5rem;padding:0 2rem;
+}
+.tool-panel-inner{
+  background:#fff;border:1px solid var(--border);
+  border-radius:22px;padding:16px;box-shadow:var(--shadow);
+  display:grid;grid-template-columns:minmax(220px,1fr) auto auto;gap:10px;align-items:center;
+}
+.search-box{
+  width:100%;border:1px solid var(--border2);border-radius:999px;padding:11px 16px;
+  font:inherit;font-size:14px;color:var(--ink);background:var(--bg);
+  outline:none;transition:.15s;
+}
+.search-box:focus{border-color:var(--hope-green);box-shadow:0 0 0 4px rgba(94,157,90,.12);background:#fff}
+.tool-button{
+  border:1px solid var(--border2);background:var(--surface);border-radius:999px;padding:10px 14px;
+  font:inherit;font-size:13px;color:var(--ink2);cursor:pointer;white-space:nowrap;transition:.15s;
+}
+.tool-button:hover{background:var(--bg2);color:var(--ink)}
+.tool-button.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.usage-section{
+  max-width:1180px;margin:0 auto 1.5rem;padding:0 2rem;
+}
+.usage-box{
+  border-radius:24px;border:1px solid rgba(94,157,90,.18);background:rgba(255,248,234,.75);
+  padding:22px;display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:start;
+}
+.usage-title{font-size:18px;font-weight:800;color:var(--hope-green-dark);margin-bottom:6px}
+.usage-sub{font-size:13px;color:var(--ink2);line-height:1.7}
+.usage-list{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.usage-item{background:#fff;border:1px solid var(--border);border-radius:16px;padding:13px}
+.usage-item b{font-size:13px;color:var(--ink)}
+.usage-item p{font-size:12px;color:var(--ink2);line-height:1.6;margin-top:4px}
+.legend-row,.sel-bar{max-width:1180px}
+.legend-row{padding-top:.25rem}
+.legend-chip,.sel-btn{background:rgba(255,255,255,.78)}
+.count-bar{max-width:1180px}
+.grid-wrap{max-width:1180px}
+.card{
+  border-radius:18px;
+  background:rgba(255,255,255,.86);
+}
+.card::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--family-accent, var(--border2));
+}
+.card-family-name{font-size:11px;color:var(--ink3);margin-top:8px}
+.card-title{font-size:16px;font-weight:800}
+.card-subtitle{min-height:1.2em}
+.empty-msg{
+  background:#fff;border:1px dashed var(--border2);border-radius:20px;
+}
+.detail-hero{
+  box-shadow:var(--shadow);
+}
+.sec-body{
+  line-height:1.75;
+}
+.site-footer{
+  background:#1F2B21;
+}
+.footer-org,.footer-copy-text a{color:rgba(255,255,255,.85)}
+.footer-desc,.footer-copy-text{color:rgba(255,255,255,.62)}
+.cc-badge{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18);color:rgba(255,255,255,.75)}
+.cc-type{color:#fff}.cc-full{color:rgba(255,255,255,.58)}
+.footer-copy{border-top-color:rgba(255,255,255,.12)}
+
+@media (max-width: 880px){
+  .hero-section{grid-template-columns:1fr}
+  .hero-visual{grid-template-columns:repeat(4,220px);overflow-x:auto;padding-bottom:6px}
+  .quick-grid{grid-template-columns:repeat(2,1fr)}
+  .usage-box{grid-template-columns:1fr}
+}
 @media (max-width: 640px) {
   .footer-inner { grid-template-columns: 1fr; }
   .footer-license { text-align: left; }
   .footer-copy { flex-direction: column; align-items: flex-start; }
-}
-  .hero-section { grid-template-columns: 1fr; padding: 2.5rem 1.25rem 1.5rem; }
+  .hero-section { grid-template-columns: 1fr; padding: 2.5rem 1.25rem 1.5rem; padding-top: 1.7rem; }
   .hero-stats { flex-direction: row; align-items: flex-start; }
   .legend-row, .sel-bar, .count-bar, .grid-wrap { padding-left: 1.25rem; padding-right: 1.25rem; }
-  .grid { grid-template-columns: 1fr 1fr; }
   .action-grid { grid-template-columns: 1fr; }
   .detail-wrap { padding: 1.5rem 1.25rem 4rem; }
   .detail-title { font-size: 22px; }
-  .topbar { padding: 0 1.25rem; }
+  .topbar { padding: 0 1.25rem; height: auto; min-height: 60px; flex-wrap: wrap; padding-top: 10px; padding-bottom: 10px; }
+  .topbar-title { order: 3; width: 100%; font-size: 13px; }
+  .topbar-nav { margin-left: 0; overflow-x: auto; max-width: 100%; }
+  .hero-copy-card { padding: 1.4rem; border-radius: 22px; }
+  .hero-actions .cta-btn { width: 100%; justify-content: center; }
+  .hero-visual { grid-template-columns: repeat(4,190px); padding-left: 2px; }
+  .quick-grid { grid-template-columns: 1fr; }
+  .tool-panel-inner { grid-template-columns: 1fr; }
+  .usage-list { grid-template-columns: 1fr; }
+  .grid { grid-template-columns: 1fr; }
+  .legend-row, .sel-bar { overflow-x: auto; flex-wrap: nowrap; }
+  .legend-chip, .sel-btn { white-space: nowrap; }
 }
+
 </style>
 </head>
 <body>
@@ -380,34 +569,99 @@ body {
 <div id="page-home" class="page active">
   <div class="topbar">
     <a class="home-btn" href="index.html">← 返回資源中心</a>
-    <div class="topbar-title">情緒家族牌卡 <em>× 41 個陪伴練習</em></div>
+    <div class="topbar-title">情緒家族牌卡 <em>× 41 個 SEL 陪伴活動</em></div>
+    <nav class="topbar-nav" aria-label="頁面導覽">
+      <a href="#quick-use">快速使用</a>
+      <a href="#filters">分類篩選</a>
+      <a href="#activity-list">活動清單</a>
+    </nav>
   </div>
 
   <div class="hero-section">
-    <div>
-      <div class="hero-eyebrow">Emotion Family Cards · Activity Guide</div>
-      <h1 class="hero-title">讓情緒<strong>被看見</strong>，<br>用行動<strong>好好陪伴</strong>。</h1>
-      <p class="hero-desc">六個情緒家族，41 個可立即使用的 SEL 活動。<br>
-        適合教師、家長、輔導工作者，以及任何想幫孩子建立情緒語言的大人。</p>
+    <div class="hero-copy-card">
+      <div class="hero-eyebrow">Emotion Family Cards · SEL Toolkit</div>
+      <h1 class="hero-title">讓情緒<strong>被看見</strong>，<br>讓陪伴<strong>變成可操作的活動</strong>。</h1>
+      <p class="hero-desc">六個情緒家族，41 個可立即使用的 SEL 陪伴活動。老師可以依照時間、情緒家族或 SEL 核心能力快速篩選，直接帶進課輔班、家庭對話與小團體活動。</p>
+      <div class="hero-actions">
+        <a class="cta-btn cta-primary" href="#quick-use">今天要怎麼帶？</a>
+        <button class="cta-btn" type="button" onclick="randomActivity()">🎲 隨機抽活動</button>
+        <a class="cta-btn" href="#activity-list">看全部活動</a>
+      </div>
     </div>
-    <div class="hero-stats">
-      <div class="hero-stat-item">
-        <div class="hero-stat-num">41</div>
-        <div class="hero-stat-lbl">個活動</div>
+    <div class="hero-visual" aria-label="教材特色摘要">
+      <div class="hero-tool-card" data-mark="41">
+        <div class="hero-tool-num">41</div>
+        <div class="hero-tool-label">個活動</div>
+        <div class="hero-tool-text">每個活動都有目標、步驟、引導語與延伸行動。</div>
       </div>
-      <div class="hero-stat-item">
-        <div class="hero-stat-num">5</div>
-        <div class="hero-stat-lbl">SEL 核心能力</div>
+      <div class="hero-tool-card" data-mark="5">
+        <div class="hero-tool-num">5</div>
+        <div class="hero-tool-label">SEL 核心能力</div>
+        <div class="hero-tool-text">可依自我覺察、自我管理、人際技巧等快速篩選。</div>
       </div>
-      <div class="hero-stat-item">
-        <div class="hero-stat-num">6+</div>
-        <div class="hero-stat-lbl">情緒家族</div>
+      <div class="hero-tool-card" data-mark="6">
+        <div class="hero-tool-num">6+</div>
+        <div class="hero-tool-label">情緒家族</div>
+        <div class="hero-tool-text">黃色、綠色、藍色、橘色、紫色、紅色和彩虹綜合。</div>
+      </div>
+      <div class="hero-tool-card" data-mark="GO">
+        <div class="hero-tool-num">即用</div>
+        <div class="hero-tool-label">課輔現場友善</div>
+        <div class="hero-tool-text">3–20 分鐘都能帶，適合開場、收尾與主題課。</div>
       </div>
     </div>
   </div>
 
+  <section class="quick-section" id="quick-use">
+    <div class="quick-grid">
+      <button class="quick-card" type="button" onclick="setTimeFilter('short')">
+        <div class="quick-kicker">3–10 分鐘</div>
+        <div class="quick-title">課前快速安頓</div>
+        <div class="quick-desc">適合開場、Check-in、情緒點名，先讓孩子知道自己現在在哪裡。</div>
+      </button>
+      <button class="quick-card" type="button" onclick="setTimeFilter('medium')">
+        <div class="quick-kicker">11–15 分鐘</div>
+        <div class="quick-title">小團體陪伴練習</div>
+        <div class="quick-desc">適合課中轉換、同理對話、界線語言與身體覺察練習。</div>
+      </button>
+      <button class="quick-card" type="button" onclick="setTimeFilter('long')">
+        <div class="quick-kicker">16 分鐘以上</div>
+        <div class="quick-title">完整主題活動</div>
+        <div class="quick-desc">適合班級活動、小團體課程，能帶出討論、書寫與延伸行動。</div>
+      </button>
+      <button class="quick-card" type="button" onclick="randomActivity()">
+        <div class="quick-kicker">不知道從哪開始</div>
+        <div class="quick-title">隨機抽一個活動</div>
+        <div class="quick-desc">讓系統替你挑一個活動，適合臨時備課或老師月聚會暖身。</div>
+      </button>
+    </div>
+  </section>
+
+  <section class="tool-panel">
+    <div class="tool-panel-inner">
+      <input id="search-input" class="search-box" type="search" placeholder="搜尋活動、情緒詞或關鍵字：例如 委屈、界線、呼吸、感恩、焦慮">
+      <button class="tool-button primary" type="button" onclick="randomActivity()">🎲 隨機抽活動</button>
+      <button class="tool-button" type="button" onclick="resetFilters()">清除篩選</button>
+    </div>
+  </section>
+
+  <section class="usage-section">
+    <div class="usage-box">
+      <div>
+        <div class="usage-title">適合用在這些時刻</div>
+        <p class="usage-sub">這份網頁可以從「教材清單」升級成現場教學工具，讓老師依情境快速選活動。</p>
+      </div>
+      <div class="usage-list">
+        <div class="usage-item"><b>課輔班開場</b><p>用 10 分鐘內活動做情緒 Check-in，讓孩子先回到學習狀態。</p></div>
+        <div class="usage-item"><b>衝突或情緒事件後</b><p>選紅色、綠色、藍色家族，協助孩子說出界線、委屈與需要。</p></div>
+        <div class="usage-item"><b>老師培訓或月聚會</b><p>抽一個活動實作，讓老師先體驗，再轉化成班級帶法。</p></div>
+        <div class="usage-item"><b>親子教育分享</b><p>選感恩、安心、求助等活動，讓家長知道如何用一句話陪伴孩子。</p></div>
+      </div>
+    </div>
+  </section>
+
   <!-- family legend -->
-  <div class="legend-row">
+  <div class="legend-row" id="filters">
     <button class="legend-chip legend-chip-all active" data-family="all">
       <span class="legend-dot" style="background:var(--ink3);"></span>全部家族
     </button>
@@ -449,7 +703,7 @@ body {
     <span class="count-txt" id="count-txt">顯示全部 41 個活動</span>
   </div>
 
-  <div class="grid-wrap">
+  <div class="grid-wrap" id="activity-list">
     <div class="grid" id="card-grid"></div>
   </div>
 </div>
@@ -849,7 +1103,7 @@ const DATA = [
     at:'可建立班級「情境故事庫」，邀請孩子輪流提供生活中的客觀事件情境，累積成可持續使用的教學素材。' }
 ];
 
-let activeFamily = 'all', activeSel = 'all';
+let activeFamily = 'all', activeSel = 'all', activeTime = 'all', searchQuery = '';
 
 function selBadges(selArr, size='12px') {
   return selArr.map(s =>
@@ -857,33 +1111,58 @@ function selBadges(selArr, size='12px') {
   ).join('');
 }
 
+function getFilteredActivities() {
+  const q = searchQuery.trim().toLowerCase();
+  return DATA.filter(a => {
+    const passFamily = activeFamily === 'all' || a.family === activeFamily;
+    const passSel = activeSel === 'all' || a.sel.includes(activeSel);
+    const passTime =
+      activeTime === 'all' ||
+      (activeTime === 'short' && a.time <= 10) ||
+      (activeTime === 'medium' && a.time > 10 && a.time <= 15) ||
+      (activeTime === 'long' && a.time > 15);
+    const haystack = [
+      a.title, a.subtitle, a.cards, a.goal, a.guide, a.reminder, a.ac, a.at,
+      FAM[a.family].label, ...a.sel, ...(a.steps || [])
+    ].join(' ').toLowerCase();
+    const passSearch = !q || haystack.includes(q);
+    return passFamily && passSel && passTime && passSearch;
+  });
+}
+
 function renderGrid() {
-  const filtered = DATA.filter(a =>
-    (activeFamily === 'all' || a.family === activeFamily) &&
-    (activeSel === 'all' || a.sel.includes(activeSel))
-  );
+  const filtered = getFilteredActivities();
+  const activeParts = [];
+  if (activeFamily !== 'all') activeParts.push(FAM[activeFamily].label);
+  if (activeSel !== 'all') activeParts.push(activeSel);
+  if (activeTime !== 'all') {
+    activeParts.push(activeTime === 'short' ? '10 分鐘內' : activeTime === 'medium' ? '11–15 分鐘' : '16 分鐘以上');
+  }
+  if (searchQuery.trim()) activeParts.push(`搜尋「${searchQuery.trim()}」`);
+
   document.getElementById('count-txt').textContent =
-    filtered.length === DATA.length
+    filtered.length === DATA.length && !activeParts.length
       ? `顯示全部 ${DATA.length} 個活動`
-      : `篩選結果：${filtered.length} 個活動`;
+      : `篩選結果：${filtered.length} 個活動${activeParts.length ? '｜' + activeParts.join('・') : ''}`;
 
   const grid = document.getElementById('card-grid');
   if (!filtered.length) {
-    grid.innerHTML = '<div class="empty-msg">沒有符合條件的活動</div>';
+    grid.innerHTML = '<div class="empty-msg">沒有符合條件的活動。可以試著清除篩選，或搜尋「情緒、界線、呼吸、感恩、求助」。</div>';
     return;
   }
   grid.innerHTML = filtered.map(a => {
     const f = FAM[a.family];
     const wm = a.title.slice(0, 2);
     return `
-      <div class="card" onclick="showDetail(${a.id})">
+      <div class="card" onclick="showDetail(${a.id})" style="--family-accent:${f.accent};">
         <div class="card-watermark">${wm}</div>
         <div class="card-top">
           <div class="card-id">${String(a.id).padStart(2,'0')}</div>
           <div class="card-family-dot" style="background:${f.accent};"></div>
         </div>
         <div class="card-title">${a.title}</div>
-        ${a.subtitle ? `<div class="card-subtitle">${a.subtitle}</div>` : ''}
+        ${a.subtitle ? `<div class="card-subtitle">${a.subtitle}</div>` : '<div class="card-subtitle">點擊查看完整帶領步驟</div>'}
+        <div class="card-family-name">${f.label} · ${a.cards.split('：')[0] || '活動牌卡'}</div>
         <div class="card-divider"></div>
         <div class="card-foot">
           ${selBadges(a.sel,'10px')}
@@ -955,6 +1234,41 @@ function toggleSec(head) {
   head.classList.toggle('open');
   head.querySelector('.sec-arrow').classList.toggle('open');
   head.nextElementSibling.classList.toggle('open');
+}
+
+
+function setTimeFilter(type) {
+  activeTime = type;
+  document.getElementById('activity-list').scrollIntoView({behavior:'smooth', block:'start'});
+  renderGrid();
+}
+
+function randomActivity() {
+  const pool = getFilteredActivities();
+  const list = pool.length ? pool : DATA;
+  const pick = list[Math.floor(Math.random() * list.length)];
+  showDetail(pick.id);
+}
+
+function resetFilters() {
+  activeFamily = 'all';
+  activeSel = 'all';
+  activeTime = 'all';
+  searchQuery = '';
+  const searchInput = document.getElementById('search-input');
+  if (searchInput) searchInput.value = '';
+  document.querySelectorAll('[data-family]').forEach(b => b.classList.toggle('active', b.dataset.family === 'all'));
+  document.querySelectorAll('[data-sel]').forEach(b => b.classList.toggle('active', b.dataset.sel === 'all'));
+  renderGrid();
+  document.getElementById('activity-list').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+const searchInput = document.getElementById('search-input');
+if (searchInput) {
+  searchInput.addEventListener('input', (e) => {
+    searchQuery = e.target.value;
+    renderGrid();
+  });
 }
 
 document.querySelectorAll('[data-family]').forEach(btn =>
