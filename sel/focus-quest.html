@@ -34,8 +34,8 @@
   }
   h1,h2,h3{font-family:'Noto Serif TC','Noto Sans TC',serif;}
   .wrap{max-width:900px;margin:0 auto;padding:70px 20px 40px;}
+  .top-nav{position:fixed;top:16px;left:16px;z-index:9999;display:flex;gap:8px;}
   .home-back{
-    position:fixed;top:16px;left:16px;z-index:9999;
     display:inline-flex;align-items:center;gap:7px;
     background:rgba(255,255,255,0.9);backdrop-filter:blur(8px);
     border:1px solid var(--border);border-radius:20px;padding:7px 16px;
@@ -238,13 +238,16 @@
   .history-list{display:grid;gap:8px;max-height:260px;overflow:auto}.history-item{display:grid;grid-template-columns:1fr auto;gap:6px;padding:10px 12px;background:var(--bg);border-radius:11px;font-size:.82rem}.history-item small{color:var(--ink3)}
   .action-card{background:linear-gradient(145deg,#fff,#eff7ea);border:1px solid rgba(76,154,91,.2);border-radius:16px;padding:18px;margin:14px 0;text-align:left}.action-card strong{display:block;color:var(--forest-text);margin-bottom:6px}.modal-actions{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
   .nav-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:18px}.tiny{font-size:.78rem;color:var(--ink3);line-height:1.55}.empty{text-align:center;color:var(--ink3);padding:18px 8px;}
-  @media(max-width:720px){.wrap{padding:64px 14px 30px}.hub-grid{grid-template-columns:1fr}.hub-hero{padding:22px 18px}.companion-row{grid-template-columns:repeat(2,1fr)}.map-grid{grid-template-columns:1fr}.panel{padding:16px}.stat-row{gap:8px}.home-back{top:10px;left:10px}.hub-card{padding:16px}}
+  @media(max-width:720px){.wrap{padding:64px 14px 30px}.hub-grid{grid-template-columns:1fr}.hub-hero{padding:22px 18px}.companion-row{grid-template-columns:repeat(2,1fr)}.map-grid{grid-template-columns:1fr}.panel{padding:16px}.stat-row{gap:8px}.top-nav{top:10px;left:10px}.hub-card{padding:16px}}
   @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
 
-<button class="home-back" id="hubBtn" type="button">⌂ 探險手冊</button>
+<div class="top-nav">
+  <a class="home-back" href="index.html">← 資源中心</a>
+  <button class="home-back" id="hubBtn" type="button">⌂ 探險手冊</button>
+</div>
 
 <div class="wrap">
 
