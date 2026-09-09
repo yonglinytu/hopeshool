@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>115學年第一學期 SEL 活動建議表｜HOPE 希望小學</title>
+<meta name="description" content="115學年度第一學期 15 週 SEL 課程活動建議表，含主課程與每日入場小活動，點擊即可查看完整教案。永齡希望小學雲科大分校製作。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+
+:root {
+  --yellow: #F5C842;
+  --yellow-bg: #FFFBEA;
+  --green: #4CAF7D;
+  --green-bg: #F0FFF6;
+  --blue: #5B9BD5;
+  --blue-bg: #EEF5FF;
+  --orange: #F4844B;
+  --orange-bg: #FFF5EE;
+  --purple: #9B72CF;
+  --purple-bg: #F8F0FF;
+  --red: #E05B5B;
+  --red-bg: #FFF0F0;
+  --rainbow: #888;
+  --rainbow-bg: #F8F8F8;
+  --text: #2A2A2A;
+  --text-light: #666;
+  --bg: #FAFAF8;
+  --card-bg: #FFFFFF;
+  --border: #EDEDE8;
+  --shadow: 0 2px 12px rgba(0,0,0,0.07);
+  --shadow-hover: 0 6px 24px rgba(0,0,0,0.13);
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ─── Header ─── */
+.site-header {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.site-header a {
+  color: var(--text-light);
+  text-decoration: none;
+  font-size: 14px;
+}
+.site-header a:hover { color: var(--text); }
+.site-header .sep { color: var(--border); }
+
+.hero {
+  background: linear-gradient(135deg, #FFFBEA 0%, #F0FFF6 50%, #EEF5FF 100%);
+  padding: 48px 24px 36px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+.hero h1 {
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(22px, 4vw, 32px);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.hero p {
+  color: var(--text-light);
+  font-size: 15px;
+  margin-bottom: 24px;
+}
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.stat {
+  text-align: center;
+}
+.stat-num {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+}
+.stat-label {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-top: 2px;
+}
+
+/* ─── Layout ─── */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.main-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 0;
+  min-height: calc(100vh - 200px);
+}
+
+/* ─── Sidebar ─── */
+.sidebar {
+  background: #fff;
+  border-right: 1px solid var(--border);
+  padding: 24px 16px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.filter-group {
+  margin-bottom: 28px;
+}
+.filter-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--text-light);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.filter-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1.5px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 13px;
+  color: var(--text-light);
+  margin-bottom: 4px;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.filter-btn:hover {
+  background: var(--bg);
+  color: var(--text);
+}
+.filter-btn.active {
+  background: var(--text);
+  color: #fff;
+  border-color: var(--text);
+}
+.filter-btn .count {
+  margin-left: auto;
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+/* 家族顏色 */
+.btn-yellow.active { background: var(--yellow); color: #2A2A2A; border-color: var(--yellow); }
+.btn-green.active { background: var(--green); color: #fff; border-color: var(--green); }
+.btn-blue.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+.btn-orange.active { background: var(--orange); color: #fff; border-color: var(--orange); }
+.btn-purple.active { background: var(--purple); color: #fff; border-color: var(--purple); }
+.btn-red.active { background: var(--red); color: #fff; border-color: var(--red); }
+.btn-rainbow.active { background: linear-gradient(90deg, #F5C842,#4CAF7D,#5B9BD5,#F4844B,#9B72CF,#E05B5B); color: #fff; border-color: #999; }
+
+/* ─── Content ─── */
+.content {
+  padding: 24px;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.search-wrap {
+  flex: 1;
+  min-width: 180px;
+  position: relative;
+}
+.search-wrap svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-light);
+}
+.search-input {
+  width: 100%;
+  padding: 10px 12px 10px 38px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 14px;
+  background: #fff;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.search-input:focus {
+  border-color: #aaa;
+}
+.result-count {
+  font-size: 13px;
+  color: var(--text-light);
+  white-space: nowrap;
+}
+
+/* 時間篩選 */
+.time-filters {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.time-btn {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 12px;
+  color: var(--text-light);
+  transition: all 0.15s;
+}
+.time-btn:hover { border-color: #aaa; color: var(--text); }
+.time-btn.active { background: var(--text); color: #fff; border-color: var(--text); }
+
+/* ─── Cards Grid ─── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  border: 1.5px solid var(--border);
+  padding: 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+  border-color: #ccc;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.card.fam-yellow::before { background: var(--yellow); }
+.card.fam-green::before { background: var(--green); }
+.card.fam-blue::before { background: var(--blue); }
+.card.fam-orange::before { background: var(--orange); }
+.card.fam-purple::before { background: var(--purple); }
+.card.fam-red::before { background: var(--red); }
+.card.fam-rainbow::before { background: linear-gradient(90deg, #F5C842,#4CAF7D,#5B9BD5,#F4844B,#9B72CF,#E05B5B); }
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.card-code {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-light);
+  background: var(--bg);
+  padding: 2px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.card-name {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+}
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.card-family {
+  font-size: 12px;
+  color: var(--text-light);
+}
+.card-time {
+  font-size: 12px;
+  color: var(--text-light);
+  background: var(--bg);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.card-part {
+  font-size: 11px;
+  color: var(--text-light);
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+.card-sel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.sel-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 500;
+}
+.sel-awareness { background: #5B9BD5; }
+.sel-social { background: #4CAF7D; }
+.sel-management { background: #F4844B; }
+.sel-relationship { background: #9B72CF; }
+.sel-decision { background: #E05B5B; }
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-light);
+  grid-column: 1 / -1;
+}
+.empty-state .emoji { font-size: 40px; margin-bottom: 12px; }
+
+/* ─── Modal ─── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+  overflow-y: auto;
+  padding: 24px 16px;
+}
+.modal-overlay.open { display: flex; align-items: flex-start; justify-content: center; }
+.modal {
+  background: #fff;
+  border-radius: 16px;
+  max-width: 720px;
+  width: 100%;
+  padding: 32px;
+  position: relative;
+  margin: auto;
+}
+.modal-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--text-light);
+  transition: all 0.15s;
+}
+.modal-close:hover { background: var(--bg); color: var(--text); }
+.modal-family-bar {
+  height: 4px;
+  border-radius: 2px;
+  margin-bottom: 20px;
+}
+.modal-body { line-height: 1.8; }
+.modal-body h2.act-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.modal-body .act-meta {
+  font-size: 13px;
+  color: var(--text-light);
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-body .section-head {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+  margin: 20px 0 8px;
+  padding-left: 10px;
+  border-left: 3px solid var(--border);
+}
+.modal-body p {
+  font-size: 14px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.modal-body ol {
+  padding-left: 20px;
+  margin-bottom: 12px;
+}
+.modal-body li {
+  font-size: 14px;
+  margin-bottom: 6px;
+  line-height: 1.7;
+}
+.modal-body blockquote.quote {
+  background: var(--bg);
+  border-left: 3px solid #ddd;
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--text-light);
+  margin: 12px 0;
+}
+
+/* Print button */
+.modal-actions {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+}
+.btn-print {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 13px;
+  color: var(--text-light);
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-print:hover { border-color: #aaa; color: var(--text); background: var(--bg); }
+
+/* ─── Mobile ─── */
+@media (max-width: 768px) {
+  .main-layout {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: static;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding: 16px;
+  }
+  .filter-btn {
+    display: inline-flex;
+    width: auto;
+    margin-right: 6px;
+    margin-bottom: 6px;
+  }
+  .content { padding: 16px; }
+}
+
+@media print {
+  .site-header, .hero, .sidebar, .toolbar, .modal-actions, .modal-close { display: none !important; }
+  .modal-overlay { display: block !important; position: static !important; padding: 0; background: none; }
+  .modal { box-shadow: none; border-radius: 0; max-width: 100%; }
+  .cards-grid { display: none !important; }
+}
+
+
+/* ── Week timeline page-specific styles ── */
+.plan-container { max-width: 980px; margin: 0 auto; padding: 8px 16px 60px; }
+.legend-note {
+  max-width: 980px; margin: 0 auto 24px; padding: 14px 20px;
+  background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius);
+  font-size: 13px; color: var(--text-light); line-height: 1.9;
+}
+.legend-note b { color: var(--text); }
+.week-card {
+  position: relative;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--border);
+  margin-bottom: 18px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.week-bar { height: 5px; width: 100%; }
+.week-body { padding: 18px 22px 20px; }
+.week-head {
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.week-num {
+  font-family: 'Noto Serif TC', serif; font-weight: 700; font-size: 16px; color: var(--text);
+}
+.week-theme { font-size: 16px; font-weight: 600; color: var(--text); }
+.week-fam { margin-left: auto; font-size: 12px; color: var(--text-light); }
+.week-note { font-size: 13px; color: var(--text-light); margin-bottom: 14px; line-height: 1.7; }
+.week-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
+.week-row:last-child { margin-bottom: 0; }
+.row-label {
+  flex-shrink: 0; width: 66px; font-size: 12px; font-weight: 600; color: var(--text-light);
+  padding-top: 6px;
+}
+.chip-wrap, .openers-wrap { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; }
+.act-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #fff; border: 1.5px solid var(--border); border-radius: 20px;
+  padding: 6px 14px 6px 8px; font-size: 13px; color: var(--text);
+  cursor: pointer; transition: all 0.15s; line-height: 1.4;
+}
+.act-chip:hover { border-color: #aaa; box-shadow: var(--shadow); transform: translateY(-1px); }
+.chip-code {
+  font-size: 10.5px; font-weight: 600; color: #fff; background: #9a9a9a;
+  padding: 2px 6px; border-radius: 4px; flex-shrink: 0;
+}
+.main-chip .chip-code { background: var(--text); }
+.opener-slot { display: flex; flex-direction: column; gap: 4px; }
+.opener-label { font-size: 10.5px; color: var(--text-light); padding-left: 2px; }
+.opener-chip { font-size: 12.5px; padding: 5px 12px 5px 8px; }
+.opener-chip .chip-code { background: #b9b3a3; }
+.openers-row .openers-wrap { flex-wrap: wrap; }
+
+@media (max-width: 640px) {
+  .week-row { flex-direction: column; }
+  .row-label { width: auto; padding-top: 0; }
+  .week-fam { margin-left: 0; }
+}
+@media print {
+  .plan-container, .legend-note { break-inside: avoid; }
+}
+
+</style>
+</head>
+<body>
+
+<a href="index.html" style="position:fixed;top:16px;left:16px;z-index:9998;display:inline-flex;align-items:center;gap:7px;background:rgba(250,246,240,0.92);backdrop-filter:blur(8px);border:1px solid rgba(42,32,24,0.12);border-radius:20px;padding:7px 16px;font-family:'Noto Sans TC',sans-serif;font-size:0.8rem;color:#4a4040;text-decoration:none;box-shadow:0 2px 12px rgba(42,32,24,0.09);">← 資源中心</a>
+
+<header class="site-header">
+  <span style="visibility:hidden;">← 資源中心</span>
+  <span class="sep">／</span>
+  <span>115學年第一學期活動建議表</span>
+</header>
+
+<div class="hero">
+  <h1>115學年第一學期 SEL 活動建議表</h1>
+  <p>15 週課程・每週 4 天入場小活動・點擊活動名稱查看完整教案</p>
+  <div class="stats">
+    <div class="stat"><div class="stat-num">15</div><div class="stat-label">週次</div></div>
+    <div class="stat"><div class="stat-num">18</div><div class="stat-label">主課程活動</div></div>
+    <div class="stat"><div class="stat-num">60</div><div class="stat-label">入場小活動場次</div></div>
+    <div class="stat"><div class="stat-num">41</div><div class="stat-label">教案總數</div></div>
+  </div>
+</div>
+
+<div class="plan-container">
+  <div class="legend-note">
+    <b>使用說明：</b>「主課程」每週 1 次，安排較深入的 SEL 活動（HOPE 牌卡／情境故事／正念／積木創作系列穿插使用），約 20–40 分鐘。「每日入場」為每週 4 天上課日的固定開場儀式（約 5–10 分鐘），依「呼吸放鬆／情緒 Check In／身體正念／創意律動」四種類型輪替。<b>點擊任一活動名稱</b>即可展開完整教案（活動目標、教具、步驟、引導語、行動轉化）。第 8 週為期中回顧，第 15 週為期末統整。
+  </div>
+
+  
+    <div class="week-card" style="background:#FAFAF8;">
+      <div class="week-bar" style="background:linear-gradient(90deg,#F5C842,#4CAF7D,#5B9BD5,#F4844B,#9B72CF,#E05B5B);"></div>
+      <div class="week-body">
+        <div class="week-head">
+          <span class="week-num">第 1 週</span>
+          <span class="week-theme">開學暖身：認識彼此的情緒</span>
+          <span class="week-fam">彩虹綜合</span>
+        </div>
+        <p class="week-note">用動物譬喻認識六大情緒詞彙，建立班級情緒安全感與基本規範，作為全學期的起點。</p>
+        <div class="week-row">
+          <span class="row-label">主課程</span>
+          <div class="chip-wrap"><span class="act-chip main-chip" onclick="openModal('T-2')"><span class="chip-code">T-2</span>情緒動物代言人</span><span class="act-chip main-chip" onclick="openModal('T-3')"><span class="chip-code">T-3</span>情緒紅綠燈</span></div>
+        </div>
+        <div class="week-row openers-row">
+          <span class="row-label">每日入場</span>
+          <div class="openers-wrap"><div class="opener-slot"><span class="opener-label">① 呼吸放鬆</span><span class="act-chip opener-chip" onclick="openModal('C-1')"><span class="chip-code">C-1</span>呼吸小夥伴</span></div><div class="opener-slot"><span class="opener-label">② 情緒 Check In</span><span class="act-chip opener-chip" onclick="openModal('T-5')"><span class="chip-code">T-5</span>情緒 Check In</span></div><div class="opener-slot"><span class="opener-label">③ 身體正念</span><span class="act-chip opener-chip" onclick="openModal('M-2')"><span class="chip-code">M-2</span>跟身體做朋友</span></div><div class="opener-slot"><span class="opener-label">④ 創意律動</span><span class="act-chip opener-chip" onclick="openModal('T-6')"><span class="chip-code">T-6</span>情緒探索號帶動唱</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="week-card" style="background:#FFFBEA;">
+      <div class="week-bar" style="background:#F5C842;"></div>
+      <div class="week-body">
+        <div class="week-head">
+          <span class="week-num">第 2 週</span>
+          <span class="week-theme">黃色家族：正向情緒起步</span>
+          <span class="week-fam">黃色家族</span>
+        </div>
+        <p class="week-note">從正向、低壓力的情緒切入，練習辨識安心與喜悅，建立情緒學習的信任感。</p>
+        <div class="week-row">
+          <span class="row-label">主課程</span>
+          <div class="chip-wrap"><span class="act-chip main-chip" onclick="openModal('H-1')"><span class="chip-code">H-1</span>安心地圖——找到讓我心安的地方</span><span class="act-chip main-chip" onclick="openModal('H-2')"><span class="chip-code">H-2</span>喜悅存摺——收集今天的好事</span></div>
+        </div>
+        <div class="week-row openers-row">
+          <span class="row-label">每日入場</span>
+          <div class="openers-wrap"><div class="opener-slot"><span class="opener-label">① 呼吸放鬆</span><span class="act-chip opener-chip" onclick="openModal('C-2')"><span class="chip-code">C-2</span>爬爬五指山</span></div><div class="opener-slot"><span class="opener-label">② 情緒 Check In</span><span class="act-chip opener-chip" onclick="openModal('T-10')"><span class="chip-code">T-10</span>情緒 Check In——今天我在哪個家族的家</span></div><div class="opener-slot"><span class="opener-label">③ 身體正念</span><span class="act-chip opener-chip" onclick="openModal('M-3')"><span class="chip-code">M-3</span>感受當下——運用五感回到此刻</span></div><div class="opener-slot"><span class="opener-label">④ 創意律動</span><span class="act-chip opener-chip" onclick="openModal('T-7')"><span class="chip-code">T-7</span>聽聽音樂 情緒流動</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="week-card" style="background:#FAFAF8;">
+      <div class="week-bar" style="background:linear-gradient(90deg,#F5C842,#4CAF7D,#5B9BD5,#F4844B,#9B72CF,#E05B5B);"></div>
+      <div class="week-body">
+        <div class="week-head">
+          <span class="week-num">第 3 週</span>
+          <span class="week-theme">情境故事：意外中的情緒調節</span>
+          <span class="week-fam">彩虹綜合</span>
+        </div>
+        <p class="week-note">透過故事討論覺察意外帶來的情緒，練習調節與同理他人的無心之失。</p>
+        <div class="week-row">
+          <span class="row-label">主課程</span>
+          <div class="chip-wrap"><span class="act-chip main-chip" onclick="openModal('S-1')"><span class="chip-code">S-1</span>故事時間（一）——掉落的霜淇淋</span></div>
+        </div>
+        <div class="week-row openers-row">
+          <span class="row-label">每日入場</span>
+          <div class="openers-wrap"><div class="opener-slot"><span class="opener-label">① 呼吸放鬆</span><span class="act-chip opener-chip" onclick="openModal('C-3')"><span class="chip-code">C-3</span>吹蠟燭呼吸法</span></div><div class="opener-slot"><span class="opener-label">② 情緒 Check In</span><span class="act-chip opener-chip" onclick="openModal('T-5')"><span class="chip-code">T-5</span>情緒 Check In</span></div><div class="opener-slot"><span class="opener-label">③ 身體正念</span><span class="act-chip opener-chip" onclick="openModal('E-3')"><span class="chip-code">E-3</span>單腳平衡——專注當下的身體練習</span></div><div class="opener-slot"><span class="opener-label">④ 創意律動</span><span class="act-chip opener-chip" onclick="openModal('T-8')"><span class="chip-code">T-8</span>自由畫畫</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="week-card" style="background:#F0FFF6;">
+      <div class="week-bar" style="background:#4CAF7D;"></div>
+      <div class="week-body">
+        <div class="week-head">
+          <span class="week-num">第 4 週</span>
+          <span class="week-theme">綠色家族：我的舒適圈與界線</span>
+          <span class="week-fam">綠色家族</span>
+        </div>
+        <p class="week-note">辨識界線被侵犯時的身體訊號，練習用語言表達不舒服與拒絕。</p>
+        <div class="week-row">
+          <span class="row-label">主課程</span>
+          <div class="chip-wrap"><span class="act-chip main-chip" onclick="openModal('H-4')"><span class="chip-code">H-4</span>我的舒適圈——界線雷達</span><span class="act-chip main-chip" onclick="openModal('H-5')"><span class="chip-code">H-5</span>拒絕句練習站</span></div>
+        </div>
+        <div class="week-row openers-row">
+          <span class="row-label">每日入場</span>
+          <div class="openers-wrap"><div class="opener-slot"><span class="opener-label">① 呼吸放鬆</span><span class="act-chip opener-chip" onclick="openModal('C-5')"><span class="chip-code">C-5</span>自創冷靜魔法</span></div><div class="opener-slot"><span class="opener-label">② 情緒 Check In</span><span class="act-chip opener-chip" onclick="openModal('T-10')"><span class="chip-code">T-10</span>情緒 Check In——今天我在哪個家族的家</span></div><div class="opener-slot"><span class="opener-label">③ 身體正念</span><span class="act-chip opener-chip" onclick="openModal('M-5')"><span class="chip-code">M-5</span>正念散步——感官覺察之旅</span></div><div class="opener-slot"><span class="opener-label">④ 創意律動</span><span class="act-chip opener-chip" onclick="openModal('T-9')"><span class="chip-code">T-9</span>自由書寫</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="week-card" style="background:#FAFAF8;">
+      <div class="week-bar" style="background:linear-gradient(90deg,#F5C842,#4CAF7D,#5B9BD5,#F4844B,#9B72CF,#E05B5B);"></div>
+      <div class="week-body">
+        <div class="week-head">
+          <span class="week-num">第 5 週</span>
+          <span class="week-theme">積木創作：情緒建築師</span>
+          <span class="week-fam">彩虹綜合</span>
+        </div>
+        <p class="week-note">以積木非語言表達情緒，透過小組合作體驗「不同意見→協商→共同完成」。</p>
+        <div class="week-row">
+          <span class="row-label">主課程</span>
+          <div class="chip-wrap"><span class="act-chip main-chip" onclick="openModal('L-A')"><span class="chip-code">L-A</span>情緒建築師</span></div>
+        </div>
+        <div class="week-row openers-row">
+          <span class="row-label">每日入場</span>
+          <div class="openers-wrap"><div class="opener-slot"><span class="opener-label">① 呼吸放鬆</span><span class="act-chip opener-chip" onclick="openModal('C-6')"><span class="chip-code">C-6</span>找尋每一個人的冷靜空間</span></div><div class="opener-slot"><span class="opener-label">② 情緒 Check In</span><span class="act-chip opener-chip" onclick="openModal('T-5')"><span class="chip-code">T-5</span>情緒 Check In</span></div><div class="opener-slot"><span class="opener-label">③ 身體正念</span><span class="act-chip opener-chip" onclick="openModal('M-7')"><span class="chip-code">M-7</span>正念隨身行——戶外五感尋寶</span></div><div class="opener-slot"><span class="opener-label">④ 創意律動</span><span class="act-chip opener-chip" onclick="openModal('E-2')"><span class="chip-code">E-2</span>樂動紓壓 5 招——身體是最好的情緒出口</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="week-card" style="background:#EEF5FF;">
+      <div class="week-bar" style="background:#5B9BD5;"></div>
+      <div class="week-body">
+        <div class="week-head">
+          <span class="week-num">第 6 週</span>
+          <span class="week-theme">藍色家族：接住低落與委屈</span>
+          <span class="week-fam">藍色家族</span>
+        </div>
+        <p class="week-note">練習把委屈說出口，學會允許自己難過，並溫柔對待自己的情緒。</p>
+        <div class="week-row">
+          <span class="row-label">主課程</span>
+          <div class="chip-wrap"><span class="act-chip main-chip" onclick="openModal('H-6')"><span class="chip-code">H-6</span>委屈翻譯機</span><span class="act-chip main-chip" onclick="openModal('H-8')"><span class="chip-code">H-8</span>情緒許可證</span></div>
+        </div>
+        <div class="week-row openers-row">
+          <span class="row-label">每日入場</span>
+          <div class="openers-wrap"><div class="opener-slot"><span class="opener-label">① 呼吸放鬆</span><span class="act-chip opener-chip" onclick="openModal('C-1')"><span class="chip-code">C-1</span>呼吸小夥伴</span></div><div class="opener-slot"><span class="opener-label">② 情緒 Check In</span><span class="act-chip opener-chip" onclick="openModal('T-10')"><span class="chip-code">T-10</span>情緒 Check In——今天我在哪個家族的家</span></div><div class="opener-slot"><span class="opener-label">③ 身體正念</span><span class="act-chip opener-chip" onclick="openModal('M-2')"><span class="chip-code">M-2</span>跟身體做朋友</span></div><div class="opener-slot"><span class="opener-label">④ 創意律動</span><span class="act-chip opener-chip" onclick="openModal('T-6')"><span class="chip-code">T-6</span>情緒探索號帶動唱</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="week-card" style="background:#FAFAF8;">
+      <div class="week-bar" style="background:linear-gradient(90deg,#F5C842,#4CAF7D,#5B9BD5,#F4844B,#9B72CF,#E05B5B);"></div>
+      <div class="week-body">
+        <div class="week-head">
+          <span class="week-num">第 7 週</span>
+          <span class="week-theme">情境故事：陪伴難過的人</span>
+          <span class="week-fam">彩虹綜合</span>
+        </div>
+        <p class="week-note">練習覺察看見他人難過時自己的感受，思考如何適切陪伴與回應。</p>
+        <div class="week-row">
+          <span class="row-label">主課程</span>
+          <div class="chip-wrap"><span class="act-chip main-chip" onclick="openModal('S-2')"><span class="chip-code">S-2</span>故事時間（二）——弟弟的眼淚</span></div>
+        </div>
+        <div class="week-row openers-row">
+          <span class="row-label">每日入場</span>
+          <div class="openers-wrap"><div class="opener-slot"><span class="opener-label">① 呼吸放鬆</span><span class="act-chip opener-chip" onclick="openModal('C-2')"><span class="chip-code">C-2</span>爬爬五指山</span></div><div class="opener-slot"><span class="opener-label">② 情緒 Check In</span><span class="act-chip opener-chip" onclick="openModal('T-5')"><span class="chip-code">T-5</span>情緒 Check In</span></div><div class="opener-slot"><span class="opener-label">③ 身體正念</span><span class="act-chip opener-chip" onclick="openModal('M-3')"><span class="chip-code">M-3</span>感受當下——運用五感回到此刻</span></div><div class="opener-slot"><span class="opener-label">④ 創意律動</span><span class="act-chip opener-chip" onclick="openModal('T-7')"><span class="chip-code">T-7</span>聽聽音樂 情緒流動</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="week-card" style="background:#FAFAF8;">
+      <div class="week-bar" style="background:linear-gradient(90deg,#F5C842,#4CAF7D,#5B9BD5,#F4844B,#9B72CF,#E05B5B);"></div>
+      <div class="week-body">
+        <div class="week-head">
+          <span class="week-num">第 8 週</span>
+          <span class="week-theme">期中回顧與整合</span>
+          <span class="week-fam">彩虹綜合</span>
+        </div>
+        <p class="week-note">回顧前七週的情緒學習歷程，練習精準命名情緒強度，覺察自己的改變。</p>
+        <div class="week-row">
+          <span class="row-label">主課程</span>
+          <div class="chip-wrap"><span class="act-chip main-chip" onclick="openModal('T-11')"><span class="chip-code">T-11</span>情緒光譜排隊</span><span class="act-chip main-chip" onclick="openModal('H-40')"><span class="chip-code">H-40</span>情緒成長紀錄</span></div>
+        </div>
+        <div class="week-row openers-row">
+          <span class="row-label">每日入場</span>
+          <div class="openers-wrap"><div class="opener-slot"><span class="opener-label">① 呼吸放鬆</span><span class="act-chip opener-chip" onclick="openModal('C-3')"><span class="chip-code">C-3</span>吹蠟燭呼吸法</span></div><div class="opener-slot"><span class="opener-label">② 情緒 Check In</span><span class="act-chip opener-chip" onclick="openModal('T-10')"><span class="chip-code">T-10</span>情緒 Check In——今天我在哪個家族的家</span></div><div class="opener-slot"><span class="opener-label">③ 身體正念</span><span class="act-chip opener-chip" onclick="openModal('E-3')"><span class="chip-code">E-3</span>單腳平衡——專注當下的身體練習</span></div><div class="opener-slot"><span class="opener-label">④ 創意律動</span><span class="act-chip opener-chip" onclick="openModal('T-8')"><span class="chip-code">T-8</span>自由畫畫</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="week-card" style="background:#FFF5EE;">
+      <div class="week-bar" style="background:#F4844B;"></div>
+      <div class="week-body">
+        <div class="week-head">
+          <span class="week-num">第 9 週</span>
+          <span class="week-theme">橘色家族：好奇與驚訝</span>
+          <span class="week-fam">橘色家族</span>
+        </div>
+        <p class="week-note">認識驚訝情緒家族，練習「停看選」策略，並將好奇心連結到學習動力。</p>
+        <div class="week-row">
+          <span class="row-label">主課程</span>
+          <div class="chip-wrap"><span class="act-chip main-chip" onclick="openModal('H-9')"><span class="chip-code">H-9</span>表情漫畫家</span><span class="act-chip main-chip" onclick="openModal('H-10')"><span class="chip-code">H-10</span>好奇心偵探</span></div>
+        </div>
+        <div class="week-row openers-row">
+          <span class="row-label">每日入場</span>
+          <div class="openers-wrap"><div class="opener-slot"><span class="opener-label">① 呼吸放鬆</span><span class="act-chip opener-chip" onclick="openModal('C-5')"><span class="chip-code">C-5</span>自創冷靜魔法</span></div><div class="opener-slot"><span class="opener-label">② 情緒 Check In</span><span class="act-chip opener-chip" onclick="openModal('T-5')"><span class="chip-code">T-5</span>情緒 Check In</span></div><div class="opener-slot"><span class="opener-label">③ 身體正念</span><span class="act-chip opener-chip" onclick="openModal('M-5')"><span class="chip-code">M-5</span>正念散步——感官覺察之旅</span></div><div class="opener-slot"><span class="opener-label">④ 創意律動</span><span class="act-chip opener-chip" onclick="openModal('T-9')"><span class="chip-code">T-9</span>自由書寫</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="week-card" style="background:#FAFAF8;">
+      <div class="week-bar" style="background:linear-gradient(90deg,#F5C842,#4CAF7D,#5B9BD5,#F4844B,#9B72CF,#E05B5B);"></div>
+      <div class="week-body">
+        <div class="week-head">
+          <span class="week-num">第 10 週</span>
+          <span class="week-theme">正念深化：雲朵與靜心繪圖</span>
+          <span class="week-fam">彩虹綜合</span>
+        </div>
+        <p class="week-note">練習觀察情緒而不被情緒淹沒，透過重複性繪圖進入專注與穩定狀態。</p>
+        <div class="week-row">
+          <span class="row-label">主課程</span>
+          <div class="chip-wrap"><span class="act-chip main-chip" onclick="openModal('M-4')"><span class="chip-code">M-4</span>雲冥想</span><span class="act-chip main-chip" onclick="openModal('M-6')"><span class="chip-code">M-6</span>禪繞靜心繪圖</span></div>
+        </div>
+        <div class="week-row openers-row">
+          <span class="row-label">每日入場</span>
+          <div class="openers-wrap"><div class="opener-slot"><span class="opener-label">① 呼吸放鬆</span><span class="act-chip opener-chip" onclick="openModal('C-6')"><span class="chip-code">C-6</span>找尋每一個人的冷靜空間</span></div><div class="opener-slot"><span class="opener-label">② 情緒 Check In</span><span class="act-chip opener-chip" onclick="openModal('T-10')"><span class="chip-code">T-10</span>情緒 Check In——今天我在哪個家族的家</span></div><div class="opener-slot"><span class="opener-label">③ 身體正念</span><span class="act-chip opener-chip" onclick="openModal('M-7')"><span class="chip-code">M-7</span>正念隨身行——戶外五感尋寶</span></div><div class="opener-slot"><span class="opener-label">④ 創意律動</span><span class="act-chip opener-chip" onclick="openModal('E-2')"><span class="chip-code">E-2</span>樂動紓壓 5 招——身體是最好的情緒出口</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="week-card" style="background:#F8F0FF;">
+      <div class="week-bar" style="background:#9B72CF;"></div>
+      <div class="week-body">
+        <div class="week-head">
+          <span class="week-num">第 11 週</span>
+          <span class="week-theme">紫色家族：害怕與安全感</span>
+          <span class="week-fam">紫色家族</span>
+        </div>
+        <p class="week-note">理解害怕是正常且有保護功能的情緒，建立具體可用的個人安全計畫。</p>
+        <div class="week-row">
+          <span class="row-label">主課程</span>
+          <div class="chip-wrap"><span class="act-chip main-chip" onclick="openModal('H-11')"><span class="chip-code">H-11</span>身體的警報器：我的害怕地圖</span><span class="act-chip main-chip" onclick="openModal('H-12')"><span class="chip-code">H-12</span>我的安全盾牌</span></div>
+        </div>
+        <div class="week-row openers-row">
+          <span class="row-label">每日入場</span>
+          <div class="openers-wrap"><div class="opener-slot"><span class="opener-label">① 呼吸放鬆</span><span class="act-chip opener-chip" onclick="openModal('C-1')"><span class="chip-code">C-1</span>呼吸小夥伴</span></div><div class="opener-slot"><span class="opener-label">② 情緒 Check In</span><span class="act-chip opener-chip" onclick="openModal('T-5')"><span class="chip-code">T-5</span>情緒 Check In</span></div><div class="opener-slot"><span class="opener-label">③ 身體正念</span><span class="act-chip opener-chip" onclick="openModal('M-2')"><span class="chip-code">M-2</span>跟身體做朋友</span></div><div class="opener-slot"><span class="opener-label">④ 創意律動</span><span class="act-chip opener-chip" onclick="openModal('T-6')"><span class="chip-code">T-6</span>情緒探索號帶動唱</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="week-card" style="background:#FAFAF8;">
+      <div class="week-bar" style="background:linear-gradient(90deg,#F5C842,#4CAF7D,#5B9BD5,#F4844B,#9B72CF,#E05B5B);"></div>
+      <div class="week-body">
+        <div class="week-head">
+          <span class="week-num">第 12 週</span>
+          <span class="week-theme">情境故事：面對緊張的勇氣</span>
+          <span class="week-fam">彩虹綜合</span>
+        </div>
+        <p class="week-note">理解緊張是面對挑戰的正常反應，練習同理他人壓力並提供具體支持。</p>
+        <div class="week-row">
+          <span class="row-label">主課程</span>
+          <div class="chip-wrap"><span class="act-chip main-chip" onclick="openModal('S-6')"><span class="chip-code">S-6</span>故事時間（六）——上台的勇氣</span></div>
+        </div>
+        <div class="week-row openers-row">
+          <span class="row-label">每日入場</span>
+          <div class="openers-wrap"><div class="opener-slot"><span class="opener-label">① 呼吸放鬆</span><span class="act-chip opener-chip" onclick="openModal('C-2')"><span class="chip-code">C-2</span>爬爬五指山</span></div><div class="opener-slot"><span class="opener-label">② 情緒 Check In</span><span class="act-chip opener-chip" onclick="openModal('T-10')"><span class="chip-code">T-10</span>情緒 Check In——今天我在哪個家族的家</span></div><div class="opener-slot"><span class="opener-label">③ 身體正念</span><span class="act-chip opener-chip" onclick="openModal('M-3')"><span class="chip-code">M-3</span>感受當下——運用五感回到此刻</span></div><div class="opener-slot"><span class="opener-label">④ 創意律動</span><span class="act-chip opener-chip" onclick="openModal('T-7')"><span class="chip-code">T-7</span>聽聽音樂 情緒流動</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="week-card" style="background:#FFF0F0;">
+      <div class="week-bar" style="background:#E05B5B;"></div>
+      <div class="week-body">
+        <div class="week-head">
+          <span class="week-num">第 13 週</span>
+          <span class="week-theme">紅色家族：憤怒與界線表達</span>
+          <span class="week-fam">紅色家族</span>
+        </div>
+        <p class="week-note">辨識憤怒光譜從輕微到強烈，設計個人降溫行動，練習界線用語。</p>
+        <div class="week-row">
+          <span class="row-label">主課程</span>
+          <div class="chip-wrap"><span class="act-chip main-chip" onclick="openModal('H-13')"><span class="chip-code">H-13</span>怒火溫度計：我的情緒溫度</span><span class="act-chip main-chip" onclick="openModal('H-14')"><span class="chip-code">H-14</span>界線用語工廠</span></div>
+        </div>
+        <div class="week-row openers-row">
+          <span class="row-label">每日入場</span>
+          <div class="openers-wrap"><div class="opener-slot"><span class="opener-label">① 呼吸放鬆</span><span class="act-chip opener-chip" onclick="openModal('C-3')"><span class="chip-code">C-3</span>吹蠟燭呼吸法</span></div><div class="opener-slot"><span class="opener-label">② 情緒 Check In</span><span class="act-chip opener-chip" onclick="openModal('T-5')"><span class="chip-code">T-5</span>情緒 Check In</span></div><div class="opener-slot"><span class="opener-label">③ 身體正念</span><span class="act-chip opener-chip" onclick="openModal('E-3')"><span class="chip-code">E-3</span>單腳平衡——專注當下的身體練習</span></div><div class="opener-slot"><span class="opener-label">④ 創意律動</span><span class="act-chip opener-chip" onclick="openModal('T-8')"><span class="chip-code">T-8</span>自由畫畫</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="week-card" style="background:#FAFAF8;">
+      <div class="week-bar" style="background:linear-gradient(90deg,#F5C842,#4CAF7D,#5B9BD5,#F4844B,#9B72CF,#E05B5B);"></div>
+      <div class="week-body">
+        <div class="week-head">
+          <span class="week-num">第 14 週</span>
+          <span class="week-theme">積木創作：合作塔</span>
+          <span class="week-fam">彩虹綜合</span>
+        </div>
+        <p class="week-note">限時合作挑戰，覺察壓力與挫折情緒，練習衝突當下的語言表達。</p>
+        <div class="week-row">
+          <span class="row-label">主課程</span>
+          <div class="chip-wrap"><span class="act-chip main-chip" onclick="openModal('L-D')"><span class="chip-code">L-D</span>合作塔</span></div>
+        </div>
+        <div class="week-row openers-row">
+          <span class="row-label">每日入場</span>
+          <div class="openers-wrap"><div class="opener-slot"><span class="opener-label">① 呼吸放鬆</span><span class="act-chip opener-chip" onclick="openModal('C-5')"><span class="chip-code">C-5</span>自創冷靜魔法</span></div><div class="opener-slot"><span class="opener-label">② 情緒 Check In</span><span class="act-chip opener-chip" onclick="openModal('T-10')"><span class="chip-code">T-10</span>情緒 Check In——今天我在哪個家族的家</span></div><div class="opener-slot"><span class="opener-label">③ 身體正念</span><span class="act-chip opener-chip" onclick="openModal('M-5')"><span class="chip-code">M-5</span>正念散步——感官覺察之旅</span></div><div class="opener-slot"><span class="opener-label">④ 創意律動</span><span class="act-chip opener-chip" onclick="openModal('T-9')"><span class="chip-code">T-9</span>自由書寫</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="week-card" style="background:#FAFAF8;">
+      <div class="week-bar" style="background:linear-gradient(90deg,#F5C842,#4CAF7D,#5B9BD5,#F4844B,#9B72CF,#E05B5B);"></div>
+      <div class="week-body">
+        <div class="week-head">
+          <span class="week-num">第 15 週</span>
+          <span class="week-theme">期末統整：情緒自畫像</span>
+          <span class="week-fam">彩虹綜合</span>
+        </div>
+        <p class="week-note">統整一學期的情緒學習，建立個人化的情緒自我認識，作為學期總回顧。</p>
+        <div class="week-row">
+          <span class="row-label">主課程</span>
+          <div class="chip-wrap"><span class="act-chip main-chip" onclick="openModal('H-36')"><span class="chip-code">H-36</span>情緒自畫像</span></div>
+        </div>
+        <div class="week-row openers-row">
+          <span class="row-label">每日入場</span>
+          <div class="openers-wrap"><div class="opener-slot"><span class="opener-label">① 呼吸放鬆</span><span class="act-chip opener-chip" onclick="openModal('C-6')"><span class="chip-code">C-6</span>找尋每一個人的冷靜空間</span></div><div class="opener-slot"><span class="opener-label">② 情緒 Check In</span><span class="act-chip opener-chip" onclick="openModal('T-5')"><span class="chip-code">T-5</span>情緒 Check In</span></div><div class="opener-slot"><span class="opener-label">③ 身體正念</span><span class="act-chip opener-chip" onclick="openModal('M-7')"><span class="chip-code">M-7</span>正念隨身行——戶外五感尋寶</span></div><div class="opener-slot"><span class="opener-label">④ 創意律動</span><span class="act-chip opener-chip" onclick="openModal('E-2')"><span class="chip-code">E-2</span>樂動紓壓 5 招——身體是最好的情緒出口</span></div></div>
+        </div>
+      </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <button class="modal-close" id="modal-close">×</button>
+    <div class="modal-family-bar" id="modal-bar"></div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-actions">
+      <button class="btn-print" onclick="window.print()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        列印此教案
+      </button>
+    </div>
+  </div>
+</div>
+
+<footer style="max-width:980px;margin:0 auto;padding:20px 16px 60px;">
+  <div style="padding-top:14px;border-top:1px solid rgba(42,32,24,0.08);font-size:0.75rem;color:#9a8878;line-height:1.9;">
+    © 永齡希望小學雲科大分校<br>
+    本作品採用
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hant" target="_blank" rel="noopener" style="color:#7a8878;text-decoration:underline;text-underline-offset:2px;">
+      創用 CC 姓名標示－非商業性－相同方式分享 4.0
+    </a> 授權・使用請保留出處標示
+  </div>
+</footer>
+
+<script>
+const ACTIVITIES = [{"code": "T-5", "name": "情緒 Check In", "family": "彩虹綜合", "emoji": "🌈", "time": "10 分鐘", "sel": ["自我覺察", "自我管理"], "part": "情緒覺察工具", "html": "<div class=\"act-meta\"><p><h3>T-5　情緒 Check In</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 10 分鐘 ｜ SEL 核心能力：</strong>自我覺察・自我管理</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>培養每日情緒覺察習慣，讓孩子練習辨識當下的情緒狀態並說出來。</p><p><h3><span class=\"section-label\">【教具準備】</span></h3><br>探索盒外星人與外星寵物（或情緒牌卡）</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>教師將所有情緒外星人與外星寵物放置在桌上（或展示情緒牌卡）。</li><br><li>請每位學生挑選一個符合今天心情的外星人（或牌卡），覺察自己當下的情緒與感受。</li><br><li>若學生當下需要協助平靜，帶著做 3–5 次呼吸練習。</li><br><li>簡短分享（自願）：「我今天選的是＿＿，因為＿＿。」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「現在的你，感覺比較像哪個外星人？不需要完全一樣，只要選一個最接近你現在感覺的就可以。這不是考試，沒有對錯。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>這個活動可以成為每天開場的固定環節（只要 5 分鐘），長期下來孩子的情緒語言會明顯增加。幫助老師快速了解班級當日情緒狀態。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>今天回家後，告訴家人你今天的情緒是什麼顏色（選一個你覺得代表今天心情的顏色），並說說為什麼。</p><p><h3>老師的延伸</h3><br>可搭配「今天我在哪個情緒家族的家」（H-16）形成更完整的每日 Check In 系統。</p><p>---</p></div>"}, {"code": "T-9", "name": "自由書寫", "family": "彩虹綜合", "emoji": "🌈", "time": "10 分鐘", "sel": ["自我覺察", "自我管理"], "part": "情緒覺察工具", "html": "<div class=\"act-meta\"><p><h3>T-9　自由書寫</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 10 分鐘 ｜ SEL 核心能力：</strong>自我覺察・自我管理</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>以書寫作為情緒表達與釋放的媒介，練習將內在感受轉化為文字。</p><p><h3><span class=\"section-label\">【教具準備】</span></h3><br>白紙、筆、輕鬆背景音樂（可選）</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>教師給予主題（可與自由畫畫使用相同主題，或擇一）：「我討厭…」「我害怕…」「我現在…」「我最喜歡…」「我做過一個夢…」「當我長大後…」</li><br><li>播放輕鬆音樂，給孩子 5 分鐘自由書寫。</li><br><li>引導說明：「想到什麼就寫，可以是連續的句子，也可以是一個詞、一個感覺。不用管文法或格式，這張紙是你自己的，寫完後收起來。」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「今天的書寫沒有對錯，沒有標準答案。讓你的筆跟著你的心走，想到什麼就寫什麼。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>若孩子狀態停滯，可適時問一句「你現在心裡最大的感覺是什麼？」幫助啟動書寫。不強迫完成完整文章。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>這週試著寫一封信給你某一種常常出現的情緒（例如：「親愛的害怕……」），告訴它你想說的話。</p><p><h3>老師的延伸</h3><br>可在班級設置「秘密信箱」，學生可匿名投遞心情信件，讓老師了解班級情緒風向；也可發展為學期書寫計畫。</p><p>---</p></div>"}, {"code": "T-11", "name": "情緒光譜排隊", "family": "彩虹綜合", "emoji": "🌈", "time": "15 分鐘", "sel": ["自我覺察"], "part": "情緒覺察工具", "html": "<div class=\"act-meta\"><p><h3>T-11　情緒光譜排隊</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 15 分鐘 ｜ SEL 核心能力：</strong>自我覺察</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>建立情緒強度的具體概念，擴充情緒詞彙，練習精準命名自己的感受。</p><p><h3><span class=\"section-label\">【使用牌卡】</span></h3><br>任選一個家族的全部 14 張卡（建議先從紅色或黃色開始）</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>小組各拿一套家族卡（14 張），攤開在桌上。</li><br><li>討論並排成情緒光譜：從最輕微排到最強烈，說出排序理由。</li><br><li>完成後展示給其他組看，比較哪裡排法不同，討論為什麼。</li><br><li>問：「你今天的狀態在這個光譜的哪個位置？」</li><br><li>以陪伴句收尾（隨當天選的家族調整）。</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「我們今天要做一件有趣的事，幫這些情緒排隊。就像辣度有一顆辣椒到五顆辣椒，情緒也有不同的程度。你可以想一想：有點煩，和快要氣炸，中間差了幾格呢？」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>不同組排法不同很正常，讓孩子理解情緒感受是主觀的，沒有標準答案。重點在討論過程，而不是結果正確。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>這週試著用今天學到的情緒詞更精準地描述自己的感覺，不只說「我很難過」，而是說「我現在是第幾格的難過」。看看這樣說，別人有沒有更懂你。</p><p><h3>老師的延伸</h3><br>可將光譜排隊發展為每日晨間 Check-In：「今天你在第幾格？」幫助孩子每天練習精準的情緒命名。</p><p>---</p></div>"}, {"code": "H-8", "name": "情緒許可證", "family": "藍色家族", "emoji": "💙", "time": "15 分鐘", "sel": ["自我管理"], "part": "HOPE牌卡", "html": "<div class=\"act-meta\"><p><h3>H-8　情緒許可證</h3><br><h3>💙 藍色家族<strong> ｜ ⏱ 15 分鐘 ｜ SEL 核心能力：</strong>自我管理</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>理解有負向情緒是正常的，學習允許自己有感覺，並溫柔對待自己。</p><p><h3><span class=\"section-label\">【使用牌卡】</span></h3><br>藍色家族：心悶（1）、小難過（3）、難過（4）、傷心（5）</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>展示四張卡，請孩子排排看哪個程度最深。</li><br><li>老師分享：「我曾經覺得難過時，我做的第一件事是＿＿。（示範誠實分享）」</li><br><li>請孩子畫一個「當我難過時的樣子」（臉會變成怎樣？身體哪裡有感覺？可用顏色或線條表現）。</li><br><li>寫一張給自己的「情緒許可證」：「我允許自己難過，因為那表示我很在乎＿＿。」</li><br><li>以陪伴句收尾：「就算只是小小的難過，也值得被溫柔對待。」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「你有沒有過這種經驗——難過的時候，馬上有人說：『別哭了、這又沒有什麼大不了』，結果心裡反而更悶了？今天我們要練習：讓難過好好被溫柔對待，再慢慢變好。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>老師的誠實分享是建立信任的關鍵，不需要說很私密的事，但要真實。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>把你的「情緒許可證」收好。當你下次難過時，拿出來看看，對自己說：「我現在很難過，這是可以的。」給自己 5 分鐘好好感覺一下，準備好之後再慢慢往前走。</p><p><h3>老師的延伸</h3><br>可將孩子的「情緒許可證」護貝，讓孩子隨身保存。同時在班級中持續營造「難過也沒關係」的氛圍，設置安靜角，讓孩子在情緒低落時有地方暫時停下來。</p><p>---</p></div>"}, {"code": "S-1", "name": "故事時間（一）——掉落的霜淇淋", "family": "彩虹綜合", "emoji": "🌈", "time": "10 分鐘", "sel": ["自我覺察", "自我管理", "社會覺察"], "part": "情境故事", "html": "<div class=\"act-meta\"><p><h3>S-1　故事時間（一）——掉落的霜淇淋</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 10 分鐘 ｜ SEL 核心能力：</strong>自我覺察・自我管理・社會覺察</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>覺察突發意外帶來的情緒，練習在意外後調節情緒，並理解他人的無心之失。</p><p><h3><span class=\"section-label\">【使用教具】</span></h3><br>22th 情緒卡牌（搭配放鬆結尾使用）</p><p><h3><span class=\"section-label\">【故事內容】</span></h3><br>終於來到了期待的星期日，你非常開心地拿著自己辛苦存下來的零用錢，愉悅地走到便利商店，買到了最新口味的霜淇淋。當你拿著霜淇淋正要開心享用時，結果被一個急急忙忙的路人撞到，路人急急忙忙地走了，並沒有發現撞到你，而你手上的霜淇淋也瞬間掉到地上了……此時你已經沒有其他的零用錢再買一支了。</p><p><h3><span class=\"section-label\">【討論引導】</span></h3><br><li>被路人撞到、霜淇淋瞬間掉到地上時，你的感覺是什麼？</li><br><li>如果可以對那個路人說一句話，你會說什麼？為什麼？</li><br><li>霜淇淋掉到地上後，你產生了情緒，你會怎麼處理這些情緒？</li><br><li>此時如果有朋友或家人在場，你希望他們怎麼安慰你？為什麼？</li><br><li>你曾經有過類似的經驗嗎？當時你是如何處理自己的情緒的？</li></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>每個學生分享完後，提醒孩子：雖然大家聽的是同一個故事，卻有不同的感覺與反應，這是很正常的——每個人心裡都有自己對事情的想法，所以看待事情的反應也會不同。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>這週如果遇到讓你很失望的意外，試著在心裡做一件事：先停下來、做一次深呼吸，然後問自己：「我現在最需要的是什麼？」允許自己有那個情緒，然後慢慢找一個讓自己好過一點的方式。</p><p><h3>老師的延伸</h3><br>可搭配 22th 情緒卡牌，邀請孩子在討論後選一張代表當下感受的牌卡，說說為什麼選這張。也可引導孩子創作「情緒轉化小故事」：把霜淇淋掉落變成一個故事的新開頭，看看接下來會怎麼發展。</p><p>---</p></div>"}, {"code": "E-3", "name": "單腳平衡——專注當下的身體練習", "family": "彩虹綜合", "emoji": "🌈", "time": "10 分鐘", "sel": ["自我覺察", "自我管理"], "part": "延伸活動", "html": "<div class=\"act-meta\"><p><h3>E-3　單腳平衡——專注當下的身體練習</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 10 分鐘 ｜ SEL 核心能力：</strong>自我覺察・自我管理</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>透過身體平衡挑戰，練習將注意力帶回當下，體驗專注時情緒自然穩定的效果。</p><p><h3><span class=\"section-label\">【教具準備】</span></h3><br>無（確認站立空間安全）</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>請孩子找一個站得穩的位置，雙腳站好，感受腳底與地面的接觸。</li><br><li>深吸一口氣，準備好後，慢慢把一隻腳抬起來，盡量保持平衡。眼睛可以找一個定點看著（不必閉眼）。計時 30 秒。</li><br><li>換腳，再做一次。</li><br><li>引導討論：「你剛才單腳站立的時候，腦袋裡在想什麼？有沒有其他的煩惱或情緒跑出來？你的身體注意到了什麼？」</li><br><li>老師說明：「當我們需要專注在身體上，腦袋就比較難同時擔心其他事。這是一種很自然的、把注意力帶回當下的方法。」</li><br><li>進階版：可以閉上眼睛再試一次，感受難度的不同。以陪伴句收尾：「當你把注意力放在腳底，你的情緒也慢慢跟著穩下來了。」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「試試看——當你要讓自己不倒下，你的腦袋有沒有辦法同時想很多事？你會發現，要平衡，就得把所有注意力放在身體上。這就是當下。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>若有孩子平衡較差容易擔心出醜，可以讓孩子靠近牆壁或扶著椅背，重點在體驗「專注帶來穩定」的感受，而不是競賽誰站得最久。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>下次當你感到思緒很亂、情緒很混的時候，找一個安全的地方，試著做 30 秒的單腳站立，把注意力帶回身體，讓自己先穩一下再說。</p><p><h3>老師的延伸</h3><br>可和「感受當下——運用五感回到此刻」（M-3）搭配使用，讓孩子體驗不同方式的「回到當下」，找到最適合自己的方法。</p><p>---</p></div>"}, {"code": "T-2", "name": "情緒動物代言人", "family": "彩虹綜合", "emoji": "🌈", "time": "10 分鐘", "sel": ["自我覺察", "社會覺察"], "part": "情緒覺察工具", "html": "<div class=\"act-meta\"><p><h3>T-2　情緒動物代言人</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 10 分鐘 ｜ SEL 核心能力：</strong>自我覺察・社會覺察</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>以動物作為情緒的象徵媒介，透過投射與想像加深對六大情緒的理解與個人連結。</p><p><h3><span class=\"section-label\">【教具準備】</span></h3><br>「情緒動物代言人」學習單</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>引導提問：「你覺得最能代表『開心』的是什麼動物？最能代表『生氣』的呢？難過？害怕？厭惡？驚訝？」若孩子有困難，可調整提問方式：「你看到哪一種動物會讓你感到害怕？」</li><br><li>搭配學習單，在六個情緒框格中畫出或寫出每個情緒的動物代言人。</li><br><li>和同組夥伴分享，說明選擇理由。</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「如果每一種情緒都有一個動物代言人，你覺得他們會是誰？發揮你的想像力，選出你心目中最適合的動物！」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>沒有標準答案，重點在孩子能說出選擇的理由，說明情緒與動物特質的連結。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>今天回家把你選的情緒動物代言人介紹給家人，讓他們猜猜看你選的是哪種情緒。</p><p><h3>老師的延伸</h3><br>可設計「班級情緒動物園」，讓全班將自己的情緒動物代言人貼在大海報上，看見不同孩子對同一情緒的不同想像。</p><p>---</p></div>"}, {"code": "H-13", "name": "怒火溫度計：我的情緒溫度", "family": "紅色家族", "emoji": "❤️", "time": "15 分鐘", "sel": ["自我管理"], "part": "HOPE牌卡", "html": "<div class=\"act-meta\"><p><h3>H-13　怒火溫度計：我的情緒溫度</h3><br><h3>❤️ 紅色家族<strong> ｜ ⏱ 15 分鐘 ｜ SEL 核心能力：</strong>自我管理</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>辨識憤怒光譜從輕微到強烈，理解憤怒背後的界線訊號，設計個人降溫行動。</p><p><h3><span class=\"section-label\">【使用牌卡】</span></h3><br>紅色家族（心煩、不耐、惱火、火大、氣炸等相關卡）</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>在黑板上畫出 0 到 10 的情緒溫度計，邀請孩子上台，將不同的憤怒情緒詞放在他們認為合適的位置。</li><br><li>問：「你上次情緒很強烈的時候，大概是幾度？通常到幾度時，你會開始覺得比較難控制自己？」</li><br><li>孩子設計個人「降溫計畫」：在幾度要做什麼行動？（如：7 度以上先走出去深呼吸）</li><br><li>兩兩分享降溫計畫，互相給建議。</li><br><li>練習說界線用語：「我現在有點不舒服，可以先停一下嗎？」以陪伴句收尾：「生氣是在提醒你：有一個重要的界線被碰到了。」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「生氣不是你的問題。生氣是你的身體在提醒你：『這裡有一條重要的界線被碰到了。』真正重要的，不是有沒有生氣，而是我們怎麼回應這個感覺。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>降溫計畫要具體（哪個動作、幾分鐘），才能在真的氣到 7 度時想得起來用。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>把你的降溫計畫寫在一張小紙條上，放在書包裡。這週如果情緒快要升高時，先在心裡問自己：「我現在是幾度？」接著試著啟動你的降溫方法。</p><p><h3>老師的延伸</h3><br>可在教室設置「情緒溫度計」海報，讓孩子每天早上貼上代表自己狀態的溫度貼紙，老師藉此快速掌握班級情緒狀態。</p><p>---</p></div>"}, {"code": "M-5", "name": "正念散步——感官覺察之旅", "family": "彩虹綜合", "emoji": "🌈", "time": "15 分鐘", "sel": ["自我覺察"], "part": "正念覺察", "html": "<div class=\"act-meta\"><p><h3>M-5　正念散步——感官覺察之旅</h3><br><strong>🌈 彩虹綜合</strong> ｜ ⏱ 15 分鐘 ｜ SEL 核心能力：<strong>自我覺察</strong> （需戶外空間）</p><p><h3><span class=\"section-label\">【活動目標】</span></h3><br>透過有引導的戶外行走，練習將注意力帶向當下的感官體驗，體驗正念在日常移動中的應用。</p><p><h3><span class=\"section-label\">【教具準備】</span></h3><br>戶外空間（校園草地、走廊、操場均可）</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>帶領孩子到戶外，說明今天的散步有些不一樣：我們要用「正念」的方式走路——非常慢、非常專注，把所有的注意力放在行走這件事本身和身邊的環境上。</li><br><li>開始走路，教師以緩慢的語速引導：感受腳底接觸地面的感覺→感受腳跟先著地還是腳尖→留意每一步的重量轉換→感受空氣流過皮膚→留意周圍的聲音→留意眼睛看到的顏色與形狀。</li><br><li>停下來找一個讓自己有感覺的地方，停留 30 秒，感受這個空間給你的感覺。</li><br><li>回到教室後分享：「這次散步中，有沒有哪個瞬間讓你特別有感覺？你注意到了什麼以前沒有注意到的事情？」</li><br><li>以陪伴句收尾：「當我們慢下來，世界會給我們更多。」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「今天的散步，我們不趕時間，也不想要去哪裡。我們只是走，然後感覺——感覺腳底下的地面，感覺風，感覺眼睛看到的東西。讓自己完全在這個時刻裡。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>正念散步需要孩子能夠安靜行走，建議在班級有一定規範基礎後進行。若孩子難以放慢速度，可先在走廊段練習，再逐步延伸到更開放的戶外空間。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>今天走回家（或走到公車站）的時候，試著做一次正念散步：慢下來，感受每一步，看看有沒有什麼平常沒有注意到的風景或聲音。</p><p><h3>老師的延伸</h3><br>可定期安排「正念散步時間」，讓孩子持續練習在行走中保持覺察；也可連結環境教育，讓孩子在正念散步中記錄校園中的自然觀察。</p><p>---</p></div>"}, {"code": "C-3", "name": "吹蠟燭呼吸法", "family": "彩虹綜合", "emoji": "🌈", "time": "10 分鐘", "sel": ["自我覺察", "自我管理"], "part": "冷靜工具箱", "html": "<div class=\"act-meta\"><p><h3>C-3　吹蠟燭呼吸法</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 10 分鐘 ｜ SEL 核心能力：</strong>自我覺察・自我管理</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>透過吹蠟燭的意象幫助孩子練習緩慢的深吐氣，緩解緊繃情緒。</p><p><h3><span class=\"section-label\">【教具準備】</span></h3><br>無（參考影片：https://www.youtube.com/watch?v=qTN_MtV5TFw）</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>伸出一隻手，想像 5 根手指頭是蛋糕上點燃的蠟燭。</li><br><li>深深吸一口氣，大口地把一根蠟燭吹熄，一根手指收進掌心；繼續一根根吹，直到五根蠟燭都熄滅，手變成一顆石頭。</li><br><li>可以逐漸拉長呼吸，邊吹可以把手掌慢慢拉遠，增加吹氣的時間。</li><br><li>也可讓孩子把手放在胸口，感受現在的心跳速度。</li><br><li>教師提問：「吹氣時，有什麼樣的感覺？吹完之後，身體有沒有不一樣？」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「人緊張焦慮時，會不自覺身體緊繃，但是當我們慢慢地吹——呼～，整個肌肉會慢慢放鬆下來。試著在你的生日蠟燭上，把緊繃的情緒一根根吹熄。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>吐氣要慢而長，效果才明顯。可以讓孩子邊吹邊感受嘴唇的涼意，增加身體覺察的深度。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>下次感到緊張、生氣或心跳很快的時候，伸出手，試著用吹蠟燭呼吸法讓自己慢下來。注意：吐氣要慢，慢到感覺身體鬆了。</p><p><h3>老師的延伸</h3><br>可讓孩子在手掌圖上為每根蠟燭（手指）標上一種想放下的情緒（例如：焦慮、生氣、緊張），練習每次吹熄一根，就想像放下那個情緒。</p><p>---</p></div>"}, {"code": "M-7", "name": "正念隨身行——戶外五感尋寶", "family": "彩虹綜合", "emoji": "🌈", "time": "15 分鐘", "sel": ["自我覺察"], "part": "正念覺察", "html": "<div class=\"act-meta\"><p><h3>M-7　正念隨身行——戶外五感尋寶</h3><br><strong>🌈 彩虹綜合</strong> ｜ ⏱ 15 分鐘 ｜ SEL 核心能力：<strong>自我覺察</strong> （需戶外空間）</p><p><h3><span class=\"section-label\">【活動目標】</span></h3><br>在戶外環境中進行有目標的五感探索，深化感官覺察能力，體驗自然環境對情緒的安定效果。</p><p><h3><span class=\"section-label\">【教具準備】</span></h3><br>五感尋寶學習單（記錄格式）、戶外空間</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>說明今天的任務：「我們要在校園裡進行五感尋寶，用你的眼睛、耳朵、鼻子、手和注意力，去找到五種不同的東西或感受。」</li><br><li>分發學習單（五欄，每欄對應一個感官），帶孩子到戶外，分配 8–10 分鐘自由尋寶。提示：用眼睛找讓你「哇」的顏色或形狀；用耳朵聽最讓你有感覺的聲音；用手觸摸兩種不同質地的東西；用鼻子感受戶外的氣味；用身體感受空氣的溫度或風。</li><br><li>回到教室分享：「你的五感今天發現了什麼？有沒有讓你特別有感覺的一個時刻？在戶外的這段時間，你的情緒有沒有什麼變化？」</li><br><li>引導討論：「為什麼在自然環境裡，有時候情緒會變得比較平靜？」</li><br><li>以陪伴句收尾：「你的五感是很好的朋友，隨時都可以用它們讓自己回到當下。」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「今天的尋寶，不是找到什麼東西帶回來，而是找到一個感受、一個瞬間。讓你的感官全部打開，讓自然告訴你一些事情。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>事先確認戶外路線的安全性，並告知孩子不摘採任何植物，用感受代替採集。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>今天放學後，在回家的路上試著做一次「迷你版戶外五感尋寶」——只用 5 分鐘，找出今天在戶外聽到、聞到、看到的各一件讓你有感覺的事。</p><p><h3>老師的延伸</h3><br>可定期安排戶外五感時間，讓孩子持續觀察校園環境的變化（季節、天氣、生物），形成長期的自然正念練習。</p><p>---</p><p># 第六部分：情境故事討論系列</p><p>> <strong>定位說明：</strong> 本系列以「故事時間」為核心教學模式，搭配冥想音樂帶領孩子進入情境，透過故事討論培養情緒覺察與同理能力，每個故事結束後均有引導式放鬆練習。所有故事均來自雲科版，融入 SEL 五大核心能力框架。<br>><br>> <strong>共同流程結構（每個故事均適用）：</strong><br>> 1. 邀請孩子安靜、放鬆地坐好<br>> 2. 播放冥想背景音樂（音量適中，不蓋過老師說話聲）：https://www.youtube.com/watch?v=y2_hVYj9P1E<br>> 3. 告知孩子現在要說一個小故事，邀請他們閉上眼睛進入情境<br>> 4. 老師朗讀故事（語速緩慢、有停頓感）<br>> 5. 結束音樂，請孩子睜開眼睛<br>> 6. 分享與討論（依各故事引導提問）<br>> 7. 播放放鬆引導詞（見下方），以呼吸收尾<br>><br>> <strong>共同放鬆引導詞（所有故事通用）：</strong><br>> <em>「現在，請你閉上眼睛，以你最舒服的姿勢坐在椅子上，雙腳踏穩地板，調整好自己的呼吸，就專注在你的呼吸上，鼻子吸……鼻子吐……，吸……吐……，用呼吸讓自己靜下來，剛剛在活動的過程中，你可能有一些情緒的產生，就讓它產生，不用特別停留，這些情緒都很自然，但你並不是這些情緒，就讓這些情緒慢慢地流動，再次深呼吸，心中默數 3 秒，1～2～3～，大大吐氣，1～2～3～，慢慢的吸，慢慢的吐，再深呼吸三次後，當你準備好了就可以張開眼睛。」</em></p><p>---</p></div>"}, {"code": "C-5", "name": "自創冷靜魔法", "family": "彩虹綜合", "emoji": "🌈", "time": "10 分鐘", "sel": ["自我覺察", "自我管理"], "part": "冷靜工具箱", "html": "<div class=\"act-meta\"><p><h3>C-5　自創冷靜魔法</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 10 分鐘 ｜ SEL 核心能力：</strong>自我覺察・自我管理</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>統整個人情緒調節策略，發展適合自己的客製化冷靜方法，並能主動應用。</p><p><h3><span class=\"section-label\">【教具準備】</span></h3><br>「自創冷靜魔法」學習單</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>發下學習單，邀請學生想一想：當情緒來時，會運用什麼方法讓自己平靜下來？除了課堂上學過的方法（呼吸、爬五指山、吹蠟燭、五步驟緊張小貓），還可以加入其他自己的方法，例如：從 1 數到 100、澆花、唱歌、跑步、聽音樂、閱讀、做家事、玩遊戲、與寵物玩、找朋友聊天、跳舞、畫畫、睡覺…等。</li><br><li>請學生在學習單上畫下並寫出每個冷靜魔法，讓它成為屬於自己的冷靜工具手冊。</li><br><li>邀請學生上台發表自己的方法。</li><br><li>參考他人的方法，補充或修改自己的學習單，形成最終版本。</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「冷靜的方法沒有標準答案，適合你的，就是你最好的魔法。今天我們來創造屬於你自己的冷靜魔法書——裡面每一頁，都是只對你有用的魔法。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>沒有什麼冷靜方法是「錯的」，只要安全、合法、不傷害自己和他人即可。鼓勵多元，讓孩子知道每個人的冷靜方法可以很不一樣。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>把你的冷靜魔法學習單帶回家，讓家人也看看你有哪些魔法。這週試著用其中一個你還沒有用過的方法，看看效果如何。</p><p><h3>老師的延伸</h3><br>可彙整全班作品，製作一本「班級冷靜魔法寶典」，讓孩子在情緒低落時可以從中尋找靈感。也可設立教室「情緒補給站」，放置孩子可以使用的冷靜工具（如畫紙、閱讀書角）。</p><p>---</p></div>"}, {"code": "H-14", "name": "界線用語工廠", "family": "紅色家族", "emoji": "❤️", "time": "15 分鐘", "sel": ["人際技巧"], "part": "HOPE牌卡", "html": "<div class=\"act-meta\"><p><h3>H-14　界線用語工廠</h3><br><h3>❤️ 紅色家族<strong> ｜ ⏱ 15 分鐘 ｜ SEL 核心能力：</strong>人際技巧</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>建立多樣且合適的界線表達語句，並能在情緒升高前嘗試用語言表達自己的需求與不舒服。</p><p><h3><span class=\"section-label\">【使用牌卡】</span></h3><br>紅色家族（不耐、惱火、憤怒等相關卡）</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>老師提供三個常見衝突情境，請孩子討論「可以怎麼說」。說明原則：用說的表達，不攻擊、不責備、不動手。</li><br><li>介紹界線語言句型：「我不喜歡你＿＿，我希望你＿＿。」</li><br><li>小組接龍練習：每人提出一個情境，並說出一句界線用語，目標是「清楚又合適」。</li><br><li>全班票選「最不容易說出口的一句話」，討論為什麼這句話很難說，還有沒有其他說法。</li><br><li>老師帶著全班一起說：「我現在需要一點空間，等我平靜一下我們再談。」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「你有沒有這樣的經驗：明明很生氣，但又知道不能動手、也不想罵人，卻一時不知道可以說什麼。今天我們要一起設計一個『界線工具箱』，把一些在生氣時也能說得出來的話，放進去。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>接龍遊戲能讓孩子在輕鬆與笑聲中練習，比單純反覆說明更容易投入與記住。活動結束前，確認每位孩子至少記住並能說出一句適合的界線用語。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>從今天練習的句子中，選出一句你最想多用的話，寫下來貼在書桌前。這週找一個合適的時機，試著用一次。</p><p><h3>老師的延伸</h3><br>可定期進行「語言工具箱補充」，每隔幾週邀請孩子再想出新的界線用語，加入班級的語言工具箱海報。</p><p>---</p></div>"}, {"code": "H-4", "name": "我的舒適圈——界線雷達", "family": "綠色家族", "emoji": "💚", "time": "15 分鐘", "sel": ["自我覺察"], "part": "HOPE牌卡", "html": "<div class=\"act-meta\"><p><h3>H-4　我的舒適圈——界線雷達</h3><br><h3>💚 綠色家族<strong> ｜ ⏱ 15 分鐘 ｜ SEL 核心能力：</strong>自我覺察</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>辨識界線被侵犯時的身體訊號，練習用語言取代身體推拒反應。</p><p><h3><span class=\"section-label\">【使用牌卡】</span></h3><br>綠色家族：怪怪的（1）、不合拍（2）、反感（6）、討厭（5）</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>展示「怪怪的」卡，問：「有沒有過心裡怪怪的、說不上來哪裡不對的感覺？那時身體哪裡有感覺？」</li><br><li>畫出人體輪廓，請孩子說出身體警報器在哪裡（肩膀緊、肚子翻、喉嚨卡）。</li><br><li>小組討論：在哪些情境下，你的身體會發出這個訊號？（被人碰觸、被嘲笑、被迫表演…）</li><br><li>介紹「界線用語」：「這樣我感覺不舒服，可以不要這樣嗎？」全班練習說一次。</li><br><li>以陪伴句收尾：「你的身體在保護你，那個怪怪的感覺很重要。」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「你的身體是你最誠實的朋友——它會在你還沒想清楚之前，先告訴你『這裡不太對』。我們今天要學會聽懂它說的話。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>若孩子說出具體被侵犯的情境，需謹慎回應，必要時依輔導機制處理。活動聚焦在「辨識」，不深入挖掘個人創傷。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>這週留意一次身體的「警報感覺」，記下：是什麼情境？身體哪裡有感覺？你後來怎麼做？</p><p><h3>老師的延伸</h3><br>後續可設計「界線情境卡」讓孩子練習如何開口。也可連結生命教育或健康課，討論身體自主權的概念。</p><p>---</p></div>"}, {"code": "H-2", "name": "喜悅存摺——收集今天的好事", "family": "黃色家族", "emoji": "💛", "time": "15 分鐘", "sel": ["自我覺察"], "part": "HOPE牌卡", "html": "<div class=\"act-meta\"><p><h3>H-2　喜悅存摺——收集今天的好事</h3><br><h3>💛 黃色家族<strong> ｜ ⏱ 15 分鐘 ｜ SEL 核心能力：</strong>自我覺察</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>練習辨識喜悅、開心、感恩等正向情緒，建立感恩日記習慣。</p><p><h3><span class=\"section-label\">【使用牌卡】</span></h3><br>黃色家族：喜悅（4）、開心（5）、感恩（12）、滿足（13）</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>展示四張卡，請孩子說說這四種感覺有什麼不同。</li><br><li>每人拿一張便利貼，寫下今天讓自己「心裡亮亮的」一件小事。</li><br><li>貼到全班「喜悅存摺」的海報上。</li><br><li>老師隨機抽讀幾張，問：「這件事對你來說，最像哪張情緒卡？」</li><br><li>以陪伴句收尾：「那種從心裡冒出來的喜悅，很值得收藏。」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「今天有沒有什麼小事——不一定是大事，可能是朋友對你笑、午餐很好吃、或是終於看懂一題數學——讓你心裡有一點點亮亮的感覺？」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>海報可持續使用，每週選出班上票數最多的「本週最暖小事」，培養正向班級文化。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>今晚睡前，在心裡回想今天一件讓你感覺好的事，把它說給自己聽，或寫在筆記本上。連續做三天，看看你的「喜悅存摺」會變得多豐富。</p><p><h3>老師的延伸</h3><br>可設置班級「喜悅牆」持續累積，每隔兩週做一次回顧。也可延伸討論：喜悅可以分享嗎？分享之後喜悅會變多還是變少？</p><p>---</p></div>"}, {"code": "H-1", "name": "安心地圖——找到讓我心安的地方", "family": "黃色家族", "emoji": "💛", "time": "10 分鐘", "sel": ["自我覺察"], "part": "HOPE牌卡", "html": "<div class=\"act-meta\"><p><h3>H-1　安心地圖——找到讓我心安的地方</h3><br><h3>💛 黃色家族<strong> ｜ ⏱ 10 分鐘 ｜ SEL 核心能力：</strong>自我覺察</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>擴充正向情緒詞彙，連結身體放鬆感受，練習命名「心安」情緒。</p><p><h3><span class=\"section-label\">【使用牌卡】</span></h3><br>黃色家族：心安（1）、放鬆（2）、輕鬆（3）</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>展示「心安」卡，請孩子用手指出現在身體哪裡感覺最放鬆。</li><br><li>發給每人一張紙（或學習單），畫出三個讓自己心安的地方或人。</li><br><li>兩兩配對，輪流分享：「當我想到＿＿，我的肩膀就放鬆了。」</li><br><li>全班分享一兩個，老師用「心安」卡在黑板上做情緒命名。</li><br><li>以陪伴句收尾：「你值得待在讓自己覺得安心、踏實的地方。」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「現在閉上眼睛，想一個讓你覺得很放鬆、很安全的地方——可能是你家的某個角落、奶奶家的廚房、操場的某棵樹下……感受一下那裡的溫度和聲音。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>若有孩子說不出來，可先示範老師自己的安心地方。不強迫分享，只需完成自己的學習單即可。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>今天回家後，找一個讓你覺得最安心的角落，靜靜坐 1 分鐘，感受身體哪裡放鬆了。明天可以把那個感覺用一句話或一張圖記錄下來。</p><p><h3>老師的延伸</h3><br>可在下次課前請 1–2 位孩子分享「安心角落」，延伸討論：這週有沒有需要讓自己平靜的時刻，你有沒有想到那個地方？也可發展為課前例行活動：「今天你的心安放在哪裡？」</p><p>---</p></div>"}, {"code": "M-2", "name": "跟身體做朋友", "family": "彩虹綜合", "emoji": "🌈", "time": "10 分鐘", "sel": ["自我覺察", "自我管理"], "part": "正念覺察", "html": "<div class=\"act-meta\"><p><h3>M-2　跟身體做朋友</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 10 分鐘 ｜ SEL 核心能力：</strong>自我覺察・自我管理</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>透過身體隊友卡，讓孩子嘗試不同的讓自己平靜的身體姿勢，並用創作方式感謝自己的身體。</p><p><h3><span class=\"section-label\">【教具準備】</span></h3><br>身體隊友卡、隊友學習單、彩色筆</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>每位學童抽出兩張身體隊友卡，試試這些讓自己平靜的方法。</li><br><li>老師請學童發想並分享：除了卡上的姿勢，有哪些身體動作可以幫助自己感到平靜？（例如：伸個懶腰、輕輕甩手、深呼吸、搓搓手掌…）</li><br><li>發下隊友學習單，引導孩子：「感謝自己的身體當你的隊友！想像自己的身體如果有顏色跟圖案，會是什麼樣子？」在人體輪廓上用顏色、形狀、表情等方式表達，例如：心臟部位上有笑容、膝蓋上有一團毛球、胃是藍色的。</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「你的身體每天都在幫助你——走路、呼吸、感覺。今天我們要謝謝它，也要讓它知道：你注意到它了，你在照顧它。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>引導孩子理解身體感受是連結情緒的橋梁，不只是生理反應，也是情緒訊號。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>挑選三個你最喜歡的平靜身體動作，畫成小卡，製作「我的平靜隊友卡」隨身攜帶，在感覺緊繃時拿出來使用。</p><p><h3>老師的延伸</h3><br>可延伸為「情緒身體地圖」，讓孩子分別畫出「生氣時」「害怕時」「快樂時」身體的感受圖，理解情緒與身體的連動。</p><p>---</p></div>"}, {"code": "S-6", "name": "故事時間（六）——上台的勇氣", "family": "彩虹綜合", "emoji": "🌈", "time": "10 分鐘", "sel": ["自我覺察", "社會覺察", "自我管理", "人際技巧", "負責任的決策"], "part": "情境故事", "html": "<div class=\"act-meta\"><p><h3>S-6　故事時間（六）——上台的勇氣</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 10 分鐘 ｜ SEL 核心能力：</strong>自我覺察・社會覺察・自我管理・人際技巧・負責任的決策</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>理解緊張與害怕是面對挑戰的正常反應，練習同理他人壓力，並思考如何提供有效支持。</p><p><h3><span class=\"section-label\">【使用教具】</span></h3><br>21th 情緒卡牌</p><p><h3><span class=\"section-label\">【故事內容】</span></h3><br>你有一個朋友，對於上台他會感到非常緊張。他不喜歡被別人注視，這種壓力會讓他在面對人群時，感到無法呼吸。每次即將上台，他的手心總是出汗，心跳加速，腦海裡一片空白。雖然他準備得很充分，但一旦站在聚光燈下，那些熟悉的內容似乎都消失了，只剩下無盡的焦慮。為了幫助他克服這種恐懼，你想幫助他……。</p><p><h3><span class=\"section-label\">【討論引導】</span></h3><br><li>你覺得這個朋友最害怕的具體情境是什麼？</li><br><li>在上台準備的過程中，他的情緒是如何變化的？</li><br><li>你想要幫助他，你會怎麼幫助他？</li><br><li>你覺得這個朋友是個怎樣性格的人？有什麼優點？</li><br><li>你生活周遭有沒有這樣的朋友存在？</li><br><li>如果你是這個朋友的狀態，你會希望別人怎麼幫助你？</li></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>這個故事可以和「緊張小貓五步驟」（H-32）自然連結，讓孩子在討論「我會怎麼幫助朋友」時，同時複習並內化可以實際使用的冷靜方法。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>這週如果你看到朋友緊張，試著用一句話告訴他：「沒關係，我在這裡。」不需要解決他的緊張，只需要讓他知道你看到他了。</p><p><h3>老師的延伸</h3><br>可安排角色扮演：兩人一組，一人扮演上台前焦慮的朋友，一人練習給予支持的具體方式（深呼吸引導、加油語、手勢）。</p><p>---</p></div>"}, {"code": "H-36", "name": "情緒自畫像", "family": "彩虹綜合", "emoji": "🌈", "time": "20 分鐘", "sel": ["自我覺察"], "part": "HOPE牌卡", "html": "<div class=\"act-meta\"><p><h3>H-36　情緒自畫像</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 20 分鐘 ｜ SEL 核心能力：</strong>自我覺察</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>統整情緒學習，建立個人化的情緒自我認識，作為期末反思。</p><p><h3><span class=\"section-label\">【使用牌卡】</span></h3><br>全六個家族，孩子各自選出「最像自己的卡」</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>引導孩子從六個家族中各選一張最常出現或最有感覺的情緒卡（強調沒有對錯）。</li><br><li>發下空白紙，請孩子進行情緒自畫像創作，將選出的卡放在旁邊作為參考，透過顏色、圖案與文字呈現自己的狀態，鼓勵自由表達。</li><br><li>完成後，引導孩子寫下三個重點：①我最常出現的情緒是什麼；②哪一種情緒讓我感覺有力量；③我接下來想練習的一個情緒能力。</li><br><li>兩兩分享，傾聽者不評論，只回應一個具體觀察（如：「我看到你用很多藍色」「我沒想到你其實很在乎這件事」）。</li><br><li>老師帶領回顧，強調每個人的情緒樣貌都不同，能看懂自己的情緒，就是很重要的能力。以陪伴句收尾：「當你開始看懂自己的情緒，你就在慢慢學會照顧自己。」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「今天我們要做一件很特別的事，不是畫你的外表，而是畫出你的情緒樣子——你的心是什麼樣的顏色、感覺和樣貌。這沒有標準答案，每一個人的畫都會不一樣，因為每個人的情緒世界本來就不一樣。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>這個活動很適合安排在學期末進行，讓孩子回顧並整合整段時間的情緒學習經驗，增加成就感與自我理解。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>把你的情緒自畫像帶回家，找一個時間和家人分享：「這是我現在的情緒＿＿，我最常有的情緒是＿＿，我這學期學到最重要的一件事是＿＿。」</p><p><h3>老師的延伸</h3><br>可在下學期開學初安排孩子再次進行情緒自畫像，並與上學期作品對照，觀察自己的情緒變化與成長。</p><p>---</p></div>"}, {"code": "M-4", "name": "雲冥想", "family": "彩虹綜合", "emoji": "🌈", "time": "10 分鐘", "sel": ["自我覺察", "自我管理"], "part": "正念覺察", "html": "<div class=\"act-meta\"><p><h3>M-4　雲冥想</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 10 分鐘 ｜ SEL 核心能力：</strong>自我覺察・自我管理</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>透過雲的意象練習觀察情緒而不被情緒淹沒，培養情緒的旁觀者視角。</p><p><h3><span class=\"section-label\">【教具準備】</span></h3><br>安靜的環境（可選輕柔背景音樂）</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>引導孩子找舒服的姿勢坐好，閉上眼睛，做幾次深呼吸穩定身體。</li><br><li>老師帶領想像：「你現在坐在一片草地上，天空是藍色的。你可以看見一朵一朵的雲，慢慢地飄過去。現在，試著把你心裡的想法或感覺，放在那些雲上。每一朵雲代表一個你現在有的感覺——可能是高興，可能是擔心，可能是說不清楚的感覺。你只是看著它們飄過去，不需要抓住它們，也不需要趕走它們，就只是看著它們慢慢飄走。」</li><br><li>靜默約 1 分鐘後，引導孩子慢慢睜開眼睛，回到現在的教室。</li><br><li>分享：「剛才你的雲上面有什麼？是什麼感覺讓你印象最深？那朵雲飄走了嗎，還是還在？」</li><br><li>以陪伴句收尾：「你不需要消滅你的感覺，只需要看著它們慢慢飄過去。」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「你不是那朵雲，你是看著雲飄的人。你的情緒會來，也會走，就像雲一樣。你只需要靜靜地看著它，不需要被它帶走。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>這個活動對孩子來說可能是第一次體驗「觀察情緒」而非「被情緒控制」的感受，引導語的語速要慢，留足夠的靜默時間。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>下次當你情緒很混亂的時候，試著在心裡做一次「雲冥想」：找一個安靜的角落，閉上眼睛，把你的感覺放在雲上，看著它飄走，不用急著解決它。</p><p><h3>老師的延伸</h3><br>可發展為每週一次的「雲時間」，作為固定的情緒安頓儀式。也可搭配創作：讓孩子把今天的雲畫出來，標上雲上的情緒詞。</p><p>---</p></div>"}, {"code": "H-40", "name": "情緒成長紀錄", "family": "彩虹綜合", "emoji": "🌈", "time": "15 分鐘", "sel": ["自我覺察"], "part": "HOPE牌卡", "html": "<div class=\"act-meta\"><p><h3>H-40　情緒成長紀錄</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 15 分鐘 ｜ SEL 核心能力：</strong>自我覺察</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>回顧情緒學習歷程，覺察自己的改變，建立成長感與自我肯定。</p><p><h3><span class=\"section-label\">【使用牌卡】</span></h3><br>孩子自選對自己影響最深的三張卡</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>引導孩子從整套牌卡中挑選三張「對自己最有感、最有影響」的卡，不一定是最喜歡的，而是讓自己有改變或印象最深的。</li><br><li>在每張卡旁寫下兩件事：這張卡讓我發現了什麼；以及我現在和以前不一樣的地方。</li><br><li>輪流分享，每人約 90 秒，其他人專心傾聽，不評論。</li><br><li>老師提問：在這段學習中，有沒有哪一個改變是你自己也覺得意外的？</li><br><li>引導孩子思考：如果情緒課可以再多一堂，你還想學什麼？老師統整，強調每個人的改變速度與方式都不同，能看見自己的改變，本身就是一種成長。以陪伴句收尾：「當你開始看見自己的改變，就正在慢慢成為更了解自己的人。」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「今天我們來到這段情緒學習旅程的一個小小終點，也是一個回頭看的時刻。你可以想一想，還記得一開始上課的時候，你是怎麼說情緒的嗎？現在的你，和那時候有沒有哪裡不一樣？」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>在課程結尾詢問孩子「接下來還想學什麼」，能讓孩子感受到自己不只是學習者，也是課程的一部分，同時提供教師在下一階段設計上的重要參考。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>把你選的三張情緒卡抄寫回家，找一個時間和家人分享：「這學期讓我改變最多的三個情緒是＿＿、＿＿、＿＿」，說一小段自己的故事，並問家人：「你覺得我最近有什麼不一樣？」</p><p><h3>老師的延伸</h3><br>將孩子回饋的「還想再學什麼」整理成主題清單，作為下一階段課程設計的重要依據。</p><p>---</p></div>"}, {"code": "H-11", "name": "身體的警報器：我的害怕地圖", "family": "紫色家族", "emoji": "💜", "time": "15 分鐘", "sel": ["自我覺察"], "part": "HOPE牌卡", "html": "<div class=\"act-meta\"><p><h3>H-11　身體的警報器：我的害怕地圖</h3><br><h3>💜 紫色家族<strong> ｜ ⏱ 15 分鐘 ｜ SEL 核心能力：</strong>自我覺察</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>理解害怕是正常的情緒，辨識身體出現的害怕訊號，並學習保護自己的方法。</p><p><h3><span class=\"section-label\">【使用牌卡】</span></h3><br>紫色家族（害怕、緊張、不安相關卡）</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>問：「你有沒有特別害怕的東西？請先在紙上悄悄寫下，不需要分享。」也可引導：「寫一點點就好，也可以用畫的。」</li><br><li>說明：「害怕不是弱，而是你的身體在提醒你：這裡可能有危險，需要注意。」</li><br><li>請孩子在人體輪廓上，用顏色標出：當我害怕時，身體哪裡最有感覺。</li><br><li>問：「當那個地方有感覺時，它在提醒你什麼？（小心一點？找人幫忙？先停一下？）」</li><br><li>兩兩分享，傾聽者說：「我聽到你說，當你＿＿時，身體＿＿會有感覺，對嗎？」以陪伴句收尾：「害怕不是弱，是身體在保護我。」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「很多人以為勇敢就是不會害怕，但其實真正的勇敢，是知道自己在害怕什麼，還願意慢慢往前。今天我們要認識：當我害怕的時候，我的身體在告訴我什麼。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>孩子可能分享不同程度的害怕。請以接納與不評價的態度回應，避免比較或過度解讀。若觀察到孩子有較強烈或持續的恐懼反應，建議個別關懷，並視需要連結心理師。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>把你的「害怕地圖」帶回家，找一位你信任的大人分享你的身體感覺。可以這樣說：「我害怕的時候，身體這裡最有感覺。」不一定需要說出害怕的內容。</p><p><h3>老師的延伸</h3><br>可在課堂中定期安排「勇氣分享時間」，邀請孩子分享曾經害怕但仍然嘗試的經驗，引導重點放在：當時身體的感覺、做了什麼決定、結果如何。</p><p>---</p></div>"}, {"code": "H-10", "name": "好奇心偵探", "family": "橘色家族", "emoji": "🧡", "time": "15 分鐘", "sel": ["自我覺察"], "part": "HOPE牌卡", "html": "<div class=\"act-meta\"><p><h3>H-10　好奇心偵探</h3><br><h3>🧡 橘色家族<strong> ｜ ⏱ 15 分鐘 ｜ SEL 核心能力：</strong>自我覺察</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>將好奇情緒連結到主動學習動力，練習用語言描述驚豔感受。</p><p><h3><span class=\"section-label\">【使用牌卡】</span></h3><br>橘色家族：好奇（1）、驚豔（7）、讚嘆（6）、小驚喜（2）</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>展示「好奇」卡，請孩子說出最近一個讓他一直想知道答案的問題。</li><br><li>小組分享：「我最好奇的事是＿＿，因為＿＿。我猜答案可能是＿＿。」</li><br><li>老師帶出幾個有趣小知識，孩子用「驚豔」卡打分 1–5，並說明：「為什麼這件事讓你覺得驚豔？」</li><br><li>孩子寫下今天最讓自己「哇」的一件事：「原來＿＿，世界也可以這樣！我還想知道的是＿＿。」</li><br><li>以陪伴句收尾：「你的好奇心，是一個很重要的學習超能力。」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「世界上有太多很奇怪、很厲害、很奇妙的事在等著你去發現——但你得先打開那個好奇的開關。今天我們來找找，你的好奇開關在哪裡？」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>可連結到孩子正在學習的任何科目，幫助他們體驗「知識本身可以很驚豔」。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>這週請找一個你一直很好奇的問題，試著去找答案（問大人、查書或上網）。找到之後，下次上課和大家分享你的發現，用「驚豔」卡幫自己的發現打 1–5 分。</p><p><h3>老師的延伸</h3><br>可在班級設立「好奇牆」，讓孩子將想知道的問題貼上去，由老師或同學一起協助尋找答案。</p><p>---</p></div>"}, {"code": "T-10", "name": "情緒 Check In——今天我在哪個家族的家", "family": "彩虹綜合", "emoji": "🌈", "time": "10 分鐘", "sel": ["自我覺察"], "part": "情緒覺察工具", "html": "<div class=\"act-meta\"><p><h3>T-10　情緒 Check In——今天我在哪個家族的家</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 10 分鐘 ｜ SEL 核心能力：</strong>自我覺察</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>培養每日情緒覺察習慣，練習用情緒語言自我介紹，作為牌卡課程的常態開場。</p><p><h3><span class=\"section-label\">【使用牌卡】</span></h3><br>六個家族各取 1–2 張代表性卡片，共展示 6–12 張</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>展示六個家族的代表卡，老師說明每個家族的核心關鍵字（黃：正向溫暖；藍：低落柔軟；紅：強烈能量；綠：怪怪不適；橘：驚奇好奇；紫：擔心不安）。</li><br><li>孩子各自在白板（或紙上）寫下：今天我在「＿＿色家族」的家，最像的是「＿＿」。</li><br><li>舉起讓老師掃視（不需全班唸出，保護隱私）。</li><br><li>老師觀察整體分布，分享觀察。</li><br><li>問一兩個自願的孩子：「今天你選這張卡，是因為發生了什麼嗎？」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「現在的你，覺得自己比較像住在哪個情緒家族的家？不需要完全一樣，只要選一個最接近的感覺就可以。這不是考試，沒有對錯。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>這個活動建議固定安排在牌卡課程開始前進行，長期累積下來孩子的情緒語言會明顯豐富。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>今天回家後，和家人分享：你今天比較像住在哪個情緒家族的家，說說為什麼你有這樣的感覺。</p><p><h3>老師的延伸</h3><br>可設計「本週住最久的情緒家族」回顧，引導孩子回想一週中最常出現的情緒狀態。</p><p>---</p></div>"}, {"code": "L-A", "name": "情緒建築師", "family": "彩虹綜合", "emoji": "🌈", "time": "40 分鐘", "sel": ["自我覺察", "社會覺察", "人際技巧"], "part": "積木創作", "html": "<div class=\"act-meta\"><p>### 🏗 主題 A：情緒建築師</p><p><h3>SEL 核心能力：自我覺察・社會覺察・人際技巧</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>學習用非語言方式表達情緒，練習情緒辨識與同理；透過小組合作感受「不同意見→協商→共同完成」的過程。</p><p><h3><span class=\"section-label\">【教具準備】</span></h3><br>積木、情緒牌卡（可使用情緒迷宮教具內的牌卡）</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>暖身提問：「如果情緒是一棟建築，它會長什麼樣子？」可邀請孩子先畫出草圖或口頭說說。老師可舉例啟發聯想：「快樂」可能是明亮的黃色房子，有很多窗戶；「憤怒」可能是紅色、高聳且帶有尖角的塔樓；「害怕」可能是黑暗的小屋，四周有高牆。</li><br><li>將學生分為小組（2–3 人一組），發給每組一張情緒主題卡片（如快樂、憤怒、害怕、驚訝等），任務是用積木建構一座代表該情緒的建築或場景。</li><br><li>小組討論並搭建（15 分鐘）。老師引導提問：「你們的建築有哪些元素能讓人感受到這種情緒？」「這個顏色或形狀有什麼象徵意義？」</li><br><li>各組輪流展示作品，說明如何透過形狀、顏色、結構表達情緒；其他小組猜測這棟建築代表哪種情緒，並說出是從哪些地方看出來的。</li><br><li>以陪伴句收尾：「當你能把情緒蓋出來，你就離理解它更近了一步。」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「情緒住在每個人心裡，但它長什麼樣子？今天我們要用積木把它蓋出來——不用說話，只用形狀、顏色和高度，讓別人猜出你在想什麼。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>在分享階段，注意引導孩子說出<strong>合作過程中的不同意見</strong>是如何被解決的——這往往比作品本身更有討論價值。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>今天你用積木表達了一種情緒。回家後，試著用語言再說一次：「那種情緒感覺像是一棟＿＿，因為＿＿。」說給家人聽，看看他們有沒有類似的感受。</p><p><h3>老師的延伸</h3><br>可於學期末讓各組重新搭建同一個主題，比較和期初的作品有何不同，作為情緒理解成長的視覺紀錄。</p></div>"}, {"code": "S-2", "name": "故事時間（二）——弟弟的眼淚", "family": "彩虹綜合", "emoji": "🌈", "time": "10 分鐘", "sel": ["自我覺察", "社會覺察", "人際技巧"], "part": "情境故事", "html": "<div class=\"act-meta\"><p><h3>S-2　故事時間（二）——弟弟的眼淚</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 10 分鐘 ｜ SEL 核心能力：</strong>自我覺察・社會覺察・人際技巧</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>辨識看見他人難過時自己的感受，練習推測他人情緒並思考如何回應。</p><p><h3><span class=\"section-label\">【使用教具】</span></h3><br>28th 情緒卡牌</p><p><h3><span class=\"section-label\">【故事內容】</span></h3><br>在某一天的晚上，你正在寫功課，聽到弟弟的哭泣聲。你放下手邊的功課，快步走到客廳，看到弟弟哇哇大哭，聲音回盪在整個房子裡。你不知道他怎麼了？只看到他哭得非常傷心……。</p><p><h3><span class=\"section-label\">【討論引導】</span></h3><br><li>當你聽到弟弟在哭的聲音時，你的感覺是什麼？</li><br><li>運用你的想像力，猜一猜他可能發生了什麼事？</li><br><li>你到客廳後，看到弟弟哇哇大哭，你會跟他說什麼？</li><br><li>你曾經看過弟弟妹妹或朋友哭泣嗎？當時你的感覺是什麼，你是怎麼處理的？</li></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>這個故事特別適合引導孩子覺察「看見別人難過時，我心裡發生了什麼」，以及練習如何第一時間回應——是先說話，還是先陪著？</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>這週如果看到有人難過，試著先停一下，不急著說話，只是先靠近，讓對方知道你在。等他準備好，再輕輕問一句：「你還好嗎？」</p><p><h3>老師的延伸</h3><br>可進行角色扮演：兩人一組，一人演哭泣的弟弟，一人練習不同的回應方式（說話、靠近、遞紙巾），討論哪種方式讓人感覺最被安撫。</p><p>---</p></div>"}, {"code": "T-6", "name": "情緒探索號帶動唱", "family": "彩虹綜合", "emoji": "🌈", "time": "10 分鐘", "sel": ["自我覺察", "自我管理"], "part": "情緒覺察工具", "html": "<div class=\"act-meta\"><p><h3>T-6　情緒探索號帶動唱</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 10 分鐘 ｜ SEL 核心能力：</strong>自我覺察・自我管理</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>透過音樂律動覺察情緒，體驗身體活動作為情緒調節工具的效果。</p><p><h3><span class=\"section-label\">【教具準備】</span></h3><br>情緒探索號影片（波波星球泡泡哥哥）：https://reurl.cc/gGXVXR</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>教師簡單介紹：「今天我們要一起搭上『情緒探索號』，在音樂中找到我們的情緒！」</li><br><li>播放影片，請學生跟著一起唱跳，模仿影片中的動作與表情變化。</li><br><li>情緒覺察回顧：「你剛剛最喜歡哪一段動作？那段動作代表什麼情緒？你覺得身體跳舞後有什麼變化？心情有沒有不一樣？」</li><br><li>引導總結：「當我們覺得累、煩或生氣時，可以像今天一樣，用唱歌、跳舞的方式來放鬆自己。」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「音樂和身體是很好的朋友——當我們動起來，情緒也會跟著流動。今天我們用身體來探索情緒！」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>活動趣味性強，適合在班級氣氛較沉悶時使用，或作為課堂前段的暖身活動。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>這週心情不好的時候，試著放一首你喜歡的歌，跟著動一動身體，看看心情有沒有不一樣。</p><p><h3>老師的延伸</h3><br>可讓孩子各自設計一個代表自己某種情緒的動作，組合成「班級情緒舞」。</p><p>---</p></div>"}, {"code": "H-6", "name": "委屈翻譯機", "family": "藍色家族", "emoji": "💙", "time": "15 分鐘", "sel": ["社會覺察"], "part": "HOPE牌卡", "html": "<div class=\"act-meta\"><p><h3>H-6　委屈翻譯機</h3><br><h3>💙 藍色家族<strong> ｜ ⏱ 15 分鐘 ｜ SEL 核心能力：</strong>社會覺察</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>將難以說出口的委屈情緒轉化為語言，練習「被聽見」與「真正聆聽」兩種能力。</p><p><h3><span class=\"section-label\">【使用牌卡】</span></h3><br>藍色家族：委屈（7）、孤單（9）、心酸（6）</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>展示「委屈」卡，請孩子用身體表演一下「委屈」的樣子（不需說話）。</li><br><li>老師示範：「我最近有一件委屈的事，其實我想說的是：＿＿。」</li><br><li>孩子寫在紙上（不需唸出）：「最近讓我感到委屈的是＿＿，其實我想說的是＿＿。」</li><br><li>兩兩配對，選擇是否願意分享；傾聽者只能說：「我聽到了，你＿＿（重複剛剛聽到的話），是嗎？」</li><br><li>以陪伴句收尾：「你覺得委屈，是因為你心裡有很重要的話想被聽見。」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「委屈很難說清楚，所以很多人選擇放棄，乾脆不說。但今天我們要來幫委屈翻譯一下——讓那個說不出口的感覺，變成別人可以懂的話。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>傾聽者的任務只有一個：說回去讓對方知道你聽到了。這是最基本的同理心練習，比直接給建議更重要。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>下次當你心裡有委屈的時候，先試著在紙上寫：「讓我委屈的是＿＿，我真正想說的是＿＿。」寫出來之後，決定要不要說給某個人聽。</p><p><h3>老師的延伸</h3><br>可在班級設置「委屈信箱」，讓孩子匿名投入，老師定期回應。也可每月做一次「翻譯練習」，讓孩子練習把同學描述的委屈翻譯成清楚的語言。</p><p>---</p></div>"}, {"code": "C-1", "name": "呼吸小夥伴", "family": "彩虹綜合", "emoji": "🌈", "time": "10 分鐘", "sel": ["自我覺察", "自我管理"], "part": "冷靜工具箱", "html": "<div class=\"act-meta\"><p><h3>C-1　呼吸小夥伴</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 10 分鐘 ｜ SEL 核心能力：</strong>自我覺察・自我管理</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>透過有引導的深呼吸練習，覺察呼吸對身體與情緒的影響，建立基礎的冷靜工具。</p><p><h3><span class=\"section-label\">【教具準備】</span></h3><br>探索盒外星人與外星寵物（或任何小玩偶）、兒童冥想音檔</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>請每個學生選擇一個外星人當作這次的「呼吸小夥伴」，回到座位坐好，將外星人放在肚子上（若學生自己有隨身玩偶，也可替代）。</li><br><li>播放音檔：《兒童專注力冥想》第一集——像小青蛙一樣呼吸（https://www.youtube.com/watch?v=nqX2k7NnoXw），讓學生練習（只需要聲音，不用看影片）。</li><br><li>分享與討論：「剛剛的呼吸，跟平常的呼吸有什麼不同？你現在感覺你的呼吸是怎麼樣的？深呼吸時，哪個部位的運動最明顯——胸部還是腹部？」</li><br><li>引導孩子感受深呼吸和淺呼吸的差異，找到最讓自己放鬆的節奏。</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「把小夥伴放在你的肚子上，感覺它隨著你的呼吸上下移動。吸氣的時候，小夥伴輕輕往上；吐氣的時候，它慢慢往下。讓你的呼吸帶著它，也讓它帶著你放鬆。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>每次上課都可以搭配音檔帶著學生練習深呼吸，只要 3–5 分鐘，長期下來孩子會逐漸建立隨時可用的冷靜習慣。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>睡前可以找一個安靜的時刻，把玩偶放在肚子上，練習安定呼吸 2–3 分鐘。感受一下，呼吸穩定之後，身體有沒有什麼不一樣？</p><p><h3>老師的延伸</h3><br>可搭配不同風格的音檔，讓孩子體驗情緒起伏與呼吸的關係，也可在課堂開始前作為穩定儀式使用。</p><p>---</p></div>"}, {"code": "C-6", "name": "找尋每一個人的冷靜空間", "family": "彩虹綜合", "emoji": "🌈", "time": "10 分鐘", "sel": ["自我覺察", "自我管理"], "part": "冷靜工具箱", "html": "<div class=\"act-meta\"><p><h3>C-6　找尋每一個人的冷靜空間</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 10 分鐘 ｜ SEL 核心能力：</strong>自我覺察・自我管理</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>透過繪本引導，讓孩子理解冷靜空間的功能（積極暫停，而非懲罰），並為自己設計個人化的冷靜角。</p><p><h3><span class=\"section-label\">【教具準備】</span></h3><br>《傑瑞的冷靜太空》繪本或影片（https://www.youtube.com/watch?v=n1ck2UkNJCw）、冷靜空間學習單</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>說故事：播放或朗讀《傑瑞的冷靜太空》。</li><br><li>說明：「冷靜空間」又稱「積極暫停區」，當一個人情緒快要爆炸時使用，能讓人轉移注意力，讓情緒慢慢恢復。重點是：這不是被處罰，而是自己願意、主動去的地方。</li><br><li>發下學習單，讓學生設計自己的冷靜角，並在教室及家中各找一個地方，想像它成為自己的冷靜空間。</li><br><li>引導提問：「傑瑞的冷靜太空長什麼樣子？你覺得那樣的空間有什麼魔法？」「如果你有一個角落可以讓你放鬆冷靜，你希望裡面有什麼？」「你願意在什麼時候主動進入冷靜空間？」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「每個人都需要一個屬於自己的小角落，當情緒快滿出來的時候，可以進去停一下，不是逃跑，而是給自己一點時間充電，然後再出來面對。今天我們來設計你的專屬冷靜空間。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>冷靜空間需要搭配清楚的班級規範，讓孩子知道「什麼時候可以去」「去了要做什麼」「多久可以回來」，才能真正發揮效果。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>在家裡找一個可以當作你冷靜空間的角落（可以是沙發的一個角、書桌前、甚至是浴室），下次情緒來了，試著去那裡待 3–5 分鐘，讓自己慢慢平靜。</p><p><h3>老師的延伸</h3><br>可讓全班共同設計班級冷靜角，由孩子一起決定裡面放什麼、有什麼規則，增加使用意願。</p><p>---</p><p># 第五部分：正念與身體覺察系列</p><p>> <strong>定位說明：</strong> 本系列七個活動以身體覺察與正念為核心，幫助孩子學習把注意力帶回當下。活動難度由基礎到深化，可依班級需求選擇；M-4（戶外五感尋寶）需要戶外空間，其餘均可在教室進行。</p><p>---</p></div>"}, {"code": "L-D", "name": "合作塔", "family": "彩虹綜合", "emoji": "🌈", "time": "15 分鐘", "sel": ["人際技巧", "自我管理", "負責任的決策"], "part": "積木創作", "html": "<div class=\"act-meta\"><p>：合作塔</p><p><h3>SEL 核心能力：人際技巧・自我管理・負責任的決策</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>在限時挑戰中體驗溝通、分工與協調的重要性；覺察自己在合作中的情緒反應（壓力、挫折、興奮），並練習在衝突出現時用語言表達。</p><p><h3><span class=\"section-label\">【教具準備】</span></h3><br>積木、計時器</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>暖身提問：「你覺得要一起完成一件事情時，最重要的是什麼？」引導學生說出溝通、傾聽、尊重意見、分工等關鍵字。</li><br><li>說明任務：「今天我們要進行一個挑戰——每組用積木合作蓋出一座最高的塔！」規則：只能用提供的材料；所有組員都要參與，每人至少放一塊積木；時間到就停止；塔必須能自行站立不倒塌。</li><br><li>小組策略討論（3 分鐘）：討論如何分工，規劃搭建順序。老師提示：「你們打算怎麼讓塔保持穩定？如果塔倒了，要怎麼調整？」</li><br><li>計時建塔挑戰（3–5 分鐘）。老師在旁觀察，鼓勵學生討論協調，若有衝突適時引導用語言表達並尋求共識。</li><br><li>成果展示：測量各組高度，每組回答：「什麼合作方法最有效？」「遇到困難時怎麼解決的？」「下次有什麼想改進的？」</li><br><li>以陪伴句收尾：「最高的塔不一定最厲害，最能一起解決問題的隊伍才最強。」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「今天的挑戰很簡單：蓋一座塔。但真正的挑戰是：你們要一起蓋。怎麼分工、怎麼說話、塔倒了怎麼辦——這些才是今天真正要學的。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>塔倒掉的那一刻往往是最好的教學時機——孩子的情緒反應（生氣、沮喪、大笑）可以直接成為討論素材：「剛才塔倒的時候，你的感覺是什麼？你怎麼讓自己繼續？」</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>這週在學校或家裡找一個需要和別人合作完成的任務，試著在開始前先和對方說：「我們要怎麼分工？」然後看看有沒有比平常更順利。</p><p><h3>老師的延伸</h3><br>可記錄各組的合作過程（口頭描述或拍照），學期末回顧時討論：你們這個學期的「合作塔」有沒有蓋得更好？有沒有學到新的溝通方式？</p></div>"}, {"code": "H-12", "name": "我的安全盾牌", "family": "紫色家族", "emoji": "💜", "time": "15 分鐘", "sel": ["自我管理"], "part": "HOPE牌卡", "html": "<div class=\"act-meta\"><p><h3>H-12　我的安全盾牌</h3><br><h3>💜 紫色家族<strong> ｜ ⏱ 15 分鐘 ｜ SEL 核心能力：</strong>自我管理</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>建立具體可操作的個人安全計畫，強化自我保護與情緒回穩的能力。</p><p><h3><span class=\"section-label\">【使用牌卡】</span></h3><br>紫色家族（不安、緊張、擔心等相關卡）</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>發給孩子 A5 空白紙，請他們畫出自己心目中「盾牌」的形狀。</li><br><li>盾牌分四格：①讓我安心的人；②讓我安心的話；③讓我安心的行動；④讓我安心的地點。</li><br><li>各自填寫，可以畫也可以寫。</li><br><li>兩兩分享其中一格。</li><br><li>老師說：「這張盾牌是你的，當你很不安的時候，可以在心裡把它拿出來。」以陪伴句收尾：「你的盾牌一直都在，你自己就帶著它。」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「當我們覺得不安全、很緊張的時候，最需要的是能快速想到：我可以找誰？我可以做什麼？我可以去哪裡？今天我們要把這些方法整理起來，放進自己的安全盾牌裡。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>盾牌可護貝或讓孩子貼在聯絡簿，成為真實的「情緒急救工具」。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>把你的盾牌護貝或貼在你常看到的地方。這週試試看：當你感覺有點不安的時候，在心裡把盾牌拿出來，想一想裡面的內容，看看有沒有幫助。</p><p><h3>老師的延伸</h3><br>期末可做「盾牌更新」活動：請孩子重新填寫，比較學期初和期末的不同，作為成長記錄。也可邀請家長在盾牌上加寫一格「家人的話」。</p><p>---</p></div>"}, {"code": "H-5", "name": "拒絕句練習站", "family": "綠色家族", "emoji": "💚", "time": "10 分鐘", "sel": ["人際技巧"], "part": "HOPE牌卡", "html": "<div class=\"act-meta\"><p><h3>H-5　拒絕句練習站</h3><br><h3>💚 綠色家族<strong> ｜ ⏱ 10 分鐘 ｜ SEL 核心能力：</strong>人際技巧</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>降低拒絕的焦慮感，練習至少三種不同語氣的拒絕表達。</p><p><h3><span class=\"section-label\">【使用牌卡】</span></h3><br>綠色家族：拒絕（14）、躲開（13）、反感（6）</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>展示「拒絕」卡，問：「有沒有過明明不想卻不好意思說不要的經驗？」</li><br><li>老師示範三種拒絕語氣：硬式（「不要！」）、軟式（「謝謝你，但我不要。」）、理由式（「我現在不方便，可以下次嗎？」）。</li><br><li>兩兩配對角色扮演（老師先準備不同情境），一人提出請求，一人練習拒絕。</li><br><li>交換角色，感受被拒絕是什麼感覺。</li><br><li>全班討論：哪種拒絕方式你最常用？哪種你會想多練習？</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「說『不』是很重要的能力，但很多人從小就覺得說不會讓別人不高興。今天我們要練習——拒絕不是不禮貌，是在照顧自己。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>配對時讓孩子自己選場景，如同學借東西、被邀請做不想做的事，才更有真實感。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>這週試試看，當有人提出你不想答應的要求時，練習用今天學到的其中一種拒絕方式。說完之後注意自己的感覺——是不是沒有你想的那麼可怕？</p><p><h3>老師的延伸</h3><br>可設計「拒絕情境卡」，每隔一週抽一張進行快速角色扮演。也可引導討論：被拒絕的感受和拒絕別人的感受，哪個比較難？為什麼？</p><p>---</p></div>"}, {"code": "M-6", "name": "禪繞靜心繪圖", "family": "彩虹綜合", "emoji": "🌈", "time": "15 分鐘", "sel": ["自我覺察", "自我管理"], "part": "正念覺察", "html": "<div class=\"act-meta\"><p><h3>M-6　禪繞靜心繪圖</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 15 分鐘 ｜ SEL 核心能力：</strong>自我覺察・自我管理</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>透過重複、有規律的圖形繪製，進入專注的創作狀態，幫助情緒穩定與壓力釋放。</p><p><h3><span class=\"section-label\">【教具準備】</span></h3><br>白紙（建議較厚）、黑色細筆或鉛筆（彩色筆可選用）、輕柔背景音樂</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>簡單介紹禪繞畫的概念：「禪繞是一種重複畫簡單圖形的方法——不需要計畫、不需要有主題，就只是把一個簡單的線條或圖案，重複畫很多次，填滿一個空間。」</li><br><li>示範幾種基本圖形（例如：螺旋線、波浪線、格子、圓點的排列），讓孩子先試著在小紙片上練習。</li><br><li>播放輕柔音樂，讓孩子在白紙上自由進行禪繞繪圖，10–12 分鐘。</li><br><li>完成後請孩子靜靜看著自己的作品約 30 秒，感受一下：現在身體有什麼感覺？心情有沒有什麼不一樣？</li><br><li>分享：「畫的過程中，你的腦袋裡在想什麼？還是什麼都沒想？你覺得這種感覺怎麼樣？」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「禪繞不需要畫得好看，不需要想要畫什麼。只要讓你的手慢慢動，讓線條慢慢出現。你的腦袋可以放空，也可以讓念頭出現又消失，只要繼續畫就好。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>禪繞繪圖的重點在過程，而不是作品。若孩子說「我不會畫」，引導他從最簡單的波浪線或圓點開始，任何重複的圖形都可以。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>這週找一個心情有點亂的時刻，拿出一張紙和一枝筆，試著畫 5 分鐘的禪繞圖，讓自己的手動起來，讓腦袋稍微休息一下。</p><p><h3>老師的延伸</h3><br>可讓孩子把禪繞圖展示在教室，也可以讓孩子在上面標注創作當下的情緒詞，成為情緒與創作的結合紀錄。</p><p>---</p></div>"}, {"code": "T-3", "name": "情緒紅綠燈", "family": "彩虹綜合", "emoji": "🌈", "time": "10 分鐘", "sel": ["自我覺察", "自我管理", "負責任的決策"], "part": "情緒覺察工具", "html": "<div class=\"act-meta\"><p><h3>T-3　情緒紅綠燈</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 10 分鐘 ｜ SEL 核心能力：</strong>自我覺察・自我管理・負責任的決策</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>覺察生活中不同事件對自己情緒的影響程度，辨識哪些情境需要「暫停等待」（紅燈），哪些可以順利通過（綠燈）。</p><p><h3><span class=\"section-label\">【教具準備】</span></h3><br>「情緒紅綠燈」學習單</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>教師提問：「生活中有哪些事情，會讓你的情緒起伏比較大，需要停下來的？有哪些事情讓你情緒平穩，可以很順利通過？」</li><br><li>搭配學習單，在紅燈區寫下情緒起伏較大的事件，在綠燈區寫下情緒平穩的事件。</li><br><li>全班玩「一、二、三，紅綠燈」遊戲：全班站在教室最後排成一排，一位同學當發號施令者，說出「一、二、三，（紅/綠燈事件）」，其他同學自行判斷：若認為是紅燈事件就停止不動；若認為是綠燈事件就往前走三步。每個人的判斷可能不同，說出合理理由都被接受。</li><br><li>討論：「有沒有同一件事，有人覺得是紅燈，有人覺得是綠燈？這說明了什麼？」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「紅燈不是壞事——它是在告訴你，現在需要先停一下，等情緒穩定了再通過。今天我們來找找看，你生活裡的紅燈和綠燈各是哪些事情。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>活動中可能引起爭論（步伐長度、紅綠燈判斷），教師可在活動前先與學生共同討論規則。若孩子因活動產生情緒，可借此帶入冷靜方法的練習。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>這週製作自己的「情緒紅綠燈手卡」，記下你最容易遇到的一個紅燈事件，以及你打算用什麼方式幫自己等到綠燈。</p><p><h3>老師的延伸</h3><br>可搭配冷靜魔法技巧，讓孩子為自己的紅燈事件設計對應的「等待策略」，結合自我管理的學習。</p><p>---</p></div>"}, {"code": "M-3", "name": "感受當下——運用五感回到此刻", "family": "彩虹綜合", "emoji": "🌈", "time": "10 分鐘", "sel": ["自我覺察", "自我管理"], "part": "正念覺察", "html": "<div class=\"act-meta\"><p><h3>M-3　感受當下——運用五感回到此刻</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 10 分鐘 ｜ SEL 核心能力：</strong>自我覺察・自我管理</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>透過有引導的五感覺察練習，學習將注意力帶回當下，作為情緒穩定的工具。</p><p><h3><span class=\"section-label\">【教具準備】</span></h3><br>白紙、筆</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>跟學生討論五感是哪五感（視覺、聽覺、嗅覺、味覺、觸覺）。</li><br><li>邀請學生閉上眼睛，依序引導運用五感感受當下環境（每個感官停留約 30 秒）：聽覺（教室裡的聲音、窗外的聲音）→嗅覺（空氣裡的氣味）→觸覺（輕輕按摩自己的手，感受身體哪裡緊繃或放鬆）→視覺（閉眼回想剛才進教室看到的東西）→味覺（感受嘴巴裡現在有什麼味道）。</li><br><li>一組發下一張白紙，請同學分組寫下他們的五感發現。</li><br><li>分組上台發表，引導討論：「做完五感覺察，你的身體感覺有沒有不一樣？」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「我們的身體提供了五扇門，讓我們隨時可以回到現在這個時刻。當思緒很亂、情緒很多的時候，試著打開其中一扇門，把自己帶回來。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>若時間允許，也可以帶領學生到教室外的空間進行，讓學生感受戶外環境的五感（蟲鳴聲、草地氣味、樹幹觸感…），效果更豐富。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>這週找一個你覺得有點焦慮或分心的時刻，試著用五感把自己拉回來：深吸一口氣，聽聽周圍有什麼聲音，感覺一下腳踩在地板上的感覺，讓自己回到現在。</p><p><h3>老師的延伸</h3><br>可設計「五感感受日記」，每週選一天記錄「今天我聽見...」「我聞到...」「我感覺...」等句型，建立自我覺察的日常習慣。</p><p>---</p></div>"}, {"code": "E-2", "name": "樂動紓壓 5 招——身體是最好的情緒出口", "family": "彩虹綜合", "emoji": "🌈", "time": "10 分鐘", "sel": ["自我覺察", "自我管理"], "part": "延伸活動", "html": "<div class=\"act-meta\"><p><h3>E-2　樂動紓壓 5 招——身體是最好的情緒出口</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 10 分鐘 ｜ SEL 核心能力：</strong>自我覺察・自我管理</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>體驗透過身體律動調節情緒，學習五種可隨時使用的紓壓動作。</p><p><h3><span class=\"section-label\">【教具準備】</span></h3><br>空間足夠讓孩子站起來活動（教室走道或操場均可）</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>老師說明：「當情緒能量太多、太強，說話解決不了，身體的動作常常是最快的出口。今天我們學 5 招，讓身體幫情緒鬆綁。」</li><br><li>帶領全班依序練習五個動作，每個動作做 5–10 次，感受身體的變化：①甩手甩腳（站好，全身放鬆，手腳像麵條一樣輕輕甩動）、②聳肩放肩（深吸氣同時用力聳肩→吐氣時整個放鬆下來）、③搖搖擺擺（雙腳站穩，身體從頭到尾像海草一樣左右搖擺）、④快走踏步（原地快走 30 秒，腳步用力踩地）、⑤伸展呼吸（雙手往上伸展、深吸→慢慢放下、慢慢吐氣）。</li><br><li>每招結束後問：「這個動作之後，你的身體有沒有什麼不一樣？」</li><br><li>最後問：「今天五招裡，哪一招你覺得最有效？你最可能在什麼時候用它？」</li><br><li>以陪伴句收尾：「你的身體是你的，你可以用它來照顧自己。」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「你知道嗎？生氣、緊張、難過的時候，那個能量一直卡在身體裡，讓你整個人更難受。今天我們要幫情緒找個出口——用動的！」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>活動前先確認空間安全，提醒孩子動作幅度適中，不碰觸他人。若有孩子因身體狀況無法參與部分動作，以觀察為主，同樣有學習效果。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>把今天最喜歡的兩招記下來，貼在書桌前或書包裡。這週心情不好的時候，先做這兩個動作，再決定接下來要怎麼辦。</p><p><h3>老師的延伸</h3><br>可定期在課前安排 2–3 分鐘的「身體暖身」，選一招讓全班一起做，慢慢建立「用身體調節情緒」的班級慣例。</p><p>---</p></div>"}, {"code": "H-9", "name": "表情漫畫家", "family": "橘色家族", "emoji": "🧡", "time": "10 分鐘", "sel": ["自我管理"], "part": "HOPE牌卡", "html": "<div class=\"act-meta\"><p><h3>H-9　表情漫畫家</h3><br><h3>🧡 橘色家族<strong> ｜ ⏱ 10 分鐘 ｜ SEL 核心能力：</strong>自我管理</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>認識驚訝情緒家族，練習在突發情況下先停頓再反應的策略。</p><p><h3><span class=\"section-label\">【使用牌卡】</span></h3><br>橘色家族：驚訝（5）、傻眼（11）、嚇一跳（10）、嚇呆（14）</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>老師念出一個橘色情緒詞，孩子在 15 秒內快速畫出那個情緒的表情。</li><br><li>展示幾張讓全班猜是哪個詞，笑著討論。</li><br><li>介紹「停看選」：停下來→看清楚發生什麼→選一個反應。</li><br><li>角色扮演：老師突然說「明天要抽考！」，孩子練習「停→深呼吸→看」。</li><br><li>以陪伴句收尾：「當你很驚訝時，給自己一點時間慢慢消化也沒關係。」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「你有沒有被嚇到後，馬上做出一個後來有點後悔的反應？像是大叫、大笑，或不小心把東西推倒……。今天我們要學一個很有用的能力：先停一下，讓大腦跟上身體。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>畫表情的過程常會帶來笑聲，是很好的暖身活動。進行前可和孩子約定：我們可以一起笑，但不嘲笑別人的作品。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>引導學生在突發情境中運用「停—看—選」策略，透過暫停與呼吸降低自動反應，事後紀錄：你有沒有用到這個方法？效果如何？</p><p><h3>老師的延伸</h3><br>可製作「停看選」提示卡張貼於教室。當班級出現突發事件時，引導孩子一起運用這個策略。</p><p>---</p></div>"}, {"code": "C-2", "name": "爬爬五指山", "family": "彩虹綜合", "emoji": "🌈", "time": "10 分鐘", "sel": ["自我覺察", "自我管理"], "part": "冷靜工具箱", "html": "<div class=\"act-meta\"><p><h3>C-2　爬爬五指山</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 10 分鐘 ｜ SEL 核心能力：</strong>自我覺察・自我管理</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>透過手指移動配合呼吸，練習一個隨時可用、不需要任何工具的冷靜技巧。</p><p><h3><span class=\"section-label\">【教具準備】</span></h3><br>無（教師參考影片：https://reurl.cc/r9Oyvx）</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>伸出左手掌，比出五。</li><br><li>伸出右手食指，沿著左手大拇指側邊開始往上爬，同時鼻子吸氣；沿著大拇指另一側往下時，鼻子呼氣。上山吸氣，下山呼氣，以此類推爬完小拇指。</li><br><li>帶領全班練習兩遍，讓孩子熟悉節奏。</li><br><li>引導感受：「爬完五指山，你的身體有沒有什麼不一樣？」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「你的手隨時都在，所以這個冷靜方法也隨時都可以用——在教室、在家裡、在任何地方。當你感覺情緒快要來了，就把手拿出來，爬一次五指山。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>這個方法特別適合在考試前、上台前、或任何需要快速冷靜的情境。引導孩子在壓力不大的時候多練習，這樣在真正需要的時候才會想起用它。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>這週找兩次機會練習爬爬五指山——一次在放鬆的時候練習，一次在心裡有點小緊張的時候試試看，感受兩次的效果有沒有不同。</p><p><h3>老師的延伸</h3><br>可搭配其他呼吸法（吹蠟燭、呼吸小夥伴）讓孩子比較，討論哪一種方法最適合自己，納入個人的冷靜工具箱。</p><p>---</p></div>"}, {"code": "T-8", "name": "自由畫畫", "family": "彩虹綜合", "emoji": "🌈", "time": "10 分鐘", "sel": ["自我覺察", "自我管理"], "part": "情緒覺察工具", "html": "<div class=\"act-meta\"><p><h3>T-8　自由畫畫</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 10 分鐘 ｜ SEL 核心能力：</strong>自我覺察・自我管理</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>以自由創作為媒介，讓情緒找到出口，培養情緒穩定與自我照顧的能力。</p><p><h3><span class=\"section-label\">【教具準備】</span></h3><br>白紙、彩色筆或蠟筆、輕鬆背景音樂（可選）</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>教師發下白紙與彩色筆，給予一個主題：「我討厭…」「我害怕…」「我現在…」「我最喜歡…」「我想念的…」（教師可依課程選擇）。</li><br><li>播放輕鬆音樂，給孩子 5 分鐘自由創作。</li><br><li>引導說明：「自由畫畫是一種讓情緒平穩的方法。想到什麼就畫，不用管別人的看法，這張紙都是你自己的，畫完後收起來，不用給別人看。」</li><br><li>若有孩子自願分享，歡迎；其餘保持隱私。</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「今天我們不用畫得好看，只要畫出你心裡的感覺。想到什麼顏色、什麼形狀，就讓它出現在紙上。」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>若有學生一直以某種色彩平塗，或畫面帶有強烈情緒，教師可適時個別關懷。創作是私人的，不強迫分享。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>這週心情有點亂的時候，試著拿出一張紙和彩色筆，設定一個主題，給自己 5 分鐘自由畫。畫完後感覺有沒有不一樣？</p><p><h3>老師的延伸</h3><br>可讓孩子持續記錄情緒主題畫作，彙整成個人「情緒圖像日記」；也可在畫作背面寫下當下的感受詞彙。</p><p>---</p></div>"}, {"code": "T-7", "name": "聽聽音樂 情緒流動", "family": "彩虹綜合", "emoji": "🌈", "time": "10 分鐘", "sel": ["自我覺察", "自我管理"], "part": "情緒覺察工具", "html": "<div class=\"act-meta\"><p><h3>T-7　聽聽音樂 情緒流動</h3><br><h3>🌈 彩虹綜合<strong> ｜ ⏱ 10 分鐘 ｜ SEL 核心能力：</strong>自我覺察・自我管理</h3><br><h3><span class=\"section-label\">【活動目標】</span></h3><br>體驗不同音樂引發的情緒差異，學習以音樂作為情緒覺察與調節的工具。</p><p><h3><span class=\"section-label\">【教具準備】</span></h3><br>動感音樂、悲傷音樂、輕柔音樂各一首（教師可自選，以下為參考連結）：動感：https://www.youtube.com/watch?v=14JPLlfD-Vc｜輕柔：https://reurl.cc/0vyV5l</p><p><h3><span class=\"section-label\">【活動步驟】</span></h3><br><li>請學生端坐，閉上雙眼，雙腳踩地，手掌打開放在膝蓋上。</li><br><li>依序播放動感音樂、悲傷音樂、輕柔音樂，每首約 1 分鐘。每首結束後提問：「這音樂讓你有什麼感覺？身體有什麼反應？」</li><br><li>引導總結：「音樂對每個人的感受都不同，但音樂會讓人有情緒的起伏，也可以紓緩情緒。當你心情不好時，可以聽一聽喜歡的音樂，或許就會讓心情轉換了。」</li></p><p><h3><span class=\"section-label\">【引導語建議】</span></h3><br><em>「閉上眼睛，讓音樂流進來——感受一下，這個聲音讓你的心裡有什麼感覺？身體哪裡最有反應？」</em></p><p><h3><span class=\"section-label\">【老師小提醒】</span></h3><br>最後一首音樂應為平靜或愉快的曲子。活動中留意孩子的情緒反應，若有較大波動，適時關懷。</p><p><h3><span class=\"section-label\">【行動轉化】</span></h3><br><h3>孩子的任務</h3><br>請學生挑選三首自己喜歡的音樂，說明每首歌代表的情緒和適合什麼心情時聽，製作「我的情緒歌單」。</p><p><h3>老師的延伸</h3><br>可延伸為「音樂日記」：今天我聽的音樂＋當下的心情，結合語文與情緒素養。</p><p>---</p></div>"}];
+
+const FAMILY_COLOR = {
+  '黃色家族': '#F5C842',
+  '綠色家族': '#4CAF7D',
+  '藍色家族': '#5B9BD5',
+  '橘色家族': '#F4844B',
+  '紫色家族': '#9B72CF',
+  '紅色家族': '#E05B5B',
+  '彩虹綜合': 'linear-gradient(90deg,#F5C842,#4CAF7D,#5B9BD5,#F4844B,#9B72CF,#E05B5B)',
+};
+
+function openModal(code) {
+  const a = ACTIVITIES.find(x => x.code === code);
+  if (!a) return;
+  const bar = document.getElementById('modal-bar');
+  bar.style.background = FAMILY_COLOR[a.family] || '#888';
+  document.getElementById('modal-body').innerHTML = a.html || '<p>內容載入中…</p>';
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.querySelector('.modal').scrollTop = 0;
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('modal-close').addEventListener('click', closeModal);
+document.getElementById('modal-overlay').addEventListener('click', (e) => {
+  if (e.target.id === 'modal-overlay') closeModal();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+});
+</script>
+
+</body>
+</html>
