@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>專注力探險隊｜HOPE SEL 資源中心</title>
+<style>
+  :root{
+    --bg:#FAF6F0; --bg2:#F2EAE0; --surface:#FFFFFF;
+    --ink:#3A2E22; --ink2:#6B5A48; --ink3:#9A8878;
+    --border:rgba(58,46,34,0.10);
+    --radius:16px; --radius-sm:10px;
+    --shadow:0 2px 10px rgba(58,46,34,0.07), 0 1px 2px rgba(58,46,34,0.05);
+    --shadow-md:0 8px 30px rgba(58,46,34,0.14);
+
+    --forest-a:#4C9A5B;   --forest-bg:#E9F5EA;   --forest-text:#265C31;
+    --road-a:#E14B4B;     --road-a2:#2879D9;      --road-bg:#FBEAEA;
+    --monster-a:#B8681E;  --monster-bg:#FBEEE0;   --monster-text:#6B3D0F;
+    --fog-a:#6B5FB0;      --fog-bg:#ECE9F9;       --fog-text:#3B3170;
+    --energy-a:#D9A62E;   --energy-bg:#FCF3DD;    --energy-text:#6B4E10;
+    --castle-a:#2E9E9E;   --castle-bg:#E4F6F6;    --castle-text:#0F5555;
+    --countdown-a:#8B5CF6; --countdown-bg:#F1ECFE; --countdown-text:#4C2E9E;
+    --nav-a:#DB6B9A;      --nav-bg:#FCEBF2;       --nav-text:#7A2E4D;
+    --move-a:#EA8B2E;     --move-bg:#FDF0E1;      --move-text:#7A4A0F;
+    --lights-a:#5B6EE1;   --lights-bg:#EAEDFC;    --lights-text:#2E3B8B;
+    --gonogo-a:#D9455F;   --gonogo-bg:#FBE7EA;    --gonogo-text:#7A1F2E;
+    --stroop-a:#2EA88B;   --stroop-bg:#E3F5F0;    --stroop-text:#0F5F4D;
+    --scenario-a:#C7789A; --scenario-bg:#FBEBF2;  --scenario-text:#7A3355;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100vh; background:var(--bg); color:var(--ink);
+    font-family:'Noto Sans TC','PingFang TC','Microsoft JhengHei',-apple-system,sans-serif;
+  }
+  h1,h2,h3{font-family:'Noto Serif TC','Noto Sans TC',serif;}
+  .wrap{max-width:900px;margin:0 auto;padding:70px 20px 40px;}
+  .home-back{
+    position:fixed;top:16px;left:16px;z-index:9999;
+    display:inline-flex;align-items:center;gap:7px;
+    background:rgba(255,255,255,0.9);backdrop-filter:blur(8px);
+    border:1px solid var(--border);border-radius:20px;padding:7px 16px;
+    font-size:0.8rem;color:var(--ink2);text-decoration:none;
+    box-shadow:0 2px 12px rgba(0,0,0,0.09);transition:all .2s;
+  }
+  .home-back:hover{background:#fff;transform:translateY(-1px);}
+  .screen{display:none;}
+  .screen.active{display:block;animation:fadeIn .35s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+  /* ---- Intro ---- */
+  .intro-hero{text-align:center;margin-bottom:28px;}
+  .intro-hero .badge-row{display:flex;justify-content:center;gap:10px;margin:18px 0 6px;flex-wrap:wrap;}
+  .intro-hero h1{font-size:1.9rem;margin:0 0 8px;}
+  .intro-hero p{color:var(--ink2);font-size:.95rem;line-height:1.8;max-width:560px;margin:0 auto;}
+  .size-select{display:flex;gap:10px;justify-content:center;margin:22px 0;flex-wrap:wrap;}
+  .size-btn{
+    padding:10px 20px;border-radius:20px;border:1.5px solid var(--border);
+    background:var(--surface);cursor:pointer;font-size:.9rem;color:var(--ink2);
+    transition:all .15s;font-family:inherit;
+  }
+  .size-btn.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .size-btn:hover{transform:translateY(-1px);}
+
+  /* ---- Map ---- */
+  .map-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:20px;}
+  .station{
+    background:var(--surface);border-radius:var(--radius);padding:20px;
+    box-shadow:var(--shadow);cursor:pointer;transition:all .2s;border:1px solid var(--border);
+    position:relative;overflow:hidden;
+  }
+  .station:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);}
+  .station .bar{position:absolute;top:0;left:0;right:0;height:5px;}
+  .station .icon{font-size:1.7rem;margin-bottom:8px;}
+  .station h3{margin:0 0 6px;font-size:1.05rem;}
+  .station p{margin:0 0 10px;font-size:.82rem;color:var(--ink2);line-height:1.6;}
+  .station .badge-tag{
+    display:inline-flex;align-items:center;gap:5px;font-size:.75rem;
+    background:var(--bg2);color:var(--ink2);padding:4px 10px;border-radius:14px;
+  }
+  .station.done .badge-tag{background:#DFF3E1;color:#265C31;}
+
+  /* ---- Common panel ---- */
+  .panel{background:var(--surface);border-radius:var(--radius);padding:26px;box-shadow:var(--shadow);border:1px solid var(--border);}
+  .panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+  .panel-head h2{margin:0;font-size:1.3rem;}
+  .btn{
+    padding:9px 18px;border-radius:20px;border:none;cursor:pointer;
+    font-family:inherit;font-size:.85rem;font-weight:600;transition:all .15s;
+  }
+  .btn-primary{background:var(--ink);color:#fff;}
+  .btn-primary:hover{opacity:.88;transform:translateY(-1px);}
+  .btn-ghost{background:none;border:1.5px solid var(--border);color:var(--ink2);}
+  .btn-ghost:hover{background:var(--bg2);}
+  .instructions{background:var(--bg2);border-radius:var(--radius-sm);padding:14px 16px;font-size:.85rem;color:var(--ink2);line-height:1.8;margin-bottom:18px;}
+  .stat-row{display:flex;gap:18px;font-size:.85rem;color:var(--ink2);margin-bottom:16px;flex-wrap:wrap;}
+  .stat-row b{color:var(--ink);}
+
+  /* ---- Grid ---- */
+  .grid{display:grid;gap:8px;margin:0 auto;max-width:520px;}
+  .cell{
+    aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+    background:var(--bg2);border-radius:var(--radius-sm);font-size:1.1rem;font-weight:700;
+    cursor:pointer;user-select:none;transition:all .12s;border:2px solid transparent;
+  }
+  .cell:hover{transform:scale(1.04);}
+  .cell.found{background:#DFF3E1;color:#9A8878;opacity:.55;cursor:default;pointer-events:none;}
+  .cell.wrong{animation:shake .3s;background:#FBDADA;}
+  .cell.role-r{color:var(--road-a);}
+  .cell.role-b{color:var(--road-a2);}
+  .cell.filler{color:var(--ink3);font-size:1.3rem;}
+  .cell.decoy{color:var(--ink3);}
+  @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
+
+  .emo-cell{background:var(--bg2);}
+  .emo-cell.selected{background:var(--energy-a);color:#fff;}
+  .emo-cell.correct{background:#DFF3E1;color:#265C31;}
+  .emo-cell.incorrect{background:#FBDADA;color:#78002A;}
+
+  .match-cols{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;}
+  .match-col{display:flex;flex-direction:column;gap:10px;min-width:150px;}
+  .match-item{
+    padding:12px 14px;border-radius:var(--radius-sm);border:2px solid var(--border);
+    background:var(--surface);cursor:pointer;font-size:.9rem;text-align:center;transition:all .15s;
+  }
+  .match-item.selected{border-color:var(--nav-a);background:var(--nav-bg);}
+  .match-item.matched{background:#DFF3E1;border-color:#4C9A5B;color:#265C31;cursor:default;opacity:.7;}
+  .match-item.mismatch{animation:shake .3s;background:#FBDADA;}
+
+  .move-card{
+    text-align:center;background:var(--move-bg);border-radius:var(--radius);padding:26px;
+    border:1.5px solid var(--move-a);max-width:360px;margin:16px auto;
+  }
+  .move-card .move-icon{font-size:2.4rem;margin-bottom:10px;}
+
+  .simon-pad{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:260px;margin:20px auto;}
+  .simon-btn{aspect-ratio:1;border-radius:16px;border:none;cursor:pointer;opacity:.5;transition:opacity .15s, transform .1s;}
+  .simon-btn.lit{opacity:1;transform:scale(1.05);box-shadow:0 0 22px rgba(0,0,0,.25);}
+  .simon-status{text-align:center;color:var(--ink2);font-size:.9rem;margin-top:8px;}
+
+  .gonogo-stage{
+    width:100%;max-width:300px;height:180px;margin:18px auto;position:relative;
+    background:var(--bg2);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;
+  }
+  .gonogo-icon{font-size:4rem;}
+  .gonogo-btn{display:block;margin:14px auto;font-size:1.1rem;padding:14px 36px;border-radius:30px;}
+
+  .stroop-word{font-size:2.6rem;font-weight:900;text-align:center;margin:20px 0;}
+  .stroop-opts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  .stroop-swatch{width:60px;height:60px;border-radius:14px;border:2px solid var(--border);cursor:pointer;}
+
+  .scenario-card{background:var(--bg2);border-radius:var(--radius);padding:20px;margin-bottom:16px;text-align:center;}
+  .scenario-opts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px;}
+  .scenario-opt{padding:10px 18px;border-radius:20px;border:1.5px solid var(--border);cursor:pointer;background:var(--surface);font-size:.9rem;}
+  .scenario-opt.picked{background:var(--nav-a);color:#fff;border-color:var(--nav-a);}
+  .scenario-discuss{margin-top:14px;font-size:.85rem;color:var(--ink2);background:#fff;border-radius:var(--radius-sm);padding:12px;text-align:left;}
+
+  .thermo-row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;}
+  .thermo-opt{font-size:1.7rem;background:none;border:2px solid transparent;border-radius:14px;padding:8px 9px;cursor:pointer;transition:all .15s;}
+  .thermo-opt.active{border-color:var(--ink);background:var(--bg2);transform:scale(1.12);}
+
+  /* Memory overlay */
+  .cover-overlay{
+    position:absolute;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;
+    flex-direction:column;border-radius:var(--radius-sm);
+  }
+  .mem-wrap{position:relative;max-width:520px;margin:0 auto;}
+  .countdown{font-size:2.2rem;font-weight:700;color:var(--fog-a);}
+
+  .mcq{margin:18px 0;}
+  .mcq p{font-weight:700;margin-bottom:10px;}
+  .mcq-opts{display:flex;gap:10px;flex-wrap:wrap;}
+  .mcq-opt{padding:9px 16px;border-radius:14px;border:1.5px solid var(--border);cursor:pointer;font-size:.85rem;background:var(--surface);}
+  .mcq-opt.picked-correct{background:#DFF3E1;border-color:#4C9A5B;}
+  .mcq-opt.picked-wrong{background:#FBDADA;border-color:#E14B4B;}
+
+  /* Clap overlay */
+  .clap-overlay{
+    position:fixed;inset:0;background:rgba(58,46,34,.45);display:none;
+    align-items:center;justify-content:center;z-index:9998;
+  }
+  .clap-overlay.show{display:flex;}
+  .clap-card{background:#fff;border-radius:var(--radius);padding:32px;text-align:center;box-shadow:var(--shadow-md);max-width:280px;}
+  .clap-btn{font-size:2.2rem;background:none;border:none;cursor:pointer;margin:14px 0;}
+
+  /* Badge modal */
+  .modal-overlay{position:fixed;inset:0;background:rgba(58,46,34,.45);display:none;align-items:center;justify-content:center;z-index:9997;}
+  .modal-overlay.show{display:flex;}
+  .modal-card{background:#fff;border-radius:var(--radius);padding:32px;text-align:center;max-width:340px;box-shadow:var(--shadow-md);}
+  .modal-card .medal{font-size:3rem;margin-bottom:10px;}
+
+  .breath-circle{
+    width:140px;height:140px;border-radius:50%;background:var(--fog-bg);border:2px solid var(--fog-a);
+    margin:30px auto;display:flex;align-items:center;justify-content:center;color:var(--fog-text);font-weight:700;
+    transition:transform 4s ease-in-out;
+  }
+  .breath-circle.in{transform:scale(1.35);}
+
+  .reflect-q{margin-bottom:16px;}
+  .reflect-q label{display:block;font-size:.85rem;color:var(--ink2);margin-bottom:6px;}
+  .reflect-q textarea{
+    width:100%;border-radius:var(--radius-sm);border:1.5px solid var(--border);padding:10px;
+    font-family:inherit;font-size:.85rem;resize:vertical;min-height:50px;
+  }
+
+  .summary-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.85rem;}
+  .summary-table th,.summary-table td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);}
+  .summary-table th{color:var(--ink3);font-weight:600;}
+
+  .footer{
+    margin-top:34px;padding-top:14px;border-top:1px solid var(--border);
+    font-size:.75rem;color:var(--ink3);line-height:1.9;text-align:center;
+  }
+  .footer a{color:#7a8878;text-decoration:underline;text-underline-offset:2px;}
+
+  /* ---- Phase 1: local adventure hub ---- */
+  .home-back{border:0;font-family:inherit;cursor:pointer;}
+  .hub-hero{background:linear-gradient(145deg,#fff 0%,#f4f8e9 100%);border:1px solid var(--border);border-radius:24px;padding:28px;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+  .hub-hero:after{content:'✦';position:absolute;right:24px;top:14px;font-size:5rem;color:rgba(76,154,91,.10);}
+  .eyebrow{font-size:.78rem;letter-spacing:.12em;color:var(--forest-text);font-weight:800;text-transform:uppercase;}
+  .hub-hero h1{font-size:clamp(1.65rem,5vw,2.45rem);margin:7px 0 8px;}
+  .hub-hero p{max-width:650px;line-height:1.8;color:var(--ink2);margin:0;}
+  .hub-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:16px;margin-top:16px;}
+  .hub-card{background:#fff;border:1px solid var(--border);border-radius:18px;padding:20px;box-shadow:var(--shadow);}
+  .hub-card h2,.hub-card h3{margin:0 0 10px;}
+  .story-step{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px dashed var(--border);}
+  .story-step:last-child{border:0}.story-dot{width:32px;height:32px;flex:0 0 32px;border-radius:50%;display:grid;place-items:center;background:var(--forest-bg);}
+  .companion-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0;}
+  .companion{border:1.5px solid var(--border);background:var(--bg);border-radius:14px;padding:10px 5px;cursor:pointer;font-family:inherit;color:var(--ink);}
+  .companion span{display:block;font-size:1.7rem;margin-bottom:4px}.companion.active{border-color:var(--forest-a);background:var(--forest-bg);box-shadow:0 0 0 2px rgba(76,154,91,.12);}
+  .companion-talk{background:var(--bg);border-radius:12px;padding:12px 14px;color:var(--ink2);line-height:1.65;min-height:70px;}
+  .task{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:.9rem;}.task:last-child{border:0}.task.done{text-decoration:line-through;color:var(--ink3)}
+  .task-check{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--bg2);font-size:.75rem}.task.done .task-check{background:#dff3e1;color:#265c31;}
+  .progress-track{height:10px;background:var(--bg2);border-radius:99px;overflow:hidden;margin:8px 0}.progress-fill{height:100%;background:linear-gradient(90deg,#7fbe72,#e7b94f);border-radius:99px;transition:width .4s;}
+  .ability-list{display:grid;gap:10px}.ability-head{display:flex;justify-content:space-between;font-size:.83rem}.ability-head b{color:var(--ink2)}
+  .tree-visual{text-align:center;font-size:clamp(3.2rem,12vw,5.5rem);line-height:1;margin:12px 0;filter:drop-shadow(0 7px 8px rgba(58,46,34,.12));}
+  .week-card{background:linear-gradient(135deg,#f3ecff,#fff4e4);border-color:rgba(139,92,246,.18)}
+  .week-status{display:inline-flex;padding:4px 9px;border-radius:99px;background:#fff;color:#6842a8;font-size:.75rem;font-weight:800;}
+  .history-list{display:grid;gap:8px;max-height:260px;overflow:auto}.history-item{display:grid;grid-template-columns:1fr auto;gap:6px;padding:10px 12px;background:var(--bg);border-radius:11px;font-size:.82rem}.history-item small{color:var(--ink3)}
+  .action-card{background:linear-gradient(145deg,#fff,#eff7ea);border:1px solid rgba(76,154,91,.2);border-radius:16px;padding:18px;margin:14px 0;text-align:left}.action-card strong{display:block;color:var(--forest-text);margin-bottom:6px}.modal-actions{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
+  .nav-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:18px}.tiny{font-size:.78rem;color:var(--ink3);line-height:1.55}.empty{text-align:center;color:var(--ink3);padding:18px 8px;}
+  @media(max-width:720px){.wrap{padding:64px 14px 30px}.hub-grid{grid-template-columns:1fr}.hub-hero{padding:22px 18px}.companion-row{grid-template-columns:repeat(2,1fr)}.map-grid{grid-template-columns:1fr}.panel{padding:16px}.stat-row{gap:8px}.home-back{top:10px;left:10px}.hub-card{padding:16px}}
+  @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<button class="home-back" id="hubBtn" type="button">⌂ 探險手冊</button>
+
+<div class="wrap">
+
+  <!-- ============ SCREEN: ADVENTURE HUB ============ -->
+  <div class="screen active" id="screen-hub">
+    <section class="hub-hero">
+      <div class="eyebrow">HOPE SEL・希望小學</div>
+      <h1>把希望的光，帶回注意力地圖</h1>
+      <p>分心怪吹散了希望之樹的葉子。你和專注力夥伴將走過森林、迷霧與情緒小鎮；每一次停下來、再試一次，都會讓地圖亮一點。</p>
+      <div class="nav-actions"><button class="btn btn-primary" id="hubStartBtn">開始今天的探險</button><button class="btn btn-ghost" id="hubContinueBtn">前往關卡地圖</button></div>
+    </section>
+    <div class="hub-grid">
+      <div>
+        <section class="hub-card" style="margin-bottom:16px">
+          <h2>🗺️ 冒險主線</h2>
+          <div class="story-step"><span class="story-dot">1</span><div><b>注意力地圖失去光芒</b><div class="tiny">先認識現在的心情，選擇適合自己的挑戰。</div></div></div>
+          <div class="story-step"><span class="story-dot">2</span><div><b>穿越森林與迷霧</b><div class="tiny">練習專注、記憶、停下來與彈性思考。</div></div></div>
+          <div class="story-step"><span class="story-dot">3</span><div><b>讓希望之樹再次發光</b><div class="tiny">把遊戲裡學到的方法，帶回教室與生活。</div></div></div>
+        </section>
+        <section class="hub-card">
+          <h2>🌱 希望能力樹</h2>
+          <div class="tree-visual" id="treeVisual">🌱</div>
+          <div class="ability-list" id="abilityList"></div>
+          <p class="tiny">能力會依完成的關卡、練習次數與自我調整慢慢成長。只和昨天的自己比較。</p>
+        </section>
+        <section class="hub-card" style="margin-top:16px">
+          <h3>📜 成長足跡</h3><div class="history-list" id="historyList"></div>
+        </section>
+      </div>
+      <div>
+        <section class="hub-card">
+          <h3>選擇陪伴夥伴</h3><div class="companion-row" id="companionRow"></div><div class="companion-talk" id="companionTalk"></div>
+        </section>
+        <section class="hub-card" style="margin-top:16px">
+          <h3>☀️ 今日三件小任務</h3><div id="dailyTasks"></div><div class="progress-track"><div class="progress-fill" id="dailyProgress"></div></div><p class="tiny" id="dailyLabel"></p>
+        </section>
+        <section class="hub-card week-card" style="margin-top:16px">
+          <span class="week-status" id="weekStatus">本週挑戰</span><h3 style="margin-top:10px">👾 擊退分心怪</h3><p class="tiny">本週完成 3 種不同關卡，就能替希望之樹找回一顆光球。</p><div class="progress-track"><div class="progress-fill" id="weekProgress"></div></div><button class="btn btn-primary" id="weekBtn">前往挑戰</button>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SCREEN: READY CHECK ============ -->
+  <div class="screen" id="screen-ready">
+    <div class="intro-hero">
+      <div class="badge-row">🧭 🗺️ 🔍</div>
+      <h1>專注力探險隊</h1>
+      <p>孩子是一位小小探險員，需要修復混亂的「注意力地圖」。完成主線關卡與特別關卡，就能集滿所有能力徽章！</p>
+    </div>
+    <div class="panel" style="max-width:480px;margin:0 auto;">
+      <h3 style="margin-top:0;">出發前，先看看現在的狀態</h3>
+      <p class="instructions" style="margin-bottom:14px;">情緒溫度計：點一個最接近現在感覺的表情，讓老師知道你準備好了嗎？</p>
+      <div class="thermo-row" id="readyOpts">
+        <button class="thermo-opt" data-r="1">😭</button>
+        <button class="thermo-opt" data-r="2">😢</button>
+        <button class="thermo-opt" data-r="3">🙁</button>
+        <button class="thermo-opt" data-r="4">😐</button>
+        <button class="thermo-opt" data-r="5">🙂</button>
+        <button class="thermo-opt" data-r="6">😁</button>
+        <button class="thermo-opt" data-r="7">😀</button>
+      </div>
+      <div style="text-align:center;margin-top:18px;">
+        <button class="btn btn-primary" id="toSizeBtn" disabled>下一步</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SCREEN: SIZE SELECT ============ -->
+  <div class="screen" id="screen-size">
+    <div class="intro-hero">
+      <h1>選擇方格大小</h1>
+      <p>方格越大，挑戰越高。可以依年級或當天狀態選擇，隨時能回來調整。</p>
+    </div>
+    <div class="size-select">
+      <button class="size-btn" data-size="3">3×3　（低年級 / 暖身）</button>
+      <button class="size-btn active" data-size="4">4×4　（中年級 / 一般）</button>
+      <button class="size-btn" data-size="5">5×5　（高年級 / 挑戰）</button>
+    </div>
+    <div style="text-align:center;margin-top:22px;">
+      <button class="btn btn-primary" id="toMapBtn">進入地圖 →</button>
+    </div>
+  </div>
+
+  <!-- ============ SCREEN: MAP ============ -->
+  <div class="screen" id="screen-map">
+    <div class="intro-hero">
+      <h1>注意力地圖</h1>
+      <p>選一關開始挑戰吧！完成後會得到能力徽章。</p>
+    </div>
+    <div class="map-grid" id="mapGrid"></div>
+    <h3 style="margin:34px 0 4px;text-align:center;">✨ 特別關卡</h3>
+    <p style="color:var(--ink2);font-size:.85rem;margin:0 0 6px;text-align:center;">額外挑戰，練習更多專注與情緒技巧。</p>
+    <div class="map-grid" id="mapGridBonus"></div>
+    <div style="text-align:center;margin-top:24px;">
+      <button class="btn btn-ghost" id="toSummaryBtn">查看今天的紀錄與收尾呼吸 →</button>
+    </div>
+  </div>
+
+  <!-- ============ SCREEN: LEVEL ============ -->
+  <div class="screen" id="screen-level">
+    <div class="panel">
+      <div class="panel-head">
+        <h2 id="lvTitle"></h2>
+        <button class="btn btn-ghost" id="backToMapBtn">← 回地圖</button>
+      </div>
+      <div class="instructions" id="lvInstr"></div>
+      <div class="stat-row">
+        <span>⏱️ 時間：<b id="lvTimer">0.0</b> 秒</span>
+        <span>❌ 錯誤：<b id="lvErrors">0</b></span>
+        <span id="lvExtraStat"></span>
+      </div>
+      <div id="lvBody"></div>
+    </div>
+  </div>
+
+  <!-- ============ SCREEN: FINAL SUMMARY ============ -->
+  <div class="screen" id="screen-summary">
+    <div class="intro-hero">
+      <h1>今天的探險紀錄</h1>
+      <p>核心原則：和自己上一次比較，不和別人比較。做得好的地方，記得跟自己說一聲！</p>
+    </div>
+    <div class="panel">
+      <table class="summary-table" id="summaryTable">
+        <thead><tr><th>關卡</th><th>時間(秒)</th><th>錯誤</th><th>徽章</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <h3>自我觀察</h3>
+      <div class="reflect-q">
+        <label>剛才哪裡最容易分心？</label>
+        <textarea rows="2"></textarea>
+      </div>
+      <div class="reflect-q">
+        <label>你用了什麼方法重新找到目標？</label>
+        <textarea rows="2"></textarea>
+      </div>
+      <div class="reflect-q">
+        <label>速度變快的時候，錯誤有沒有增加？</label>
+        <textarea rows="2"></textarea>
+      </div>
+      <div style="text-align:center;">
+        <button class="btn btn-primary" id="toBreathBtn">開始收尾呼吸 →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SCREEN: BREATHING ============ -->
+  <div class="screen" id="screen-breath">
+    <div class="intro-hero">
+      <h1>呼吸收尾</h1>
+      <p>跟著圓圈慢慢吸氣、慢慢吐氣，做三次，就可以回到教室囉。</p>
+    </div>
+    <div style="text-align:center;">
+      <div class="breath-circle" id="breathCircle">吸氣</div>
+      <p id="breathCount" style="color:var(--ink2);">第 1 / 3 次</p>
+      <button class="btn btn-primary" id="restartBtn" style="display:none;">回到地圖，再探險一次</button>
+    </div>
+  </div>
+
+  <div class="footer">
+    © 永齡希望小學雲科大分校<br>
+    本作品採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hant" target="_blank" rel="noopener">創用 CC 姓名標示－非商業性－相同方式分享 4.0</a> 授權・使用請保留出處標示
+  </div>
+</div>
+
+<div class="clap-overlay" id="clapOverlay">
+  <div class="clap-card">
+    <p>找到 3 的倍數了！<br>先拍手一次再繼續 👏</p>
+    <button class="clap-btn" id="clapBtn">👏</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="badgeModal">
+  <div class="modal-card">
+    <div class="medal" id="badgeMedal">🏅</div>
+    <h3 id="badgeTitle">獲得徽章！</h3>
+    <p id="badgeDesc" style="color:var(--ink2);font-size:.85rem;"></p>
+    <div class="action-card"><strong>把能力帶回生活</strong><span id="selActionText">今天遇到困難時，先停一下，再慢慢開始。</span></div>
+    <div class="modal-actions"><button class="btn btn-primary" id="selActionBtn">我願意試試看</button><button class="btn btn-ghost" id="badgeCloseBtn">回地圖</button></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var STATIONS = [
+    {id:'forest',  icon:'🌲', name:'數字森林',   bar:'var(--forest-a)',  bg:'var(--forest-bg)',
+      desc:'依序找到 1 到最大的數字。', badge:'專注眼睛', medal:'👁️'},
+    {id:'road',    icon:'🔀', name:'顏色岔路',   bar:'linear-gradient(90deg,var(--road-a),var(--road-a2))', bg:'var(--road-bg)',
+      desc:'紅藍交替尋找，練習規則切換。', badge:'彈性思考', medal:'🔄'},
+    {id:'monster', icon:'👾', name:'干擾怪獸谷', bar:'var(--monster-a)', bg:'var(--monster-bg)',
+      desc:'忽略怪獸與箭頭，只找正確數字。', badge:'自我控制', medal:'🛡️'},
+    {id:'fog',     icon:'🌫️', name:'記憶迷霧區', bar:'var(--fog-a)',    bg:'var(--fog-bg)',
+      desc:'先看清楚，方格消失後回想位置。', badge:'記憶大腦', medal:'🧠'},
+    {id:'energy',  icon:'💛', name:'情緒能量站', bar:'var(--energy-a)', bg:'var(--energy-bg)',
+      desc:'找出需要多一點支持的情緒。', badge:'冷靜呼吸', medal:'🌬️'},
+    {id:'castle',  icon:'🏰', name:'雙任務城堡', bar:'var(--castle-a)', bg:'var(--castle-bg)',
+      desc:'一邊找數字，一邊完成拍手任務。', badge:'合作力量', medal:'🤝'},
+    {id:'countdown', icon:'⏳', name:'倒數隧道',   bar:'var(--countdown-a)', bg:'var(--countdown-bg)',
+      desc:'從最大的數字開始，倒著數回 1。', badge:'沉著應變', medal:'⏳', bonus:true},
+    {id:'navigator', icon:'🧭', name:'情緒導航站', bar:'var(--nav-a)',       bg:'var(--nav-bg)',
+      desc:'幫情緒配對一個合適的因應方法。', badge:'安心配對', medal:'🧩', bonus:true},
+    {id:'movement',  icon:'🤸', name:'活力補給站', bar:'var(--move-a)',     bg:'var(--move-bg)',
+      desc:'邊找數字，邊完成身體動作任務。', badge:'身體覺察', medal:'🤸', bonus:true},
+    {id:'lights',    icon:'💡', name:'記憶燈光洞', bar:'var(--lights-a)',   bg:'var(--lights-bg)',
+      desc:'記住亮燈順序，越玩越長。', badge:'光影記憶', medal:'💡', bonus:true},
+    {id:'gonogo',    icon:'🚦', name:'停停走路口', bar:'var(--gonogo-a)',   bg:'var(--gonogo-bg)',
+      desc:'看到愛心點下去，看到炸彈不要點。', badge:'冷靜煞車', medal:'🚦', bonus:true},
+    {id:'stroop',    icon:'🎨', name:'顏色迷陣',   bar:'var(--stroop-a)',   bg:'var(--stroop-bg)',
+      desc:'看文字寫的顏色，不要被字義騙了。', badge:'眼腦分工', medal:'🎨', bonus:true},
+    {id:'scenario',  icon:'😢', name:'情緒故事屋', bar:'var(--scenario-a)', bg:'var(--scenario-bg)',
+      desc:'聽小故事，想想主角可能有什麼感受。', badge:'同理心', medal:'❤️', bonus:true}
+  ];
+
+  var state = {
+    ready:false,
+    size:4,
+    badges:{},        // stationId -> true
+    results:{},        // stationId -> {time, errors}
+    timerInt:null,
+    startTime:0,
+    errors:0,
+    currentStation:null
+  };
+
+  var STORAGE_KEY = 'hopeFocusQuestPhase1_v1';
+  var COMPANIONS = [
+    {id:'turtle',emoji:'🐢',name:'慢慢龜',say:'不用急。看清楚、再行動，就是很厲害的專注。'},
+    {id:'fox',emoji:'🦊',name:'勇氣狐',say:'答錯不是失敗，是大腦正在找到下一條路。'},
+    {id:'penguin',emoji:'🐧',name:'安心企鵝',say:'先呼吸，再開始。我會陪你把困難變小。'},
+    {id:'squirrel',emoji:'🐿️',name:'記憶松鼠',say:'一次記一小段，我們可以慢慢把線索收集起來。'}
+  ];
+  var ABILITY_META = {
+    focus:{name:'專注眼睛',color:'#4C9A5B'}, memory:{name:'記憶大腦',color:'#6B5FB0'},
+    calm:{name:'冷靜煞車',color:'#DB6B6B'}, flexible:{name:'彈性思考',color:'#E0A52E'}, empathy:{name:'同理心',color:'#C7789A'}
+  };
+  var STATION_ABILITY = {forest:'focus',monster:'focus',countdown:'focus',fog:'memory',lights:'memory',castle:'memory',gonogo:'calm',movement:'calm',energy:'calm',road:'flexible',stroop:'flexible',navigator:'empathy',scenario:'empathy'};
+  var SEL_ACTIONS = {
+    forest:'今天做功課前，把桌上不需要的東西先收好。', road:'遇到原來的方法不通時，試著想一個不同的方法。', monster:'想立刻插話或動手時，先在心裡數 1、2、3。',
+    fog:'今天要記事情時，把它分成兩小段再記。', energy:'今天感到不舒服時，告訴一位信任的大人：「我需要幫忙。」', castle:'和別人一起做事時，先問：「我們怎麼分工？」',
+    countdown:'著急時，放慢速度，先完成眼前的一小步。', navigator:'注意到一種感受後，為自己選一個安全的照顧方法。', movement:'感到坐不住時，做三次伸展再回來。',
+    lights:'聽到重要指令時，在心裡再說一次。', gonogo:'想立刻行動時，練習「停、看、想、做」。', stroop:'發現答案和直覺不同時，停一下再確認。', scenario:'今天主動問一位同學：「你還好嗎？」'
+  };
+  var profile = loadProfile();
+  state.size = profile.size || 4;
+  state.badges = profile.badges || {};
+  state.results = profile.bestResults || {};
+
+  function freshProfile(){return {version:1,size:4,companion:'turtle',badges:{},bestResults:{},abilities:{focus:0,memory:0,calm:0,flexible:0,empathy:0},history:[],daily:{},weekly:{},lastMood:null};}
+  function loadProfile(){
+    try{var saved=JSON.parse(localStorage.getItem(STORAGE_KEY));return Object.assign(freshProfile(),saved||{});}catch(e){return freshProfile();}
+  }
+  function saveProfile(){
+    profile.size=state.size; profile.badges=state.badges; profile.bestResults=state.results;
+    try{localStorage.setItem(STORAGE_KEY,JSON.stringify(profile));}catch(e){}
+  }
+  function localDateKey(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+  function weekKey(){var d=new Date(),day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+  function todayData(){var k=localDateKey();if(!profile.daily[k])profile.daily[k]={checkin:false,level:false,sel:false,breath:false};return profile.daily[k];}
+  function thisWeek(){var k=weekKey();if(!profile.weekly[k])profile.weekly[k]={stations:[],reward:false};return profile.weekly[k];}
+  function addHistory(st,timeVal,errors){
+    profile.history.unshift({date:new Date().toISOString(),station:st.id,name:st.name,time:timeVal,errors:errors});
+    profile.history=profile.history.slice(0,60);
+  }
+  function encouragement(errors){
+    var c=COMPANIONS.find(function(x){return x.id===profile.companion;})||COMPANIONS[0];
+    return c.emoji+' '+(errors===0?'你看得很仔細，穩穩完成了！':errors<=2?'你有發現並修正，這就是大腦在成長。':'這關很有挑戰；願意再試一次，就是勇氣。');
+  }
+
+  function renderHub(){
+    var c=COMPANIONS.find(function(x){return x.id===profile.companion;})||COMPANIONS[0];
+    $('companionRow').innerHTML='';
+    COMPANIONS.forEach(function(item){var b=document.createElement('button');b.className='companion'+(item.id===c.id?' active':'');b.innerHTML='<span>'+item.emoji+'</span>'+item.name;b.addEventListener('click',function(){profile.companion=item.id;saveProfile();renderHub();});$('companionRow').appendChild(b);});
+    $('companionTalk').textContent=c.emoji+'「'+c.say+'」';
+    var total=Object.keys(profile.badges||{}).length,tree=total<1?'🌱':total<4?'🌿':total<8?'🌳':'🌳✨';$('treeVisual').textContent=tree;
+    $('abilityList').innerHTML='';Object.keys(ABILITY_META).forEach(function(k){var val=Math.min(100,profile.abilities[k]||0),m=ABILITY_META[k];$('abilityList').insertAdjacentHTML('beforeend','<div><div class="ability-head"><span>'+m.name+'</span><b>Lv.'+Math.floor(val/20+1)+'</b></div><div class="progress-track"><div class="progress-fill" style="width:'+val+'%;background:'+m.color+'"></div></div></div>');});
+    var td=todayData(),tasks=[['checkin','說出現在的心情'],['level','完成一個專注遊戲'],['sel','把一個 SEL 小行動帶回生活']];
+    $('dailyTasks').innerHTML='';var done=0;tasks.forEach(function(t){if(td[t[0]])done++;$('dailyTasks').insertAdjacentHTML('beforeend','<div class="task '+(td[t[0]]?'done':'')+'"><span class="task-check">'+(td[t[0]]?'✓':'○')+'</span><span>'+t[1]+'</span></div>');});$('dailyProgress').style.width=(done/3*100)+'%';$('dailyLabel').textContent=done===3?'今日任務完成！希望之樹多了一點光。':'已完成 '+done+' / 3，照自己的步調就好。';
+    var w=thisWeek(),wc=w.stations.length;if(wc>=3)w.reward=true;$('weekProgress').style.width=Math.min(100,wc/3*100)+'%';$('weekStatus').textContent=w.reward?'✓ 本週挑戰完成':'本週進度 '+wc+' / 3';
+    $('historyList').innerHTML='';if(!profile.history.length)$('historyList').innerHTML='<div class="empty">完成第一個關卡後，成長足跡會出現在這裡。</div>';profile.history.slice(0,10).forEach(function(h){var d=new Date(h.date);$('historyList').insertAdjacentHTML('beforeend','<div class="history-item"><span><b>'+h.name+'</b><br><small>'+d.toLocaleDateString('zh-TW')+'・錯誤 '+h.errors+' 次</small></span><b>'+h.time.toFixed(1)+' 秒</b></div>');});
+    saveProfile();
+  }
+
+  $('hubBtn').addEventListener('click',function(){stopTimer();renderHub();showScreen('screen-hub');});
+  $('hubStartBtn').addEventListener('click',function(){showScreen('screen-ready');});
+  $('hubContinueBtn').addEventListener('click',function(){renderMap();showScreen('screen-map');});
+  $('weekBtn').addEventListener('click',function(){renderMap();showScreen('screen-map');});
+
+  function $(id){ return document.getElementById(id); }
+  var levelSession = 0;
+  function showScreen(id){
+    var prevActive = document.querySelector('.screen.active');
+    if(prevActive && prevActive.id === 'screen-level' && id !== 'screen-level'){
+      levelSession++; // player left the level early — invalidate any pending timers from it
+      var stray = document.getElementById('moveOverlay');
+      if(stray) stray.remove();
+      $('clapOverlay').classList.remove('show');
+    }
+    document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+    $(id).classList.add('active');
+  }
+  function shuffle(arr){
+    for(var i=arr.length-1;i>0;i--){
+      var j=Math.floor(Math.random()*(i+1));
+      var t=arr[i]; arr[i]=arr[j]; arr[j]=t;
+    }
+    return arr;
+  }
+
+  /* ---------- Ready check ---------- */
+  document.querySelectorAll('#readyOpts .thermo-opt').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('#readyOpts .thermo-opt').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active');
+      state.ready = true;
+      profile.lastMood={value:parseInt(b.dataset.r,10),date:new Date().toISOString()};
+      todayData().checkin=true; saveProfile();
+      $('toSizeBtn').disabled = false;
+    });
+  });
+  $('toSizeBtn').addEventListener('click', function(){ showScreen('screen-size'); });
+
+  /* ---------- Size select ---------- */
+  document.querySelectorAll('#screen-size .size-btn').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('#screen-size .size-btn').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active');
+      state.size = parseInt(b.dataset.size,10);
+      saveProfile();
+    });
+  });
+  $('toMapBtn').addEventListener('click', function(){ renderMap(); showScreen('screen-map'); });
+
+  /* ---------- Map ---------- */
+  function renderMap(){
+    var grid = $('mapGrid'), bonusGrid = $('mapGridBonus');
+    grid.innerHTML = ''; bonusGrid.innerHTML = '';
+    STATIONS.forEach(function(st){
+      var done = !!state.badges[st.id];
+      var el = document.createElement('div');
+      el.className = 'station' + (done ? ' done' : '');
+      el.setAttribute('role','button'); el.setAttribute('tabindex','0'); el.setAttribute('aria-label','開始'+st.name);
+      el.innerHTML =
+        '<div class="bar" style="background:'+st.bar+'"></div>' +
+        '<div class="icon">'+st.icon+'</div>' +
+        '<h3>'+st.name+'</h3>' +
+        '<p>'+st.desc+'</p>' +
+        '<span class="badge-tag">'+(done ? '✅ 已獲得「'+st.badge+'」' : '徽章：'+st.badge)+'</span>';
+      el.addEventListener('click', function(){ startLevel(st.id); });
+      el.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();startLevel(st.id);}});
+      (st.bonus ? bonusGrid : grid).appendChild(el);
+    });
+  }
+  $('toSummaryBtn').addEventListener('click', function(){ renderSummary(); showScreen('screen-summary'); });
+  $('backToMapBtn').addEventListener('click', function(){ stopTimer(); renderMap(); showScreen('screen-map'); });
+
+  /* ---------- Timer helpers ---------- */
+  function startTimer(){
+    state.startTime = Date.now();
+    state.errors = 0;
+    $('lvErrors').textContent = '0';
+    if(state.timerInt) clearInterval(state.timerInt);
+    state.timerInt = setInterval(function(){
+      var s = ((Date.now()-state.startTime)/1000).toFixed(1);
+      $('lvTimer').textContent = s;
+    }, 100);
+  }
+  function stopTimer(){
+    if(state.timerInt){ clearInterval(state.timerInt); state.timerInt=null; }
+  }
+  function registerError(){
+    state.errors++;
+    $('lvErrors').textContent = state.errors;
+  }
+  function finishLevel(stationId, extraNote){
+    stopTimer();
+    var timeVal = parseFloat($('lvTimer').textContent);
+    var runResult = {time:timeVal, errors:state.errors, note: extraNote||''};
+    state.badges[stationId] = true;
+    var st = STATIONS.find(function(s){return s.id===stationId;});
+    var old=profile.bestResults[stationId];
+    if(!old || timeVal<old.time || (timeVal===old.time && state.errors<old.errors)) profile.bestResults[stationId]=runResult;
+    state.results=profile.bestResults; profile.badges=state.badges;
+    var ability=STATION_ABILITY[stationId]||'focus';profile.abilities[ability]=Math.min(100,(profile.abilities[ability]||0)+(state.errors===0?10:7));
+    todayData().level=true;var w=thisWeek();if(w.stations.indexOf(stationId)<0)w.stations.push(stationId);if(w.stations.length>=3)w.reward=true;
+    addHistory(st,timeVal,state.errors);saveProfile();
+    $('badgeMedal').textContent = st.medal;
+    $('badgeTitle').textContent = '獲得徽章：'+st.badge;
+    $('badgeDesc').textContent = '完成「'+st.name+'」！用時 '+timeVal+' 秒，錯誤 '+state.errors+' 次。 '+encouragement(state.errors);
+    $('selActionText').textContent = SEL_ACTIONS[stationId] || '今天遇到困難時，先停一下，再慢慢開始。';
+    $('badgeModal').classList.add('show');
+  }
+  $('badgeCloseBtn').addEventListener('click', function(){
+    $('badgeModal').classList.remove('show');
+    renderMap(); showScreen('screen-map');
+  });
+  $('selActionBtn').addEventListener('click',function(){todayData().sel=true;saveProfile();$('badgeModal').classList.remove('show');renderHub();showScreen('screen-hub');});
+
+  /* ---------- Level dispatch ---------- */
+  function startLevel(stationId){
+    state.currentStation = stationId;
+    var st = STATIONS.find(function(s){return s.id===stationId;});
+    $('lvTitle').textContent = st.icon+' '+st.name;
+    $('lvExtraStat').textContent = '';
+    showScreen('screen-level');
+    if(stationId==='forest') buildForest();
+    else if(stationId==='road') buildRoad();
+    else if(stationId==='monster') buildMonster();
+    else if(stationId==='fog') buildFog();
+    else if(stationId==='energy') buildEnergy();
+    else if(stationId==='castle') buildCastle();
+    else if(stationId==='countdown') buildCountdown();
+    else if(stationId==='navigator') buildNavigator();
+    else if(stationId==='movement') buildMovement();
+    else if(stationId==='lights') buildLights();
+    else if(stationId==='gonogo') buildGoNoGo();
+    else if(stationId==='stroop') buildStroop();
+    else if(stationId==='scenario') buildScenario();
+  }
+
+  function gridStyle(n){
+    $('lvBody').innerHTML = '';
+    var g = document.createElement('div');
+    g.className = 'grid';
+    g.style.gridTemplateColumns = 'repeat('+n+', 1fr)';
+    $('lvBody').appendChild(g);
+    return g;
+  }
+
+  /* ---------- Level 1: 數字森林 ---------- */
+  function buildForest(){
+    var n = state.size, total = n*n;
+    $('lvInstr').textContent = '請依序點選數字 1 到 '+total+'。眼睛先找，再用手點選。';
+    var nums = shuffle(Array.from({length:total},function(_,i){return i+1;}));
+    var g = gridStyle(n);
+    var next = 1;
+    nums.forEach(function(num){
+      var c = document.createElement('div');
+      c.className = 'cell'; c.textContent = num;
+      c.addEventListener('click', function(){
+        if(c.classList.contains('found')) return;
+        if(num === next){
+          c.classList.add('found'); next++;
+          if(next > total) finishLevel('forest');
+        } else {
+          c.classList.add('wrong'); registerError();
+          setTimeout(function(){c.classList.remove('wrong');},300);
+        }
+      });
+      g.appendChild(c);
+    });
+    startTimer();
+  }
+
+  /* ---------- Level 2: 顏色岔路 ---------- */
+  function buildRoad(){
+    var n = state.size, total = n*n, pairs = n;
+    $('lvInstr').textContent = '請依序點選：紅1→藍1→紅2→藍2…，一直到紅'+pairs+'→藍'+pairs+'。灰色圓點不要點喔。';
+    var cells = [];
+    for(var i=1;i<=pairs;i++){ cells.push({label:'R'+i, role:'r', order:(i-1)*2}); cells.push({label:'B'+i, role:'b', order:(i-1)*2+1}); }
+    var fillerCount = total - cells.length;
+    for(var f=0; f<fillerCount; f++){ cells.push({label:'●', role:'filler'}); }
+    shuffle(cells);
+    var g = gridStyle(n);
+    var next = 0;
+    cells.forEach(function(cd){
+      var c = document.createElement('div');
+      c.className = 'cell ' + (cd.role==='r'?'role-r':cd.role==='b'?'role-b':'filler');
+      c.textContent = cd.label;
+      c.addEventListener('click', function(){
+        if(c.classList.contains('found')) return;
+        if(cd.role!=='filler' && cd.order===next){
+          c.classList.add('found'); next++;
+          if(next >= cells.length - fillerCount){ finishLevel('road'); }
+        } else {
+          c.classList.add('wrong'); registerError();
+          setTimeout(function(){c.classList.remove('wrong');},300);
+        }
+      });
+      g.appendChild(c);
+    });
+    startTimer();
+  }
+
+  /* ---------- Level 3: 干擾怪獸谷 ---------- */
+  function buildMonster(){
+    var n = state.size, total = n*n;
+    var decoyIcons = ['👾','⭐','➡️','❓'];
+    var decoyCount = Math.max(2, Math.floor(total/5));
+    var numCount = total - decoyCount;
+    $('lvInstr').textContent = '請依序點選數字 1 到 '+numCount+'，路上出現的怪獸、星星、箭頭都不要點，那是干擾。';
+    var items = [];
+    for(var i=1;i<=numCount;i++){ items.push({type:'num', val:i}); }
+    for(var d=0; d<decoyCount; d++){ items.push({type:'decoy', val:decoyIcons[d % decoyIcons.length]}); }
+    shuffle(items);
+    var g = gridStyle(n);
+    var next = 1;
+    items.forEach(function(it){
+      var c = document.createElement('div');
+      c.className = 'cell ' + (it.type==='decoy' ? 'decoy' : '');
+      c.textContent = it.val;
+      c.addEventListener('click', function(){
+        if(c.classList.contains('found')) return;
+        if(it.type==='num' && it.val===next){
+          c.classList.add('found'); next++;
+          if(next > numCount) finishLevel('monster');
+        } else {
+          c.classList.add('wrong'); registerError();
+          setTimeout(function(){c.classList.remove('wrong');},300);
+        }
+      });
+      g.appendChild(c);
+    });
+    startTimer();
+  }
+
+  /* ---------- Level 4: 記憶迷霧區 ---------- */
+  function buildFog(){
+    var n = state.size, total = n*n;
+    var mySession = levelSession;
+    $('lvInstr').textContent = '先仔細看 10 秒，方格會蓋起來，接著回答 3 個小問題。';
+    $('lvBody').innerHTML = '';
+    var wrap = document.createElement('div');
+    wrap.className = 'mem-wrap';
+    var g = document.createElement('div');
+    g.className = 'grid'; g.style.gridTemplateColumns = 'repeat('+n+',1fr)';
+    var nums = shuffle(Array.from({length:total},function(_,i){return i+1;}));
+    var positions = {}; // num -> {row,col}
+    var rowOf = {}, colorOf = {};
+    var half = Math.ceil(total/2);
+    var colored = shuffle(nums.slice()).slice(0, half);
+    nums.forEach(function(num, idx){
+      var row = Math.floor(idx/n), col = idx % n;
+      positions[num] = {row:row, col:col};
+      rowOf[num] = row;
+      var isColored = colored.indexOf(num) !== -1;
+      colorOf[num] = isColored;
+      var c = document.createElement('div');
+      c.className = 'cell';
+      c.style.color = isColored ? '#B8681E' : '';
+      c.textContent = num;
+      g.appendChild(c);
+    });
+    wrap.appendChild(g);
+    var overlay = document.createElement('div');
+    overlay.className = 'cover-overlay';
+    overlay.innerHTML = '<div class="countdown" id="fogCountdown">10</div><p style="color:var(--ink2);">記憶中…</p>';
+    $('lvBody').appendChild(wrap);
+    var count = 10;
+    var iv = setInterval(function(){
+      if(mySession !== levelSession){ clearInterval(iv); return; }
+      count--;
+      var el = document.getElementById('fogCountdown');
+      if(el) el.textContent = count;
+      if(count<=0){
+        clearInterval(iv);
+        g.style.visibility='hidden';
+        wrap.appendChild(overlay);
+        showFogQuestions(positions, rowOf, colorOf, n, total);
+      }
+    },1000);
+    startTimer();
+    stopTimer(); // memory phase isn't timed as a race; timer resumes for questions
+  }
+  function showFogQuestions(positions, rowOf, colorOf, n, total){
+    var quizWrap = document.createElement('div');
+    quizWrap.style.marginTop = '20px';
+    var nums = Object.keys(positions).map(Number);
+    var target = nums[Math.floor(Math.random()*nums.length)];
+    var pos = positions[target];
+    var half = n/2;
+    var quadrant;
+    if(pos.row < half && pos.col < half) quadrant = '左上';
+    else if(pos.row < half) quadrant = '右上';
+    else if(pos.col < half) quadrant = '左下';
+    else quadrant = '右下';
+    var quadOpts = shuffle(['左上','右上','左下','右下']);
+
+    var coloredNums = nums.filter(function(x){return colorOf[x];});
+    var colorTarget = coloredNums[Math.floor(Math.random()*coloredNums.length)];
+    var colorOpts = shuffle(shuffle(nums.slice()).slice(0,3).concat([colorTarget])).filter(function(v,i,a){return a.indexOf(v)===i;}).slice(0,4);
+    if(colorOpts.indexOf(colorTarget)===-1) colorOpts[0]=colorTarget;
+
+    var rowTarget = nums[Math.floor(Math.random()*nums.length)];
+    var sameRow = nums.filter(function(x){return rowOf[x]===rowOf[rowTarget] && x!==rowTarget;});
+    var rowOptsCorrect = sameRow.join('、') || '無';
+    var wrongSet1 = shuffle(nums.filter(function(x){return rowOf[x]!==rowOf[rowTarget];})).slice(0,2).join('、');
+    var wrongSet2 = shuffle(nums.filter(function(x){return rowOf[x]!==rowOf[rowTarget];})).slice(0,2).join('、');
+    var rowOpts = shuffle([rowOptsCorrect, wrongSet1, wrongSet2].filter(function(v,i,a){return a.indexOf(v)===i;}));
+
+    var score = 0;
+    quizWrap.innerHTML =
+      '<div class="mcq"><p>Q1. 數字 '+target+' 大約在方格的哪個位置？</p><div class="mcq-opts" data-correct="'+quadrant+'">'+
+      quadOpts.map(function(o){return '<span class="mcq-opt">'+o+'</span>';}).join('')+'</div></div>' +
+      '<div class="mcq"><p>Q2. 哪一個數字是橘色的？</p><div class="mcq-opts" data-correct="'+colorTarget+'">'+
+      colorOpts.map(function(o){return '<span class="mcq-opt">'+o+'</span>';}).join('')+'</div></div>' +
+      '<div class="mcq"><p>Q3. 哪些數字和「'+rowTarget+'」在同一排？</p><div class="mcq-opts" data-correct="'+rowOptsCorrect+'">'+
+      rowOpts.map(function(o){return '<span class="mcq-opt">'+o+'</span>';}).join('')+'</div></div>' +
+      '<div style="text-align:center;margin-top:10px;"><button class="btn btn-primary" id="fogFinishBtn" style="display:none;">完成，領取徽章 →</button></div>';
+    $('lvBody').appendChild(quizWrap);
+
+    var answered = 0;
+    quizWrap.querySelectorAll('.mcq').forEach(function(mcqDiv){
+      var opts = mcqDiv.querySelector('.mcq-opts');
+      var correct = opts.dataset.correct;
+      opts.querySelectorAll('.mcq-opt').forEach(function(opt){
+        opt.addEventListener('click', function(){
+          if(opts.classList.contains('locked')) return;
+          opts.classList.add('locked');
+          answered++;
+          if(opt.textContent === correct){ opt.classList.add('picked-correct'); score++; }
+          else {
+            opt.classList.add('picked-wrong'); registerError();
+            opts.querySelectorAll('.mcq-opt').forEach(function(o2){ if(o2.textContent===correct) o2.classList.add('picked-correct'); });
+          }
+          if(answered===3){ document.getElementById('fogFinishBtn').style.display='inline-block'; }
+        });
+      });
+    });
+    quizWrap.querySelector('#fogFinishBtn') && quizWrap.addEventListener('click', function(e){
+      if(e.target && e.target.id==='fogFinishBtn'){ finishLevel('fog', '答對 '+score+' / 3 題'); }
+    });
+  }
+
+  /* ---------- Level 5: 情緒能量站 ---------- */
+  function buildEnergy(){
+    $('lvInstr').textContent = '方格裡有 16 種情緒。請點選所有「需要多一點支持」的情緒（例如讓身體比較緊繃、不舒服的情緒）。';
+    var supportNeeded = ['害怕','生氣','委屈','緊張','孤單','心煩','擔心','難過'];
+    var comfortable = ['開心','放鬆','感恩','滿足','安心','驚訝','興奮','平靜'];
+    var all = shuffle(supportNeeded.concat(comfortable).map(function(w){
+      return {word:w, need: supportNeeded.indexOf(w)!==-1};
+    }));
+    var g = gridStyle(4);
+    var picked = 0, correct = 0;
+    all.forEach(function(item){
+      var c = document.createElement('div');
+      c.className = 'cell emo-cell'; c.style.fontSize='.95rem'; c.textContent = item.word;
+      c.addEventListener('click', function(){
+        if(c.classList.contains('correct') || c.classList.contains('incorrect')) return;
+        picked++;
+        if(item.need){ c.classList.add('correct'); correct++; }
+        else { c.classList.add('incorrect'); registerError(); }
+        if(picked === all.length || correct === supportNeeded.length){
+          setTimeout(function(){ finishLevel('energy', '找出 '+correct+' / '+supportNeeded.length+' 個需要支持的情緒'); }, 400);
+        }
+      });
+      g.appendChild(c);
+    });
+    startTimer();
+  }
+
+  /* ---------- Level 6: 雙任務城堡 ---------- */
+  function buildCastle(){
+    var n = state.size, total = n*n;
+    $('lvInstr').textContent = '依序點選數字 1 到 '+total+'。找到 3 的倍數時，記得先拍手一次再繼續！';
+    var nums = shuffle(Array.from({length:total},function(_,i){return i+1;}));
+    var g = gridStyle(n);
+    var next = 1, clapPending = false, clapMisses = 0;
+    nums.forEach(function(num){
+      var c = document.createElement('div');
+      c.className = 'cell'; c.textContent = num;
+      c.addEventListener('click', function(){
+        if(clapPending) return;
+        if(c.classList.contains('found')) return;
+        if(num === next){
+          c.classList.add('found');
+          if(num % 3 === 0){
+            clapPending = true;
+            $('clapOverlay').classList.add('show');
+          }
+          next++;
+          if(next > total && !clapPending) finishLevel('castle', '拍手漏掉 '+clapMisses+' 次');
+        } else {
+          c.classList.add('wrong'); registerError();
+          setTimeout(function(){c.classList.remove('wrong');},300);
+        }
+      });
+      g.appendChild(c);
+    });
+    $('clapBtn').onclick = function(){
+      clapPending = false;
+      $('clapOverlay').classList.remove('show');
+      if(next > total) finishLevel('castle', '拍手漏掉 '+clapMisses+' 次');
+    };
+    startTimer();
+  }
+
+  /* ---------- Bonus Level: 倒數隧道 ---------- */
+  function buildCountdown(){
+    var n = state.size, total = n*n;
+    $('lvInstr').textContent = '請從最大的數字 '+total+' 開始，依序倒數點選回 1。';
+    var nums = shuffle(Array.from({length:total},function(_,i){return i+1;}));
+    var g = gridStyle(n);
+    var next = total;
+    nums.forEach(function(num){
+      var c = document.createElement('div');
+      c.className = 'cell'; c.textContent = num;
+      c.addEventListener('click', function(){
+        if(c.classList.contains('found')) return;
+        if(num === next){
+          c.classList.add('found'); next--;
+          if(next < 1) finishLevel('countdown');
+        } else {
+          c.classList.add('wrong'); registerError();
+          setTimeout(function(){c.classList.remove('wrong');},300);
+        }
+      });
+      g.appendChild(c);
+    });
+    startTimer();
+  }
+
+  /* ---------- Bonus Level: 情緒導航站 ---------- */
+  function buildNavigator(){
+    $('lvInstr').textContent = '左邊是情緒，右邊是因應方法。請先點一個情緒，再點它合適的方法，幫他們配對成功。';
+    var pairs = [
+      {emo:'害怕', method:'深呼吸，抱抱自己'},
+      {emo:'生氣', method:'暫時離開現場'},
+      {emo:'委屈', method:'說出來，找人聊聊'},
+      {emo:'緊張', method:'慢慢吐氣'},
+      {emo:'孤單', method:'找人陪伴'},
+      {emo:'心煩', method:'喝水休息一下'},
+      {emo:'擔心', method:'把心事寫下來'},
+      {emo:'難過', method:'哭一下也沒關係'}
+    ];
+    $('lvBody').innerHTML =
+      '<div class="match-cols"><div class="match-col" id="matchEmo"></div><div class="match-col" id="matchMethod"></div></div>';
+    var emoCol = $('matchEmo'), methodCol = $('matchMethod');
+    var shuffledEmo = shuffle(pairs.slice());
+    var shuffledMethod = shuffle(pairs.slice());
+    var selectedEmo = null, matchedCount = 0;
+
+    shuffledEmo.forEach(function(p){
+      var d = document.createElement('div');
+      d.className = 'match-item'; d.textContent = p.emo; d.dataset.emo = p.emo;
+      d.addEventListener('click', function(){
+        if(d.classList.contains('matched')) return;
+        emoCol.querySelectorAll('.match-item').forEach(function(x){x.classList.remove('selected');});
+        d.classList.add('selected');
+        selectedEmo = p.emo;
+      });
+      emoCol.appendChild(d);
+    });
+    shuffledMethod.forEach(function(p){
+      var d = document.createElement('div');
+      d.className = 'match-item'; d.textContent = p.method; d.dataset.method = p.method; d.dataset.emo = p.emo;
+      d.addEventListener('click', function(){
+        if(d.classList.contains('matched') || !selectedEmo) return;
+        if(d.dataset.emo === selectedEmo){
+          d.classList.add('matched');
+          var emoEl = emoCol.querySelector('[data-emo="'+selectedEmo+'"]');
+          if(emoEl) emoEl.classList.add('matched');
+          matchedCount++;
+          selectedEmo = null;
+          if(matchedCount === pairs.length) finishLevel('navigator');
+        } else {
+          d.classList.add('mismatch'); registerError();
+          setTimeout(function(){d.classList.remove('mismatch');},300);
+        }
+      });
+      methodCol.appendChild(d);
+    });
+    startTimer();
+  }
+
+  /* ---------- Bonus Level: 活力補給站 ---------- */
+  function buildMovement(){
+    var n = state.size, total = n*n;
+    var mySession = levelSession;
+    $('lvInstr').textContent = '依序點選數字 1 到 '+total+'，途中會出現動作任務，做完再點「我做到了」繼續。';
+    var moves = [
+      {icon:'🤸',text:'單腳站立，數 5 秒'},
+      {icon:'🙆',text:'伸展雙手，往上碰一下天花板'},
+      {icon:'🌀',text:'原地慢慢轉一圈'},
+      {icon:'🧘',text:'深呼吸三次'},
+      {icon:'🤲',text:'雙手交叉，摸摸自己的肩膀'}
+    ];
+    var nums = shuffle(Array.from({length:total},function(_,i){return i+1;}));
+    var g = gridStyle(n);
+    var next = 1, paused = false, moveIdx = 0;
+    var breakEvery = Math.max(3, Math.floor(total/4));
+    nums.forEach(function(num){
+      var c = document.createElement('div');
+      c.className = 'cell'; c.textContent = num;
+      c.addEventListener('click', function(){
+        if(mySession !== levelSession) return;
+        if(paused) return;
+        if(c.classList.contains('found')) return;
+        if(num === next){
+          c.classList.add('found');
+          if(next % breakEvery === 0 && next < total){
+            paused = true;
+            showMovePrompt(moves[moveIdx % moves.length], function(){
+              if(mySession !== levelSession) return;
+              paused = false;
+              next++;
+              if(next > total) finishLevel('movement');
+            });
+            moveIdx++;
+          } else {
+            next++;
+            if(next > total) finishLevel('movement');
+          }
+        } else {
+          c.classList.add('wrong'); registerError();
+          setTimeout(function(){c.classList.remove('wrong');},300);
+        }
+      });
+      g.appendChild(c);
+    });
+    startTimer();
+  }
+  function showMovePrompt(move, onDone){
+    var overlay = document.createElement('div');
+    overlay.id = 'moveOverlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(58,46,34,.45);display:flex;align-items:center;justify-content:center;z-index:9996;';
+    overlay.innerHTML =
+      '<div class="move-card"><div class="move-icon">'+move.icon+'</div>' +
+      '<p>'+move.text+'</p>' +
+      '<button class="btn btn-primary" id="moveDoneBtn">我做到了 ✅</button></div>';
+    document.body.appendChild(overlay);
+    document.getElementById('moveDoneBtn').addEventListener('click', function(){
+      if(overlay.parentNode) document.body.removeChild(overlay);
+      onDone();
+    });
+  }
+
+  /* ---------- Bonus Level: 記憶燈光洞 (Simon) ---------- */
+  function buildLights(){
+    $('lvInstr').textContent = '看仔細亮燈的順序，亮完之後依照相同順序點回去。順序會越來越長！';
+    var mySession = levelSession;
+    var target = state.size + 4;
+    $('lvBody').innerHTML = '<div class="simon-pad" id="simonPad"></div><p class="simon-status" id="simonStatus">準備開始…</p>';
+    var colors = [{css:'#E14B4B'},{css:'#2879D9'},{css:'#4C9A5B'},{css:'#D9A62E'}];
+    var pad = $('simonPad');
+    colors.forEach(function(c, idx){
+      var b = document.createElement('button');
+      b.className='simon-btn'; b.style.background=c.css; b.dataset.idx=idx;
+      pad.appendChild(b);
+    });
+    var seq = [], userPos = 0, accepting=false;
+    function lightUp(idx){
+      if(mySession !== levelSession) return;
+      var btns = pad.querySelectorAll('.simon-btn');
+      var b = btns[idx];
+      if(!b) return;
+      b.classList.add('lit');
+      setTimeout(function(){ if(mySession===levelSession) b.classList.remove('lit'); }, 450);
+    }
+    function playSeq(){
+      var i=0;
+      var iv = setInterval(function(){
+        if(mySession !== levelSession){ clearInterval(iv); return; }
+        lightUp(seq[i]); i++;
+        if(i>=seq.length){ clearInterval(iv); accepting=true; $('simonStatus').textContent='換你了，依照順序點點看'; }
+      }, 700);
+    }
+    function nextRound(){
+      if(mySession !== levelSession) return;
+      seq.push(Math.floor(Math.random()*4));
+      userPos = 0; accepting=false;
+      $('simonStatus').textContent = '第 '+seq.length+' 輪，請看仔細…';
+      setTimeout(function(){ if(mySession===levelSession) playSeq(); }, 500);
+    }
+    pad.querySelectorAll('.simon-btn').forEach(function(b){
+      b.addEventListener('click', function(){
+        if(mySession !== levelSession) return;
+        if(!accepting) return;
+        var idx = parseInt(b.dataset.idx,10);
+        lightUp(idx);
+        if(idx === seq[userPos]){
+          userPos++;
+          if(userPos === seq.length){
+            accepting=false;
+            if(seq.length >= target){ finishLevel('lights'); }
+            else { setTimeout(function(){ if(mySession===levelSession) nextRound(); }, 700); }
+          }
+        } else {
+          accepting=false; registerError();
+          $('simonStatus').textContent = '順序不對，再挑戰一次！';
+          setTimeout(function(){ if(mySession===levelSession){ seq=[]; nextRound(); } }, 900);
+        }
+      });
+    });
+    startTimer();
+    nextRound();
+  }
+
+  /* ---------- Bonus Level: 停停走路口 (Go/No-Go) ---------- */
+  function buildGoNoGo(){
+    $('lvInstr').textContent = '看到 ❤️ 快點下方按鈕；看到 💣 忍住不要點！';
+    var mySession = levelSession;
+    var totalTrials = 12;
+    $('lvBody').innerHTML = '<div class="gonogo-stage" id="gonogoStage"></div><button class="btn btn-primary gonogo-btn" id="gonogoBtn">點！</button><p class="simon-status" id="gonogoStatus">第 1 / '+totalTrials+' 題</p>';
+    var stage = $('gonogoStage'), btn=$('gonogoBtn'), statusEl=$('gonogoStatus');
+    var trial=0, hits=0, correctInhibits=0, current=null, responded=false, timer=null;
+    function nextTrial(){
+      if(mySession !== levelSession) return;
+      trial++;
+      if(trial>totalTrials){ finishLevel('gonogo', 'GO答對 '+hits+' 次，忍住 '+correctInhibits+' 次'); return; }
+      statusEl.textContent = '第 '+trial+' / '+totalTrials+' 題';
+      current = Math.random() < 0.7 ? 'go' : 'nogo';
+      responded=false;
+      stage.innerHTML = '<div class="gonogo-icon">'+(current==='go'?'❤️':'💣')+'</div>';
+      timer = setTimeout(function(){
+        if(mySession !== levelSession) return;
+        if(!responded){
+          if(current==='go'){ /* missed a go, no error counted, just no credit */ } else { correctInhibits++; }
+          stage.innerHTML = '';
+          setTimeout(function(){ if(mySession===levelSession) nextTrial(); }, 400);
+        }
+      }, 1100);
+    }
+    btn.addEventListener('click', function(){
+      if(mySession !== levelSession) return;
+      if(!current || responded) return;
+      responded=true;
+      clearTimeout(timer);
+      if(current==='go'){ hits++; }
+      else { registerError(); }
+      stage.innerHTML='';
+      setTimeout(function(){ if(mySession===levelSession) nextTrial(); }, 400);
+    });
+    startTimer();
+    nextTrial();
+  }
+
+  /* ---------- Bonus Level: 顏色迷陣 (Stroop) ---------- */
+  function buildStroop(){
+    $('lvInstr').textContent = '請點選文字寫的「顏色」，不要被字義騙了！例如寫著「紅」但字是藍色，要點藍色。';
+    var colors = [{name:'紅',css:'#E14B4B'},{name:'藍',css:'#2879D9'},{name:'綠',css:'#4C9A5B'},{name:'黃',css:'#D9A62E'}];
+    var totalTrials = 10;
+    $('lvBody').innerHTML = '<div class="stroop-word" id="stroopWord"></div><div class="stroop-opts" id="stroopOpts"></div><p class="simon-status" id="stroopStatus"></p>';
+    var wordEl=$('stroopWord'), optsEl=$('stroopOpts'), statusEl=$('stroopStatus');
+    colors.forEach(function(c){
+      var b=document.createElement('button');
+      b.className='stroop-swatch'; b.style.background=c.css; b.dataset.name=c.name;
+      optsEl.appendChild(b);
+    });
+    var trial=0, correctColor=null;
+    function nextTrial(){
+      trial++;
+      if(trial>totalTrials){ finishLevel('stroop'); return; }
+      statusEl.textContent = '第 '+trial+' / '+totalTrials+' 題';
+      var wordMeaning = colors[Math.floor(Math.random()*colors.length)];
+      var inkColor = colors[Math.floor(Math.random()*colors.length)];
+      wordEl.textContent = wordMeaning.name;
+      wordEl.style.color = inkColor.css;
+      correctColor = inkColor.name;
+    }
+    optsEl.querySelectorAll('.stroop-swatch').forEach(function(b){
+      b.addEventListener('click', function(){
+        if(b.dataset.name === correctColor){ nextTrial(); }
+        else {
+          registerError();
+          wordEl.style.animation='shake .3s';
+          setTimeout(function(){wordEl.style.animation='';},300);
+        }
+      });
+    });
+    startTimer();
+    nextTrial();
+  }
+
+  /* ---------- Bonus Level: 情緒故事屋 (scenario) ---------- */
+  function buildScenario(){
+    $('lvInstr').textContent = '看看小故事，想想主角可能有什麼感受？沒有標準答案，選一個最接近的，看完會有小提醒。';
+    var scenarios = [
+      {text:'小明很認真練習，比賽卻沒有得名。', opts:['失望','難過','生氣','不甘心'],
+        discuss:'努力之後沒有得到想要的結果，會有很多種感受同時出現，這些感受都是正常的。'},
+      {text:'下課鐘響了，同學都出去玩，只有小華一個人留在教室。', opts:['孤單','難過','自在','無聊'],
+        discuss:'一個人不一定都是不好的感受，重要的是問問自己：現在比較需要陪伴，還是比較需要安靜？'},
+      {text:'小美準備要上台報告，手心一直冒汗。', opts:['緊張','害怕','興奮','期待'],
+        discuss:'上台前身體會有一些反應，像是心跳變快、手心冒汗，這是身體在提醒我們「這件事對我很重要」。'},
+      {text:'弟弟不小心把小傑最喜歡的畫弄破了。', opts:['生氣','難過','委屈','失望'],
+        discuss:'東西壞掉、心血被破壞時，會有很強烈的感受，先深呼吸，再想想接下來可以怎麼說。'},
+      {text:'小安終於學會騎腳踏車，忍不住笑了出來。', opts:['開心','驕傲','放鬆','興奮'],
+        discuss:'完成一件努力很久的事情，常常會同時出現好幾種正向的感受喔！'}
+    ];
+    var idx=0;
+    $('lvBody').innerHTML = '<div id="scenarioBody"></div><div style="text-align:center;margin-top:14px;"><button class="btn btn-primary" id="scenarioNextBtn" style="display:none;">下一則 →</button></div>';
+    var body = $('scenarioBody');
+    function render(){
+      var sc = scenarios[idx];
+      body.innerHTML =
+        '<div class="scenario-card"><p>'+sc.text+'</p>' +
+        '<div class="scenario-opts">'+sc.opts.map(function(o){return '<span class="scenario-opt">'+o+'</span>';}).join('')+'</div>' +
+        '<div class="scenario-discuss" id="scenarioDiscuss" style="display:none;">💬 '+sc.discuss+'</div></div>';
+      $('scenarioNextBtn').style.display='none';
+      body.querySelectorAll('.scenario-opt').forEach(function(o){
+        o.addEventListener('click', function(){
+          if(body.querySelector('.scenario-opt.picked')) return;
+          o.classList.add('picked');
+          document.getElementById('scenarioDiscuss').style.display='block';
+          $('scenarioNextBtn').style.display='inline-block';
+        });
+      });
+    }
+    $('scenarioNextBtn').onclick = function(){
+      idx++;
+      if(idx>=scenarios.length){ finishLevel('scenario'); return; }
+      render();
+    };
+    render();
+    startTimer();
+  }
+
+  /* ---------- Summary ---------- */
+  function renderSummary(){
+    var tbody = document.querySelector('#summaryTable tbody');
+    tbody.innerHTML = '';
+    STATIONS.forEach(function(st){
+      var r = state.results[st.id];
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td>'+st.icon+' '+st.name+'</td><td>'+(r?r.time:'—')+'</td><td>'+(r?r.errors:'—')+'</td><td>'+(state.badges[st.id]?('✅ '+st.badge):'—')+'</td>';
+      tbody.appendChild(tr);
+    });
+  }
+  $('toBreathBtn').addEventListener('click', function(){ showScreen('screen-breath'); runBreathing(); });
+
+  /* ---------- Breathing ---------- */
+  function runBreathing(){
+    var count = 1, phaseIn = true;
+    var circle = $('breathCircle');
+    $('restartBtn').style.display = 'none';
+    function step(){
+      if(count > 3){
+        circle.textContent = '完成 🌿';
+        $('breathCount').textContent = '做得很好！';
+        $('restartBtn').style.display = 'inline-block';
+        todayData().breath = true; saveProfile();
+        return;
+      }
+      if(phaseIn){
+        circle.classList.add('in'); circle.textContent = '吸氣…';
+        $('breathCount').textContent = '第 '+count+' / 3 次';
+      } else {
+        circle.classList.remove('in'); circle.textContent = '吐氣…';
+      }
+      phaseIn = !phaseIn;
+      if(!phaseIn){ setTimeout(step, 4000); }
+      else { count++; setTimeout(step, 4000); }
+    }
+    step();
+  }
+  $('restartBtn').addEventListener('click', function(){
+    renderHub(); showScreen('screen-hub');
+  });
+
+  /* Restore the player's local choices and open the adventure hub. */
+  document.querySelectorAll('#screen-size .size-btn').forEach(function(b){b.classList.toggle('active',parseInt(b.dataset.size,10)===state.size);});
+  renderHub();
+
+})();
+</script>
+</body>
+</html>

@@ -39,6 +39,7 @@
     --c7: #b7a2c9; --c7-soft: #f1eaf6; --c7-deep: #5c4475;
     --c8: #efc18c; --c8-soft: #fbefe4; --c8-deep: #865a28;
     --c9: #d3948f; --c9-soft: #faeae8; --c9-deep: #7a3a35;
+    --c10: #7c8fe0; --c10-soft: #eef0fc; --c10-deep: #3d4d99;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -247,283 +248,93 @@
   }
   .btn:hover { transform: translateY(-2px); box-shadow: 0 14px 26px rgba(66,45,28,.11); }
 
-  /* ===== ABSTRACT SPECTRUM FLOWER TREE ===== */
-  .tree-stage-wrap {
+  /* ===== EXTENSIBLE RESOURCE PATH ===== */
+  .path-stage-wrap {
     width: 100%;
-    overflow: visible;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    padding: 40px 4px 22px;
   }
-  .tree-stage {
+  .path-stage {
     position: relative;
-    width: min(660px, 100%);
-    aspect-ratio: 820 / 690;
-    min-height: 540px;
-    margin-inline: auto;
-  }
-  .tree-aura {
-    position: absolute;
-    inset: 7% 2% 2%;
-    border-radius: 52% 48% 48% 52% / 44% 44% 56% 56%;
-    background:
-      radial-gradient(circle at 50% 44%, rgba(255,251,230,.74), transparent 21%),
-      radial-gradient(circle at 28% 25%, rgba(157,191,136,.18), transparent 23%),
-      radial-gradient(circle at 76% 28%, rgba(147,190,208,.17), transparent 24%),
-      radial-gradient(circle at 78% 74%, rgba(199,172,216,.16), transparent 24%),
-      radial-gradient(circle at 22% 75%, rgba(229,183,125,.16), transparent 22%);
-    filter: blur(.2px);
-  }
-  .tree-aura::before,
-  .tree-aura::after {
-    content: '';
-    position: absolute;
-    border-radius: 50%;
-    pointer-events: none;
-  }
-  .tree-aura::before {
-    inset: 10% 5% 16%;
-    border: 1px dashed rgba(87,105,89,.16);
-    transform: rotate(-4deg);
-  }
-  .tree-aura::after {
-    left: 5%; right: 3%; bottom: -6%; height: 20%;
-    background: linear-gradient(180deg, rgba(111,159,112,.10), rgba(91,140,128,.16));
-    filter: blur(14px);
-  }
-  .branches {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    overflow: visible;
-  }
-  .branch-main {
-    fill: none;
-    stroke: url(#branchGold);
-    stroke-width: 10;
-    stroke-linecap: round;
-    opacity: .86;
-    filter: drop-shadow(0 10px 14px rgba(97,77,43,.13));
-  }
-  .branch-line {
-    fill: none;
-    stroke: url(#branchGreen);
-    stroke-width: 4.8;
-    stroke-linecap: round;
-    opacity: .78;
-  }
-  .branch-light {
-    fill: none;
-    stroke: rgba(255,255,245,.86);
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    opacity: .86;
-  }
-  .branch-dot { fill: rgba(218,178,94,.86); }
-  .leaf { fill: rgba(122,151,116,.44); stroke: rgba(255,255,255,.55); stroke-width: 1; }
-  .leaf.gold { fill: rgba(222,184,98,.36); }
-  .leaf.blue { fill: rgba(129,174,190,.34); }
-  .leaf.purple { fill: rgba(169,143,195,.31); }
-
-  .tree-core {
-    position: absolute;
-    left: 50%;
-    top: 51%;
-    translate: -50% -50%;
-    width: clamp(114px, 16.5vw, 158px);
-    aspect-ratio: 1;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    text-align: center;
-    z-index: 6;
-    color: var(--deep);
-    background:
-      radial-gradient(circle at 35% 28%, #fffdf4, #f8f1dc 54%, #eef4e7 100%);
-    border: 10px solid rgba(255,255,255,.82);
-    box-shadow:
-      0 0 0 2px rgba(208,174,95,.46),
-      0 20px 44px rgba(65,81,59,.16),
-      inset 0 0 26px rgba(111,159,112,.12);
-  }
-  .tree-core::before {
-    content: '';
-    position: absolute;
-    inset: -19px;
-    border-radius: 50%;
-    border: 1px solid rgba(111,159,112,.28);
-  }
-  .tree-core::after {
-    content: '❦';
-    position: absolute;
-    bottom: 24px;
-    left: 50%;
-    translate: -50% 0;
-    color: var(--gold);
-    font-size: 1.2rem;
-  }
-  .core-kicker { font-size: clamp(1.85rem, 3.4vw, 3.06rem); line-height: .92; font-family: 'Noto Serif TC', serif; font-weight: 700; letter-spacing: .05em; }
-  .core-title { display:block; margin-top: 8px; font-family: 'Noto Serif TC', serif; font-size: clamp(.81rem, 1.3vw, 1.17rem); font-weight: 700; letter-spacing: .04em; }
-
-  .flower-node {
-    --node-bg: var(--c1-soft);
-    --node-main: var(--c1);
-    --node-ink: var(--c1-deep);
-    position: absolute;
-    z-index: 8;
-    width: clamp(118px, 15.5vw, 159px);
-    min-height: clamp(90px, 11.5vw, 114px);
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 16px 14px 15px;
-    text-align: center;
-    color: var(--node-ink);
-    background:
-      radial-gradient(circle at 28% 18%, rgba(255,255,255,.74), transparent 32%),
-      linear-gradient(145deg, rgba(255,255,255,.36), rgba(255,255,255,.02)),
-      var(--node-bg);
-    border: 1px solid rgba(255,255,255,.74);
-    box-shadow:
-      0 0 0 2px rgba(255,255,255,.42),
-      0 12px 32px rgba(66,45,28,.13),
-      inset 0 0 18px rgba(255,255,255,.48);
-    outline: 1px solid rgba(153,125,74,.16);
-    transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
-    cursor: pointer;
-    isolation: isolate;
+    gap: clamp(18px, 3vw, 34px);
+    width: max-content;
+    min-width: 100%;
+    padding: 0 clamp(16px, 4vw, 40px);
   }
-  .flower-node::before {
-    content: '';
-    position: absolute;
-    inset: 7px;
-    border-radius: inherit;
-    border: 1px solid rgba(255,255,255,.66);
-    z-index: -1;
-  }
-  .flower-node::after {
-    content: '';
-    position: absolute;
-    width: 12px; height: 12px;
-    border-radius: 50%;
-    background: radial-gradient(circle, #fff 0 25%, rgba(255,232,168,.95) 26% 58%, transparent 60%);
-    box-shadow: 0 0 18px rgba(245,207,124,.9);
-    right: 18px;
-    top: 18px;
-  }
-  .flower-node:hover,
-  .flower-node:focus-visible {
-    transform: translateY(-6px) scale(1.018) rotate(var(--rot, 0deg));
-    box-shadow:
-      0 0 0 2px rgba(255,255,255,.55),
-      0 22px 44px rgba(66,45,28,.18),
-      0 0 36px rgba(157,191,136,.46);
-    box-shadow:
-      0 0 0 2px rgba(255,255,255,.55),
-      0 22px 44px rgba(66,45,28,.18),
-      0 0 36px color-mix(in srgb, var(--node-main), transparent 54%);
-    filter: saturate(1.05) brightness(1.02);
-  }
-  .node-inner { position: relative; z-index: 1; }
-  .node-icon {
-    width: 25px;
-    height: 25px;
-    margin: 0 auto 6px;
-    display: grid;
-    place-items: center;
-    border-radius: 50%;
-    color: var(--node-ink);
-    opacity: .88;
-  }
-  .node-icon svg { width: 25px; height: 25px; stroke: currentColor; stroke-width: 1.75; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-  .node-title {
-    display: block;
-    font-family: 'Noto Serif TC', serif;
-    font-size: clamp(.72rem, 1vw, .87rem);
-    line-height: 1.42;
-    font-weight: 700;
-    letter-spacing: .02em;
-  }
-  .node-sub {
-    display: block;
-    margin-top: 2px;
-    font-size: clamp(.63rem, .85vw, .72rem);
-    line-height: 1.45;
-    font-weight: 500;
-    color: var(--node-ink);
-    color: color-mix(in srgb, var(--node-ink), #2d261f 14%);
-  }
-
-  .leaf-shape { border-radius: 72% 28% 68% 32% / 56% 42% 58% 44%; }
-  .leaf-shape.alt { border-radius: 32% 68% 34% 66% / 44% 58% 42% 56%; }
-  .leaf-shape.round { border-radius: 54% 46% 50% 50% / 52% 48% 54% 46%; }
-
-  /* 八個資源節點以同心圓方式平均圍繞 SEL 五大核心能力 */
-  .node-1 { --node-bg: linear-gradient(145deg, #f1f7e8, #dceccf); --node-main: var(--c1); --node-ink: var(--c1-deep); left: 50%; top: 3%; translate: -50% 0; --rot: 0deg; }
-  .node-2 { --node-bg: linear-gradient(145deg, #eaf8f6, #cfe9e7); --node-main: var(--c2); --node-ink: var(--c2-deep); left: 75%; top: 14%; translate: -50% 0; --rot: 5deg; transform: rotate(5deg); }
-  .node-3 { --node-bg: linear-gradient(145deg, #e6f4fa, #c8e5ee); --node-main: var(--c3); --node-ink: var(--c3-deep); left: 87%; top: 39%; translate: -50% 0; --rot: -4deg; transform: rotate(-4deg); }
-  .node-4 { --node-bg: linear-gradient(145deg, #f3ebf8, #dcc8ea); --node-main: var(--c4); --node-ink: var(--c4-deep); left: 75%; top: 64%; translate: -50% 0; --rot: 4deg; transform: rotate(4deg); }
-  .node-5 { --node-bg: linear-gradient(145deg, #fbf0e5, #f3cfaa); --node-main: var(--c5); --node-ink: var(--c5-deep); left: 50%; top: 76%; translate: -50% 0; --rot: 0deg; }
-  .node-6 { --node-bg: linear-gradient(145deg, #fbf5dc, #ead58e); --node-main: var(--c6); --node-ink: var(--c6-deep); left: 25%; top: 64%; translate: -50% 0; --rot: -4deg; transform: rotate(-4deg); }
-  .node-7 { --node-bg: linear-gradient(145deg, #f3ecf8, #d9c6e7); --node-main: var(--c7); --node-ink: var(--c7-deep); left: 13%; top: 39%; translate: -50% 0; --rot: 4deg; transform: rotate(4deg); }
-  .node-8 { --node-bg: linear-gradient(145deg, #fff1df, #f2c995); --node-main: var(--c8); --node-ink: var(--c8-deep); left: 25%; top: 14%; translate: -50% 0; --rot: -5deg; transform: rotate(-5deg); }
-
-  .sparkle {
-    position: absolute;
-    z-index: 4;
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: #fff8d5;
-    box-shadow: 0 0 18px rgba(235,199,102,.8);
-    opacity: .75;
-    pointer-events: none;
-  }
-  .sparkle.s1 { left: 34%; top: 25%; }
-  .sparkle.s2 { left: 58%; top: 17%; width: 5px; height: 5px; }
-  .sparkle.s3 { left: 76%; top: 48%; }
-  .sparkle.s4 { left: 24%; top: 48%; width: 5px; height: 5px; }
-  .sparkle.s5 { left: 50%; top: 83%; width: 6px; height: 6px; }
-
-  .garden-base {
-    position: absolute;
-    left: 2%; right: 2%; bottom: -1%;
-    height: 16%;
-    z-index: 2;
-    pointer-events: none;
-    background:
-      radial-gradient(ellipse at 20% 100%, rgba(99,143,116,.22), transparent 62%),
-      radial-gradient(ellipse at 80% 100%, rgba(142,184,185,.23), transparent 62%),
-      linear-gradient(180deg, transparent, rgba(109,144,107,.17));
-    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
-  }
-  .garden-base::before,
-  .garden-base::after {
-    content:'';
-    position:absolute;
-    inset: auto 0 0;
-    height: 70%;
-    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
-    border-top: 1px solid rgba(213,171,85,.35);
-  }
-  .garden-base::after { transform: translateY(16px) scaleX(1.08); opacity: .7; }
-
-  .tree-note {
+  .path-track {
     position: absolute;
     left: 0;
-    bottom: 5%;
-    max-width: 160px;
-    color: var(--deep);
-    font-family: 'Noto Serif TC', serif;
-    font-size: .88rem;
-    line-height: 2;
-    letter-spacing: .08em;
-    opacity: .78;
+    right: 0;
+    top: 50%;
+    height: 0;
+    border-top: 3px dashed rgba(213,171,85,.5);
+    z-index: 0;
   }
-  .tree-note::before {
-    content: '⌁';
+  .path-stop {
+    position: relative;
+    z-index: 1;
+    scroll-snap-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: clamp(96px, 11vw, 124px);
+    flex: 0 0 auto;
+    text-decoration: none;
+    color: var(--ink);
+    transition: transform .2s ease;
+  }
+  .path-stop:nth-child(even) { transform: translateY(-30px); }
+  .path-stop:nth-child(3n) { transform: translateY(20px); }
+  .path-stop:hover, .path-stop:focus-visible { transform: translateY(-8px); }
+  .path-stop:nth-child(even):hover, .path-stop:nth-child(even):focus-visible { transform: translateY(-38px); }
+  .path-stop:nth-child(3n):hover, .path-stop:nth-child(3n):focus-visible { transform: translateY(12px); }
+  .stop-marker {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(circle at 30% 22%, rgba(255,255,255,.85), transparent 45%),
+      var(--stop-accent);
+    border: 3px solid var(--paper);
+    box-shadow: 0 0 0 1px rgba(153,125,74,.18), 0 10px 20px rgba(66,45,28,.16);
+    color: var(--stop-deep);
+    transition: box-shadow .2s ease;
+  }
+  .path-stop:hover .stop-marker, .path-stop:focus-visible .stop-marker {
+    box-shadow: 0 0 0 1px rgba(153,125,74,.24), 0 14px 26px rgba(66,45,28,.22), 0 0 0 6px color-mix(in srgb, var(--stop-accent), transparent 68%);
+  }
+  .stop-marker svg { width: 26px; height: 26px; stroke: currentColor; stroke-width: 1.75; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .stop-label { text-align: center; }
+  .stop-title {
     display: block;
-    color: var(--gold);
-    font-size: 1.1rem;
-    margin-bottom: 4px;
+    font-family: 'Noto Serif TC', serif;
+    font-size: .78rem;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+  .stop-sub {
+    display: block;
+    margin-top: 1px;
+    font-size: .66rem;
+    line-height: 1.4;
+    color: var(--muted);
+  }
+  .path-note {
+    text-align: center;
+    margin-top: 4px;
+    font-family: 'Noto Serif TC', serif;
+    font-size: .82rem;
+    letter-spacing: .06em;
+    color: var(--deep);
+    opacity: .78;
   }
 
   .journey-strip {
@@ -573,6 +384,32 @@
   }
   .section-desc { color: var(--muted); font-size: .92rem; line-height: 1.8; max-width: 430px; }
 
+  .filter-tabs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 22px 0 6px;
+  }
+  .filter-tab {
+    font-family: inherit;
+    font-size: .82rem;
+    color: var(--muted);
+    background: rgba(255,255,255,.55);
+    border: 1px solid rgba(153,125,74,.18);
+    padding: 8px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease, border-color .2s ease, transform .2s ease;
+  }
+  .filter-tab:hover { transform: translateY(-1px); border-color: rgba(153,125,74,.32); }
+  .filter-tab.active {
+    background: var(--deep);
+    color: #fff;
+    border-color: var(--deep);
+  }
+  .resource-card.is-hidden { display: none; }
+
   .cards-wrap {
     padding: 38px 0 76px;
     display: grid;
@@ -621,6 +458,7 @@
   .card-7 { --accent: var(--c7); --accent-soft: var(--c7-soft); --accent-deep: var(--c7-deep); }
   .card-8 { --accent: var(--c8); --accent-soft: var(--c8-soft); --accent-deep: var(--c8-deep); }
   .card-9 { --accent: var(--c9); --accent-soft: var(--c9-soft); --accent-deep: var(--c9-deep); }
+  .card-10 { --accent: var(--c10); --accent-soft: var(--c10-soft); --accent-deep: var(--c10-deep); }
   .card-body {
     position: relative;
     z-index: 1;
@@ -732,8 +570,6 @@
   @media (max-width: 1120px) {
     .hero-grid { grid-template-columns: 1fr; }
     .hero-copy { max-width: 680px; }
-    .tree-stage-wrap { overflow-x: auto; padding: 12px 0 4px; -webkit-overflow-scrolling: touch; }
-    .tree-stage { width: 660px; max-width: none; }
     .cards-wrap { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @media (max-width: 720px) {
@@ -742,7 +578,6 @@
     .hero { padding-top: 44px; }
     .hero-panel { border-radius: 34px; padding: 26px 18px 24px; }
     .hero-panel::before { inset: 10px; border-radius: 26px; }
-    .tree-stage { transform-origin: top left; }
     .section-head { display: block; }
     .section-desc { margin-top: 10px; }
     .cards-wrap { grid-template-columns: 1fr; padding-top: 26px; }
@@ -752,7 +587,7 @@
     .brand-text { font-size: .76rem; }
     .nav-pills a { padding: 6px 9px; font-size: .74rem; }
     .hero h1 { font-size: 2.35rem; }
-    .tree-note { display: none; }
+    .path-note { display: none; }
   }
 </style>
 </head>
@@ -777,7 +612,7 @@
           <div class="hero-copy-col">
             <div class="eyebrow">SEL RESOURCE CENTER</div>
             <h1>SEL 資源中心</h1>
-            <p class="hero-subtitle">把孩子的情緒能力，慢慢長成一棵樹</p>
+            <p class="hero-subtitle">把孩子的情緒能力，一步步鋪成一條路</p>
             <p class="hero-copy">從情緒認識、正念練習、親子對話到課程活動地圖，每一份資源都能直接帶進課輔班、家庭與社區，讓孩子在被理解的環境裡練習覺察、調節與連結。</p>
             <div class="hero-actions">
               <a class="btn btn-primary" href="#resources">瀏覽工具包 →</a>
@@ -791,126 +626,61 @@
             </div>
           </div>
 
-          <div class="tree-stage-wrap" aria-label="可左右滑動查看完整 SEL 資源中心花樹">
-            <div class="tree-stage">
-              <div class="tree-aura"></div>
-              <div class="garden-base"></div>
-              <div class="tree-note">把孩子的情緒能力，慢慢長成一棵樹。</div>
-              <span class="sparkle s1"></span><span class="sparkle s2"></span><span class="sparkle s3"></span><span class="sparkle s4"></span><span class="sparkle s5"></span>
+          <div class="path-stage-wrap" aria-label="可左右滑動查看 SEL 資源中心小徑">
+            <div class="path-stage">
+              <div class="path-track"></div>
 
-              <svg class="branches" viewBox="0 0 820 690" aria-hidden="true">
-                <defs>
-                  <linearGradient id="branchGold" x1="0" y1="640" x2="820" y2="0" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stop-color="#7e8c66" stop-opacity=".86" />
-                    <stop offset=".42" stop-color="#d1aa62" stop-opacity=".78" />
-                    <stop offset="1" stop-color="#7aa69a" stop-opacity=".72" />
-                  </linearGradient>
-                  <linearGradient id="branchGreen" x1="0" y1="640" x2="820" y2="0" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stop-color="#6d8d68" stop-opacity=".72" />
-                    <stop offset=".55" stop-color="#c9a85b" stop-opacity=".58" />
-                    <stop offset="1" stop-color="#5c9086" stop-opacity=".72" />
-                  </linearGradient>
-                </defs>
-                <path class="branch-main" d="M410 660 C404 560 400 455 410 350" />
-                <path class="branch-main" d="M410 660 C462 548 478 455 410 350" opacity=".46" />
-                <path class="branch-main" d="M410 660 C358 548 342 455 410 350" opacity=".44" />
-
-                <path class="branch-line" d="M410 350 C408 250 408 165 410 92" />
-                <path class="branch-line" d="M426 360 C496 288 562 190 615 150" />
-                <path class="branch-line" d="M445 385 C565 350 645 310 715 300" />
-                <path class="branch-line" d="M448 420 C565 456 626 502 612 544" />
-                <path class="branch-line" d="M420 454 C468 542 444 582 410 598" />
-                <path class="branch-line" d="M400 454 C352 542 376 582 410 598" />
-                <path class="branch-line" d="M372 420 C255 456 194 502 208 544" />
-                <path class="branch-line" d="M375 385 C255 350 175 310 105 300" />
-                <path class="branch-line" d="M394 360 C324 288 258 190 205 150" />
-
-                <path class="branch-light" d="M410 646 C419 548 420 452 410 350" />
-                <path class="branch-light" d="M410 362 C496 308 555 203 615 151" />
-                <path class="branch-light" d="M410 362 C324 308 265 203 205 151" />
-                <path class="branch-light" d="M420 420 C530 443 620 505 612 544" />
-                <path class="branch-light" d="M400 420 C290 443 200 505 208 544" />
-
-                <ellipse class="leaf" cx="368" cy="306" rx="10" ry="25" transform="rotate(-38 368 306)" />
-                <ellipse class="leaf gold" cx="462" cy="286" rx="9" ry="23" transform="rotate(35 462 286)" />
-                <ellipse class="leaf blue" cx="548" cy="338" rx="10" ry="28" transform="rotate(72 548 338)" />
-                <ellipse class="leaf purple" cx="278" cy="416" rx="9" ry="25" transform="rotate(70 278 416)" />
-                <ellipse class="leaf" cx="510" cy="495" rx="10" ry="25" transform="rotate(-35 510 495)" />
-                <ellipse class="leaf gold" cx="310" cy="495" rx="9" ry="23" transform="rotate(35 310 495)" />
-                <ellipse class="leaf blue" cx="620" cy="258" rx="9" ry="25" transform="rotate(-35 620 258)" />
-                <ellipse class="leaf" cx="200" cy="258" rx="9" ry="25" transform="rotate(35 200 258)" />
-
-                <circle class="branch-dot" cx="410" cy="334" r="4" />
-                <circle class="branch-dot" cx="526" cy="220" r="3" />
-                <circle class="branch-dot" cx="294" cy="340" r="3" />
-                <circle class="branch-dot" cx="642" cy="422" r="3" />
-                <circle class="branch-dot" cx="290" cy="534" r="3" />
-                <circle class="branch-dot" cx="410" cy="596" r="3" />
-              </svg>
-
-              <div class="tree-core" aria-label="SEL 五大核心能力">
-                <div>
-                  <span class="core-kicker">SEL</span>
-                  <span class="core-title">五大核心能力</span>
-                </div>
-              </div>
-
-              <a class="flower-node node-1 leaf-shape" href="#card-1" onclick="jumpToCard(event,'card-1')" aria-label="前往 HOPE 情緒六大家族牌卡">
-                <span class="node-inner">
-                  <span class="node-icon"><svg viewBox="0 0 32 32"><path d="M16 8.5c1.5-3.1 6.1-2.6 6.1 1.1 0 3.8-6.1 7-6.1 7s-6.1-3.2-6.1-7c0-3.7 4.6-4.2 6.1-1.1Z"/><path d="M7 26c1.2-3 4.2-5 7.5-5h3c3.3 0 6.3 2 7.5 5"/><circle cx="10" cy="14" r="3"/><circle cx="22" cy="14" r="3"/></svg></span>
-                  <span class="node-title">HOPE</span><span class="node-sub">情緒六大家族牌卡</span>
-                </span>
+              <a class="path-stop" href="#card-1" onclick="jumpToCard(event,'card-1')" style="--stop-accent:var(--c1);--stop-deep:var(--c1-deep)" aria-label="前往 HOPE 情緒六大家族牌卡">
+                <span class="stop-marker"><svg viewBox="0 0 32 32"><path d="M16 8.5c1.5-3.1 6.1-2.6 6.1 1.1 0 3.8-6.1 7-6.1 7s-6.1-3.2-6.1-7c0-3.7 4.6-4.2 6.1-1.1Z"/><path d="M7 26c1.2-3 4.2-5 7.5-5h3c3.3 0 6.3 2 7.5 5"/><circle cx="10" cy="14" r="3"/><circle cx="22" cy="14" r="3"/></svg></span>
+                <span class="stop-label"><span class="stop-title">HOPE</span><span class="stop-sub">情緒六大家族牌卡</span></span>
               </a>
 
-              <a class="flower-node node-2 leaf-shape alt" href="#card-2" onclick="jumpToCard(event,'card-2')" aria-label="前往正念隨身行家長版">
-                <span class="node-inner">
-                  <span class="node-icon"><svg viewBox="0 0 32 32"><circle cx="16" cy="8" r="3"/><path d="M16 12v8"/><path d="M8 26c2.2-3.6 5-5.4 8-5.4S21.8 22.4 24 26"/><path d="M9 17c3 1.7 5.3 2.6 7 2.6s4-.9 7-2.6"/><path d="M11 13c1.8 1.2 3.5 1.8 5 1.8s3.2-.6 5-1.8"/></svg></span>
-                  <span class="node-title">正念隨身行</span><span class="node-sub">家長版</span>
-                </span>
+              <a class="path-stop" href="#card-2" onclick="jumpToCard(event,'card-2')" style="--stop-accent:var(--c2);--stop-deep:var(--c2-deep)" aria-label="前往正念隨身行家長版">
+                <span class="stop-marker"><svg viewBox="0 0 32 32"><circle cx="16" cy="8" r="3"/><path d="M16 12v8"/><path d="M8 26c2.2-3.6 5-5.4 8-5.4S21.8 22.4 24 26"/><path d="M9 17c3 1.7 5.3 2.6 7 2.6s4-.9 7-2.6"/><path d="M11 13c1.8 1.2 3.5 1.8 5 1.8s3.2-.6 5-1.8"/></svg></span>
+                <span class="stop-label"><span class="stop-title">正念隨身行</span><span class="stop-sub">家長版</span></span>
               </a>
 
-              <a class="flower-node node-3 leaf-shape" href="#card-3" onclick="jumpToCard(event,'card-3')" aria-label="前往正念隨身行教師版">
-                <span class="node-inner">
-                  <span class="node-icon"><svg viewBox="0 0 32 32"><path d="M5 8.5c4.5-1.9 7.8-.9 11 1.4 3.2-2.3 6.5-3.3 11-1.4v16.2c-4.4-1.9-7.8-.8-11 1.4-3.2-2.2-6.6-3.3-11-1.4Z"/><path d="M16 9.9v16.2"/><path d="M9 13h4M19 13h4M9 17h4M19 17h4"/></svg></span>
-                  <span class="node-title">正念隨身行</span><span class="node-sub">教師版</span>
-                </span>
+              <a class="path-stop" href="#card-3" onclick="jumpToCard(event,'card-3')" style="--stop-accent:var(--c3);--stop-deep:var(--c3-deep)" aria-label="前往正念隨身行教師版">
+                <span class="stop-marker"><svg viewBox="0 0 32 32"><path d="M5 8.5c4.5-1.9 7.8-.9 11 1.4 3.2-2.3 6.5-3.3 11-1.4v16.2c-4.4-1.9-7.8-.8-11 1.4-3.2-2.2-6.6-3.3-11-1.4Z"/><path d="M16 9.9v16.2"/><path d="M9 13h4M19 13h4M9 17h4M19 17h4"/></svg></span>
+                <span class="stop-label"><span class="stop-title">正念隨身行</span><span class="stop-sub">教師版</span></span>
               </a>
 
-              <a class="flower-node node-4 leaf-shape alt" href="#card-4" onclick="jumpToCard(event,'card-4')" aria-label="前往親子覺察對話手冊">
-                <span class="node-inner">
-                  <span class="node-icon"><svg viewBox="0 0 32 32"><path d="M7 9.5h12a4 4 0 0 1 4 4v1.8a4 4 0 0 1-4 4h-5.7L8 23v-3.7H7a4 4 0 0 1-4-4v-1.8a4 4 0 0 1 4-4Z"/><path d="M18 20.5h3.4l4.6 3.2v-3.2h.2a3.8 3.8 0 0 0 3.8-3.8v-1.4a3.8 3.8 0 0 0-3.8-3.8H25"/><path d="M9 14.5h.1M13 14.5h.1M17 14.5h.1"/></svg></span>
-                  <span class="node-title">親子覺察</span><span class="node-sub">對話手冊</span>
-                </span>
+              <a class="path-stop" href="#card-4" onclick="jumpToCard(event,'card-4')" style="--stop-accent:var(--c4);--stop-deep:var(--c4-deep)" aria-label="前往親子覺察對話手冊">
+                <span class="stop-marker"><svg viewBox="0 0 32 32"><path d="M7 9.5h12a4 4 0 0 1 4 4v1.8a4 4 0 0 1-4 4h-5.7L8 23v-3.7H7a4 4 0 0 1-4-4v-1.8a4 4 0 0 1 4-4Z"/><path d="M18 20.5h3.4l4.6 3.2v-3.2h.2a3.8 3.8 0 0 0 3.8-3.8v-1.4a3.8 3.8 0 0 0-3.8-3.8H25"/><path d="M9 14.5h.1M13 14.5h.1M17 14.5h.1"/></svg></span>
+                <span class="stop-label"><span class="stop-title">親子覺察</span><span class="stop-sub">對話手冊</span></span>
               </a>
 
-              <a class="flower-node node-5 leaf-shape" href="#card-5" onclick="jumpToCard(event,'card-5')" aria-label="前往 HOPE SEL 課程活動地圖">
-                <span class="node-inner">
-                  <span class="node-icon"><svg viewBox="0 0 32 32"><path d="M6 9l7-3 6 3 7-3v17l-7 3-6-3-7 3Z"/><path d="M13 6v17M19 9v17"/><path d="M16 10.5c2.1 0 3.8 1.6 3.8 3.7 0 3.1-3.8 6.2-3.8 6.2s-3.8-3.1-3.8-6.2c0-2.1 1.7-3.7 3.8-3.7Z"/><circle cx="16" cy="14.3" r="1.2"/></svg></span>
-                  <span class="node-title">HOPE SEL</span><span class="node-sub">課程活動地圖</span>
-                </span>
+              <a class="path-stop" href="#card-5" onclick="jumpToCard(event,'card-5')" style="--stop-accent:var(--c5);--stop-deep:var(--c5-deep)" aria-label="前往 HOPE SEL 課程活動地圖">
+                <span class="stop-marker"><svg viewBox="0 0 32 32"><path d="M6 9l7-3 6 3 7-3v17l-7 3-6-3-7 3Z"/><path d="M13 6v17M19 9v17"/><path d="M16 10.5c2.1 0 3.8 1.6 3.8 3.7 0 3.1-3.8 6.2-3.8 6.2s-3.8-3.1-3.8-6.2c0-2.1 1.7-3.7 3.8-3.7Z"/><circle cx="16" cy="14.3" r="1.2"/></svg></span>
+                <span class="stop-label"><span class="stop-title">HOPE SEL</span><span class="stop-sub">課程活動地圖</span></span>
               </a>
 
-              <a class="flower-node node-6 leaf-shape alt" href="#card-6" onclick="jumpToCard(event,'card-6')" aria-label="前往 SEL 外展服務合作邀約">
-                <span class="node-inner">
-                  <span class="node-icon"><svg viewBox="0 0 32 32"><path d="M12.5 18.5l3 3a3 3 0 0 0 4.2 0l5.3-5.3a3.2 3.2 0 0 0 0-4.5l-1-1a3.1 3.1 0 0 0-4.4 0l-.9.9"/><path d="M19.5 13.5l-3-3a3 3 0 0 0-4.2 0L7 15.8a3.2 3.2 0 0 0 0 4.5l1 1a3.1 3.1 0 0 0 4.4 0l.9-.9"/><path d="M13 19l6-6"/></svg></span>
-                  <span class="node-title">SEL 外展服務</span><span class="node-sub">合作邀約</span>
-                </span>
+              <a class="path-stop" href="#card-6" onclick="jumpToCard(event,'card-6')" style="--stop-accent:var(--c6);--stop-deep:var(--c6-deep)" aria-label="前往 SEL 外展服務合作邀約">
+                <span class="stop-marker"><svg viewBox="0 0 32 32"><path d="M12.5 18.5l3 3a3 3 0 0 0 4.2 0l5.3-5.3a3.2 3.2 0 0 0 0-4.5l-1-1a3.1 3.1 0 0 0-4.4 0l-.9.9"/><path d="M19.5 13.5l-3-3a3 3 0 0 0-4.2 0L7 15.8a3.2 3.2 0 0 0 0 4.5l1 1a3.1 3.1 0 0 0 4.4 0l.9-.9"/><path d="M13 19l6-6"/></svg></span>
+                <span class="stop-label"><span class="stop-title">SEL 外展服務</span><span class="stop-sub">合作邀約</span></span>
               </a>
 
-              <a class="flower-node node-7 leaf-shape" href="#card-7" onclick="jumpToCard(event,'card-7')" aria-label="前往情緒家族牌卡 41 個陪伴練習">
-                <span class="node-inner">
-                  <span class="node-icon"><svg viewBox="0 0 32 32"><rect x="7" y="7" width="12" height="18" rx="2" transform="rotate(-8 13 16)"/><rect x="13" y="7" width="12" height="18" rx="2" transform="rotate(8 19 16)"/><path d="M16 14.5c.9-1.8 3.4-1.6 3.4.5 0 2-3.4 3.8-3.4 3.8S12.6 17 12.6 15c0-2.1 2.5-2.3 3.4-.5Z"/></svg></span>
-                  <span class="node-title">情緒家族牌卡</span><span class="node-sub">41 個陪伴練習</span>
-                </span>
+              <a class="path-stop" href="#card-7" onclick="jumpToCard(event,'card-7')" style="--stop-accent:var(--c7);--stop-deep:var(--c7-deep)" aria-label="前往情緒家族牌卡 41 個陪伴練習">
+                <span class="stop-marker"><svg viewBox="0 0 32 32"><rect x="7" y="7" width="12" height="18" rx="2" transform="rotate(-8 13 16)"/><rect x="13" y="7" width="12" height="18" rx="2" transform="rotate(8 19 16)"/><path d="M16 14.5c.9-1.8 3.4-1.6 3.4.5 0 2-3.4 3.8-3.4 3.8S12.6 17 12.6 15c0-2.1 2.5-2.3 3.4-.5Z"/></svg></span>
+                <span class="stop-label"><span class="stop-title">情緒家族牌卡</span><span class="stop-sub">41 個陪伴練習</span></span>
               </a>
 
-              <a class="flower-node node-8 leaf-shape alt" href="#card-8" onclick="jumpToCard(event,'card-8')" aria-label="前往暑假 26 天 SEL 課程規劃">
-                <span class="node-inner">
-                  <span class="node-icon"><svg viewBox="0 0 32 32"><rect x="6" y="8" width="20" height="18" rx="2"/><path d="M10 6v5M22 6v5M6 13h20"/><circle cx="16" cy="19" r="3.2"/><path d="M16 14.5v1.2M16 22.3v1.2M11.5 19h1.2M19.3 19h1.2"/></svg></span>
-                  <span class="node-title">暑假 26 天</span><span class="node-sub">SEL 課程規劃</span>
-                </span>
+              <a class="path-stop" href="#card-8" onclick="jumpToCard(event,'card-8')" style="--stop-accent:var(--c8);--stop-deep:var(--c8-deep)" aria-label="前往暑假 26 天 SEL 課程規劃">
+                <span class="stop-marker"><svg viewBox="0 0 32 32"><rect x="6" y="8" width="20" height="18" rx="2"/><path d="M10 6v5M22 6v5M6 13h20"/><circle cx="16" cy="19" r="3.2"/><path d="M16 14.5v1.2M16 22.3v1.2M11.5 19h1.2M19.3 19h1.2"/></svg></span>
+                <span class="stop-label"><span class="stop-title">暑假 26 天</span><span class="stop-sub">SEL 課程規劃</span></span>
+              </a>
+
+              <a class="path-stop" href="#card-9" onclick="jumpToCard(event,'card-9')" style="--stop-accent:var(--c9);--stop-deep:var(--c9-deep)" aria-label="前往 115學年第一學期 SEL 活動建議表">
+                <span class="stop-marker"><svg viewBox="0 0 32 32"><rect x="6" y="7" width="20" height="19" rx="2"/><path d="M6 13h20"/><path d="M11 5v5M21 5v5"/><path d="M10.5 18.5l2 2 4-4"/></svg></span>
+                <span class="stop-label"><span class="stop-title">學期活動</span><span class="stop-sub">建議表</span></span>
+              </a>
+
+              <a class="path-stop" href="#card-10" onclick="jumpToCard(event,'card-10')" style="--stop-accent:var(--c10);--stop-deep:var(--c10-deep)" aria-label="前往專注力探險隊互動關卡遊戲">
+                <span class="stop-marker"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="9"/><circle cx="16" cy="16" r="5"/><circle cx="16" cy="16" r="1.4" fill="currentColor" stroke="none"/></svg></span>
+                <span class="stop-label"><span class="stop-title">專注力探險隊</span><span class="stop-sub">互動關卡遊戲</span></span>
               </a>
             </div>
+            <p class="path-note">這條小徑會一直延伸——之後每加一份新資源，就在小徑上多鋪一顆石頭。</p>
           </div>
         </div>
 
@@ -933,8 +703,16 @@
         <p class="section-desc">每張卡片都是一個可以直接帶進課輔班、親子互動或教師培訓的入口，依需要選擇合適的情境工具。</p>
       </div>
 
+      <div class="filter-tabs" role="tablist" aria-label="依對象篩選資源">
+        <button class="filter-tab active" data-filter="all" type="button">全部</button>
+        <button class="filter-tab" data-filter="teacher" type="button">教師</button>
+        <button class="filter-tab" data-filter="parent" type="button">家長</button>
+        <button class="filter-tab" data-filter="student" type="button">學生</button>
+        <button class="filter-tab" data-filter="community" type="button">學校 · 社區</button>
+      </div>
+
       <div class="cards-wrap">
-        <a class="resource-card card-1 fade-in" href="hope-cards.html" id="card-1">
+        <a class="resource-card card-1 fade-in" href="hope-cards.html" id="card-1" data-tags="teacher,parent,student">
           <div class="card-body">
             <div class="card-top"><div class="card-icon-wrap">🃏</div><div><span class="card-tag">情緒教育</span><div class="card-title">HOPE 情緒六大家族牌卡</div></div></div>
             <p class="card-desc">84 張情緒牌卡，六大色系家族。把情緒說清楚，是一種能力——幫孩子建立情緒詞彙，從認識情緒開始。</p>
@@ -943,7 +721,7 @@
           </div>
         </a>
 
-        <a class="resource-card card-2 fade-in" href="mindfulness-parents.html" id="card-2">
+        <a class="resource-card card-2 fade-in" href="mindfulness-parents.html" id="card-2" data-tags="parent">
           <div class="card-body">
             <div class="card-top"><div class="card-icon-wrap">🏺</div><div><span class="card-tag">正念 · 家長版</span><div class="card-title">正念隨身行｜家長實踐指南</div></div></div>
             <p class="card-desc">16 種呼吸法、五感尋寶任務、日常正念儀式。依孩子當下的狀態，快速找到最適合的親子練習。</p>
@@ -952,7 +730,7 @@
           </div>
         </a>
 
-        <a class="resource-card card-3 fade-in" href="mindfulness-teacher.html" id="card-3">
+        <a class="resource-card card-3 fade-in" href="mindfulness-teacher.html" id="card-3" data-tags="teacher">
           <div class="card-body">
             <div class="card-top"><div class="card-icon-wrap">🍃</div><div><span class="card-tag">正念 · 教師版</span><div class="card-title">正念隨身行｜師生課堂實踐手冊</div></div></div>
             <p class="card-desc">雙節課教案、教室情境快查、教師引導語。從上課鐘響到大考前，讓正念成為班級日常的共同語言。</p>
@@ -961,7 +739,7 @@
           </div>
         </a>
 
-        <a class="resource-card card-4 fade-in" href="dialogue-handbook.html" id="card-4">
+        <a class="resource-card card-4 fade-in" href="dialogue-handbook.html" id="card-4" data-tags="parent">
           <div class="card-body">
             <div class="card-top"><div class="card-icon-wrap">💬</div><div><span class="card-tag">親子對話</span><div class="card-title">親子覺察對話手冊</div></div></div>
             <p class="card-desc">五個時間點 × 50 個問題 × 接話建議。讓日常聊天成為素養教育——幫孩子從忙碌的一天中，慢慢回到自己。</p>
@@ -970,7 +748,7 @@
           </div>
         </a>
 
-        <a class="resource-card card-5 fade-in" href="sel-activities.html" id="card-5">
+        <a class="resource-card card-5 fade-in" href="sel-activities.html" id="card-5" data-tags="teacher">
           <div class="card-body">
             <div class="card-top"><div class="card-icon-wrap">🗺️</div><div><span class="card-tag">SEL 活動</span><div class="card-title">HOPE SEL 課程活動地圖</div></div></div>
             <p class="card-desc">108 個 SEL 活動教案，八大課程系列，涵蓋五大核心能力。依家族、能力、系列篩選，點擊查看完整步驟與行動轉化建議。</p>
@@ -979,7 +757,7 @@
           </div>
         </a>
 
-        <a class="resource-card card-6 fade-in" href="outreach.html" id="card-6">
+        <a class="resource-card card-6 fade-in" href="outreach.html" id="card-6" data-tags="community">
           <div class="card-body">
             <div class="card-top"><div class="card-icon-wrap">🤝</div><div><span class="card-tag">外展服務</span><div class="card-title">SEL 外展服務合作邀約</div></div></div>
             <p class="card-desc">將 SEL 課程帶進社區——親職講座、情緒課程、積木體驗三大模組，免費扶助弱勢學童，歡迎學校與社區組織洽談合作。</p>
@@ -988,7 +766,7 @@
           </div>
         </a>
 
-        <a class="resource-card card-7 fade-in" href="emotion-cards.html" id="card-7">
+        <a class="resource-card card-7 fade-in" href="emotion-cards.html" id="card-7" data-tags="teacher,parent">
           <div class="card-body">
             <div class="card-top"><div class="card-icon-wrap">🎴</div><div><span class="card-tag">情緒牌卡 · 公開版</span><div class="card-title">情緒家族牌卡 × 41 個陪伴練習</div></div></div>
             <p class="card-desc">六大情緒家族，41 個可立即使用的陪伴活動。含完整步驟、引導語建議與行動轉化，適合教師、家長與輔導工作者。</p>
@@ -997,7 +775,7 @@
           </div>
         </a>
 
-        <a class="resource-card card-8 fade-in" href="summer-camp-26days.html" id="card-8">
+        <a class="resource-card card-8 fade-in" href="summer-camp-26days.html" id="card-8" data-tags="teacher">
           <div class="card-body">
             <div class="card-top"><div class="card-icon-wrap">☀️</div><div><span class="card-tag">營隊規劃</span><div class="card-title">暑假 26 天 SEL 課程規劃</div></div></div>
             <p class="card-desc">以課程活動地圖排出的密集營隊行程——早場牌卡深度學習、午場統整舒緩，六大情緒家族由淺入深。</p>
@@ -1006,12 +784,21 @@
           </div>
         </a>
 
-        <a class="resource-card card-9 fade-in" href="semester-plan.html" id="card-9">
+        <a class="resource-card card-9 fade-in" href="semester-plan.html" id="card-9" data-tags="teacher">
           <div class="card-body">
             <div class="card-top"><div class="card-icon-wrap">🗓️</div><div><span class="card-tag">課程規劃</span><div class="card-title">115學年第一學期 SEL 活動建議表</div></div></div>
             <p class="card-desc">15 週學期課程排程——每週主課程搭配每日入場小活動，六大情緒家族與各系列穿插編排。點擊活動名稱即可展開完整教案。</p>
             <div class="card-features"><span class="feature-chip">15 週規劃</span><span class="feature-chip">主課程 + 每日入場</span><span class="feature-chip">點擊看教案</span><span class="feature-chip">六大家族穿插</span></div>
             <div class="card-footer"><span class="card-audience">教師</span><span class="card-cta">前往 →</span></div>
+          </div>
+        </a>
+
+        <a class="resource-card card-10 fade-in" href="focus-quest.html" id="card-10" data-tags="student,teacher">
+          <div class="card-body">
+            <div class="card-top"><div class="card-icon-wrap">🎯</div><div><span class="card-tag">遊戲化練習</span><div class="card-title">專注力探險隊｜互動關卡遊戲</div></div></div>
+            <p class="card-desc">舒爾特方格升級版，13 關專注力與情緒調節小遊戲。找數字、記亮燈、認情緒，完成關卡集滿能力徽章，課前 10 分鐘就能玩一輪。</p>
+            <div class="card-features"><span class="feature-chip">13 個關卡</span><span class="feature-chip">6 枚能力徽章</span><span class="feature-chip">難度可調整</span><span class="feature-chip">個人紀錄比較</span></div>
+            <div class="card-footer"><span class="card-audience">學生 · 教師</span><span class="card-cta">前往 →</span></div>
           </div>
         </a>
       </div>
@@ -1044,10 +831,29 @@
     event.preventDefault();
     const el = document.getElementById(id);
     if (!el) return;
+    if (el.classList.contains('is-hidden')) {
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      const allTab = document.querySelector('.filter-tab[data-filter="all"]');
+      if (allTab) allTab.classList.add('active');
+      document.querySelectorAll('.resource-card').forEach(card => card.classList.remove('is-hidden'));
+    }
     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     el.classList.remove('pulse');
     requestAnimationFrame(() => el.classList.add('pulse'));
   }
+
+  document.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const filter = tab.dataset.filter;
+      document.querySelectorAll('.resource-card').forEach(card => {
+        const tags = (card.dataset.tags || '').split(',');
+        const show = filter === 'all' || tags.includes(filter);
+        card.classList.toggle('is-hidden', !show);
+      });
+    });
+  });
 </script>
 </body>
 </html>
