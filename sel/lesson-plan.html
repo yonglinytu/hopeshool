@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>HOPE 每日教學流程</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: 左側是班級設定與匯出的固定面板，右側是「每位孩子一條時間軸」的排課區，可切換成全班總表 */
+:root{
+  --bg:#F5F7F6; --surface:#FFFFFF; --ink:#1E3640; --muted:#5E7076; --line:#D8E0DF;
+  --accent:#D9702A; --accent-ink:#FFFFFF; --accent-soft:#FCE9DA;
+  --task:#E8F1FA; --task-line:#B8D2EA; --common:#EDF3EB; --common-ink:#4A684D;
+  --warn:#A8461F; --ok:#2C7656; --focus:#2F6FA8;
+  --font-display:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --font-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --font-num:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12191C; --surface:#1A2428; --ink:#E4ECEC; --muted:#98A9AD; --line:#2C3A3F;
+  --accent:#EE8C47; --accent-ink:#1C1007; --accent-soft:#3A2617;
+  --task:#172634; --task-line:#2D4961; --common:#1A2820; --common-ink:#A6C8A9;
+  --warn:#F0895B; --ok:#5DC496; --focus:#7DB4E6; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#12191C; --surface:#1A2428; --ink:#E4ECEC; --muted:#98A9AD; --line:#2C3A3F;
+  --accent:#EE8C47; --accent-ink:#1C1007; --accent-soft:#3A2617;
+  --task:#172634; --task-line:#2D4961; --common:#1A2820; --common-ink:#A6C8A9;
+  --warn:#F0895B; --ok:#5DC496; --focus:#7DB4E6; color-scheme:dark;}
+*{box-sizing:border-box}
+html{color-scheme:light}body{margin:0}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.55}
+.app{max-width:1200px;margin:0 auto;padding-inline:16px;padding-block:20px 56px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:16px}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--muted);margin:0}
+h1{font-family:var(--font-display);font-weight:400;font-size:clamp(26px,4vw,34px);margin:2px 0 0;text-wrap:balance;line-height:1.2}
+h1 .subj{color:var(--accent)}
+.saved{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.saved::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ok)}
+.banner{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);border-radius:var(--r);padding:10px 14px;margin-bottom:16px}
+.banner p{margin:0;flex:1 1 260px}
+.layout{display:grid;grid-template-columns:320px minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:900px){.layout{grid-template-columns:1fr}aside{display:contents}aside .panel:nth-child(1){order:1}aside .panel:nth-child(2){order:2}main{order:3}aside .panel:nth-child(3){order:4}}
+aside{display:flex;flex-direction:column;gap:14px}
+@media (min-width:901px){aside{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);max-height:calc(100vh - 24px);overflow:auto;padding-right:2px}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:10px}
+.panel h2{font-family:var(--font-display);font-weight:400;font-size:17px;margin:0}
+.panel h2 small{font-family:var(--font-body);font-size:12px;color:var(--muted);margin-left:6px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+label,.lbl{font-size:12.5px;color:var(--muted);letter-spacing:.02em}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 9px;width:100%;min-width:0}
+textarea{resize:vertical;min-height:38px}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--bg)}
+.seg label{flex:1;position:relative;text-align:center;cursor:pointer;margin:0}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg span{display:block;padding:7px 4px;font-size:14px;color:var(--ink);white-space:nowrap}
+.seg label+label span{border-left:1px solid var(--line)}
+.seg input:checked+span{background:var(--accent);color:var(--accent-ink);font-weight:700}
+.seg input:focus-visible+span{outline:2px solid var(--focus);outline-offset:-2px}
+.hint{font-size:12.5px;color:var(--muted);margin:0}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:7px 12px}
+button:hover{border-color:var(--muted)}
+.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+.primary:hover{filter:brightness(1.05);border-color:var(--accent)}
+.link{border:none;background:none;color:var(--focus);padding:2px 4px;font-size:13px}
+.link:hover{text-decoration:underline}
+.danger{color:var(--warn)}
+.roster{display:flex;flex-direction:column;gap:8px;background:var(--accent-soft);border-radius:8px;padding:10px}
+.roster .row2{grid-template-columns:1fr}.roster .row2 select{background:var(--surface)}
+.roster .hint .link{font-size:12.5px}
+.exports{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.exports .wide{grid-column:1/-1}
+.status{font-size:13px;margin:0;color:var(--muted)}
+.status b{color:var(--ink);font-variant-numeric:tabular-nums}
+.status .miss,.status.miss{color:var(--warn)}
+.status.ok{color:var(--ok)}
+details summary{cursor:pointer;font-size:13px;color:var(--muted)}
+details[open] summary{margin-bottom:8px}
+
+main{min-width:0;display:flex;flex-direction:column;gap:14px}
+.toolbar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px}
+.viewseg{width:auto}
+.viewseg label span{padding:6px 16px}
+.kids{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.kid{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:7px 12px;min-width:92px;text-align:left}
+.kid .kid-name{font-weight:700;font-size:14.5px}
+.kid .kid-meta{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.kid[aria-selected="true"]{border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent)}
+.kid.add{justify-content:center;align-items:center;color:var(--muted);border-style:dashed}
+.meter{width:100%;height:3px;border-radius:2px;background:var(--line);margin-top:4px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--ok)}
+
+.kid-head{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;grid-template-columns:1.2fr .8fr 1.6fr;gap:10px 12px}
+.kid-head .note{grid-column:1/-1}
+.kid-head .actions{grid-column:1/-1;display:flex;justify-content:flex-end}
+@media (max-width:560px){.kid-head{grid-template-columns:1fr 1fr}.kid-head .start{grid-column:1/-1}}
+
+.timeline{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.time{font-family:var(--font-num);font-variant-numeric:tabular-nums;font-size:13px;white-space:nowrap}
+.common{display:flex;align-items:center;gap:12px;padding:7px 12px;border-radius:8px;background:var(--common);color:var(--common-ink)}
+.common .seg-name{flex:1;font-size:14px}
+.common .tag{font-size:11.5px;letter-spacing:.06em;opacity:.8}
+.block{border:1px solid var(--task-line);border-radius:var(--r);background:var(--surface);overflow:hidden}
+.block-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:8px 12px;background:var(--task);border-bottom:1px solid var(--task-line)}
+.block-head .seg-name{font-weight:700;flex:1}
+.block-head .mins{font-size:12.5px;color:var(--muted)}
+.task{display:grid;grid-template-columns:118px minmax(0,1fr);gap:10px 14px;padding:10px 12px}
+.task+.task{border-top:1px dashed var(--line)}
+.task-side{display:flex;flex-direction:column;gap:2px}
+.task-no{font-family:var(--font-display);font-size:16px}
+.task-side .mins{font-size:12.5px;color:var(--muted)}
+.task-main{display:flex;flex-direction:column;gap:8px;min-width:0}
+.field.span{grid-column:1/-1}
+.hint .warn,.warn{color:var(--warn)}
+.tseg{display:flex;align-self:flex-start;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.tseg label{position:relative;cursor:pointer}
+.tseg input{position:absolute;opacity:0;pointer-events:none}
+.tseg span{display:block;padding:3px 10px;font-size:12.5px;color:var(--muted);white-space:nowrap}
+.tseg label+label span{border-left:1px solid var(--line)}
+.tseg input:checked+span{background:var(--task);color:var(--ink);font-weight:700}
+.tseg input:focus-visible+span{outline:2px solid var(--focus);outline-offset:-2px}
+.task.extra{background:color-mix(in srgb,var(--common) 55%,var(--surface))}
+.grid .cell .ty{font-weight:700;color:var(--common-ink)}
+.task-side .link{align-self:flex-start;padding-left:0;margin-top:4px}
+.task-fields{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:8px}
+.task.flash{animation:flash 1.2s ease-out}
+@keyframes flash{from{background:var(--accent-soft)}to{background:transparent}}
+@media (max-width:620px){.task{grid-template-columns:1fr}.task-side{flex-direction:row;align-items:baseline;gap:10px;flex-wrap:wrap}.task-side .link{margin:0 0 0 auto}.task-fields{grid-template-columns:1fr}}
+
+.backups{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:10px}
+.backups h3{font-family:var(--font-display);font-weight:400;font-size:17px;margin:0}
+.backups .list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:620px){.backups .list{grid-template-columns:1fr}}
+
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:var(--r);padding:32px 20px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+.empty h3{font-family:var(--font-display);font-weight:400;font-size:20px;margin:0}
+
+.grid-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table.grid{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px}
+.grid th,.grid td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.grid thead th{position:sticky;top:0;background:var(--surface);font-weight:700;z-index:1}
+.grid th small{display:block;font-weight:400;color:var(--muted)}
+.grid .r-common td{background:var(--common);color:var(--common-ink)}
+.grid .r-block td{background:var(--task);font-weight:700;font-size:13px}
+.grid .r-pre td{background:var(--bg)}
+.grid .cell{display:flex;flex-direction:column;gap:1px;width:100%;text-align:left;border:none;background:none;padding:2px;border-radius:6px;min-width:120px}
+.grid .cell:hover{background:var(--accent-soft)}
+.grid .cell .u{font-size:12px;color:var(--muted)}
+.grid .cell .a.none{color:var(--line)}
+
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;font-size:14px;max-width:calc(100% - 32px);z-index:10;box-shadow:0 6px 24px rgba(0,0,0,.18)}
+.copybox{width:100%;height:120px;font-family:var(--font-num);font-size:12px}
+@media (prefers-reduced-motion:reduce){.task.flash{animation:none}}
+</style>
+
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div>
+      <p class="eyebrow">永齡希望小學 雲科大分校 · 課輔老師用</p>
+      <h1><span class="subj" id="h-subj">英語</span> 每日教學流程</h1>
+    </div>
+    <span class="saved" id="saved">自動儲存在這台裝置</span>
+  </header>
+
+  <div id="banner"></div>
+
+  <div class="layout">
+    <aside>
+      <section class="panel" aria-labelledby="h-class">
+        <h2 id="h-class">班級與日期</h2>
+        <div class="roster" id="roster"></div>
+        <input type="file" id="roster-file" accept=".xlsx,.xls,.csv" hidden>
+        <div class="row2">
+          <div class="field"><label for="m-cls">課輔班別</label><input id="m-cls" data-m="cls" placeholder="例如：林頭1班"></div>
+          <div class="field"><label for="m-teacher">課輔老師</label><input id="m-teacher" data-m="teacher"></div>
+        </div>
+        <div class="field"><span class="lbl" id="lbl-subj">科目</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-subj" id="subj-seg"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="m-date">日期</label><input id="m-date" type="date" data-m="date"></div>
+          <div class="field"><label for="m-week">第幾週</label><input id="m-week" type="number" min="1" max="30" inputmode="numeric" data-m="week"></div>
+        </div>
+        <div class="field"><label for="m-template">時段類型</label><select id="m-template" data-m="template"></select></div>
+        <div class="field"><span class="lbl" id="lbl-len">每個任務</span>
+          <div class="seg" role="radiogroup" aria-labelledby="lbl-len" id="len-seg"></div>
+          <p class="hint" id="len-hint"></p>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="h-common">
+        <h2 id="h-common">班級共通規劃</h2>
+        <div class="field"><label for="m-calm">靜心活動</label><select id="m-calm" data-m="calm"></select></div>
+        <div class="field"><label for="m-reminder">班級提醒／默契</label><textarea id="m-reminder" data-m="reminder" rows="2"></textarea></div>
+        <div class="field"><label for="m-tools">教具／備註</label><input id="m-tools" data-m="tools"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="h-export">
+        <h2 id="h-export">完成後匯出</h2>
+        <p class="status" id="status"></p>
+        <div class="exports">
+          <button class="primary" id="x-xlsx">下載 Excel</button>
+          <button id="x-csv">下載 CSV</button>
+          <button class="wide" id="x-copy">複製表格（貼到試算表）</button>
+        </div>
+        <div id="copy-fallback" hidden>
+          <p class="hint">這裡不能直接寫入剪貼簿，請全選下面的內容後複製：</p>
+          <textarea class="copybox" id="copy-text" readonly></textarea>
+        </div>
+      </section>
+    </aside>
+
+    <main>
+      <div class="toolbar">
+        <div class="seg viewseg" role="radiogroup" aria-label="檢視方式">
+          <label><input type="radio" name="view" value="child" id="v-child"><span>逐位排課</span></label>
+          <label><input type="radio" name="view" value="grid" id="v-grid"><span>全班總表</span></label>
+        </div>
+        <span class="hint" id="flow-hint"></span>
+      </div>
+      <div class="kids" role="tablist" aria-label="孩子名單" id="kids"></div>
+      <div id="view"></div>
+    </main>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<datalist id="acts"></datalist>
+<datalist id="acts-all"></datalist>
+<datalist id="acts-read"></datalist>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+// 各時段類型的固定流程：只有開頭的暖身、點名和最後的統整是全班共同，中間全部依「每個任務」的分鐘數切成任務
+const tpl = (start, end) => {
+  const a = toMin(start), b = toMin(end);
+  return [['暖身時間（入場券）', fmt(a), fmt(a+5)],
+          ['點名／靜心／任務分派', fmt(a+5), fmt(a+10)],
+          ['上課時間（適時巡堂）', fmt(a+10), fmt(b-15), 'task'],
+          ['統整時間（出場券）', fmt(b-15), fmt(b)]];
+};
+const TEMPLATES = {
+  '4h':   {label:'4 小時（12:30–16:30）', items:tpl('12:30','16:30')},
+  '3.5h': {label:'3.5 小時（12:30–16:00）', items:tpl('12:30','16:00')},
+  '3h':   {label:'3 小時（13:00–16:00）', items:tpl('13:00','16:00')},
+  '1.5h': {label:'1.5 小時（16:00–17:30）', items:tpl('16:00','17:30')},
+  '1h':   {label:'1 小時（16:00–17:00）', items:tpl('16:00','17:00')}
+};
+const TASK_LENGTHS = [10,15,20];
+const GRADES = ['一年級','二年級','三年級','四年級','五年級','六年級'];
+const MAIN_ACTS = ['教材講解','習作／學習單練習','個別複習','小測驗／檢核'];
+const DATA = {"subjects": {"國語": {"units": ["ㄅㄆㄇ注音王國1", "ㄅㄆㄇ注音王國2", "ㄅㄆㄇ注音王國3", "ㄅㄆㄇ注音王國4", "ㄅㄆㄇ注音王國5", "ㄅㄆㄇ注音王國6", "ㄅㄆㄇ注音王國7", "ㄅㄆㄇ注音王國8", "奇妙文字國1-1", "奇妙文字國1-2", "奇妙文字國1-3", "奇妙文字國1-4", "奇妙文字國1-5", "奇妙文字國1-6", "奇妙文字國1-7", "奇妙文字國1-8", "奇妙文字國1-9", "奇妙文字國1-閱讀", "奇妙文字國2-1", "奇妙文字國2-2", "奇妙文字國2-3", "奇妙文字國2-4", "奇妙文字國2-5", "奇妙文字國2-6", "奇妙文字國2-7", "奇妙文字國2-8", "奇妙文字國2-9", "奇妙文字國2-閱讀", "奇妙文字國3-1", "奇妙文字國3-2", "奇妙文字國3-3", "奇妙文字國3-4", "奇妙文字國3-5", "奇妙文字國3-6", "奇妙文字國3-7", "奇妙文字國3-8", "奇妙文字國3-9", "奇妙文字國4-1", "奇妙文字國4-閱讀1", "奇妙文字國4-2", "奇妙文字國4-閱讀2", "奇妙文字國4-3", "奇妙文字國4-閱讀3", "奇妙文字國4-4", "奇妙文字國4-閱讀4", "奇妙文字國4-5", "奇妙文字國4-閱讀5", "奇妙文字國4-6", "奇妙文字國4-閱讀6", "奇妙文字國5-1", "奇妙文字國5-2", "奇妙文字國5-閱讀1", "奇妙文字國5-3", "奇妙文字國5-4", "奇妙文字國5-閱讀2", "奇妙文字國5-5", "奇妙文字國5-6", "奇妙文字國5-閱讀3"], "bank": ["注音符號遊戲", "共讀國語繪本", "聆聽有聲故事", "國字銀行", "國語日報漫畫/短文閱讀", "節慶國語活動", "拼字類/造句桌遊", "故事骰桌遊", "說書人桌遊"]}, "英語": {"units": ["Starter L1-2", "Starter L3-4", "Starter L5-6", "Starter L7-8", "Starter 總複習", "ABC-1 字母音", "ABC-2 字母音", "ABC-3 短母音", "ABC-4 長母音", "ABC-5 混淆音", "ABC-6 混淆音", "ABC-7  雙元音", "新式第一冊 CH1", "新式第一冊 CH2", "新式第一冊 CH3", "新式第一冊1-3複習", "新式第一冊 CH4", "新式第一冊 CH5", "新式第一冊 CH6", "新式第一冊4-6複習", "新式第一冊 CH7", "新式第一冊 CH8", "新式第一冊 CH9", "新式第一冊7-9複習", "新式第一冊1-9複習", "新式第二冊 CH1", "新式第二冊 CH2", "新式第二冊 CH3", "新式第二冊1-3複習", "新式第二冊 CH4", "新式第二冊 CH5", "新式第二冊 CH6", "新式第二冊4-6複習", "新式第二冊 CH7", "新式第二冊 CH8", "新式第二冊 CH9", "新式第二冊7-9複習", "新式第二冊1-9複習", "新式第三冊 CH1", "新式第三冊 CH2", "新式第三冊 CH3", "新式第三冊1-3複習", "新式第三冊 CH4", "新式第三冊 CH5", "新式第三冊 CH6", "新式第三冊4-6複習", "新式第三冊 CH7", "新式第三冊 CH8", "新式第三冊 CH9", "新式第三冊7-9複習", "新式第三冊1-9複習", "新式第四冊 CH1", "新式第四冊 CH2", "新式第四冊 CH3", "新式第四冊1-3複習", "新式第四冊 CH4", "新式第四冊 CH5", "新式第四冊 CH6", "新式第四冊4-6複習", "新式第四冊 CH7", "新式第四冊 CH8", "新式第四冊 CH9", "新式第四冊7-9複習", "新式第四冊1-9複習"], "bank": ["英語撲克牌卡", "英語BRAIN STONE桌遊", "英語字母街桌遊", "英語字卡相關活動", "平板英語教材", "節慶英語活動", "共讀英語繪本", "聆聽英語有聲故事/影音", "酷英單字挑戰/句型挑戰", "Wordwall"]}, "數學": {"units": ["玩魔數1-1", "玩魔數1-2", "玩魔數1-3", "玩魔數1-4", "玩魔數1-5", "玩魔數2-1", "玩魔數2-2", "玩魔數2-3", "玩魔數2-4", "玩魔數2-5", "玩魔數3-1", "玩魔數3-2", "玩魔數3-3", "玩魔數3-4", "玩魔數3-5", "玩魔數4-1", "玩魔數4-2", "玩魔數4-3", "玩魔數4-4", "玩魔數4-5", "玩魔數5-1", "玩魔數5-2", "玩魔數5-3", "玩魔數5-4", "玩魔數5-5", "玩魔數6-1", "玩魔數6-2", "玩魔數6-3", "玩魔數6-4", "玩魔數6-5", "玩魔數7-1", "玩魔數7-2", "玩魔數7-3", "玩魔數7-4", "玩魔數7-5", "玩魔數8-1", "玩魔數8-2", "玩魔數8-3", "玩魔數8-4", "玩魔數8-5", "玩魔數9-1", "玩魔數9-2", "玩魔數9-3", "玩魔數9-4", "玩魔數9-5", "玩魔數10-1", "玩魔數10-2", "玩魔數10-3", "玩魔數10-4", "玩魔數10-5", "玩魔數11-1", "玩魔數11-2", "玩魔數11-3", "玩魔數11-4", "玩魔數11-5", "玩魔數12-1", "玩魔數12-2", "玩魔數12-3", "玩魔數12-4", "玩魔數12-5"], "bank": ["數學撲克牌卡", "共讀數學繪本", "PagamO、均一、因才網、雲林STUDY", "數學類積木", "平板數學教材"]}}, "other": ["積木", "其他類桌遊", "曼陀羅畫/禪繞畫", "專注力訓練遊戲", "著色畫(請與社工討論)", "學生有興趣的繪本", "onestudy線上學院"], "calm": ["五指山呼吸", "正方形呼吸", "海浪呼吸", "身體掃描", "小青蛙呼吸", "伸展活動", "其他"]};
+// 家課、閱讀、SEL 是選填的任務類型：任何一個任務都可以從本科改成這三種
+const SEL_ACTS = [["基礎入門", [["B-1", "情緒小夥伴——開心", 10], ["B-2", "情緒光譜——開心", 10], ["B-3", "情緒小偵探——開心", 10], ["B-4", "情緒小夥伴——難過", 10], ["B-5", "情緒光譜——難過", 10], ["B-6", "情緒小偵探——難過", 10], ["B-7", "情緒小夥伴——生氣", 10], ["B-8", "情緒光譜——生氣", 10], ["B-9", "情緒小偵探——生氣", 10], ["B-10", "情緒小夥伴——噁心或厭惡", 10], ["B-11", "情緒光譜——噁心或厭惡", 10], ["B-12", "情緒小偵探——噁心或厭惡", 10], ["B-13", "情緒小夥伴——害怕", 10], ["B-14", "情緒光譜——害怕", 10], ["B-15", "情緒小偵探——害怕", 10], ["B-16", "情緒小夥伴——驚訝或驚喜", 10], ["B-17", "情緒光譜——驚訝或驚喜", 10], ["B-18", "情緒小偵探——驚訝或驚喜", 10]]], ["情緒覺察工具", [["T-1", "認識我的外星夥伴", 10], ["T-2", "情緒動物代言人", 10], ["T-3", "情緒紅綠燈", 10], ["T-4", "情緒遙控器", 10], ["T-5", "情緒 Check In", 10], ["T-6", "情緒探索號帶動唱", 10], ["T-7", "聽聽音樂 情緒流動", 10], ["T-8", "自由畫畫", 10], ["T-9", "自由書寫", 10], ["T-10", "情緒 Check In——今天我在哪個家族的家", 10], ["T-11", "情緒光譜排隊", 15], ["T-12", "傳遞杯子——專注、合作與情緒調節", 10]]], ["HOPE牌卡", [["H-1", "安心地圖——找到讓我心安的地方", 10], ["H-2", "喜悅存摺——收集今天的好事", 15], ["H-3", "給自己的獎狀", 10], ["H-4", "我的舒適圈——界線雷達", 15], ["H-5", "拒絕句練習站", 10], ["H-6", "委屈翻譯機", 15], ["H-7", "我的求救名單", 15], ["H-8", "情緒許可證", 15], ["H-9", "表情漫畫家", 10], ["H-10", "好奇心偵探", 15], ["H-11", "身體的警報器：我的害怕地圖", 15], ["H-12", "我的安全盾牌", 15], ["H-13", "怒火溫度計：我的情緒溫度", 15], ["H-14", "界線用語工廠", 15], ["H-15", "情緒光譜排隊", 10], ["H-16", "今天我在哪個家族的家", 10], ["H-17", "情境小劇場——你怎麼了？", 20], ["H-18", "回穩工具箱：我的情緒急救包", 15], ["H-19", "給情緒的一封信", 20], ["H-20", "情緒抽卡說故事", 15], ["H-21", "感恩三明治：把謝謝說清楚", 15], ["H-22", "幸福快照：我的美好瞬間相簿", 10], ["H-23", "鼓勵信：寫給一個月後的自己", 12], ["H-24", "怪怪的雷達：身體小提醒", 15], ["H-25", "從怪怪的，到慢慢懂自己", 15], ["H-26", "感覺翻譯機", 15], ["H-27", "心願氣球", 12], ["H-28", "好好聽你說", 15], ["H-29", "意外來了怎麼辦：停看選練習", 10], ["H-30", "我發現的哇世界", 15], ["H-31", "煩惱分類站", 15], ["H-32", "緊張小貓來了，我知道怎麼辦", 15], ["H-33", "生氣小偵探", 15], ["H-34", "好好說對不起", 12], ["H-35", "情緒觀察員：今天的班級情緒天氣", 15], ["H-36", "情緒自畫像", 20], ["H-37", "身體掃描", 15], ["H-38", "交換情緒便利貼", 15], ["H-39", "我的情緒小故事", 20], ["H-40", "情緒成長紀錄", 15], ["H-41", "情緒解碼大作戰", 40]]], ["冷靜工具箱", [["C-1", "呼吸小夥伴", 10], ["C-2", "爬爬五指山", 10], ["C-3", "吹蠟燭呼吸法", 10], ["C-4", "緊張小貓五步驟", 10], ["C-5", "自創冷靜魔法", 10], ["C-6", "找尋每一個人的冷靜空間", 10]]], ["正念覺察", [["M-1", "身體掃描", 15], ["M-2", "跟身體做朋友", 10], ["M-3", "感受當下——運用五感回到此刻", 10], ["M-4", "雲冥想", 10], ["M-5", "正念散步——感官覺察之旅", 15], ["M-6", "禪繞靜心繪圖", 15], ["M-7", "正念隨身行——戶外五感尋寶", 15]]], ["情境故事", [["S-1", "故事時間（一）——掉落的霜淇淋", 10], ["S-2", "故事時間（二）——弟弟的眼淚", 10], ["S-3", "故事時間（三）——借不借的兩難", 10], ["S-4", "故事時間（四）——操場上的爭執", 10], ["S-5", "故事時間（五）——爭奪遙控器的夜晚", 10], ["S-6", "故事時間（六）——上台的勇氣", 10], ["S-7", "故事時間（七）——面對全新的挑戰", 10], ["S-8", "故事時間（八）——變化中的驚喜", 10], ["S-9", "故事時間（九）——等待中的情緒", 10], ["S-10", "故事時間（十）——孤單中的努力", 10]]], ["延伸活動", [["E-1", "情緒對對碰——翻出你的感受力", 10], ["E-2", "樂動紓壓 5 招——身體是最好的情緒出口", 10], ["E-3", "單腳平衡——專注當下的身體練習", 10], ["E-4", "袋子裡面有什麼——情緒觸摸遊戲", 10], ["E-5", "情緒迷宮桌遊——選擇與後果的體驗", 40], ["E-6", "我的超能力——認識自己的優勢", 18], ["E-7", "我的選擇清單——回顧好決定", 15], ["E-8", "夢想目標樹——種下成長的種子", 15]]], ["積木創作", [["L-A", "情緒建築師", 40], ["L-B", "我的情緒機器人", 40], ["L-C", "友誼動物園", 40], ["L-D", "合作塔", 15], ["L-E", "感恩花園", 40], ["L-F", "衝突解決迷宮", 40]]]];   // [系列, [[代碼, 名稱, 建議分鐘], ...]]，來自 HOPE SEL 課程活動地圖
+const SEL_MIN = Object.fromEntries(SEL_ACTS.flatMap(([,list]) => list.map(([c,n,m]) => [`${c} ${n}`, m])));
+const EXTRA_TYPES = {
+  '家課': {fixedAct:'學校作業', unitLabel:'學校作業說明（選填）', placeholder:'例如：數學習作 p.20、國語圈詞'},
+  '閱讀': {actLabel:'閱讀內容', list:'acts-read', placeholder:'選擇或輸入，例如：自選繪本',
+           acts:['共讀繪本','自主閱讀','聆聽有聲故事','國語日報漫畫/短文閱讀','學生有興趣的繪本']},
+  'SEL':  {actLabel:'SEL 活動', sel:true}
+};
+const taskType = v => (v && EXTRA_TYPES[v.type]) ? v.type : '';
+
+/* ===== 工具函式 ===== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toMin(t){ const [h,m] = t.split(':').map(Number); return h*60+m; }
+function fmt(m){ return String(Math.floor(m/60)).padStart(2,'0') + ':' + String(m%60).padStart(2,'0'); }
+const today = () => { const d = new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+const uid = () => Math.random().toString(36).slice(2,9);
+const KEY = 'hope-lesson-plan-v1', UIKEY = 'hope-lesson-plan-ui', EPKEY = 'hope-lesson-plan-endpoint';
+const store = {
+  get(k){ try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; } },
+  set(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+};
+
+// 把一段上課時間切成任務：以 5 分鐘為單位平均分配，較長的放前面
+function slice(L, N){
+  const n = Math.max(1, Math.round(L/N - 0.01));
+  const units = L/5, base = Math.floor(units/n), extra = units - base*n;
+  return Array.from({length:n}, (_,i) => (base + (i < extra ? 1 : 0)) * 5);
+}
+function buildFlow(){
+  const tpl = TEMPLATES[state.meta.template] || TEMPLATES['4h']; let no = 0;
+  return tpl.items.map(([name,s,e,kind]) => {
+    const a = toMin(s), b = toMin(e);
+    if (kind !== 'task') return {kind:'common', name, start:s, end:e, min:b-a};
+    let t = a;
+    const tasks = slice(b-a, state.meta.taskLen).map(len => { const x = {no:++no, start:fmt(t), end:fmt(t+len), min:len}; t += len; return x; });
+    return {kind:'block', name, start:s, end:e, min:b-a, tasks};
+  });
+}
+const allTasks = flow => flow.flatMap(i => i.tasks || []);
+// 本科任務的單元空白＝沿用前一個本科任務；家課／閱讀任務各自獨立，不影響「同上」
+function resolved(st, tasks){
+  let cur = st.start || ''; const out = {}, before = {};
+  for (const t of tasks){
+    const v = st.tasks['t'+t.no] || {}; before[t.no] = cur;
+    if (taskType(v)){ out[t.no] = v.unit || ''; continue; }
+    if (v.unit) cur = v.unit; out[t.no] = cur;
+  }
+  out.before = before; return out;
+}
+const subj = () => DATA.subjects[state.meta.subject] || DATA.subjects['英語'];
+const filledCount = (st, tasks) => tasks.filter(t => ((st.tasks['t'+t.no]||{}).act||'').trim()).length;
+
+/* ===== 狀態 ===== */
+function blankStudent(){ return {id:uid(), name:'', grade:'', start:'', note:'', tasks:{}, backups:['','','']}; }
+function blankState(prev){
+  return {sample:false, meta:{cls:prev?.cls||'', teacher:prev?.teacher||'', subject:prev?.subject||'英語', date:today(), week:prev?.week||'',
+    template:prev?.template||'4h', taskLen:prev?.taskLen||15, calm:'', reminder:'', tools:''}, students:[blankStudent()]};
+}
+function sampleState(){
+  const s = (name, grade, start, note, list, backups) => {
+    const tasks = {}; list.forEach((x,i) => { if (x) tasks['t'+(i+1)] = {unit:x[0]||'', act:x[1]||'', type:x[2]||''}; });
+    return {id:uid(), name, grade, start, note, tasks, backups};
+  };
+  return {sample:true, meta:{cls:'範例班', teacher:'範例老師', subject:'英語', date:today(), week:'6', template:'4h', taskLen:15,
+    calm:'海浪呼吸', reminder:'舉手發言、輪流使用平板', tools:'字卡、Wordwall、撲克牌'},
+    students:[
+      s('小安','三年級','新式第一冊 CH4','昨天作業沒帶，先確認聯絡簿',[
+        ['','英語字卡相關活動'],['','教材講解'],['','習作／學習單練習'],['','Wordwall'],['','酷英單字挑戰/句型挑戰'],['','個別複習'],['','英語撲克牌卡'],['','共讀繪本','閱讀']],
+        ['英語BRAIN STONE桌遊','專注力訓練遊戲','曼陀羅畫/禪繞畫']),
+      s('阿宏','四年級','新式第二冊 CH2','',[
+        ['','教材講解'],['','習作／學習單練習'],['','平板英語教材'],['新式第二冊 CH3','教材講解'],['國語習作','學校作業','家課'],['','C-2 爬爬五指山','SEL']],
+        ['英語字母街桌遊','積木','']),
+      s('小晴','五年級','新式第三冊 CH7','',[
+        ['','聆聽英語有聲故事/影音'],['','教材講解'],['','習作／學習單練習']],['Wordwall','','']),
+      s('佑佑','二年級','ABC-3 短母音','剛轉入，先熟悉環境',[
+        ['','英語字卡相關活動'],['','英語撲克牌卡']],['','',''])
+    ]};
+}
+let state = store.get(KEY) || sampleState();
+let ui = Object.assign({view:'child', cur:0}, store.get(UIKEY) || {});
+if (!state.students) state = sampleState();
+if (!DATA.subjects[state.meta.subject]) state.meta.subject = '英語';
+function save(){ store.set(KEY, state); store.set(UIKEY, ui); }
+
+/* ===== 畫面 ===== */
+function renderStatic(){
+  $('#subj-seg').innerHTML = Object.keys(DATA.subjects).map(n =>
+    `<label><input type="radio" name="subject" value="${esc(n)}"><span>${esc(n)}</span></label>`).join('');
+  $('#len-seg').innerHTML = TASK_LENGTHS.map(n =>
+    `<label><input type="radio" name="taskLen" value="${n}"><span>${n} 分鐘</span></label>`).join('');
+  $('#m-template').innerHTML = Object.entries(TEMPLATES).map(([k,v]) => `<option value="${k}">${esc(v.label)}</option>`).join('');
+  $('#m-calm').innerHTML = '<option value="">請選擇</option>' + DATA.calm.map(c => `<option>${esc(c)}</option>`).join('');
+}
+function renderMetaValues(){
+  document.querySelectorAll('[data-m]').forEach(el => { el.value = state.meta[el.dataset.m] ?? ''; });
+  document.querySelectorAll('input[name=subject]').forEach(r => r.checked = r.value === state.meta.subject);
+  document.querySelectorAll('input[name=taskLen]').forEach(r => r.checked = Number(r.value) === Number(state.meta.taskLen));
+  document.querySelectorAll('input[name=view]').forEach(r => r.checked = r.value === ui.view);
+}
+function renderDatalists(){
+  const s = subj();
+  $('#acts').innerHTML = [...MAIN_ACTS, ...s.bank, ...DATA.other].map(a => `<option value="${esc(a)}"></option>`).join('');
+  $('#acts-all').innerHTML = [...s.bank, ...DATA.other].map(a => `<option value="${esc(a)}"></option>`).join('');
+  $('#acts-read').innerHTML = EXTRA_TYPES['閱讀'].acts.map(a => `<option value="${esc(a)}"></option>`).join('');
+  $('#h-subj').textContent = state.meta.subject;
+}
+function renderFlowHints(){
+  const flow = buildFlow(), n = allTasks(flow).length;
+  $('#len-hint').textContent = `上課時段會切成 ${n} 個任務，時間不整除時會自動調整成 5 分鐘的倍數。`;
+  const tpl = TEMPLATES[state.meta.template];
+  $('#flow-hint').textContent = `${tpl.label} · 每位孩子 ${n} 個任務`;
+}
+function renderBanner(){
+  const b = $('#banner');
+  if (state.sample){
+    b.innerHTML = `<div class="banner"><p>目前顯示的是<b>範例資料</b>，可以先點點看各個功能。</p><button class="primary" data-act="clear-sample">清空範例，開始排我的班</button></div>`;
+  } else if (state.meta.date && state.meta.date < today()){
+    b.innerHTML = `<div class="banner"><p>這份是 <b>${esc(state.meta.date)}</b> 的排課。</p><button class="primary" data-act="keep-today">以這份為底，改成今天</button><button data-act="clear-today">保留孩子名單，任務重排</button></div>`;
+  } else b.innerHTML = '';
+}
+function renderKids(){
+  const tasks = allTasks(buildFlow());
+  if (ui.cur >= state.students.length) ui.cur = Math.max(0, state.students.length - 1);
+  $('#kids').innerHTML = state.students.map((st,i) => {
+    const f = filledCount(st, tasks), pct = tasks.length ? Math.round(f/tasks.length*100) : 0;
+    return `<button class="kid" role="tab" aria-selected="${ui.view==='child' && i===ui.cur}" data-kid="${i}">
+      <span class="kid-name">${esc(st.name || '未命名')}</span>
+      <span class="kid-meta">${esc(st.grade || '—')} · ${f}/${tasks.length}</span>
+      <span class="meter"><i style="width:${pct}%"></i></span></button>`;
+  }).join('') + `<button class="kid add" data-act="add-kid">＋ 新增孩子</button>`;
+}
+function unitControl(id, attrs, value, firstLabel){
+  return `<select id="${id}" ${attrs}>${unitOptions(value, firstLabel)}</select>`;
+}
+function unitOptions(value, firstLabel){
+  const units = subj().units;
+  let o = `<option value="">${esc(firstLabel)}</option>`;
+  if (value && !units.includes(value)) o += `<option selected>${esc(value)}</option>`;
+  return o + units.map(u => `<option${u===value?' selected':''}>${esc(u)}</option>`).join('');
+}
+function renderChild(){
+  const st = state.students[ui.cur];
+  if (!st){
+    $('#view').innerHTML = `<div class="empty"><h3>還沒有孩子</h3><p class="hint">先新增班上的孩子，之後每天都會沿用這份名單。</p><button class="primary" data-act="add-kid">新增第一位孩子</button></div>`;
+    return;
+  }
+  const flow = buildFlow(), tasks = allTasks(flow), res = resolved(st, tasks);
+  const gradeOpts = '<option value="">請選擇</option>' + GRADES.map(g => `<option${g===st.grade?' selected':''}>${g}</option>`).join('');
+  let h = `<section class="kid-head" aria-label="孩子課前資料">
+    <div class="field"><label for="k-name">姓名</label><input id="k-name" data-k="name" value="${esc(st.name)}" placeholder="孩子的名字"></div>
+    <div class="field"><label for="k-grade">年級</label><select id="k-grade" data-k="grade">${gradeOpts}</select></div>
+    <div class="field start"><label for="k-start">今日進度／教材</label>${unitControl('k-start','data-k="start"',st.start,'請選擇')}</div>
+    <div class="field note"><label for="k-note">課前提醒／特殊狀況</label><textarea id="k-note" data-k="note" rows="1">${esc(st.note)}</textarea></div>
+    <div class="actions"><button class="link danger" data-act="del-kid" id="del-kid">移除這位孩子</button></div>
+  </section><ol class="timeline">`;
+  for (const it of flow){
+    if (it.kind === 'common'){
+      h += `<li class="common"><span class="time">${it.start}–${it.end}</span><span class="seg-name">${esc(it.name)}</span><span class="tag">全班</span></li>`;
+      continue;
+    }
+    h += `<li class="block"><div class="block-head"><span class="time">${it.start}–${it.end}</span><span class="seg-name">${esc(it.name)}</span><span class="mins">${it.min} 分 · ${it.tasks.length} 個任務</span></div>`;
+    for (const t of it.tasks){
+      const v = st.tasks['t'+t.no] || {}, ty = taskType(v), ex = EXTRA_TYPES[ty];
+      const first = `${t.no === 1 ? '同今日進度' : '同上'}（${res.before[t.no] || '未選'}）`;
+      const typeSeg = `<div class="tseg" role="radiogroup" aria-label="任務 ${t.no} 類型">${[['',state.meta.subject],...Object.keys(EXTRA_TYPES).map(k => [k,k])].map(([val,lab]) =>
+        `<label><input type="radio" name="ty-${t.no}" value="${val}" data-ty="${t.no}"${val===ty?' checked':''}><span>${esc(lab)}</span></label>`).join('')}</div>`;
+      let fields;
+      if (ty === '家課'){
+        fields = `<div class="field span"><label for="u-${t.no}">${ex.unitLabel}</label><input id="u-${t.no}" data-t="${t.no}" data-tf="unit" value="${esc(v.unit||'')}" placeholder="${esc(ex.placeholder)}"></div>`;
+      } else if (ty === '閱讀'){
+        fields = `<div class="field span"><label for="a-${t.no}">${ex.actLabel}</label><input id="a-${t.no}" list="${ex.list}" data-t="${t.no}" data-tf="act" value="${esc(v.act||'')}" placeholder="${esc(ex.placeholder)}"></div>`;
+      } else if (ty === 'SEL'){
+        const mins = SEL_MIN[v.act];
+        const note = mins ? (mins > t.min ? `<span class="warn">建議 ${mins} 分鐘，超過這個任務的 ${t.min} 分鐘，可連排幾個任務</span>` : `建議 ${mins} 分鐘`) : '活動內容可在 HOPE SEL 課程活動地圖查看';
+        fields = `<div class="field span"><label for="a-${t.no}">${ex.actLabel}</label><select id="a-${t.no}" data-t="${t.no}" data-tf="act"><option value="">請選擇 SEL 活動</option>${
+          SEL_ACTS.map(([part,list]) => `<optgroup label="${esc(part)}">${list.map(([c,n,m]) => { const val = `${c} ${n}`; return `<option value="${esc(val)}"${val===v.act?' selected':''}>${esc(c)}　${esc(n)}（${m} 分）</option>`; }).join('')}</optgroup>`).join('')
+        }</select><p class="hint">${note}</p></div>`;
+      } else {
+        fields = `<div class="field"><label for="u-${t.no}">單元／教材</label>${unitControl('u-'+t.no, `data-t="${t.no}" data-tf="unit"`, v.unit||'', first)}</div>
+          <div class="field"><label for="a-${t.no}">任務內容</label><input id="a-${t.no}" list="acts" data-t="${t.no}" data-tf="act" value="${esc(v.act||'')}" placeholder="選擇或輸入，例如：習作／學習單練習"></div>`;
+      }
+      h += `<div class="task${ex ? ' extra' : ''}" id="task-${t.no}">
+        <div class="task-side"><span class="task-no">任務 ${t.no}</span><span class="time">${t.start}–${t.end}</span><span class="mins">${t.min} 分鐘</span>
+          <button class="link" data-apply="${t.no}">套用到全班</button></div>
+        <div class="task-main">${typeSeg}<div class="task-fields">${fields}</div></div></div>`;
+    }
+    h += `</li>`;
+  }
+  h += `</ol>`;
+  const bank = subj().bank;
+  const b0 = st.backups[0] || '';
+  h += `<section class="backups" aria-labelledby="h-backup"><h3 id="h-backup">備用任務</h3>
+    <p class="hint">孩子提早完成時使用。第 1 項須為${esc(state.meta.subject)}學習任務並優先執行，其他兩項可選其他類，執行方式請與社工討論。</p>
+    <div class="list">
+      <div class="field"><label for="b-0">第 1 項（${esc(state.meta.subject)}）</label><select id="b-0" data-b="0"><option value="">請選擇</option>${(b0 && !bank.includes(b0) ? `<option selected>${esc(b0)}</option>` : '')}${bank.map(x => `<option${x===b0?' selected':''}>${esc(x)}</option>`).join('')}</select></div>
+      <div class="field"><label for="b-1">第 2 項</label><input id="b-1" data-b="1" list="acts-all" value="${esc(st.backups[1]||'')}"></div>
+      <div class="field"><label for="b-2">第 3 項</label><input id="b-2" data-b="2" list="acts-all" value="${esc(st.backups[2]||'')}"></div>
+    </div></section>`;
+  $('#view').innerHTML = h;
+}
+function renderGrid(){
+  const S = state.students, flow = buildFlow(), tasks = allTasks(flow);
+  if (!S.length){ renderChild(); return; }
+  const R = S.map(st => resolved(st, tasks));
+  let h = `<div class="grid-wrap"><table class="grid"><thead><tr><th>時間</th><th>段落</th>${S.map(s => `<th>${esc(s.name||'未命名')}<small>${esc(s.grade||'')}</small></th>`).join('')}</tr></thead><tbody>`;
+  h += `<tr class="r-pre"><td></td><td>今日進度</td>${S.map(s => `<td>${esc(s.start||'—')}</td>`).join('')}</tr>`;
+  h += `<tr class="r-pre"><td></td><td>課前提醒</td>${S.map(s => `<td>${esc(s.note||'—')}</td>`).join('')}</tr>`;
+  for (const it of flow){
+    if (it.kind === 'common'){
+      h += `<tr class="r-common"><td class="time">${it.start}–${it.end}</td><td colspan="${S.length+1}">${esc(it.name)}</td></tr>`;
+      continue;
+    }
+    h += `<tr class="r-block"><td class="time">${it.start}–${it.end}</td><td colspan="${S.length+1}">${esc(it.name)}</td></tr>`;
+    for (const t of it.tasks){
+      h += `<tr><td class="time">${t.start}–${t.end}</td><td>任務 ${t.no}</td>${S.map((s,i) => {
+        const v = s.tasks['t'+t.no] || {}, a = (v.act||'').trim(), ty = taskType(v);
+        return `<td><button class="cell" data-goto="${i}:${t.no}" aria-label="編輯 ${esc(s.name)} 任務 ${t.no}"><span class="u">${ty ? `<b class="ty">${ty}</b> ` : ''}${esc(R[i][t.no]||'')}</span><span class="a${a?'':' none'}">${a?esc(a):'未排'}</span></button></td>`;
+      }).join('')}</tr>`;
+    }
+  }
+  h += `<tr class="r-pre"><td></td><td>備用任務</td>${S.map(s => `<td>${s.backups.filter(Boolean).map(esc).join('<br>')||'—'}</td>`).join('')}</tr>`;
+  $('#view').innerHTML = h + `</tbody></table></div>`;
+}
+function renderStatus(){
+  const tasks = allTasks(buildFlow()), S = state.students;
+  const total = tasks.length * S.length, done = S.reduce((n,s) => n + filledCount(s, tasks), 0);
+  const miss = [['cls','班別'],['teacher','課輔老師'],['date','日期']].filter(([k]) => !String(state.meta[k]||'').trim()).map(x => x[1]);
+  $('#status').innerHTML = `${S.length} 位孩子，任務已排 <b>${done}/${total}</b>` + (miss.length ? `<br><span class="miss">還沒填：${miss.join('、')}</span>` : '');
+}
+function render(){
+  renderRoster(); renderDatalists(); renderFlowHints(); renderBanner(); renderKids();
+  ui.view === 'grid' ? renderGrid() : renderChild();
+  renderStatus(); save();
+}
+function light(){ renderKids(); renderStatus(); save(); }
+
+/* ===== 互動 ===== */
+let toastTimer;
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 3200); }
+const cur = () => state.students[ui.cur];
+
+document.addEventListener('input', e => {
+  const el = e.target, d = el.dataset;
+  if (d.m){ state.meta[d.m] = el.value; if (d.m === 'date') renderBanner(); light(); return; }
+  const st = cur(); if (!st) return;
+  if (d.k){ st[d.k] = el.value; light(); return; }
+  if (d.t){ const k = 't'+d.t; st.tasks[k] = Object.assign({unit:'',act:''}, st.tasks[k], {[d.tf]: el.value}); light(); return; }
+  if (d.b){ st.backups[Number(d.b)] = el.value; light(); return; }
+});
+document.addEventListener('change', e => {
+  const el = e.target;
+  if (el.name === 'subject'){ state.meta.subject = el.value; render(); return; }
+  if (el.name === 'taskLen'){ state.meta.taskLen = Number(el.value); render(); return; }
+  if (el.name === 'view'){ ui.view = el.value; render(); return; }
+  if (el.dataset.m === 'template'){ render(); return; }
+  if (el.dataset.ty){
+    const st = cur(), k = 't'+el.dataset.ty;
+    const ex = EXTRA_TYPES[el.value];
+    st.tasks[k] = Object.assign({unit:'',act:''}, st.tasks[k], {type:el.value, unit:'', act: ex && ex.fixedAct ? ex.fixedAct : ''});
+    renderChild(); light(); const f = document.getElementById('a-'+el.dataset.ty) || document.getElementById('u-'+el.dataset.ty); if (f) f.focus(); return;
+  }
+  if (el.tagName === 'SELECT' && (el.dataset.k === 'start' || el.dataset.tf === 'unit' || el.dataset.tf === 'act')){
+    const id = el.id; renderChild(); const again = document.getElementById(id); if (again) again.focus();
+  }
+});
+let delArmed = false, delTimer;
+document.addEventListener('click', e => {
+  const btn = e.target.closest('button'); if (!btn) return;
+  const d = btn.dataset;
+  if (d.kid !== undefined){ ui.cur = Number(d.kid); ui.view = 'child'; renderMetaValues(); render(); return; }
+  if (d.act === 'add-kid'){
+    state.students.push(blankStudent()); ui.cur = state.students.length - 1; ui.view = 'child'; renderMetaValues(); render();
+    const n = $('#k-name'); if (n) n.focus(); return;
+  }
+  if (d.act === 'del-kid'){
+    if (!delArmed){ delArmed = true; btn.textContent = `確定移除 ${cur().name || '這位孩子'}？再按一次`; clearTimeout(delTimer);
+      delTimer = setTimeout(() => { delArmed = false; if (btn.isConnected) btn.textContent = '移除這位孩子'; }, 3500); return; }
+    delArmed = false; const name = cur().name || '這位孩子'; state.students.splice(ui.cur, 1); render(); toast(`已移除 ${name}`); return;
+  }
+  if (d.apply){
+    const k = 't'+d.apply, src = Object.assign({unit:'',act:''}, cur().tasks[k]);
+    state.students.forEach(s => { s.tasks[k] = {...src}; });
+    render(); toast(`已把任務 ${d.apply} 套用到全班 ${state.students.length} 位孩子`); return;
+  }
+  if (d.goto){
+    const [i,no] = d.goto.split(':').map(Number); ui.cur = i; ui.view = 'child'; renderMetaValues(); render();
+    const t = document.getElementById('task-'+no);
+    if (t){ t.scrollIntoView({block:'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); t.classList.add('flash'); const a = document.getElementById('a-'+no); if (a) a.focus({preventScroll:true}); }
+    return;
+  }
+  if (d.act === 'clear-sample'){ state = blankState(); ui.cur = 0; renderMetaValues(); render(); toast('已清空範例，可以開始輸入班上的孩子'); return; }
+  if (d.act === 'keep-today'){ state.meta.date = today(); renderMetaValues(); render(); toast('已改成今天的日期，任務保留'); return; }
+  if (d.act === 'clear-today'){
+    const m = state.meta; state.meta = {...m, date:today(), calm:'', reminder:'', tools:''};
+    state.students.forEach(s => { s.tasks = {}; s.note = ''; s.backups = ['','','']; });
+    renderMetaValues(); render(); toast('已保留孩子名單和今日進度，任務清空'); return;
+  }
+});
+
+/* ===== 學童名冊（只存在這台裝置） ===== */
+const RKEY = 'hope-lesson-plan-roster-v2';
+let roster = store.get(RKEY);   // {file, importedAt, groups:[{cls, subject, teachers[], students[{name,grade}]}]}
+const GRADE_CH = '一二三四五六';
+const normGrade = g => { const s = String(g||'').trim(); const i = GRADE_CH.indexOf(s.charAt(0)); return i >= 0 ? GRADE_CH[i] + '年級' : s; };
+const normSubj = s => String(s||'').replace(/\s+/g,'').replace(/\//g,'／');
+const splitNames = s => String(s||'').split(/[\/／、,，\s]+/).map(x => x.trim()).filter(Boolean);
+// 支援兩種名冊：每列都填滿的「課輔編班報表」，以及用合併儲存格往下延續的舊版名冊
+function parseRoster(aoa){
+  const hi = aoa.findIndex(r => r && r.some(v => String(v ?? '').replace(/\s/g,'').includes('學生姓名')));
+  if (hi < 0) throw new Error('找不到「學生姓名」欄位，請確認選的是學童名冊');
+  const H = aoa[hi].map(v => String(v ?? '').replace(/\s/g,''));
+  const col = k => H.findIndex(h => h.includes(k));
+  const c = {cls: col('班別') >= 0 ? col('班別') : col('班級'), subj:col('科目'), tch:col('老師'), grade:col('年級'), name:col('學生姓名')};
+  if (c.cls < 0) throw new Error('找不到「班級名稱」或「課輔班別」欄位');
+  const map = new Map(); let cls = '', subj = '', tch = '';
+  for (const r of aoa.slice(hi+1)){
+    if (!r) continue;
+    const v = k => c[k] >= 0 ? String(r[c[k]] ?? '').trim() : '';
+    if (!['cls','subj','tch','name'].some(k => v(k))) continue;
+    if (v('cls') && v('cls') !== cls){ cls = v('cls'); subj = ''; tch = ''; }
+    if (v('subj')) subj = normSubj(v('subj'));
+    if (v('tch')) tch = v('tch');
+    if (!DATA.subjects[subj] || !v('name')) continue;   // 只收國語、英語、數學；家課／閱讀改在排課時選填
+    const key = [cls, subj, tch].join('|');
+    if (!map.has(key)) map.set(key, {cls, subject:subj, teachers:splitNames(tch), students:[]});
+    const g = map.get(key);
+    if (!g.students.some(s => s.name === v('name'))) g.students.push({name:v('name'), grade:normGrade(v('grade'))});
+  }
+  const out = [...map.values()];
+  if (!out.length) throw new Error('名冊裡沒有讀到任何國語、英語或數學的學生');
+  return out;
+}
+const rosterClasses = () => [...new Set(roster.groups.map(g => g.cls))];
+function renderRoster(){
+  const box = $('#roster');
+  if (!roster){
+    box.innerHTML = `<button data-act="import-roster">匯入學童名冊（Excel）</button><p class="hint">匯入「課輔編班報表」後選班別和老師，就能帶入孩子名單。名冊只存在這台裝置，不會上傳。</p>`;
+    return;
+  }
+  const classes = rosterClasses();
+  if (!classes.includes(ui.rCls)) ui.rCls = classes.includes(state.meta.cls) ? state.meta.cls : classes[0];
+  const groups = roster.groups.map((g,i) => ({g,i})).filter(x => x.g.cls === ui.rCls);
+  if (!groups.some(x => x.i === ui.rGi)){
+    const mine = groups.find(x => x.g.teachers.some(t => (state.meta.teacher||'').includes(t)) && x.g.subject === state.meta.subject);
+    ui.rGi = (mine || groups[0]).i;
+  }
+  const total = new Set(roster.groups.flatMap(g => g.students.map(s => g.cls + '|' + s.name))).size;
+  box.innerHTML = `<div class="row2">
+      <div class="field"><label for="r-cls">名冊班別</label><select id="r-cls">${classes.map(c => `<option${c===ui.rCls?' selected':''}>${esc(c)}</option>`).join('')}</select></div>
+      <div class="field"><label for="r-group">老師／科目</label><select id="r-group">${groups.map(({g,i}) =>
+        `<option value="${i}"${i===ui.rGi?' selected':''}>${esc(g.teachers.join('、') || '未填老師')}｜${esc(g.subject)}（${g.students.length} 位）</option>`).join('')}</select></div>
+    </div>
+    <button class="primary" data-act="apply-roster">帶入這組孩子</button>
+    <p class="hint">已匯入 ${classes.length} 班、${total} 位學生，只存在這台裝置。<button class="link" data-act="import-roster">重新匯入</button><button class="link danger" data-act="clear-roster">清除名冊</button></p>`;
+}
+function applyRoster(){
+  const g = roster.groups[ui.rGi]; if (!g) return;
+  const studs = g.students;
+  if (state.sample){ state = blankState(); state.students = []; }
+  Object.assign(state.meta, {cls:g.cls, teacher:g.teachers.join('、')});
+  if (DATA.subjects[g.subject]) state.meta.subject = g.subject;
+  const byName = new Map(state.students.map(s => [s.name, s]));
+  state.students = studs.map(s => { const old = byName.get(s.name); return old ? {...old, grade:s.grade || old.grade} : {...blankStudent(), name:s.name, grade:s.grade}; });
+  ui.cur = 0; ui.view = 'child'; renderMetaValues(); render();
+  toast(`已帶入 ${g.cls}｜${g.subject}，共 ${studs.length} 位孩子`);
+}
+$('#roster-file').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  if (!window.XLSX){ toast('Excel 元件還沒載入，請稍等幾秒再試'); return; }
+  try {
+    const wb = XLSX.read(await f.arrayBuffer(), {type:'array'});
+    const aoa = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header:1, defval:null, raw:false});
+    roster = {file:f.name, importedAt:new Date().toISOString(), groups:parseRoster(aoa)};
+    store.set(RKEY, roster); ui.rCls = null; ui.rGi = null; renderRoster();
+    toast(`已匯入名冊：${rosterClasses().length} 班、${roster.groups.length} 組`);
+  } catch(err){ toast('匯入失敗：' + (err.message || '檔案讀不出來')); }
+});
+document.addEventListener('change', e => {
+  if (e.target.id === 'r-cls'){ ui.rCls = e.target.value; ui.rGi = null; renderRoster(); }
+  if (e.target.id === 'r-group'){ ui.rGi = Number(e.target.value); }
+});
+document.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.act === 'import-roster') $('#roster-file').click();
+  if (b.dataset.act === 'apply-roster') applyRoster();
+  if (b.dataset.act === 'clear-roster'){ roster = null; try { localStorage.removeItem(RKEY); } catch(err){} renderRoster(); toast('已從這台裝置清除名冊'); }
+});
+
+/* ===== 匯出 ===== */
+const HEAD = ['排課編號','日期','週次','班別','課輔老師','科目','時段類型','靜心活動','班級提醒','教具備註',
+  '學生','年級','今日進度','課前提醒','類別','任務類型','序','開始','結束','分鐘','單元／教材','任務內容'];
+const planId = () => [state.meta.date, state.meta.cls || '未填班別', state.meta.subject].join('_');
+function rows(){
+  const m = state.meta, tasks = allTasks(buildFlow()), pid = planId(), out = [];
+  state.students.forEach(st => {
+    const res = resolved(st, tasks);
+    const base = [pid, m.date, m.week, m.cls, m.teacher, m.subject, TEMPLATES[m.template].label, m.calm, m.reminder, m.tools, st.name, st.grade, st.start, st.note];
+    tasks.forEach(t => { const v = st.tasks['t'+t.no] || {}; out.push([...base, '課中任務', taskType(v) || m.subject, t.no, t.start, t.end, t.min, res[t.no]||'', v.act||'']); });
+    st.backups.forEach((b,i) => { if (b) out.push([...base, '備用任務', '', i+1, '', '', '', '', b]); });
+  });
+  return out;
+}
+const fileBase = () => `教學流程_${state.meta.cls || '班別'}_${state.meta.subject}_${state.meta.date || today()}`;
+let dlPromise;
+function getDownloads(){
+  if (!dlPromise) dlPromise = (window.claude && window.claude.use) ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null);
+  return dlPromise;
+}
+async function saveFile(name, data){
+  const ns = await getDownloads();
+  if (ns){
+    try { await ns.save({filename:name, data}); toast('已下載 ' + name); }
+    catch(err){ toast(err && err.code === 'declined' ? '已取消下載' : '這裡無法下載，請改用「複製表格」'); }
+    return;
+  }
+  const blob = data instanceof Blob ? data : new Blob([data], {type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  toast('已下載 ' + name);
+}
+function buildXlsx(){
+  const m = state.meta, S = state.students, flow = buildFlow(), tasks = allTasks(flow), R = S.map(s => resolved(s, tasks));
+  const aoa = [[`${m.cls} ${m.subject} 每日教學流程`],
+    [`日期 ${m.date}　第 ${m.week||'＿'} 週　課輔老師 ${m.teacher}　${TEMPLATES[m.template].label}　每個任務 ${m.taskLen} 分鐘`],
+    [`靜心活動：${m.calm}　班級提醒：${m.reminder}　教具：${m.tools}`], [],
+    ['時間','段落', ...S.map(s => s.name + (s.grade ? `（${s.grade}）` : ''))],
+    ['課前','今日進度', ...S.map(s => s.start)],
+    ['課前','課前提醒', ...S.map(s => s.note)]];
+  const merges = [];
+  for (const it of flow){
+    if (it.kind === 'common'){ merges.push({s:{r:aoa.length,c:2}, e:{r:aoa.length,c:Math.max(2, 1+S.length)}}); aoa.push([`${it.start}-${it.end}`, it.name, '（全班共同）']); continue; }
+    it.tasks.forEach(t => aoa.push([`${t.start}-${t.end}`, `${it.name}｜任務 ${t.no}`, ...S.map((s,i) => { const v = s.tasks['t'+t.no] || {}, ty = taskType(v); return (ty ? `【${ty}】` : '') + [R[i][t.no], v.act].filter(Boolean).join('｜'); })]));
+  }
+  [0,1,2].forEach(i => aoa.push(['備用任務', `第 ${i+1} 項`, ...S.map(s => s.backups[i] || '')]));
+  const ws1 = XLSX.utils.aoa_to_sheet(aoa);
+  ws1['!merges'] = merges; ws1['!cols'] = [{wch:13},{wch:30}, ...S.map(() => ({wch:30}))];
+  const ws2 = XLSX.utils.aoa_to_sheet([HEAD, ...rows()]);
+  ws2['!cols'] = HEAD.map(h => ({wch: ['任務內容','單元／教材','排課編號','時段類型'].includes(h) ? 24 : 11}));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws1, '總表');
+  XLSX.utils.book_append_sheet(wb, ws2, '明細');
+  return new Blob([XLSX.write(wb, {bookType:'xlsx', type:'array'})]);
+}
+const csvCell = v => { const s = String(v ?? ''); return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s; };
+$('#x-xlsx').addEventListener('click', () => {
+  if (!window.XLSX){ toast('Excel 元件還沒載入，請稍等或改用 CSV'); return; }
+  saveFile(fileBase() + '.xlsx', buildXlsx());
+});
+$('#x-csv').addEventListener('click', () => {
+  saveFile(fileBase() + '.csv', '﻿' + [HEAD, ...rows()].map(r => r.map(csvCell).join(',')).join('\r\n'));
+});
+$('#x-copy').addEventListener('click', () => {
+  const tsv = [HEAD, ...rows()].map(r => r.map(v => String(v ?? '').replace(/[\t\r\n]+/g,' ')).join('\t')).join('\n');
+  const fallback = () => { $('#copy-fallback').hidden = false; const t = $('#copy-text'); t.value = tsv; t.focus(); t.select(); };
+  try {
+    navigator.clipboard.writeText(tsv).then(() => { $('#copy-fallback').hidden = true; toast('已複製，到 Google 試算表點一格後貼上'); }, fallback);
+  } catch(err){ fallback(); }
+});
+renderStatic(); renderMetaValues(); render(); getDownloads();
+</script>
+
+</body>
+</html>
