@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>慢慢村與快快城｜課堂投影｜HOPE 希望小學</title>
+<meta name="description" content="「積」起改變的力量：慢慢村與快快城——找到自己的速度。繪本 × SEL × 積木《打造一座會呼吸的城市》課堂投影頁。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --top:58px; --bottom:64px;
+  --r:18px; --r-sm:12px;
+  --hosp:#e46a6a; --home:#ef9f3f; --school:#4f9fe0; --traffic:#4fb37a; --park:#a783dc; --gran:#e783b0;
+  --font:'Noto Sans TC',-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;
+  --serif:'Noto Serif TC','PingFang TC',serif;
+  transition:background-color .8s;
+}
+body[data-theme="night"]{
+  --bg:#0f1631; --bg2:#1b2654; --ink:#f6f0e1; --muted:#b8c0da; --faint:#7d87a8;
+  --card:rgba(255,255,255,.07); --card-strong:rgba(255,255,255,.12); --line:rgba(255,255,255,.14);
+  --accent:#ffcf5a; --accent-ink:#2a2005; --glow:rgba(255,207,90,.55); --bar:rgba(10,15,36,.82);
+  --empty:rgba(255,255,255,.1);
+}
+body[data-theme="day"]{
+  --bg:#f6efe4; --bg2:#e4f0f2; --ink:#2d261f; --muted:#665849; --faint:#9a8874;
+  --card:#fffdf8; --card-strong:#ffffff; --line:rgba(96,72,48,.15);
+  --accent:#e7a521; --accent-ink:#ffffff; --glow:rgba(231,165,33,.35); --bar:rgba(255,253,248,.9);
+  --empty:rgba(96,72,48,.1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--font); color:var(--ink); background:var(--bg);
+  overflow:hidden; transition:background .8s,color .8s;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{ /* sky */
+  content:""; position:fixed; inset:0; z-index:-2; transition:opacity .8s;
+  background:
+    radial-gradient(1200px 600px at 80% -10%, var(--bg2), transparent 70%),
+    radial-gradient(900px 500px at 0% 110%, var(--bg2), transparent 70%), var(--bg);
+}
+body[data-theme="night"]::after{ /* stars */
+  content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.55;
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 18%, #fff, transparent),
+    radial-gradient(1px 1px at 28% 72%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 44% 32%, #fff, transparent),
+    radial-gradient(1px 1px at 62% 12%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 78% 58%, #fff, transparent),
+    radial-gradient(1px 1px at 90% 26%, #fff, transparent),
+    radial-gradient(1px 1px at 6% 52%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 54% 88%, #fff, transparent);
+}
+button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:none}
+button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:8px}
+
+/* ── Top bar ── */
+.topbar{
+  position:fixed; top:0; left:0; right:0; height:var(--top); z-index:50;
+  display:flex; align-items:center; gap:10px; padding:0 14px;
+  background:var(--bar); backdrop-filter:blur(10px); border-bottom:1px solid var(--line);
+}
+.home-btn{
+  display:inline-flex; align-items:center; gap:6px; flex:none;
+  border:1px solid var(--line); border-radius:20px; padding:6px 13px;
+  font-size:13px; color:var(--muted); text-decoration:none; transition:all .15s;
+}
+.home-btn:hover{color:var(--ink); background:var(--card)}
+.steps{display:flex; gap:6px; flex:1; justify-content:center; min-width:0}
+.step-chip{
+  display:flex; align-items:center; gap:7px; padding:6px 12px; border-radius:999px;
+  border:1px solid var(--line); font-size:14px; color:var(--muted); white-space:nowrap; transition:all .2s;
+}
+.step-chip .n{font-weight:900; font-size:12px; opacity:.8}
+.step-chip .m{font-size:11px; opacity:.7}
+.step-chip.done{color:var(--ink); opacity:.75}
+.step-chip.on{background:var(--accent); color:var(--accent-ink); border-color:transparent; font-weight:700; box-shadow:0 0 18px var(--glow)}
+.tools{display:flex; gap:6px; align-items:center; flex:none}
+.tool{
+  height:36px; min-width:36px; padding:0 11px; border-radius:10px; border:1px solid var(--line);
+  font-size:14px; display:inline-flex; align-items:center; justify-content:center; gap:5px; transition:all .15s;
+}
+.tool:hover{background:var(--card)}
+.tool.on{background:var(--ink); color:var(--bg); border-color:transparent}
+.grade{display:inline-flex; border:1px solid var(--line); border-radius:10px; overflow:hidden; height:36px}
+.grade button{padding:0 11px; font-size:13px; color:var(--muted)}
+.grade button.on{background:var(--ink); color:var(--bg); font-weight:700}
+.timer-pill{
+  display:none; height:36px; padding:0 12px; border-radius:10px; font-variant-numeric:tabular-nums;
+  font-weight:700; font-size:15px; align-items:center; gap:6px; background:var(--card-strong); border:1px solid var(--line);
+}
+.timer-pill.show{display:inline-flex}
+.timer-pill.run{border-color:var(--accent)}
+.timer-pill.end{background:#e46a6a; color:#fff; animation:pulse 1s infinite}
+
+/* ── Stage ── */
+.stage{
+  position:fixed; top:var(--top); bottom:var(--bottom); left:0; right:0;
+  display:flex; padding:18px 24px; overflow:auto;
+}
+.scene{width:100%; max-width:1280px; margin:auto; animation:enter .45s ease both}
+@keyframes enter{from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:none}}
+@keyframes pulse{50%{opacity:.6}}
+.backdrop{
+  position:fixed; inset:0; z-index:-1; background-size:cover; background-position:center;
+  opacity:.16; filter:blur(3px) saturate(1.1); transition:opacity .6s; pointer-events:none;
+}
+body[data-theme="day"] .backdrop{opacity:.12}
+
+.kicker{
+  display:inline-flex; align-items:center; gap:8px; font-size:15px; font-weight:700; letter-spacing:.06em;
+  color:var(--accent); margin-bottom:12px;
+}
+.kicker .time{font-weight:500; color:var(--muted); letter-spacing:0; font-size:13px; border:1px solid var(--line); padding:2px 9px; border-radius:99px}
+h1.q{
+  font-family:var(--serif); font-weight:900; line-height:1.3;
+  font-size:clamp(30px, 4.6vw, 64px); letter-spacing:.02em; text-wrap:balance;
+}
+.sub{font-size:clamp(18px, 2.2vw, 30px); color:var(--muted); margin-top:14px; line-height:1.6; text-wrap:balance}
+.center{text-align:center}
+.mt{margin-top:28px}
+
+/* story */
+.story{display:flex; flex-direction:column; align-items:center; gap:14px}
+.frame{
+  position:relative; border-radius:var(--r); overflow:hidden; line-height:0;
+  box-shadow:0 18px 60px rgba(0,0,0,.35), 0 0 0 1px var(--line);
+  max-width:100%;
+}
+.frame img{
+  display:block; width:auto; max-width:100%;
+  height:calc(100dvh - var(--top) - var(--bottom) - 36px); max-height:860px; aspect-ratio:4/3; object-fit:contain;
+}
+.story.with-cap .frame img{height:calc(100dvh - var(--top) - var(--bottom) - 130px)}
+.caption{
+  font-family:var(--serif); font-size:clamp(18px, 2.2vw, 28px); line-height:1.6; text-align:center;
+  max-width:1000px; white-space:pre-line;
+}
+.fallback{
+  width:min(92vw, calc((100dvh - var(--top) - var(--bottom) - 36px) * 4 / 3)); aspect-ratio:4/3;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:6%;
+  background:linear-gradient(160deg, var(--bg2), var(--bg)); line-height:1.6;
+}
+.fallback .pg{font-size:14px; color:var(--faint); letter-spacing:.1em}
+.fallback .txt{font-family:var(--serif); font-size:clamp(20px, 2.8vw, 38px); text-align:center; white-space:pre-line}
+.story-tools{position:absolute; right:12px; bottom:12px; display:flex; gap:8px; line-height:1}
+.story-tools button{
+  background:rgba(0,0,0,.55); color:#fff; border-radius:999px; padding:8px 14px; font-size:14px; backdrop-filter:blur(6px);
+}
+.story-tools button.on{background:var(--accent); color:var(--accent-ink)}
+
+/* cards generic */
+.grid{display:grid; gap:16px}
+.card{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:20px;
+}
+.chips{display:flex; flex-wrap:wrap; gap:10px; justify-content:center}
+.chip{
+  padding:10px 18px; border-radius:999px; background:var(--card); border:1px solid var(--line);
+  font-size:clamp(16px, 1.7vw, 22px);
+}
+.btn{
+  display:inline-flex; align-items:center; gap:8px; padding:12px 22px; border-radius:999px;
+  background:var(--accent); color:var(--accent-ink); font-weight:700; font-size:17px;
+  box-shadow:0 6px 22px var(--glow); transition:transform .15s;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn.ghost{background:transparent; color:var(--ink); border:1px solid var(--line); box-shadow:none}
+.reveal{
+  margin-top:26px; font-family:var(--serif); font-weight:700; font-size:clamp(22px, 2.8vw, 38px);
+  color:var(--accent); text-align:center; animation:enter .5s both;
+}
+
+/* facilities flip */
+.fac-grid{display:grid; grid-template-columns:repeat(5, 1fr); gap:14px; margin-top:26px}
+.flip{perspective:1000px; min-height:280px}
+.flip-in{position:relative; width:100%; height:100%; min-height:280px; transition:transform .6s; transform-style:preserve-3d}
+.flip.open .flip-in{transform:rotateY(180deg)}
+.face{
+  position:absolute; inset:0; backface-visibility:hidden; border-radius:var(--r); padding:18px 14px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; text-align:center;
+  border:1px solid var(--line); background:var(--card);
+}
+.face .ico{font-size:clamp(46px, 5vw, 72px); line-height:1}
+.face .nm{font-size:clamp(20px, 2.2vw, 30px); font-weight:900}
+.face .hint{font-size:13px; color:var(--muted)}
+.face.back{transform:rotateY(180deg); justify-content:flex-start; border-top:6px solid var(--c)}
+.face.back .nm{font-size:20px}
+.face.back ul{list-style:none; display:flex; flex-direction:column; gap:8px; font-size:clamp(15px, 1.5vw, 19px); line-height:1.45; text-align:left}
+.face.back li::before{content:"・"; color:var(--c)}
+
+/* needs */
+.needs{display:grid; grid-template-columns:repeat(5, auto); gap:18px 26px; justify-content:center; align-items:end; margin-top:24px}
+.need{display:flex; flex-direction:column; align-items:center; gap:8px}
+.need .lab{font-size:clamp(17px, 1.8vw, 24px); font-weight:700}
+.need .num{font-size:14px; color:var(--muted)}
+.cells{display:grid; grid-template-columns:repeat(4, 1fr); gap:5px}
+.cell{width:clamp(18px, 2.2vw, 30px); aspect-ratio:1; border-radius:5px; background:var(--c); box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
+.vs{display:flex; align-items:center; justify-content:center; gap:clamp(16px, 4vw, 60px); margin-top:30px; flex-wrap:wrap}
+.big-num{text-align:center}
+.big-num b{display:block; font-family:var(--serif); font-size:clamp(54px, 8vw, 110px); line-height:1}
+.big-num span{font-size:clamp(16px, 1.7vw, 22px); color:var(--muted)}
+.big-num.energy b{color:var(--accent); text-shadow:0 0 30px var(--glow)}
+.gap-badge{
+  font-size:clamp(22px, 3vw, 40px); font-weight:900; padding:10px 24px; border-radius:16px;
+  background:#e46a6a; color:#fff; animation:enter .5s both;
+}
+.energy-cells{display:grid; grid-template-columns:repeat(10, 1fr); gap:6px; margin-top:10px}
+.ecell{width:clamp(20px, 2.6vw, 34px); aspect-ratio:1; border-radius:6px; background:var(--accent); box-shadow:0 0 14px var(--glow), inset 0 -3px 0 rgba(0,0,0,.15)}
+
+/* rules / task */
+.task{display:grid; grid-template-columns:1.25fr 1fr; gap:22px; align-items:stretch; margin-top:22px}
+.rules{display:flex; flex-direction:column; gap:14px}
+.rule{display:flex; gap:16px; align-items:flex-start; padding:18px 20px}
+.rule .no{
+  flex:none; width:44px; height:44px; border-radius:50%; background:var(--accent); color:var(--accent-ink);
+  display:flex; align-items:center; justify-content:center; font-weight:900; font-size:22px;
+}
+.rule p{font-size:clamp(19px, 2vw, 27px); line-height:1.45; font-weight:500}
+.checks{list-style:none; display:flex; flex-direction:column; gap:10px}
+.checks li{
+  display:flex; align-items:center; gap:12px; padding:13px 16px; border-radius:var(--r-sm);
+  background:var(--card); border:1px solid var(--line); font-size:clamp(17px, 1.8vw, 24px); cursor:pointer; user-select:none;
+}
+.checks li .box{flex:none; width:28px; height:28px; border-radius:8px; border:2px solid var(--muted); display:flex; align-items:center; justify-content:center; font-weight:900}
+.checks li.ok .box{background:var(--traffic); border-color:var(--traffic); color:#fff}
+.checks li.ok{opacity:.75}
+
+/* big timer */
+.bigtimer{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:24px}
+.ring{position:relative; width:min(32vh, 300px); aspect-ratio:1}
+.ring svg{width:100%; height:100%; transform:rotate(-90deg)}
+.ring .track{stroke:var(--empty)}
+.ring .prog{stroke:var(--accent); transition:stroke-dashoffset 1s linear; filter:drop-shadow(0 0 8px var(--glow))}
+.ring .val{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-size:clamp(40px, 6vw, 74px); font-weight:900; font-variant-numeric:tabular-nums;
+}
+.bigtimer.end .val{color:#e46a6a; animation:pulse 1s infinite}
+.tbtns{display:flex; gap:8px; flex-wrap:wrap; justify-content:center}
+.tbtns button{padding:9px 16px; border-radius:999px; border:1px solid var(--line); font-size:15px; background:var(--card)}
+.tbtns button.main{background:var(--accent); color:var(--accent-ink); border-color:transparent; font-weight:700; min-width:96px}
+.patrol{
+  text-align:center; padding:16px 18px; border-radius:var(--r); border:1px dashed var(--line);
+  font-size:clamp(18px, 1.9vw, 25px); font-family:var(--serif); font-weight:700; min-height:76px;
+  display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer;
+}
+.patrol small{font-family:var(--font); font-weight:500; font-size:13px; color:var(--muted)}
+
+/* allocation board */
+.board{display:flex; flex-direction:column; gap:6px; margin-top:12px}
+.legend{display:flex; flex-wrap:wrap; gap:8px 16px; justify-content:center; font-size:15px; color:var(--muted); margin-top:10px}
+.legend i{display:inline-block; width:14px; height:14px; border-radius:4px; background:var(--c); vertical-align:-2px; margin-right:5px}
+.grow{
+  display:grid; grid-template-columns:86px 1fr 92px; align-items:center; gap:14px;
+  padding:6px 14px; border-radius:var(--r-sm); background:var(--card); border:1px solid var(--line);
+  cursor:pointer; transition:opacity .25s, box-shadow .2s, transform .15s;
+}
+.grow:hover{transform:translateY(-1px)}
+.board.picking .grow{opacity:.35}
+.board.picking .grow.pick{opacity:1; box-shadow:0 0 0 2px var(--accent), 0 0 24px var(--glow)}
+.gname{font-weight:900; font-size:clamp(16px, 1.6vw, 21px)}
+.gbar{display:grid; grid-template-columns:repeat(var(--cols,20), 1fr); gap:3px}
+.gbar .c{height:clamp(12px, 3.2vh, 30px); border-radius:4px; background:var(--empty); position:relative}
+.gbar .c.f{background:var(--c); box-shadow:inset 0 -3px 0 rgba(0,0,0,.16)}
+.gbar .c.over{background:repeating-linear-gradient(45deg,#e46a6a,#e46a6a 4px,transparent 4px,transparent 8px)}
+.gnums{display:flex; gap:3px; font-size:13px; color:var(--muted); margin-top:3px; flex-wrap:wrap}
+.gnums span{white-space:nowrap}
+.gnums b{color:var(--ink)}
+.gnums .d{font-weight:700; margin-left:2px}
+.gnums .d.up{color:var(--traffic)} .gnums .d.dn{color:var(--hosp)}
+.gsum{text-align:right; font-size:15px; font-weight:700}
+.gsum.ok{color:var(--traffic)} .gsum.no{color:var(--hosp)}
+.board-tools{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; align-items:center; margin-top:14px}
+.board-tools .tool{font-size:14px}
+
+/* editor modal */
+.modal-bg{position:fixed; inset:0; z-index:80; background:rgba(5,8,20,.6); display:flex; align-items:center; justify-content:center; padding:16px; animation:enter .2s both}
+.modal{width:min(720px, 100%); max-height:92dvh; overflow:auto; background:var(--card-strong); border:1px solid var(--line); border-radius:22px; padding:24px; backdrop-filter:blur(14px)}
+body[data-theme="night"] .modal{background:#1a2450}
+.modal h3{font-size:24px; display:flex; justify-content:space-between; align-items:center; gap:10px}
+.counters{display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:12px; margin:18px 0}
+.counter{border-radius:var(--r-sm); border:1px solid var(--line); padding:12px; text-align:center; border-top:5px solid var(--c)}
+.counter .lab{font-size:18px; font-weight:700}
+.counter .need{font-size:12px; color:var(--muted); display:block}
+.counter .row{display:flex; align-items:center; justify-content:center; gap:10px; margin-top:8px}
+.counter .row button{width:44px; height:44px; border-radius:50%; border:1px solid var(--line); font-size:24px; font-weight:700; background:var(--card)}
+.counter .row b{font-size:32px; min-width:42px; font-variant-numeric:tabular-nums}
+
+/* energy cards */
+.energy-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-top:24px}
+.ecard{overflow:hidden; padding:0; transition:transform .2s, box-shadow .2s; text-align:left; display:flex; flex-direction:column}
+.ecard:hover{transform:translateY(-3px); box-shadow:0 12px 34px rgba(0,0,0,.15)}
+.ecard .img{aspect-ratio:4/3; background:var(--bg2); position:relative; overflow:hidden}
+.ecard .img img{width:100%; height:100%; object-fit:cover; display:block}
+.ecard .img span{position:absolute; left:12px; top:10px; font-size:42px; filter:drop-shadow(0 2px 6px rgba(0,0,0,.3))}
+.ecard .body{padding:14px 16px 18px}
+.ecard h4{font-size:clamp(20px, 2vw, 27px); font-weight:900; border-left:6px solid var(--c); padding-left:10px}
+.ecard p{font-size:clamp(14px, 1.35vw, 17px); line-height:1.6; color:var(--muted); margin-top:8px}
+.ecard p b{color:var(--ink)}
+
+/* share */
+.share-head{display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap}
+.share-head .gname{font-size:clamp(26px, 3vw, 40px)}
+.share-head button{width:44px; height:44px; border-radius:50%; border:1px solid var(--line); font-size:20px; background:var(--card)}
+.qlist{display:grid; grid-template-columns:repeat(2, 1fr); gap:14px; margin-top:22px}
+.qitem{display:flex; gap:14px; align-items:center; padding:18px 20px}
+.qitem .no{flex:none; width:48px; height:48px; border-radius:14px; background:var(--accent); color:var(--accent-ink); font-weight:900; font-size:24px; display:flex; align-items:center; justify-content:center}
+.qitem p{font-size:clamp(19px, 2vw, 28px); font-weight:700; line-height:1.4}
+.mini-bar{max-width:720px; margin:16px auto 0}
+
+/* actions */
+.act-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-top:24px}
+.act{position:relative; padding:18px 14px; text-align:center; cursor:pointer; user-select:none; transition:transform .15s, box-shadow .2s}
+.act:hover{transform:translateY(-2px)}
+.act .ico{font-size:clamp(34px, 3.6vw, 48px)}
+.act .t{font-size:clamp(16px, 1.6vw, 21px); font-weight:700; margin-top:8px; line-height:1.4}
+.act .cnt{position:absolute; top:8px; right:10px; min-width:30px; height:30px; padding:0 8px; border-radius:99px; background:var(--accent); color:var(--accent-ink); font-weight:900; display:none; align-items:center; justify-content:center}
+.act.has .cnt{display:flex}
+.act.has{box-shadow:0 0 0 2px var(--accent)}
+.promise{
+  margin-top:24px; text-align:center; font-family:var(--serif); font-weight:700; font-size:clamp(22px, 2.7vw, 36px); line-height:1.7;
+}
+.promise u{text-decoration:none; display:inline-block; min-width:6em; border-bottom:3px solid var(--accent)}
+
+/* core */
+.core{display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; margin-top:28px}
+.core .card{text-align:center; padding:26px 14px}
+.core .no{font-size:15px; color:var(--accent); font-weight:900; letter-spacing:.1em}
+.core p{font-family:var(--serif); font-size:clamp(22px, 2.5vw, 34px); font-weight:900; margin-top:8px}
+.motto{
+  margin-top:34px; text-align:center; font-family:var(--serif); font-weight:900; line-height:1.6;
+  font-size:clamp(26px, 3.6vw, 52px); text-shadow:0 0 30px var(--glow);
+}
+
+/* event card */
+.event{
+  max-width:640px; margin:18px auto 0; padding:22px 26px; border-radius:20px; text-align:left;
+  background:linear-gradient(135deg, var(--card-strong), var(--card)); border:2px solid var(--accent);
+  box-shadow:0 0 30px var(--glow); animation:enter .4s both;
+}
+.event .tag{font-size:13px; font-weight:900; color:var(--accent); letter-spacing:.12em}
+.event h4{font-size:clamp(24px, 2.6vw, 34px); margin-top:4px}
+.event p{font-size:clamp(17px, 1.8vw, 23px); line-height:1.6; margin-top:8px}
+.two{display:grid; grid-template-columns:1fr 1.25fr; gap:24px; align-items:center}
+.two.slim{grid-template-columns:minmax(0,.8fr) 1.6fr}
+.two.slim .thumb img{max-height:30vh}
+.thumb{border-radius:var(--r); overflow:hidden; box-shadow:0 12px 40px rgba(0,0,0,.3); line-height:0}
+.thumb img{width:100%; aspect-ratio:4/3; object-fit:cover; display:block}
+
+/* bottom nav */
+.navbar{
+  position:fixed; bottom:0; left:0; right:0; height:var(--bottom); z-index:50;
+  display:flex; align-items:center; justify-content:space-between; gap:12px; padding:0 14px;
+  background:var(--bar); backdrop-filter:blur(10px); border-top:1px solid var(--line);
+}
+.navbtn{height:44px; padding:0 20px; border-radius:12px; border:1px solid var(--line); font-size:16px; font-weight:700; display:inline-flex; align-items:center; gap:6px; flex:none}
+.navbtn.next{background:var(--accent); color:var(--accent-ink); border-color:transparent}
+.navbtn:disabled{opacity:.3; cursor:default}
+.where{flex:1; min-width:0; text-align:center}
+.where .lab{font-size:15px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.prog{height:5px; background:var(--empty); border-radius:99px; margin-top:6px; overflow:hidden; max-width:520px; margin-left:auto; margin-right:auto}
+.prog i{display:block; height:100%; background:var(--accent); border-radius:99px; transition:width .4s}
+
+/* teacher drawer */
+.drawer{
+  position:fixed; top:var(--top); right:0; bottom:var(--bottom); width:min(420px, 100%); z-index:60;
+  background:#fffdf8; color:#2d261f; border-left:1px solid rgba(96,72,48,.15);
+  box-shadow:-20px 0 60px rgba(0,0,0,.25); transform:translateX(105%); transition:transform .3s ease;
+  display:flex; flex-direction:column;
+}
+.drawer.open{transform:none}
+.drawer-tabs{display:flex; border-bottom:1px solid rgba(96,72,48,.15); flex:none}
+.drawer-tabs button{flex:1; padding:13px 6px; font-size:14px; color:#665849; border-bottom:3px solid transparent}
+.drawer-tabs button.on{color:#2d261f; font-weight:700; border-color:#e7a521}
+.drawer-body{overflow:auto; padding:18px 20px 30px; font-size:15px; line-height:1.75}
+.drawer h5{font-size:13px; letter-spacing:.08em; color:#9a7a3a; margin:16px 0 6px}
+.drawer h5:first-child{margin-top:0}
+.drawer .say{background:#fbf3df; border-left:4px solid #e7a521; padding:10px 14px; border-radius:0 10px 10px 0}
+.drawer .node{font-size:18px; font-weight:900; margin-bottom:4px}
+.drawer .meta{font-size:13px; color:#9a8874}
+.drawer .faq{border:1px solid rgba(96,72,48,.15); border-radius:12px; padding:12px 14px; margin-bottom:10px}
+.drawer .faq b{display:block; margin-bottom:4px}
+.drawer table{width:100%; border-collapse:collapse; font-size:14px}
+.drawer td{border-bottom:1px solid rgba(96,72,48,.12); padding:7px 4px; vertical-align:top}
+.drawer .key{display:inline-block; border:1px solid #c9b8a4; border-radius:5px; padding:0 6px; font-size:12px; background:#f6efe4; margin:0 2px}
+.drawer .lic{margin-top:22px; padding-top:14px; border-top:1px solid rgba(42,32,24,.08); font-size:12px; color:#9a8878; line-height:1.9}
+.drawer .lic a{color:#7a8878; text-decoration:underline; text-underline-offset:2px}
+
+.toast{
+  position:fixed; left:50%; top:calc(var(--top) + 10px); transform:translateX(-50%); z-index:90;
+  background:#2d261f; color:#fffdf8; padding:10px 18px; border-radius:12px; font-size:14px; max-width:92vw;
+  box-shadow:0 10px 30px rgba(0,0,0,.3); line-height:1.6;
+}
+.toast button{margin-left:10px; color:#e7a521; font-weight:700}
+
+/* print-only worksheet */
+.print-sheet{display:none}
+@media print{
+  @page{size:A4; margin:14mm}
+  body{overflow:visible; background:#fff; color:#000}
+  body::before,body::after,.topbar,.navbar,.stage,.drawer,.backdrop,.toast,.modal-bg{display:none !important}
+  .print-sheet{display:block; font-family:var(--font); color:#000}
+  .print-sheet h2{font-family:var(--serif); font-size:20pt; text-align:center}
+  .print-sheet .s{text-align:center; font-size:11pt; color:#555; margin:4px 0 14px}
+  .print-sheet h3{font-size:13pt; margin:16px 0 8px; border-left:5px solid #e7a521; padding-left:8px}
+  .print-sheet table{width:100%; border-collapse:collapse; font-size:12pt}
+  .print-sheet th,.print-sheet td{border:1px solid #888; padding:9px 8px; text-align:center}
+  .print-sheet td.why{height:16mm; width:45%}
+  .print-sheet .box20{display:grid; grid-template-columns:repeat(10, 1fr); gap:3mm; margin:8px 0}
+  .print-sheet .box20 i{border:1.5px solid #888; border-radius:2mm; aspect-ratio:1}
+  .print-sheet ul{list-style:none; columns:2; font-size:12pt; line-height:2.1}
+  .print-sheet .line{font-size:13pt; margin-top:12px; line-height:2.2}
+  .print-sheet .draw{border:1.5px dashed #999; height:45mm; border-radius:3mm; margin-top:8px; display:flex; align-items:flex-start; padding:6px 10px; font-size:10pt; color:#888}
+  .print-sheet .foot{margin-top:14px; font-size:9pt; color:#888; text-align:center}
+}
+
+/* responsive */
+@media (max-width:1100px){
+  .step-chip .t,.step-chip .m{display:none}
+  .fac-grid{grid-template-columns:repeat(3, 1fr)}
+  .energy-grid,.act-grid,.core{grid-template-columns:repeat(2, 1fr)}
+}
+@media (max-width:760px){
+  :root{--top:54px; --bottom:60px}
+  .topbar{gap:6px; padding:0 8px}
+  .home-btn .tx,.tool .tx,.title-mini{display:none}
+  .steps{gap:3px}
+  .step-chip{padding:5px 8px}
+  .step-chip .en{display:none}
+  .stage{padding:14px 16px}
+  .fac-grid{grid-template-columns:repeat(2, 1fr)}
+  .task,.two,.qlist{grid-template-columns:1fr}
+  .needs{grid-template-columns:repeat(3, auto)}
+  .grow{grid-template-columns:60px 1fr; }
+  .gsum{grid-column:2; text-align:left}
+  .frame img{height:auto; width:100%}
+  .fallback{width:100%}
+  .navbtn{padding:0 12px}
+  .navbtn .tx{display:none}
+  .grade button{padding:0 8px}
+}
+@media (max-width:460px){
+  .energy-grid,.act-grid,.core{grid-template-columns:1fr}
+  .steps{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none !important; transition:none !important}}
+
+/* ── 遊樂場頁專用 ── */
+body[data-theme="day"]{
+  --bg:#fbf5ea; --bg2:#e3f2ee; --accent:#ef7d57; --accent-ink:#fff; --glow:rgba(239,125,87,.32);
+}
+body[data-theme="dusk"]{
+  --bg:#fbeee2; --bg2:#f6d7c3; --ink:#3a2a22; --muted:#73584a; --faint:#a68a78;
+  --card:#fffaf4; --card-strong:#fff; --line:rgba(110,70,40,.16);
+  --accent:#e0703f; --accent-ink:#fff; --glow:rgba(224,112,63,.32); --bar:rgba(255,250,244,.92);
+  --empty:rgba(110,70,40,.1);
+}
+:root{ --lele:#ef7d57; --anan:#3f9fd6; --doudou:#f2b632; --mimi:#8a76d8; --elders:#4caf7d; }
+.rainbow{background:linear-gradient(90deg,#ef7d57,#f2b632,#4caf7d,#3f9fd6,#8a76d8); -webkit-background-clip:text; background-clip:text; color:transparent}
+
+/* vote board */
+.votes{display:grid; grid-template-columns:repeat(5, 1fr); gap:12px; margin-top:24px}
+.vote{position:relative; padding:18px 10px; text-align:center; cursor:pointer; user-select:none; border-top:6px solid var(--c); transition:transform .15s, box-shadow .2s}
+.vote:hover{transform:translateY(-2px)}
+.vote .t{font-size:clamp(18px, 1.9vw, 26px); font-weight:900}
+.vote .n{font-size:clamp(26px, 3vw, 40px); font-weight:900; color:var(--c); font-variant-numeric:tabular-nums; margin-top:4px}
+.vote .bar{height:8px; border-radius:99px; background:var(--empty); margin-top:8px; overflow:hidden}
+.vote .bar i{display:block; height:100%; background:var(--c); border-radius:99px; transition:width .3s}
+.vote.top{box-shadow:0 0 0 3px var(--c), 0 10px 30px rgba(0,0,0,.08)}
+.vote.top::after{content:attr(data-rank); position:absolute; top:-12px; right:-8px; background:var(--c); color:#fff; font-weight:900; font-size:13px; padding:3px 9px; border-radius:99px}
+.vote-tools{display:flex; gap:8px; justify-content:center; margin-top:14px; align-items:center; font-size:14px; color:var(--muted)}
+
+/* observe banner */
+.banner{
+  display:inline-flex; align-items:center; gap:14px; padding:14px 26px; border-radius:999px;
+  background:var(--card); border:2px dashed var(--accent); font-size:clamp(20px, 2.4vw, 32px); font-weight:900;
+}
+
+/* role cards */
+.roles{display:grid; grid-template-columns:repeat(5, 1fr); gap:14px; margin-top:22px}
+.role{overflow:hidden; padding:0; display:flex; flex-direction:column; border-top:6px solid var(--c)}
+.role .img{aspect-ratio:4/3; background:var(--bg2); overflow:hidden; position:relative}
+.role .img img{width:100%; height:100%; object-fit:cover; display:block}
+.role .img .badge{position:absolute; left:10px; bottom:10px; background:var(--c); color:#fff; font-weight:900; font-size:clamp(17px,1.8vw,24px); padding:4px 14px; border-radius:99px}
+.role .body{padding:12px 14px 16px; flex:1; display:flex; flex-direction:column; gap:8px}
+.role .who{font-size:14px; color:var(--muted)}
+.role .lab{font-size:12px; font-weight:900; letter-spacing:.08em; color:var(--c)}
+.role ul{list-style:none; display:flex; flex-wrap:wrap; gap:6px}
+.role li{font-size:clamp(13px,1.3vw,16px); background:var(--empty); padding:3px 10px; border-radius:99px}
+.role .hidden-note{font-size:13px; color:var(--faint); border:1px dashed var(--line); border-radius:10px; padding:8px; text-align:center; cursor:pointer}
+.qrow{display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:16px}
+.qrow .chip{font-weight:700}
+
+/* big sentence */
+.sentence{
+  display:inline-block; margin-top:10px; padding:26px 40px; border-radius:28px; background:var(--card);
+  border:3px solid var(--accent); box-shadow:0 0 40px var(--glow);
+  font-family:var(--serif); font-weight:900; font-size:clamp(34px, 5vw, 72px); line-height:1.3;
+}
+.compare2{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:26px; text-align:left}
+.compare2 .card{padding:18px 20px}
+.compare2 .x{font-size:15px; color:var(--muted)}
+.compare2 p{font-size:clamp(17px,1.8vw,24px); font-weight:700; margin-top:4px; line-height:1.5}
+
+/* group draw board */
+.gboard{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:12px; margin-top:18px}
+.gcard{padding:14px 16px; cursor:pointer; transition:transform .15s}
+.gcard:hover{transform:translateY(-2px)}
+.gcard .gname{font-size:18px}
+.gcard .picks{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; min-height:40px}
+.pick{display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:99px; background:var(--c); color:#fff; font-weight:900; font-size:clamp(15px,1.6vw,20px)}
+.pick.mys{background:var(--ink); color:var(--bg)}
+.gcard .empty{color:var(--faint); font-size:14px}
+
+/* rule card */
+.only-rule{
+  margin-top:14px; padding:18px 22px; border-radius:var(--r); background:var(--accent); color:var(--accent-ink);
+  font-size:clamp(19px,2.1vw,28px); font-weight:900; line-height:1.4; box-shadow:0 8px 26px var(--glow);
+}
+.only-rule small{display:block; font-size:13px; font-weight:700; opacity:.85; letter-spacing:.1em; margin-bottom:4px}
+
+/* mystery */
+.mystery-deck{display:grid; grid-template-columns:repeat(5, 1fr); gap:14px; margin-top:24px}
+.mcard{min-height:230px; padding:18px 14px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; cursor:pointer; transition:transform .3s, box-shadow .3s}
+.mcard .ico{font-size:clamp(40px,4.4vw,60px)}
+.mcard .t{font-size:clamp(17px,1.7vw,23px); font-weight:900; line-height:1.4}
+.mcard .h{font-size:clamp(13px,1.3vw,16px); color:var(--muted); line-height:1.5}
+.mcard.back{background:linear-gradient(135deg,var(--accent),#f2b632); color:#fff; border:none}
+.mcard.back .ico{filter:drop-shadow(0 4px 10px rgba(0,0,0,.2))}
+.mcard.on{box-shadow:0 0 0 3px var(--accent), 0 12px 34px var(--glow); transform:translateY(-4px)}
+
+/* universal design matrix */
+.ud{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.3fr); gap:22px; margin-top:22px; align-items:start}
+.ud-list{display:flex; flex-direction:column; gap:8px}
+.ud-item{display:flex; align-items:center; gap:12px; padding:13px 16px; border-radius:var(--r-sm); background:var(--card); border:1px solid var(--line); cursor:pointer; font-size:clamp(17px,1.8vw,23px); font-weight:700; transition:all .15s; text-align:left}
+.ud-item .ico{font-size:26px}
+.ud-item.on{background:var(--accent); color:var(--accent-ink); border-color:transparent; box-shadow:0 6px 22px var(--glow)}
+.ud-out{padding:24px; min-height:260px}
+.ud-out h4{font-size:clamp(22px,2.4vw,32px)}
+.ud-out .users{display:flex; flex-wrap:wrap; gap:10px; margin-top:16px}
+.ud-out .u{padding:9px 16px; border-radius:99px; background:var(--c, var(--empty)); color:#fff; font-weight:900; font-size:clamp(15px,1.6vw,20px); animation:enter .35s both}
+.ud-out .u.gen{background:var(--ink); color:var(--bg)}
+.ud-out .count{margin-top:18px; font-family:var(--serif); font-weight:900; font-size:clamp(22px,2.6vw,34px); color:var(--accent)}
+
+/* frames */
+.frames{display:flex; flex-direction:column; gap:12px; margin-top:20px}
+.frame-line{display:flex; align-items:center; gap:14px; padding:16px 20px; font-size:clamp(19px,2.1vw,29px); font-weight:700}
+.frame-line .no{flex:none; width:44px; height:44px; border-radius:12px; background:var(--accent); color:var(--accent-ink); font-weight:900; display:flex; align-items:center; justify-content:center}
+.frame-line u{text-decoration:none; display:inline-block; min-width:5em; border-bottom:3px solid var(--accent); margin:0 4px}
+
+/* reflection */
+.journey{display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:10px; margin-top:22px}
+.journey .st{padding:12px 18px; border-radius:16px; background:var(--card); border:1px solid var(--line); font-weight:700; font-size:clamp(15px,1.6vw,21px)}
+.journey .st.last{background:var(--accent); color:var(--accent-ink); border-color:transparent}
+.journey .ar{color:var(--accent); font-weight:900; font-size:22px}
+.first-vote{margin-top:6px; font-size:15px; color:var(--muted)}
+.first-vote b{color:var(--ink)}
+.quote{
+  margin-top:26px; text-align:center; font-family:var(--serif); font-weight:900; line-height:1.6;
+  font-size:clamp(24px, 3.2vw, 46px);
+}
+.quote small{display:block; font-family:var(--font); font-weight:500; font-size:clamp(15px,1.6vw,20px); color:var(--muted); margin-top:10px}
+
+@media (max-width:1100px){
+  .votes,.roles,.mystery-deck{grid-template-columns:repeat(3, 1fr)}
+}
+@media (max-width:760px){
+  .votes,.roles,.mystery-deck{grid-template-columns:repeat(2, 1fr)}
+  .ud,.compare2{grid-template-columns:1fr}
+  .sentence{padding:18px 20px}
+}
+@media print{
+  .print-sheet .cards{display:grid; grid-template-columns:1fr 1fr; gap:6mm}
+  .print-sheet .pc{border:1.5px solid #888; border-radius:4mm; padding:5mm 6mm; min-height:52mm; break-inside:avoid}
+  .print-sheet .pc .k{font-size:9pt; color:#777; letter-spacing:.1em}
+  .print-sheet .pc .nm{font-size:20pt; font-weight:900; margin:2mm 0}
+  .print-sheet .pc p{font-size:11pt; line-height:1.6}
+  .print-sheet .pc.r{border-top:4mm solid var(--c)}
+  .print-sheet .pb{break-before:page}
+}
+
+/* ── 慢慢村與快快城專用 ── */
+:root{ --fast:#f08a3c; --fast-soft:#fdeee0; --slow:#4f9a6a; --slow-soft:#e5f2e8; --link:#3f8fcf; }
+body[data-theme="day"]{
+  --bg:#f8f3ea; --bg2:#e6f0f5; --accent:#f08a3c; --accent-ink:#fff; --glow:rgba(240,138,60,.3);
+}
+body[data-theme="night"]{ --bg:#141b33; --bg2:#22305e; }
+/* 16:9 繪本 */
+.story .frame{width:min(100%, calc((100dvh - var(--top) - var(--bottom) - 36px) * 16 / 9))}
+.story.with-cap .frame{width:min(100%, calc((100dvh - var(--top) - var(--bottom) - 140px) * 16 / 9))}
+.frame img{aspect-ratio:16/9; height:auto; width:100%; max-height:none}
+.story.with-cap .frame img{height:auto}
+body[data-theme="day"] .backdrop{opacity:.08; filter:blur(6px)}
+.fallback{aspect-ratio:16/9; width:100%}
+.thumb img{aspect-ratio:16/9}
+.fast{color:var(--fast)} .slow{color:var(--slow)}
+
+/* tempo */
+.tempo{display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-top:26px}
+.tbtn{padding:24px 14px; border-radius:22px; text-align:center; background:var(--card); border:2px solid var(--line); cursor:pointer; transition:all .2s}
+.tbtn .ico{font-size:clamp(40px,4.6vw,64px)}
+.tbtn .t{font-size:clamp(22px,2.6vw,36px); font-weight:900; margin-top:6px}
+.tbtn .s{font-size:14px; color:var(--muted)}
+.tbtn.on{border-color:var(--c); box-shadow:0 0 0 3px var(--c), 0 12px 30px rgba(0,0,0,.1); background:var(--cs)}
+.pulse-wrap{display:flex; align-items:center; justify-content:center; gap:18px; margin-top:24px; min-height:90px}
+.pulse{width:70px; height:70px; border-radius:50%; background:var(--c, var(--accent)); opacity:.25}
+.pulse.go{animation:beat var(--d) ease-out infinite}
+@keyframes beat{0%{transform:scale(1.25); opacity:1} 70%{transform:scale(.85); opacity:.35} 100%{transform:scale(.85); opacity:.25}}
+.stopbtn{font-size:22px; padding:16px 34px}
+
+/* power table */
+.duo{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:24px}
+.side{padding:0; overflow:hidden}
+.side .hd{padding:14px 20px; color:#fff; font-size:clamp(20px,2.2vw,30px); font-weight:900; display:flex; align-items:center; gap:10px}
+.side .bd{padding:16px 20px; display:flex; flex-direction:column; gap:12px}
+.cell2{border-radius:14px; padding:12px 16px; cursor:pointer; border:1px dashed var(--line); min-height:74px}
+.cell2 .k{font-size:13px; font-weight:900; letter-spacing:.08em}
+.cell2 .v{font-size:clamp(18px,2vw,27px); font-weight:700; margin-top:2px}
+.cell2 .q{font-size:clamp(16px,1.7vw,22px); color:var(--muted); margin-top:2px}
+.cell2.open{border-style:solid; background:var(--card-strong)}
+.core-line{
+  margin-top:24px; text-align:center; font-family:var(--serif); font-weight:900; font-size:clamp(24px,3vw,42px); line-height:1.5;
+}
+.core-line .hl{background:linear-gradient(transparent 60%, var(--glow) 60%)}
+
+/* stop scenes */
+.stopbadge{display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:99px; background:var(--ink); color:var(--bg); font-weight:900; font-size:14px; letter-spacing:.06em}
+.two.st{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}
+.formula{
+  margin-top:22px; display:flex; flex-wrap:wrap; align-items:center; gap:12px; font-size:clamp(20px,2.3vw,32px); font-weight:900;
+  animation:enter .45s both;
+}
+.formula .b{padding:10px 18px; border-radius:16px; background:var(--card-strong); border:2px solid var(--c, var(--accent))}
+.formula .ar{color:var(--accent)}
+
+/* scenario sorter */
+.sorter{display:grid; grid-template-columns:1fr 1.5fr 1fr; gap:18px; align-items:stretch; margin-top:22px}
+.side-btn{border-radius:24px; padding:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:pointer; color:#fff; transition:transform .15s; user-select:none}
+.side-btn:active{transform:scale(.97)}
+.side-btn .t{font-size:clamp(22px,2.6vw,36px); font-weight:900}
+.side-btn .n{font-size:clamp(44px,6vw,84px); font-weight:900; line-height:1; font-variant-numeric:tabular-nums}
+.side-btn .s{font-size:13px; opacity:.9}
+.side-btn.f{background:var(--fast)} .side-btn.sl{background:var(--slow)}
+.scen{padding:26px 24px; text-align:center; display:flex; flex-direction:column; justify-content:center; gap:14px}
+.scen .ico{font-size:clamp(48px,6vw,84px)}
+.scen .t{font-family:var(--serif); font-size:clamp(26px,3.2vw,46px); font-weight:900; line-height:1.35}
+.scen .nav{display:flex; justify-content:center; align-items:center; gap:12px; font-size:14px; color:var(--muted)}
+.scen .nav button{width:40px; height:40px; border-radius:50%; border:1px solid var(--line); font-size:18px; background:var(--card)}
+.balance{height:14px; border-radius:99px; overflow:hidden; display:flex; background:var(--empty)}
+.balance i{display:block; height:100%; transition:width .3s}
+.insight{margin-top:4px; padding:14px 16px; border-radius:16px; background:var(--card-strong); border:2px solid var(--accent); font-size:clamp(16px,1.7vw,22px); line-height:1.6; text-align:left; animation:enter .4s both}
+.insight b{color:var(--accent)}
+
+/* zones */
+.zones{display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-top:20px}
+.zone{padding:0; overflow:hidden; display:flex; flex-direction:column}
+.zone .hd{padding:14px 18px; color:#fff; display:flex; align-items:baseline; gap:10px}
+.zone .hd b{font-size:clamp(26px,3vw,40px); font-weight:900}
+.zone .hd span{font-size:clamp(18px,2vw,26px); font-weight:900}
+.zone .bd{padding:14px 18px 18px; display:flex; flex-direction:column; gap:10px; flex:1}
+.zone .ex{display:flex; flex-wrap:wrap; gap:6px}
+.zone .ex i{font-style:normal; padding:4px 11px; border-radius:99px; background:var(--empty); font-size:clamp(13px,1.3vw,16px)}
+.zone .ask{margin-top:auto; font-family:var(--serif); font-weight:700; font-size:clamp(16px,1.7vw,22px); line-height:1.5; padding-top:10px; border-top:1px dashed var(--line)}
+.zone.key{box-shadow:0 0 0 3px var(--link), 0 12px 30px rgba(63,143,207,.2)}
+.zone .star{font-size:12px; font-weight:900; background:#fff; color:var(--link); padding:2px 8px; border-radius:99px; margin-left:auto}
+.task.wide{grid-template-columns:1.45fr 1fr}
+
+/* checkout */
+.checkout{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:24px}
+.co{padding:22px 24px; border-top:8px solid var(--c)}
+.co .t{font-family:var(--serif); font-weight:900; font-size:clamp(22px,2.6vw,36px); line-height:1.5}
+.co .t u{text-decoration:none; display:inline-block; min-width:4.5em; border-bottom:3px solid var(--c)}
+.co ul{list-style:none; margin-top:12px; display:flex; flex-direction:column; gap:6px; font-size:clamp(15px,1.6vw,20px); color:var(--muted)}
+.co li::before{content:"・"; color:var(--c)}
+.motto3{margin-top:26px; text-align:center; font-family:var(--serif); font-weight:900; font-size:clamp(24px,3.2vw,46px); line-height:1.65}
+
+@media (max-width:1100px){ .sorter{grid-template-columns:1fr 1fr} .scen{grid-column:1 / -1; order:-1} }
+@media (max-width:760px){
+  .tempo,.duo,.zones,.checkout,.two.st{grid-template-columns:1fr}
+  .task.wide{grid-template-columns:1fr}
+}
+@media print{
+  .print-sheet .notes{display:grid; grid-template-columns:1fr 1fr; gap:6mm}
+  .print-sheet .note{border:1.5px solid #888; border-radius:4mm; padding:6mm; min-height:72mm; break-inside:avoid; font-size:12.5pt; line-height:2.3}
+  .print-sheet .note .k{font-size:9pt; color:#777; letter-spacing:.1em; line-height:1.4}
+}
+</style>
+</head>
+<body data-theme="day">
+
+<header class="topbar">
+  <a class="home-btn" href="index.html" aria-label="返回資源中心">← <span class="tx">資源中心</span></a>
+  <nav class="steps" id="steps" aria-label="課程步驟"></nav>
+  <div class="tools">
+    <span class="timer-pill" id="timerPill" title="活動計時器"></span>
+    <div class="grade" role="group" aria-label="年段">
+      <button data-grade="low" title="國小 2～3 年級">低</button>
+      <button data-grade="high" title="國小 4～6 年級">高</button>
+    </div>
+    <button class="tool" id="teacherBtn" title="教師小抄（T）">📋 <span class="tx">教師</span></button>
+    <button class="tool" id="fsBtn" title="全螢幕（F）">⛶</button>
+  </div>
+</header>
+
+<div class="backdrop" id="backdrop"></div>
+<main class="stage" id="stage" aria-live="polite"></main>
+
+<footer class="navbar">
+  <button class="navbtn" id="prevBtn">‹ <span class="tx">上一頁</span></button>
+  <div class="where"><div class="lab" id="whereLab"></div><div class="prog"><i id="progBar"></i></div></div>
+  <button class="navbtn next" id="nextBtn"><span class="tx">下一頁</span> ›</button>
+</footer>
+
+<aside class="drawer" id="drawer" aria-label="教師小抄">
+  <div class="drawer-tabs">
+    <button data-tab="now" class="on">這一頁</button>
+    <button data-tab="faq">停格・引導語</button>
+    <button data-tab="eval">評量・操作</button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</aside>
+
+<div class="print-sheet" id="printSheet"></div>
+
+<script>
+/* ═══════════ 資料 ═══════════ */
+const IMG_DIR = 'speed-town/';
+// 鍵為 Canva 頁碼：1 封面、2～17 故事、18 積木任務
+const STORY = {
+  1:'《慢慢村與快快城》',
+  2:'山的東邊，是「快快城」。\n山的西邊，是「慢慢村」。\n兩個地方離得很近，生活的方式卻完全不一樣。',
+  3:'快快城的人最常說：「快一點！」\n走路要快，吃飯要快，做事也要快。\n大家都相信：「越快完成，就代表越厲害。」',
+  4:'小凱總是第一個完成。\n畫畫最快，作業最快，吃飯也最快。\n可是有時候，他忘了畫樹幹，也會漏掉題目。\n小凱卻想：「沒關係，我最快！」',
+  5:'慢慢村的人最常說：「別急，慢慢來。」\n吃早餐時看看天空，走路時和鄰居打招呼，\n傍晚一起坐在樹下聊天。\n他們覺得：「生活不用一直趕。」',
+  6:'小悠走路總是慢慢的。\n她會停下來看蝸牛，聽風吹過葉子的聲音，\n想一想天空到底是哪一種藍。\n只是有時候，大家都走遠了，她還在原地仔細觀察。',
+  7:'一年一度的山谷節到了。\n快快城展示最快的列車。慢慢村展示最舒服的公園。\n快快城說：「效率才重要！」慢慢村說：「生活才重要！」\n誰也不服誰。',
+  8:'那天晚上，大雨下了一整夜。\n「轟——！」連接兩地的老橋，被洪水沖壞了。\n快快城和慢慢村，第一次被分開了。',
+  9:'快快城立刻開始行動。\n「快！今天就把橋蓋回來！」\n十分鐘討論，半小時準備，馬上施工。\n天還沒黑，一座臨時橋就出現了。',
+  10:'可是第二天，橋開始搖晃。\n原來大家太急著施工，忘了檢查暴雨後鬆動的泥土。\n橋雖然蓋得很快，卻不夠安全。\n小凱第一次沒有說：「快一點。」',
+  11:'慢慢村的人說：「先看看河怎麼走。」\n大家量水位，摸摸泥土，觀察水流，\n還去問住在河邊很久的老人。\n他們看得很仔細。',
+  12:'一天過去了。兩天過去了。大家還在討論。\n材料準備好了，工作卻還沒開始。\n小悠這才發現：\n想清楚很重要，但一直不行動，也解決不了問題。',
+  13:'晚上，小凱和小悠坐在河邊。\n小凱說：「我們太快了。」小悠說：「我們太慢了。」\n兩個人安靜了一會兒。\n小悠忽然抬起頭：「如果一起呢？」',
+  14:'這一次，慢慢村負責觀察，快快城負責行動。\n有人測量，有人搬材料，有人施工，也有人仔細檢查。\n需要慢下來時，不催。需要開始時，也不再等。',
+  15:'幾天後，新的橋完成了。\n橋上有車道，也有散步的步道。有人騎車，有人坐著看風景。\n快快城的人第一次停下腳步。\n慢慢村的人也發現：做事有效率，真的能省下很多時間。',
+  16:'小凱問：「所以，快比較好？還是慢比較好？」\n小悠問：「如果有人受傷，要慢慢送醫院嗎？」大家搖頭。\n「如果朋友很難過，要叫他快點不要哭嗎？」大家又搖了搖頭。\n原來，不同的事情，需要不同的速度。',
+  17:'後來，快快城學會偶爾慢下來。慢慢村也學會勇敢開始。\n橋上，有人快速騎過，也有人慢慢散步。\n真正重要的，不是永遠快，也不是永遠慢。\n而是——找到現在最適合自己的速度。',
+  18:'故事後的積木任務：《打造一座會呼吸的城市》\n請用積木設計一座同時擁有「快空間」和「慢空間」的城市。'
+};
+const SPEEDS = [
+  {k:'slow', t:'慢慢走', ico:'🐢', bpm:50, c:'var(--slow)', cs:'var(--slow-soft)'},
+  {k:'mid',  t:'平常走', ico:'🚶', bpm:90, c:'var(--link)', cs:'#e6f0f8'},
+  {k:'fast', t:'快快走', ico:'🐇', bpm:150, c:'var(--fast)', cs:'var(--fast-soft)'}
+];
+const SCEN = [
+  {i:'🩹', t:'有人突然受傷', a:'<b>要快：</b>趕快通知老師、叫救護車。'},
+  {i:'😢', t:'朋友今天很難過', a:'<b>可以慢：</b>不是什麼都不做，而是陪他、等他準備好、聽他說。'},
+  {i:'📝', t:'寫考卷', a:'<b>沒有唯一答案：</b>有人需要提醒自己快一點開始，有人需要提醒自己慢一點看清楚。'},
+  {i:'🚑', t:'救護車送病人', a:'<b>要快：</b>但開車的人也要看清楚路況，快之中還是要小心。'},
+  {i:'🚦', t:'過馬路', a:'<b>先慢再快：</b>先停下來看清楚左右，確定安全再走，不要在馬路中間慢慢晃。'},
+  {i:'🎨', t:'畫圖', a:'<b>可以慢：</b>慢慢看、慢慢想，才不會像小凱一樣忘了畫樹幹。'},
+  {i:'🚌', t:'趕公車', a:'<b>要快：</b>但是快快走，不是在路上亂衝——快也要安全。'},
+  {i:'🍱', t:'吃午餐', a:'<b>可以慢：</b>好好咀嚼，身體比較舒服；但也要注意午餐時間。'},
+  {i:'🌙', t:'睡前休息', a:'<b>要慢：</b>讓身體和心情都慢下來，才睡得好。'}
+];
+const ZONES = [
+  {k:'A', t:'需要「快」的空間', c:'var(--fast)', ex:['急救站','消防站','大眾運輸','交通轉運區','運動區','緊急避難區'], ask:'這裡為什麼需要快？'},
+  {k:'B', t:'可以「慢」的空間', c:'var(--slow)', ex:['公園','閱讀角','聊天區','河邊步道','森林教室','安靜角','老人休息區'], ask:'人在這裡慢下來，可以得到什麼？'},
+  {k:'C', t:'快與慢之間的連結', c:'var(--link)', key:true, ex:['橋','道路','自行車道','轉換廣場','休息站','交通轉乘處'], ask:'一個人從很忙的地方走到這裡，他怎麼知道自己可以慢下來？'}
+];
+const PATROL = ['這個地方是給誰用的？','他來到這裡的時候，可能是什麼心情？','這裡為什麼需要快？','人在這裡慢下來，可以得到什麼？','你們城市裡，有沒有一個可以從快變慢的地方？','如果小凱來到這座城市，他最適合去哪裡？','如果小悠來呢？'];
+const STEPS = [
+  {en:'速度報到', zh:'報到', min:5}, {en:'故事導讀', zh:'故事', min:12}, {en:'快還是慢？', zh:'快慢', min:5},
+  {en:'積木挑戰', zh:'積木', min:20}, {en:'城市導覽', zh:'導覽', min:8}, {en:'回到自己', zh:'收束', min:5}
+];
+
+/* ═══════════ 狀態 ═══════════ */
+const LS = 'hopeSpeedTown.v1';
+function load(){ try{ return JSON.parse(localStorage.getItem(LS)) || {}; }catch(e){ return {}; } }
+function save(){ try{ localStorage.setItem(LS, JSON.stringify(S)); }catch(e){} }
+let S = Object.assign({i:0, grade:'low', groups:6, caps:false, shareG:0, checks:{}, sc:0, tally:{}}, load());
+const UI = {revealed:{}, open:{}, patrol:0, tab:'now', drawer:false, toastShown:false, speed:null};
+
+/* ═══════════ 小工具 ═══════════ */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pad = n => String(n).padStart(2,'0');
+let ALT_NAMES = true; // Canva 打包下載預設檔名為 1.jpg、2.jpg…
+const imgSrc = (n, flip) => IMG_DIR + ((ALT_NAMES !== !!flip) ? n : 'p' + pad(n)) + '.jpg';
+const resolved = {};
+const storyTitle = n => STORY[n].split('\n')[0];
+function img(n, style=''){
+  const src = resolved[n] || imgSrc(n);
+  return `<img src="${src}" style="${style}" alt="繪本：${esc(STORY[n].replace(/\n/g,''))}" data-p="${n}" onerror="imgErr(this)" onload="imgOk(this)">`;
+}
+function imgOk(el){ resolved[el.dataset.p] = el.getAttribute('src'); }
+function imgErr(el){
+  const n = +el.dataset.p;
+  if(!el.dataset.tried){ el.dataset.tried = 1; el.src = imgSrc(n, true); return; }
+  if(el.closest('.frame')){
+    const fb = document.createElement('div'); fb.className = 'fallback';
+    fb.innerHTML = `<div class="pg">繪本 ${n === 1 ? '封面' : n === 18 ? '積木任務' : '第 ' + (n-1) + ' 頁'}</div><div class="txt">${esc(STORY[n])}</div>`;
+    el.replaceWith(fb);
+  } else el.style.visibility = 'hidden';
+  if(!UI.toastShown){ UI.toastShown = true; toast('還沒找到繪本圖片：請把 Canva 匯出的 JPG 放進 <b>sel/speed-town/</b>（1.jpg～18.jpg）。目前先以文字顯示。'); }
+}
+function toast(html, ms=9000){
+  const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = html + '<button>知道了</button>';
+  t.querySelector('button').onclick = () => t.remove();
+  document.body.appendChild(t); setTimeout(() => t.remove(), ms);
+}
+const kick = (label, time) => `<div class="kicker">${label}${time ? `<span class="time">${time}</span>` : ''}</div>`;
+const hi = () => S.grade === 'high';
+const stepK = i => `${i+1}｜${STEPS[i].en}`;
+
+/* ═══════════ 計時器 ═══════════ */
+const T = {total:0, left:0, run:false, label:'', id:null, end:false};
+function tSet(sec, label){ tStop(); Object.assign(T, {total:sec, left:sec, label, end:false}); tPaint(); }
+function tStart(){ if(T.left <= 0) return; T.run = true; T.end = false; T.id = setInterval(tick, 1000); tPaint(); }
+function tStop(){ T.run = false; clearInterval(T.id); tPaint(); }
+function tick(){ T.left--; if(T.left <= 0){ T.left = 0; tStop(); T.end = true; chime(); } tPaint(); }
+function tAdd(sec){ T.left = Math.max(0, T.left + sec); T.total = Math.max(T.total, T.left); T.end = false; tPaint(); }
+const fmt = s => `${Math.floor(s/60)}:${pad(s%60)}`;
+function tPaint(){
+  const pill = $('#timerPill');
+  pill.className = 'timer-pill' + (T.total ? ' show' : '') + (T.run ? ' run' : '') + (T.end ? ' end' : '');
+  pill.innerHTML = `⏱ ${fmt(T.left)}`;
+  const box = $('.bigtimer'); if(!box) return;
+  box.classList.toggle('end', T.end);
+  box.querySelector('.val').textContent = fmt(T.left);
+  const C = 2*Math.PI*45, pr = box.querySelector('.prog');
+  pr.style.strokeDasharray = C; pr.style.strokeDashoffset = C * (1 - (T.total ? T.left/T.total : 0));
+  box.querySelector('[data-t="go"]').textContent = T.run ? '暫停' : (T.left === T.total ? '開始' : (T.left ? '繼續' : '時間到'));
+}
+function chime(){
+  try{
+    const a = new (window.AudioContext || window.webkitAudioContext)();
+    [523.25, 659.25, 783.99].forEach((f, i) => {
+      const o = a.createOscillator(), g = a.createGain(); o.type = 'sine'; o.frequency.value = f;
+      o.connect(g); g.connect(a.destination);
+      const t0 = a.currentTime + i*0.22; g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(0.25, t0 + 0.03); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.9);
+      o.start(t0); o.stop(t0 + 1);
+    });
+  }catch(e){}
+}
+function bigTimer(sec, label){
+  if(T.label !== label) tSet(sec, label);
+  return `<div class="bigtimer card">
+    <div class="ring"><svg viewBox="0 0 100 100"><circle class="track" cx="50" cy="50" r="45" fill="none" stroke-width="7"/><circle class="prog" cx="50" cy="50" r="45" fill="none" stroke-width="7" stroke-linecap="round"/></svg><div class="val"></div></div>
+    <div class="tbtns"><button data-t="-60">−1分</button><button class="main" data-t="go">開始</button><button data-t="+60">+1分</button><button data-t="reset" data-sec="${sec}" data-label="${esc(label)}">重設</button></div></div>`;
+}
+
+
+
+/* ═══════════ 節拍（速度報到） ═══════════ */
+let metro = null, actx = null;
+function tickSound(){
+  try{
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    const o = actx.createOscillator(), g = actx.createGain(), t0 = actx.currentTime;
+    o.type = 'triangle'; o.frequency.value = 880; o.connect(g); g.connect(actx.destination);
+    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.18, t0 + 0.005); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.08);
+    o.start(t0); o.stop(t0 + 0.1);
+  }catch(e){}
+}
+function setSpeed(k){
+  clearInterval(metro); metro = null;
+  UI.speed = k;
+  const sp = SPEEDS.find(s => s.k === k);
+  if(sp && UI.sound){ tickSound(); metro = setInterval(tickSound, 60000 / sp.bpm); }
+}
+
+/* ═══════════ 場景 ═══════════ */
+const story = (step, p, node, teach={}, theme='day') => ({step, kind:'story', p, theme, label:`繪本 ${p === 1 ? '封面' : p - 1}`, teach:Object.assign({node}, teach)});
+const stopKick = (n, pages) => `<span class="stopbadge">⏸ 停格${n}｜第 ${pages} 頁</span>`;
+const SCENES = [
+  /* 1 速度報到 */
+  {step:0, kind:'tempo', theme:'day', label:'速度報到',
+    teach:{node:'速度報到', time:'5 分', say:'先不介紹故事，邀請孩子站起來：「等等我會說一種速度，你只要用走路來表現，不可以撞到別人。」\n依序按：慢慢走 → 平常走 → 快快走，最後按「停！」。可開啟節拍聲，讓孩子跟著節奏走。', observe:'注意空間安全；這時不要下結論說哪一種比較好。'},
+    html:() => { const sp = SPEEDS.find(s => s.k === UI.speed);
+      return `<div class="center">${kick(stepK(0),'5 分')}<h1 class="q">用走路，表現一種速度</h1><p class="sub">不可以撞到別人喔！</p></div>
+      <div class="tempo">${SPEEDS.map(s => `<div class="tbtn${UI.speed === s.k ? ' on' : ''}" style="--c:${s.c};--cs:${s.cs}" data-speed="${s.k}" role="button" tabindex="0"><div class="ico">${s.ico}</div><div class="t">${s.t}</div></div>`).join('')}</div>
+      <div class="pulse-wrap">${sp ? `<div class="pulse go" style="--c:${sp.c};--d:${60/sp.bpm}s"></div>` : '<div class="pulse"></div>'}
+        <button class="btn stopbtn" data-speed="stop">✋ 停！</button>
+        <button class="tool${UI.sound ? ' on' : ''}" data-act="sound">${UI.sound ? '🔊 節拍聲開' : '🔈 節拍聲關'}</button></div>`; }},
+  {step:0, kind:'body', theme:'day', label:'身體有什麼變化？',
+    teach:{node:'速度報到・提問', say:'「剛剛快快走的時候，你的身體有什麼變化？」「慢慢走的時候呢？」先聽孩子說，再點卡片看看可能的答案。\n收束：「原來速度不同，我們的身體感覺也會不同。今天我們要去兩個很特別的地方，一個什麼都很快，一個什麼都慢慢來。」', observe:'能辨認自己在不同速度下的感受。'},
+    html:() => `<div class="center">${kick(stepK(0))}<h1 class="q" style="font-size:clamp(28px,3.6vw,50px)">你的身體，有什麼變化？</h1></div>
+      <div class="duo">
+        ${[['fast','🐇 快快走的時候','心跳變快、呼吸變快、很刺激、比較緊張、怕撞到別人'],['slow','🐢 慢慢走的時候','比較放鬆、可以看到旁邊、覺得無聊、比較舒服']].map(([k, h, v]) => `
+        <div class="card side"><div class="hd" style="background:var(--${k})">${h}</div><div class="bd">
+          <div class="cell2${UI.open['b'+k] ? ' open' : ''}" data-open="b${k}" role="button" tabindex="0">${UI.open['b'+k] ? `<div class="k ${k}">可能的感覺</div><div class="v">${v}</div>` : '<div class="q">先說說看，再點我</div>'}</div></div></div>`).join('')}
+      </div>
+      ${UI.revealed.body ? '<div class="core-line">原來速度不同，<span class="hl">我們的身體感覺也會不同</span>。</div>' : '<div class="center mt"><button class="btn ghost" data-reveal="body">✨ 收束</button></div>'}`},
+
+  /* 2 故事導讀 */
+  story(1, 1, '故事開始', {time:'12 分', say:'「今天我們要去兩個很特別的地方……」故事不必每一頁都問問題，抓四個關鍵停格就好。'}),
+  story(1, 2, '兩個地方'),
+  story(1, 3, '快快城'),
+  story(1, 4, '小凱', {say:'可以先讓孩子注意：小凱快，但忘了畫樹幹、漏掉題目。'}),
+  story(1, 5, '慢慢村'),
+  story(1, 6, '小悠', {say:'讀完這頁進入停格一。'}),
+  {step:1, kind:'power', theme:'day', label:'停格一｜快和慢的力量',
+    teach:{node:'停格一（第 3～5 頁）', say:'「如果你跟小凱一起做事情，你可能會覺得他有什麼優點？」「那可能會遇到什麼困難？」「跟小悠一起呢？」\n先讓孩子說，再點格子顯示整理。最後建立核心概念。', expect:'快：很快做完、不拖拖拉拉；會漏東西。慢：很仔細、看得到小東西；會跟不上。', observe:'能說出快與慢各有優點與限制。'},
+    html:() => `<div class="center">${stopKick('一','3～5')}<h1 class="q mt" style="margin-top:12px;font-size:clamp(26px,3.2vw,44px)">跟他一起做事情，會怎麼樣？</h1></div>
+      <div class="duo">${[['fast','🐇 小凱（什麼都快）',[['快的力量','迅速、有效率、敢開始'],['快的風險','漏掉細節、來不及觀察']]],['slow','🐢 小悠（什麼都慢）',[['慢的力量','仔細、看得多、願意思考'],['慢的風險','想太久、錯過行動時間']]]].map(([k, h, cells]) => `
+        <div class="card side"><div class="hd" style="background:var(--${k})">${h}</div><div class="bd">
+        ${cells.map(([lab, v], j) => { const id = `p${k}${j}`; return `<div class="cell2${UI.open[id] ? ' open' : ''}" data-open="${id}" role="button" tabindex="0"><div class="k ${k}">${lab}</div>${UI.open[id] ? `<div class="v">${v}</div>` : `<div class="q">${j ? '可能會遇到什麼困難？' : '有什麼優點？'}</div>`}</div>`; }).join('')}
+        </div></div>`).join('')}</div>
+      ${UI.revealed.power ? '<div class="core-line">每一種速度都有力量，<br><span class="hl">也都有需要注意的地方</span>。</div>' : '<div class="center mt"><button class="btn ghost" data-reveal="power">✨ 核心概念</button></div>'}`},
+  story(1, 7, '山谷節'),
+  story(1, 8, '橋被沖壞了', {}, 'night'),
+  story(1, 9, '快快城馬上行動'),
+  story(1, 10, '橋開始搖晃', {say:'讀完這頁進入停格二。'}),
+  {step:1, kind:'stop2', theme:'day', label:'停格二｜太快少了什麼？',
+    teach:{node:'停格二（第 9 頁）', say:'「如果你是小凱，現在心裡可能有什麼感覺？」再問：「他們不是不認真，為什麼還是出問題？」', expect:'失望、害怕、後悔、尷尬、擔心。', observe:'能從角色角度說明感受。'},
+    html:() => `<div class="two st"><div class="thumb">${img(10)}</div><div>
+      ${stopKick('二','9')}<h1 class="q" style="margin-top:12px;font-size:clamp(24px,2.8vw,40px)">如果你是小凱，<br>現在心裡可能有什麼感覺？</h1>
+      <div class="chips" style="justify-content:flex-start;margin-top:14px">${['😞 失望','😨 害怕','😣 後悔','😳 尷尬','😟 擔心'].map(e => `<span class="chip">${e}</span>`).join('')}</div>
+      <p class="sub" style="font-size:clamp(17px,1.9vw,25px)">他們不是不認真，為什麼還是出問題？</p>
+      ${UI.revealed.s2 ? `<div class="formula"><span class="b" style="--c:var(--fast)">太快</span><span class="ar">→</span><span>少了一個重要步驟：</span><span class="b" style="--c:var(--slow)">先看清楚</span></div>` : '<div class="mt" style="margin-top:18px"><button class="btn ghost" data-reveal="s2">💡 少了什麼？</button></div>'}
+      </div></div>`},
+  story(1, 11, '慢慢村仔細觀察'),
+  story(1, 12, '一直沒有開始', {say:'讀完這頁進入停格三。'}),
+  {step:1, kind:'stop3', theme:'day', label:'停格三｜只觀察不開始',
+    teach:{node:'停格三（第 11 頁）', say:'「小悠現在可能發現什麼？」', low:'低年級不需強迫回答「想很久沒開始」的生活經驗。', high:'高年級可連結作業、報告、交朋友、上台等生活經驗。'},
+    html:() => `<div class="two st"><div class="thumb">${img(12)}</div><div>
+      ${stopKick('三','11')}<h1 class="q" style="margin-top:12px;font-size:clamp(24px,2.8vw,40px)">小悠現在<br>可能發現什麼？</h1>
+      ${UI.revealed.s3 ? `<div class="formula"><span class="b" style="--c:var(--slow)">只觀察、不開始</span><span class="ar">→</span><span>也沒有辦法解決問題</span></div>` : '<div style="margin-top:18px"><button class="btn ghost" data-reveal="s3">💡 她發現了…</button></div>'}
+      ${hi() ? '<p class="sub" style="font-size:clamp(16px,1.8vw,23px);margin-top:20px">有沒有一件事情，是你想很久、擔心很久，<br>結果一直沒有開始？</p>' : ''}
+      </div></div>`},
+  story(1, 13, '如果一起呢？', {}, 'night'),
+  story(1, 14, '一起修橋'),
+  story(1, 15, '新的橋'),
+  story(1, 16, '不同的事情，不同的速度', {say:'讀完這頁進入停格四。'}),
+  {step:1, kind:'stop4', theme:'day', bg:14, label:'停格四｜真正的合作',
+    teach:{node:'停格四（第 12～15 頁）', say:'小悠說：「如果一起呢？」問：「他們真正合作的是什麼？」\n教師總結：「所以真正厲害的，不是永遠最快，也不是永遠最慢，而是知道現在需要什麼。」', expect:'一個看、一個做；慢慢村觀察，快快城行動。'},
+    html:() => `<div class="center">${stopKick('四','12～15')}<h1 class="q" style="margin-top:12px">他們真正合作的是什麼？</h1>
+      ${UI.revealed.s4 ? `<div class="formula" style="justify-content:center"><span class="b" style="--c:var(--slow)">🐢 一邊負責看清楚</span><span class="ar">＋</span><span class="b" style="--c:var(--fast)">🐇 一邊負責開始做</span></div>
+        <div class="core-line">真正厲害的，不是永遠最快，也不是永遠最慢，<br>而是<span class="hl">知道現在需要什麼</span>。</div>` : '<div class="mt"><button class="btn ghost" data-reveal="s4">💡 揭曉</button></div>'}</div>`},
+  story(1, 17, '找到自己的速度'),
+
+  /* 3 快還是慢？ */
+  {step:2, kind:'sort', theme:'day', label:'現在要快，還是慢？',
+    teach:{node:'情境判斷', time:'5 分', say:'教室左邊＝需要快一點，右邊＝可以慢一點。念出情境請孩子站隊，再按兩側按鈕記錄人數。\n建議順序：受傷（多數站快）→ 朋友難過（多數站慢，問「慢是什麼意思？」）→ 寫考卷（有爭議）。', observe:'能說明為什麼某個情境需要快或慢。'},
+    html:() => { const sc = SCEN[S.sc % SCEN.length], tl = S.tally[S.sc] || {f:0, s:0}, tot = tl.f + tl.s;
+      return `<div class="center">${kick(stepK(2),'5 分')}<h1 class="q" style="font-size:clamp(28px,3.6vw,50px)">現在要快，還是慢？</h1></div>
+      <div class="sorter">
+        <div class="side-btn f" data-tally="f" role="button" tabindex="0"><div class="s">← 教室左邊</div><div class="t">需要快一點</div><div class="n">${tl.f}</div><div class="s">點一下 +1</div></div>
+        <div class="card scen"><div class="nav"><button data-act="sc" data-d="-1" aria-label="上一個情境">‹</button>情境 ${S.sc % SCEN.length + 1} / ${SCEN.length}<button data-act="sc" data-d="1" aria-label="下一個情境">›</button></div>
+          <div class="ico">${sc.i}</div><div class="t">${sc.t}</div>
+          <div class="balance"><i style="width:${tot ? tl.f/tot*100 : 50}%;background:var(--fast)"></i><i style="width:${tot ? tl.s/tot*100 : 50}%;background:var(--slow)"></i></div>
+          ${UI.revealed['sc'+S.sc] ? `<div class="insight">${sc.a}</div>` : `<div><button class="btn ghost" data-reveal="sc${S.sc}">💬 說說看</button> <button class="tool" data-act="tallyReset">歸零</button></div>`}</div>
+        <div class="side-btn sl" data-tally="s" role="button" tabindex="0"><div class="s">教室右邊 →</div><div class="t">可以慢一點</div><div class="n">${tl.s}</div><div class="s">點一下 +1</div></div>
+      </div>`; }},
+  {step:2, kind:'ask', theme:'day', label:'沒有唯一答案',
+    teach:{node:'銜接積木任務', say:'「原來有些事情沒有唯一答案。有人需要提醒自己快一點開始，有人需要提醒自己慢一點看清楚。」'},
+    html:() => `<div class="center">${kick(stepK(2))}<h1 class="q">原來，有些事情<br>沒有唯一答案</h1>
+      <div class="duo" style="max-width:900px;margin:26px auto 0;text-align:left">
+        <div class="card co" style="--c:var(--fast)"><div class="t">有人需要提醒自己<br><span class="fast">快一點開始</span></div></div>
+        <div class="card co" style="--c:var(--slow)"><div class="t">有人需要提醒自己<br><span class="slow">慢一點看清楚</span></div></div></div></div>`},
+
+  /* 4 積木挑戰 */
+  story(3, 18, '積木任務', {time:'20 分', say:'「今天你們不是要蓋快快城，也不是要蓋慢慢村。」「你們要蓋一座知道什麼時候快、什麼時候慢的城市。」'}),
+  {step:3, kind:'zones', theme:'day', label:'三個部分',
+    teach:{node:'任務說明', say:'每組至少要完成三個部分。C「快與慢之間的連結」是整個積木活動最重要的部分。\n若有分好顏色的積木：藍灰／橘色代表快空間，綠／米色／棕色代表慢空間，但不限定孩子一定要照顏色。', expect:'孩子可能在連結區設計：樹木、椅子、不同路面、轉角、草地、水池。'},
+    html:() => `<div class="center">${kick(stepK(3))}<h1 class="q" style="font-size:clamp(26px,3.2vw,44px)">一座知道什麼時候快、什麼時候慢的城市</h1></div>
+      <div class="zones">${ZONES.map(z => `<div class="card zone${z.key ? ' key' : ''}"><div class="hd" style="background:${z.c}"><b>${z.k}</b><span>${z.t}</span>${z.key ? '<span class="star">最重要</span>' : ''}</div>
+        <div class="bd"><div class="ex">${z.ex.map(e => `<i>${e}</i>`).join('')}</div><div class="ask">💭 ${z.ask}</div></div></div>`).join('')}</div>`},
+  {step:3, kind:'build', theme:'day', bg:18, label:'積木建構',
+    teach:{node:'積木建構', time:'18～20 分', say:'巡迴時多問角色與感受的問題，把積木作品拉回 SEL 的角色觀點與同理心（點下方問題可換下一句）。', observe:'作品同時包含快空間與慢空間；願意聽組員想法並共同完成作品。'},
+    html:() => `${kick(stepK(3),'20 分')}<h1 class="q" style="font-size:clamp(28px,3.6vw,50px)">打造一座<span class="fast">會</span><span class="slow">呼吸</span>的城市</h1>
+      <div class="task wide"><div class="rules"><ul class="checks">${[['A','需要「快」的空間','var(--fast)'],['B','可以「慢」的空間','var(--slow)'],['C','快與慢之間的連結','var(--link)']].map(([k, t, c]) => `<li class="${S.checks['z'+k]?'ok':''}" data-check="z${k}"><span class="box" style="${S.checks['z'+k] ? `background:${c};border-color:${c}` : `border-color:${c}`}">${S.checks['z'+k]?'✓':''}</span><b style="color:${c}">${k}</b>　${t}</li>`).join('')}</ul>
+        <div class="patrol" data-act="patrol">💭 ${PATROL[UI.patrol % PATROL.length]} <small>（換一句）</small></div></div>
+      ${bigTimer(1200, 'build')}</div>`},
+
+  /* 5 城市導覽 */
+  {step:4, kind:'share', theme:'day', label:'城市導覽',
+    teach:{node:'城市導覽', time:'8～10 分', say:'每組只回答三件事。孩子說「這是安靜公園，給很累的人坐一下」時，可以接：「所以你們設計的不是一張椅子，而是一個讓人可以休息的地方。」——把「物件」提升成「人的需求」。', observe:'能從居民角度說明設計在幫助誰。'},
+    html:() => { const g = S.shareG % S.groups;
+      return `<div class="center">${kick(stepK(4),'8 分')}
+      <div class="share-head"><button data-act="shareG" data-d="-1" aria-label="上一組">‹</button><span class="gname">第 ${g+1} 組的城市</span><button data-act="shareG" data-d="1" aria-label="下一組">›</button></div></div>
+      <div class="frames">${[['🐇','我們城市<span class="fast">哪裡需要快</span>？'],['🐢','<span class="slow">哪裡可以慢</span>？'],['💛','我們最想介紹的一個設計，是在<b>幫助誰</b>？']].map(([i, f]) => `<div class="card frame-line"><span class="no" style="background:var(--card-strong);font-size:24px">${i}</span><span>${f}</span></div>`).join('')}</div>
+      <div class="board-tools"><button class="tool" data-act="groups" data-d="-1">− 組</button><span style="font-size:14px;color:var(--muted)">共 ${S.groups} 組</span><button class="tool" data-act="groups" data-d="1">＋ 組</button></div>`; }},
+
+  /* 6 回到自己 */
+  {step:5, kind:'checkout', theme:'day', bg:17, label:'找到自己的速度',
+    teach:{node:'SEL 收束', time:'5 分', say:'「小凱後來學會慢一點，小悠學會快一點開始。那你呢？」讓孩子完成兩句。', low:'低年級口頭回答即可。', high:'高年級可以寫在便利貼上（最後一頁可列印）。', observe:'能辨識至少一個「我需要快一點」及一個「我需要慢一點」的情境。'},
+    html:() => `<div class="center">${kick(stepK(5),'5 分')}<h1 class="q" style="font-size:clamp(26px,3.2vw,44px)">小凱學會慢一點，小悠學會快一點開始。<br>那你呢？</h1></div>
+      <div class="checkout">
+        <div class="card co" style="--c:var(--fast)"><div class="t">最近我可以<span class="fast">快一點</span>的是<u>&nbsp;</u>。</div>${UI.revealed.ex ? '<ul><li>寫功課可以快一點開始</li><li>看到朋友跌倒，要快一點去找老師</li></ul>' : ''}</div>
+        <div class="card co" style="--c:var(--slow)"><div class="t">最近我可以<span class="slow">慢一點</span>的是<u>&nbsp;</u>。</div>${UI.revealed.ex ? '<ul><li>生氣的時候可以慢一點講話</li><li>過馬路要慢一點看</li><li>朋友在哭的時候，不用急著叫他不要哭</li></ul>' : ''}</div>
+      </div>${UI.revealed.ex ? '' : '<div class="center mt"><button class="btn ghost" data-reveal="ex">💡 看看例子</button></div>'}`},
+  {step:5, kind:'motto', theme:'day', bg:17, label:'速度不是比賽',
+    teach:{node:'教師收束', say:'「速度不是比賽，而是一種選擇。」「知道現在需要快，還是需要慢，就是照顧自己，也是在照顧別人。」'},
+    html:() => `<div class="center">${kick('課程核心句')}
+      <div class="motto3"><span class="fast">快</span>，讓我們勇敢開始。<br><span class="slow">慢</span>，讓我們看得更清楚。<br>真正重要的是，<span style="background:linear-gradient(transparent 60%, var(--glow) 60%)">知道現在需要哪一種速度</span>。</div>
+      <p class="sub">速度不是比賽，而是一種選擇。</p>
+      <div class="mt"><button class="btn" data-act="print">🖨️ 列印「我的速度」便利貼卡</button></div></div>`}
+];
+
+/* ═══════════ 繪製 ═══════════ */
+function storyHTML(sc){
+  return `<div class="story${S.caps?' with-cap':''}"><div class="frame">${img(sc.p)}
+    <div class="story-tools"><button data-act="speak">🔊 朗讀</button><button data-act="caps" class="${S.caps?'on':''}">字幕</button></div></div>
+    ${S.caps ? `<div class="caption">${esc(STORY[sc.p])}</div>` : ''}</div>`;
+}
+function render(anim = true){
+  const sc = SCENES[S.i];
+  document.body.dataset.theme = sc.theme;
+  $('#backdrop').style.backgroundImage = sc.bg ? `url('${resolved[sc.bg] || imgSrc(sc.bg)}')` : 'none';
+  const st = $('#stage'), scroll = anim ? 0 : st.scrollTop;
+  st.innerHTML = `<div class="scene" style="${anim ? '' : 'animation:none'}">${sc.kind === 'story' ? storyHTML(sc) : sc.html()}</div>`;
+  st.scrollTop = scroll;
+  $('#steps').innerHTML = STEPS.map((s, i) => `<button class="step-chip${i===sc.step?' on':''}${i<sc.step?' done':''}" data-step="${i}" title="${i+1}. ${s.en}（約 ${s.min} 分）"><span class="n">${i+1}</span><span class="en">${s.zh}</span><span class="m">${s.min}′</span></button>`).join('');
+  document.querySelectorAll('.grade button').forEach(b => b.classList.toggle('on', b.dataset.grade === S.grade));
+  $('#whereLab').textContent = `${S.i+1} / ${SCENES.length}　${sc.label}`;
+  $('#progBar').style.width = ((S.i+1)/SCENES.length*100) + '%';
+  $('#prevBtn').disabled = S.i === 0; $('#nextBtn').disabled = S.i === SCENES.length-1;
+  tPaint(); drawer(); save();
+  try{ history.replaceState(null, '', '#' + (S.i+1)); }catch(e){}
+  const nx = SCENES[S.i+1]; if(nx && nx.p){ const im = new Image(); im.src = resolved[nx.p] || imgSrc(nx.p); }
+}
+function go(i){
+  i = Math.max(0, Math.min(SCENES.length-1, i));
+  if(i === S.i) return;
+  try{ speechSynthesis.cancel(); }catch(e){}
+  if(SCENES[S.i].kind === 'tempo') setSpeed(null);
+  S.i = i; render();
+}
+
+/* ═══════════ 教師小抄 ═══════════ */
+function drawer(){
+  document.querySelectorAll('.drawer-tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === UI.tab));
+  $('#drawer').classList.toggle('open', UI.drawer); $('#teacherBtn').classList.toggle('on', UI.drawer);
+  const sc = SCENES[S.i], t = sc.teach || {}, st = STEPS[sc.step];
+  const nl = s => esc(s).replace(/\n/g, '<br>');
+  let h = '';
+  if(UI.tab === 'now'){
+    h = `<div class="meta">第 ${sc.step+1} 階段｜${st.en}（約 ${st.min} 分）</div><div class="node">${esc(t.node || sc.label)}${t.time ? `<span class="meta">　${t.time}</span>` : ''}</div>
+      ${sc.p ? `<h5>本頁故事</h5><div style="white-space:pre-line">${esc(STORY[sc.p])}</div>` : ''}
+      ${t.say ? `<h5>教師引導</h5><div class="say">${nl(t.say)}</div>` : ''}
+      ${t.expect ? `<h5>學生可能反應</h5><div>${nl(t.expect)}</div>` : ''}
+      ${t.observe ? `<h5>評量／觀察</h5><div>${nl(t.observe)}</div>` : ''}
+      ${t.low && !hi() ? `<h5>低年級</h5><div>${nl(t.low)}</div>` : ''}
+      ${t.high && hi() ? `<h5>高年級</h5><div>${nl(t.high)}</div>` : ''}`;
+  } else if(UI.tab === 'faq'){
+    h = `<h5>四個停格</h5>
+      <div class="faq"><b>停格一｜第 3～5 頁</b>小凱什麼都快，小悠什麼都慢 → 每一種速度都有力量，也都有需要注意的地方。</div>
+      <div class="faq"><b>停格二｜第 9 頁</b>橋不安全 → 太快，少了一個重要步驟：先看清楚。</div>
+      <div class="faq"><b>停格三｜第 11 頁</b>一直沒開始 → 只觀察、不開始，也沒有辦法解決問題。</div>
+      <div class="faq"><b>停格四｜第 12～15 頁</b>如果一起呢？→ 一邊負責看清楚，一邊負責開始做。</div>
+      <h5>巡迴引導語</h5><div>${PATROL.map(p => '・' + p).join('<br>')}</div>
+      <h5>核心概念</h5><div class="say">「快」和「慢」都不是問題，重要的是能依照情境、需要與自己的狀態，選擇適合的速度。</div>`;
+  } else {
+    h = `<h5>課程評量</h5><table>${[
+      ['概念理解','能說出快與慢各有優點與限制'],['自我覺察','能辨認自己在不同速度下的感受'],['同理心','能從小凱、小悠或城市居民角度說明需要'],
+      ['問題解決','作品同時包含快空間與慢空間'],['負責任決定','能說明為什麼某個情境需要快或慢'],['合作溝通','願意聽組員想法並共同完成作品']
+    ].map(([a, b]) => `<tr><td style="white-space:nowrap;font-weight:700">${a}</td><td>${b}</td></tr>`).join('')}</table>
+    <h5>操作方式</h5><div><span class="key">→</span><span class="key">空白鍵</span> 下一頁　<span class="key">←</span> 上一頁<br><span class="key">T</span> 開關小抄　<span class="key">F</span> 全螢幕<br>上方 1～6 可直接跳到各階段。站隊人數會留在這台電腦的瀏覽器裡。</div>
+    <h5>重設</h5><button class="tool" style="border-color:#c9b8a4" data-act="resetAll">清除本堂課所有紀錄</button>
+    <div class="lic">© 永齡希望小學雲科大分校<br>本作品採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hant" target="_blank" rel="noopener">創用 CC 姓名標示－非商業性－相同方式分享 4.0</a> 授權・使用請保留出處標示</div>`;
+  }
+  $('#drawerBody').innerHTML = h;
+}
+
+/* ═══════════ 列印 ═══════════ */
+function printNotes(){
+  const one = `<div class="note"><div class="k">我的速度｜慢慢村與快快城</div>姓名：＿＿＿＿＿＿<br>🐇 最近我可以<b>快一點</b>的是<br>＿＿＿＿＿＿＿＿＿＿＿＿<br>🐢 最近我可以<b>慢一點</b>的是<br>＿＿＿＿＿＿＿＿＿＿＿＿</div>`;
+  $('#printSheet').innerHTML = `<h2>找到自己的速度</h2><div class="s">剪下後發給每位學生</div><div class="notes">${one.repeat(6)}</div><div class="foot">© 永齡希望小學雲科大分校・CC BY-NC-SA 4.0</div>`;
+  window.print();
+}
+
+/* ═══════════ 事件 ═══════════ */
+function speak(){
+  const sc = SCENES[S.i]; if(!sc.p || !('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(STORY[sc.p].replace(/[《》]/g, ''));
+  u.lang = 'zh-TW'; u.rate = 0.9;
+  const v = speechSynthesis.getVoices().find(v => /zh[-_]TW/i.test(v.lang)); if(v) u.voice = v;
+  speechSynthesis.speak(u);
+}
+let clearArm = 0;
+function confirmClear(){
+  if(Date.now() - clearArm < 4000){ clearArm = 0; return true; }
+  clearArm = Date.now(); toast('再按一次即可清除', 3500); return false;
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-act],[data-step],[data-grade],[data-tab],[data-reveal],[data-check],[data-open],[data-speed],[data-tally],[data-t]');
+  if(!t) return;
+  const d = t.dataset;
+  if(d.step !== undefined) return go(SCENES.findIndex(s => s.step === +d.step));
+  if(d.grade){ S.grade = d.grade; return render(false); }
+  if(d.tab){ UI.tab = d.tab; return drawer(); }
+  if(d.reveal){ UI.revealed[d.reveal] = true; return render(false); }
+  if(d.open){ UI.open[d.open] = !UI.open[d.open]; return render(false); }
+  if(d.check){ S.checks[d.check] = !S.checks[d.check]; return render(false); }
+  if(d.speed){ setSpeed(d.speed === 'stop' ? null : d.speed); return render(false); }
+  if(d.tally){ const k = S.sc; S.tally[k] = S.tally[k] || {f:0, s:0}; S.tally[k][d.tally]++; return render(false); }
+  if(d.t){
+    if(d.t === 'go') T.run ? tStop() : tStart();
+    else if(d.t === 'reset') tSet(+d.sec, d.label);
+    else tAdd(+d.t);
+    return;
+  }
+  switch(d.act){
+    case 'sound': UI.sound = !UI.sound; setSpeed(UI.speed); render(false); break;
+    case 'sc': S.sc = (S.sc + (+d.d) + SCEN.length) % SCEN.length; render(false); break;
+    case 'tallyReset': S.tally[S.sc] = {f:0, s:0}; render(false); break;
+    case 'groups': S.groups = Math.max(2, Math.min(10, S.groups + (+d.d))); render(false); break;
+    case 'patrol': UI.patrol++; render(false); break;
+    case 'shareG': S.shareG = (S.shareG + (+d.d) + S.groups) % S.groups; render(false); break;
+    case 'speak': speak(); break;
+    case 'caps': S.caps = !S.caps; render(false); break;
+    case 'print': printNotes(); break;
+    case 'resetAll': if(confirmClear()){ S = Object.assign({}, S, {tally:{}, shareG:0, checks:{}, sc:0}); UI.open = {}; UI.revealed = {}; tSet(0, ''); render(false); } break;
+  }
+});
+$('#prevBtn').onclick = () => go(S.i - 1);
+$('#nextBtn').onclick = () => go(S.i + 1);
+$('#teacherBtn').onclick = () => { UI.drawer = !UI.drawer; drawer(); };
+$('#fsBtn').onclick = toggleFS;
+$('#timerPill').onclick = () => { if(T.total) T.run ? tStop() : tStart(); };
+function toggleFS(){ try{ document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }catch(e){} }
+document.addEventListener('keydown', e => {
+  if(e.target.matches('input,textarea')) return;
+  if(['ArrowRight','PageDown',' '].includes(e.key)){ e.preventDefault(); go(S.i + 1); }
+  else if(['ArrowLeft','PageUp'].includes(e.key)){ e.preventDefault(); go(S.i - 1); }
+  else if(e.key === 't' || e.key === 'T'){ UI.drawer = !UI.drawer; drawer(); }
+  else if(e.key === 'f' || e.key === 'F') toggleFS();
+  else if(e.key === 'Enter' && e.target.matches('[role=button]')) e.target.click();
+});
+let tx = null;
+$('#stage').addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, {passive:true});
+$('#stage').addEventListener('touchend', e => {
+  if(tx === null || SCENES[S.i].kind !== 'story') return;
+  const dx = e.changedTouches[0].clientX - tx; tx = null;
+  if(Math.abs(dx) > 60) go(S.i + (dx < 0 ? 1 : -1));
+});
+
+/* ═══════════ 啟動 ═══════════ */
+const h0 = parseInt(location.hash.slice(1), 10);
+if(h0 >= 1 && h0 <= SCENES.length) S.i = h0 - 1;
+if(!(S.i < SCENES.length)) S.i = 0;
+render();
+(function probe(){
+  const a = new Image();
+  a.onerror = () => { const b = new Image(); b.onload = () => { ALT_NAMES = false; render(false); }; b.src = IMG_DIR + 'p01.jpg'; };
+  a.src = IMG_DIR + '1.jpg';
+})();
+
+</script>
+</body>
+</html>
