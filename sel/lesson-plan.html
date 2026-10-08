@@ -204,17 +204,25 @@ table.grid{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px}
       </section>
 
       <section class="panel" aria-labelledby="h-export">
-        <h2 id="h-export">完成後匯出</h2>
+        <h2 id="h-export">完成後送出</h2>
         <p class="status" id="status"></p>
+        <p class="status" id="send-result" aria-live="polite"></p>
         <div class="exports">
-          <button class="primary" id="x-xlsx">下載 Excel</button>
+          <button class="primary wide" id="x-sheet">傳送到 Google 試算表</button>
+          <button id="x-xlsx">下載 Excel</button>
           <button id="x-csv">下載 CSV</button>
           <button class="wide" id="x-copy">複製表格（貼到試算表）</button>
         </div>
+        <p class="hint" id="endpoint-tag"></p>
         <div id="copy-fallback" hidden>
           <p class="hint">這裡不能直接寫入剪貼簿，請全選下面的內容後複製：</p>
           <textarea class="copybox" id="copy-text" readonly></textarea>
         </div>
+        <details id="sheet-settings">
+          <summary>Google 試算表連線設定</summary>
+          <div class="field"><label for="m-endpoint">試算表接收網址（Apps Script 網頁應用程式）</label><input id="m-endpoint" placeholder="https://script.google.com/macros/s/…/exec"></div>
+          <p class="hint">由督導提供。設定一次後，這台裝置會記住。</p>
+        </details>
       </section>
     </aside>
 
@@ -239,6 +247,10 @@ table.grid{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
+/* ===== 督導可修改的設定 ===== */
+// 部署到學校網站後，把 Apps Script 的網址貼在這裡，老師就不用自己設定
+const SHEET_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyEAgUVxlvbReJ5qbCPbI9viif48EPG8sJakgo-BubTs41vYVjPOkoM6TQFSY3e-OzkCQ/exec';
+
 // 各時段類型的固定流程：只有開頭的暖身、點名和最後的統整是全班共同，中間全部依「每個任務」的分鐘數切成任務
 const tpl = (start, end) => {
   const a = toMin(start), b = toMin(end);
@@ -352,6 +364,8 @@ function renderStatic(){
     `<label><input type="radio" name="taskLen" value="${n}"><span>${n} 分鐘</span></label>`).join('');
   $('#m-template').innerHTML = Object.entries(TEMPLATES).map(([k,v]) => `<option value="${k}">${esc(v.label)}</option>`).join('');
   $('#m-calm').innerHTML = '<option value="">請選擇</option>' + DATA.calm.map(c => `<option>${esc(c)}</option>`).join('');
+  $('#m-endpoint').value = store.get(EPKEY) || '';
+  if (SHEET_ENDPOINT) $('#sheet-settings').hidden = true;
 }
 function renderMetaValues(){
   document.querySelectorAll('[data-m]').forEach(el => { el.value = state.meta[el.dataset.m] ?? ''; });
@@ -504,6 +518,7 @@ const cur = () => state.students[ui.cur];
 document.addEventListener('input', e => {
   const el = e.target, d = el.dataset;
   if (d.m){ state.meta[d.m] = el.value; if (d.m === 'date') renderBanner(); light(); return; }
+  if (el.id === 'm-endpoint'){ store.set(EPKEY, el.value.trim()); return; }
   const st = cur(); if (!st) return;
   if (d.k){ st[d.k] = el.value; light(); return; }
   if (d.t){ const k = 't'+d.t; st.tasks[k] = Object.assign({unit:'',act:''}, st.tasks[k], {[d.tf]: el.value}); light(); return; }
@@ -718,6 +733,35 @@ $('#x-copy').addEventListener('click', () => {
     navigator.clipboard.writeText(tsv).then(() => { $('#copy-fallback').hidden = true; toast('已複製，到 Google 試算表點一格後貼上'); }, fallback);
   } catch(err){ fallback(); }
 });
+$('#x-sheet').addEventListener('click', async () => {
+  const url = SHEET_ENDPOINT || (store.get(EPKEY) || '').trim();
+  if (!url){ const d = $('#sheet-settings'); d.hidden = false; d.open = true; $('#m-endpoint').focus(); toast('請先貼上督導提供的試算表接收網址'); return; }
+  const miss = [['cls','班別'],['teacher','課輔老師'],['date','日期']].filter(([k]) => !String(state.meta[k]||'').trim());
+  if (miss.length){ toast('送出前請先填：' + miss.map(x => x[1]).join('、')); return; }
+  const btn = $('#x-sheet'); btn.disabled = true; btn.textContent = '傳送中…';
+  const body = JSON.stringify({planId: planId(), headers: HEAD, rows: rows()});
+  const time = new Date().toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'});
+  const show = (ok, msg) => { const el = $('#send-result'); el.className = 'status ' + (ok ? 'ok' : 'miss'); el.textContent = `${time}　${msg}`; toast(msg); };
+  try {
+    // 讀得到 Google 的回覆，成功或失敗都照實顯示
+    const res = await fetch(url, {method:'POST', body});
+    const text = await res.text();
+    let data = null; try { data = JSON.parse(text); } catch(e){}
+    if (data && data.ok) show(true, `試算表已收到 ${data.rows} 筆。同一天同班同科目再送會覆蓋舊紀錄`);
+    else if (data) show(false, '試算表回報錯誤：' + data.error);
+    else if (/accounts\.google|ServiceLogin|登入/.test(text)) show(false, '沒有送進去：接收程式需要登入才能用，請督導把部署的「誰可以存取」改成「任何人」');
+    else show(false, '沒有送進去：Google 回傳的不是預期的內容，請督導到 Apps Script 重新授權並部署新版本');
+  } catch(err){
+    // 讀不到回覆（例如網路或瀏覽器限制）時，改用不讀回覆的方式再送一次
+    try {
+      await fetch(url, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body});
+      show(true, '已送出，但無法確認試算表是否收到，請到試算表檢查');
+    } catch(err2){ show(false, '沒有送出：這個頁面連不到 Google。請改用下載或複製表格'); }
+  } finally { btn.disabled = false; btn.textContent = '傳送到 Google 試算表'; }
+});
+// 顯示接收網址尾碼，方便確認開的是哪一版檔案
+(() => { const u = SHEET_ENDPOINT || (store.get(EPKEY) || ''); const m = u.match(/\/s\/([^/]+)\/exec/); $('#endpoint-tag').textContent = m ? `接收程式 …${m[1].slice(-6)}` : '尚未設定接收網址'; })();
+
 renderStatic(); renderMetaValues(); render(); getDownloads();
 </script>
 
