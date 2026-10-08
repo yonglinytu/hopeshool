@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>停電了！拯救希望城市｜課堂投影｜HOPE 希望小學</title>
+<meta name="description" content="「積」起改變的力量：停電了！拯救希望城市——20格能源的城市任務挑戰。繪本故事 × 小組討論 × 積木建構的課堂投影頁。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --top:58px; --bottom:64px;
+  --r:18px; --r-sm:12px;
+  --hosp:#e46a6a; --home:#ef9f3f; --school:#4f9fe0; --traffic:#4fb37a; --park:#a783dc; --gran:#e783b0;
+  --font:'Noto Sans TC',-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;
+  --serif:'Noto Serif TC','PingFang TC',serif;
+  transition:background-color .8s;
+}
+body[data-theme="night"]{
+  --bg:#0f1631; --bg2:#1b2654; --ink:#f6f0e1; --muted:#b8c0da; --faint:#7d87a8;
+  --card:rgba(255,255,255,.07); --card-strong:rgba(255,255,255,.12); --line:rgba(255,255,255,.14);
+  --accent:#ffcf5a; --accent-ink:#2a2005; --glow:rgba(255,207,90,.55); --bar:rgba(10,15,36,.82);
+  --empty:rgba(255,255,255,.1);
+}
+body[data-theme="day"]{
+  --bg:#f6efe4; --bg2:#e4f0f2; --ink:#2d261f; --muted:#665849; --faint:#9a8874;
+  --card:#fffdf8; --card-strong:#ffffff; --line:rgba(96,72,48,.15);
+  --accent:#e7a521; --accent-ink:#ffffff; --glow:rgba(231,165,33,.35); --bar:rgba(255,253,248,.9);
+  --empty:rgba(96,72,48,.1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:var(--font); color:var(--ink); background:var(--bg);
+  overflow:hidden; transition:background .8s,color .8s;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{ /* sky */
+  content:""; position:fixed; inset:0; z-index:-2; transition:opacity .8s;
+  background:
+    radial-gradient(1200px 600px at 80% -10%, var(--bg2), transparent 70%),
+    radial-gradient(900px 500px at 0% 110%, var(--bg2), transparent 70%), var(--bg);
+}
+body[data-theme="night"]::after{ /* stars */
+  content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.55;
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 18%, #fff, transparent),
+    radial-gradient(1px 1px at 28% 72%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 44% 32%, #fff, transparent),
+    radial-gradient(1px 1px at 62% 12%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 78% 58%, #fff, transparent),
+    radial-gradient(1px 1px at 90% 26%, #fff, transparent),
+    radial-gradient(1px 1px at 6% 52%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 54% 88%, #fff, transparent);
+}
+button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:none}
+button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:8px}
+
+/* ── Top bar ── */
+.topbar{
+  position:fixed; top:0; left:0; right:0; height:var(--top); z-index:50;
+  display:flex; align-items:center; gap:10px; padding:0 14px;
+  background:var(--bar); backdrop-filter:blur(10px); border-bottom:1px solid var(--line);
+}
+.home-btn{
+  display:inline-flex; align-items:center; gap:6px; flex:none;
+  border:1px solid var(--line); border-radius:20px; padding:6px 13px;
+  font-size:13px; color:var(--muted); text-decoration:none; transition:all .15s;
+}
+.home-btn:hover{color:var(--ink); background:var(--card)}
+.steps{display:flex; gap:6px; flex:1; justify-content:center; min-width:0}
+.step-chip{
+  display:flex; align-items:center; gap:7px; padding:6px 12px; border-radius:999px;
+  border:1px solid var(--line); font-size:14px; color:var(--muted); white-space:nowrap; transition:all .2s;
+}
+.step-chip .n{font-weight:900; font-size:12px; opacity:.8}
+.step-chip .m{font-size:11px; opacity:.7}
+.step-chip.done{color:var(--ink); opacity:.75}
+.step-chip.on{background:var(--accent); color:var(--accent-ink); border-color:transparent; font-weight:700; box-shadow:0 0 18px var(--glow)}
+.tools{display:flex; gap:6px; align-items:center; flex:none}
+.tool{
+  height:36px; min-width:36px; padding:0 11px; border-radius:10px; border:1px solid var(--line);
+  font-size:14px; display:inline-flex; align-items:center; justify-content:center; gap:5px; transition:all .15s;
+}
+.tool:hover{background:var(--card)}
+.tool.on{background:var(--ink); color:var(--bg); border-color:transparent}
+.grade{display:inline-flex; border:1px solid var(--line); border-radius:10px; overflow:hidden; height:36px}
+.grade button{padding:0 11px; font-size:13px; color:var(--muted)}
+.grade button.on{background:var(--ink); color:var(--bg); font-weight:700}
+.timer-pill{
+  display:none; height:36px; padding:0 12px; border-radius:10px; font-variant-numeric:tabular-nums;
+  font-weight:700; font-size:15px; align-items:center; gap:6px; background:var(--card-strong); border:1px solid var(--line);
+}
+.timer-pill.show{display:inline-flex}
+.timer-pill.run{border-color:var(--accent)}
+.timer-pill.end{background:#e46a6a; color:#fff; animation:pulse 1s infinite}
+
+/* ── Stage ── */
+.stage{
+  position:fixed; top:var(--top); bottom:var(--bottom); left:0; right:0;
+  display:flex; padding:18px 24px; overflow:auto;
+}
+.scene{width:100%; max-width:1280px; margin:auto; animation:enter .45s ease both}
+@keyframes enter{from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:none}}
+@keyframes pulse{50%{opacity:.6}}
+.backdrop{
+  position:fixed; inset:0; z-index:-1; background-size:cover; background-position:center;
+  opacity:.16; filter:blur(3px) saturate(1.1); transition:opacity .6s; pointer-events:none;
+}
+body[data-theme="day"] .backdrop{opacity:.12}
+
+.kicker{
+  display:inline-flex; align-items:center; gap:8px; font-size:15px; font-weight:700; letter-spacing:.06em;
+  color:var(--accent); margin-bottom:12px;
+}
+.kicker .time{font-weight:500; color:var(--muted); letter-spacing:0; font-size:13px; border:1px solid var(--line); padding:2px 9px; border-radius:99px}
+h1.q{
+  font-family:var(--serif); font-weight:900; line-height:1.3;
+  font-size:clamp(30px, 4.6vw, 64px); letter-spacing:.02em; text-wrap:balance;
+}
+.sub{font-size:clamp(18px, 2.2vw, 30px); color:var(--muted); margin-top:14px; line-height:1.6; text-wrap:balance}
+.center{text-align:center}
+.mt{margin-top:28px}
+
+/* story */
+.story{display:flex; flex-direction:column; align-items:center; gap:14px}
+.frame{
+  position:relative; border-radius:var(--r); overflow:hidden; line-height:0;
+  box-shadow:0 18px 60px rgba(0,0,0,.35), 0 0 0 1px var(--line);
+  max-width:100%;
+}
+.frame img{
+  display:block; width:auto; max-width:100%;
+  height:calc(100dvh - var(--top) - var(--bottom) - 36px); max-height:860px; aspect-ratio:4/3; object-fit:contain;
+}
+.story.with-cap .frame img{height:calc(100dvh - var(--top) - var(--bottom) - 130px)}
+.caption{
+  font-family:var(--serif); font-size:clamp(18px, 2.2vw, 28px); line-height:1.6; text-align:center;
+  max-width:1000px; white-space:pre-line;
+}
+.fallback{
+  width:min(92vw, calc((100dvh - var(--top) - var(--bottom) - 36px) * 4 / 3)); aspect-ratio:4/3;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:6%;
+  background:linear-gradient(160deg, var(--bg2), var(--bg)); line-height:1.6;
+}
+.fallback .pg{font-size:14px; color:var(--faint); letter-spacing:.1em}
+.fallback .txt{font-family:var(--serif); font-size:clamp(20px, 2.8vw, 38px); text-align:center; white-space:pre-line}
+.story-tools{position:absolute; right:12px; bottom:12px; display:flex; gap:8px; line-height:1}
+.story-tools button{
+  background:rgba(0,0,0,.55); color:#fff; border-radius:999px; padding:8px 14px; font-size:14px; backdrop-filter:blur(6px);
+}
+.story-tools button.on{background:var(--accent); color:var(--accent-ink)}
+
+/* cards generic */
+.grid{display:grid; gap:16px}
+.card{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:20px;
+}
+.chips{display:flex; flex-wrap:wrap; gap:10px; justify-content:center}
+.chip{
+  padding:10px 18px; border-radius:999px; background:var(--card); border:1px solid var(--line);
+  font-size:clamp(16px, 1.7vw, 22px);
+}
+.btn{
+  display:inline-flex; align-items:center; gap:8px; padding:12px 22px; border-radius:999px;
+  background:var(--accent); color:var(--accent-ink); font-weight:700; font-size:17px;
+  box-shadow:0 6px 22px var(--glow); transition:transform .15s;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn.ghost{background:transparent; color:var(--ink); border:1px solid var(--line); box-shadow:none}
+.reveal{
+  margin-top:26px; font-family:var(--serif); font-weight:700; font-size:clamp(22px, 2.8vw, 38px);
+  color:var(--accent); text-align:center; animation:enter .5s both;
+}
+
+/* facilities flip */
+.fac-grid{display:grid; grid-template-columns:repeat(5, 1fr); gap:14px; margin-top:26px}
+.flip{perspective:1000px; min-height:280px}
+.flip-in{position:relative; width:100%; height:100%; min-height:280px; transition:transform .6s; transform-style:preserve-3d}
+.flip.open .flip-in{transform:rotateY(180deg)}
+.face{
+  position:absolute; inset:0; backface-visibility:hidden; border-radius:var(--r); padding:18px 14px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; text-align:center;
+  border:1px solid var(--line); background:var(--card);
+}
+.face .ico{font-size:clamp(46px, 5vw, 72px); line-height:1}
+.face .nm{font-size:clamp(20px, 2.2vw, 30px); font-weight:900}
+.face .hint{font-size:13px; color:var(--muted)}
+.face.back{transform:rotateY(180deg); justify-content:flex-start; border-top:6px solid var(--c)}
+.face.back .nm{font-size:20px}
+.face.back ul{list-style:none; display:flex; flex-direction:column; gap:8px; font-size:clamp(15px, 1.5vw, 19px); line-height:1.45; text-align:left}
+.face.back li::before{content:"・"; color:var(--c)}
+
+/* needs */
+.needs{display:grid; grid-template-columns:repeat(5, auto); gap:18px 26px; justify-content:center; align-items:end; margin-top:24px}
+.need{display:flex; flex-direction:column; align-items:center; gap:8px}
+.need .lab{font-size:clamp(17px, 1.8vw, 24px); font-weight:700}
+.need .num{font-size:14px; color:var(--muted)}
+.cells{display:grid; grid-template-columns:repeat(4, 1fr); gap:5px}
+.cell{width:clamp(18px, 2.2vw, 30px); aspect-ratio:1; border-radius:5px; background:var(--c); box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
+.vs{display:flex; align-items:center; justify-content:center; gap:clamp(16px, 4vw, 60px); margin-top:30px; flex-wrap:wrap}
+.big-num{text-align:center}
+.big-num b{display:block; font-family:var(--serif); font-size:clamp(54px, 8vw, 110px); line-height:1}
+.big-num span{font-size:clamp(16px, 1.7vw, 22px); color:var(--muted)}
+.big-num.energy b{color:var(--accent); text-shadow:0 0 30px var(--glow)}
+.gap-badge{
+  font-size:clamp(22px, 3vw, 40px); font-weight:900; padding:10px 24px; border-radius:16px;
+  background:#e46a6a; color:#fff; animation:enter .5s both;
+}
+.energy-cells{display:grid; grid-template-columns:repeat(10, 1fr); gap:6px; margin-top:10px}
+.ecell{width:clamp(20px, 2.6vw, 34px); aspect-ratio:1; border-radius:6px; background:var(--accent); box-shadow:0 0 14px var(--glow), inset 0 -3px 0 rgba(0,0,0,.15)}
+
+/* rules / task */
+.task{display:grid; grid-template-columns:1.25fr 1fr; gap:22px; align-items:stretch; margin-top:22px}
+.rules{display:flex; flex-direction:column; gap:14px}
+.rule{display:flex; gap:16px; align-items:flex-start; padding:18px 20px}
+.rule .no{
+  flex:none; width:44px; height:44px; border-radius:50%; background:var(--accent); color:var(--accent-ink);
+  display:flex; align-items:center; justify-content:center; font-weight:900; font-size:22px;
+}
+.rule p{font-size:clamp(19px, 2vw, 27px); line-height:1.45; font-weight:500}
+.checks{list-style:none; display:flex; flex-direction:column; gap:10px}
+.checks li{
+  display:flex; align-items:center; gap:12px; padding:13px 16px; border-radius:var(--r-sm);
+  background:var(--card); border:1px solid var(--line); font-size:clamp(17px, 1.8vw, 24px); cursor:pointer; user-select:none;
+}
+.checks li .box{flex:none; width:28px; height:28px; border-radius:8px; border:2px solid var(--muted); display:flex; align-items:center; justify-content:center; font-weight:900}
+.checks li.ok .box{background:var(--traffic); border-color:var(--traffic); color:#fff}
+.checks li.ok{opacity:.75}
+
+/* big timer */
+.bigtimer{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:24px}
+.ring{position:relative; width:min(32vh, 300px); aspect-ratio:1}
+.ring svg{width:100%; height:100%; transform:rotate(-90deg)}
+.ring .track{stroke:var(--empty)}
+.ring .prog{stroke:var(--accent); transition:stroke-dashoffset 1s linear; filter:drop-shadow(0 0 8px var(--glow))}
+.ring .val{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-size:clamp(40px, 6vw, 74px); font-weight:900; font-variant-numeric:tabular-nums;
+}
+.bigtimer.end .val{color:#e46a6a; animation:pulse 1s infinite}
+.tbtns{display:flex; gap:8px; flex-wrap:wrap; justify-content:center}
+.tbtns button{padding:9px 16px; border-radius:999px; border:1px solid var(--line); font-size:15px; background:var(--card)}
+.tbtns button.main{background:var(--accent); color:var(--accent-ink); border-color:transparent; font-weight:700; min-width:96px}
+.patrol{
+  text-align:center; padding:16px 18px; border-radius:var(--r); border:1px dashed var(--line);
+  font-size:clamp(18px, 1.9vw, 25px); font-family:var(--serif); font-weight:700; min-height:76px;
+  display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer;
+}
+.patrol small{font-family:var(--font); font-weight:500; font-size:13px; color:var(--muted)}
+
+/* allocation board */
+.board{display:flex; flex-direction:column; gap:6px; margin-top:12px}
+.legend{display:flex; flex-wrap:wrap; gap:8px 16px; justify-content:center; font-size:15px; color:var(--muted); margin-top:10px}
+.legend i{display:inline-block; width:14px; height:14px; border-radius:4px; background:var(--c); vertical-align:-2px; margin-right:5px}
+.grow{
+  display:grid; grid-template-columns:86px 1fr 92px; align-items:center; gap:14px;
+  padding:6px 14px; border-radius:var(--r-sm); background:var(--card); border:1px solid var(--line);
+  cursor:pointer; transition:opacity .25s, box-shadow .2s, transform .15s;
+}
+.grow:hover{transform:translateY(-1px)}
+.board.picking .grow{opacity:.35}
+.board.picking .grow.pick{opacity:1; box-shadow:0 0 0 2px var(--accent), 0 0 24px var(--glow)}
+.gname{font-weight:900; font-size:clamp(16px, 1.6vw, 21px)}
+.gbar{display:grid; grid-template-columns:repeat(var(--cols,20), 1fr); gap:3px}
+.gbar .c{height:clamp(12px, 3.2vh, 30px); border-radius:4px; background:var(--empty); position:relative}
+.gbar .c.f{background:var(--c); box-shadow:inset 0 -3px 0 rgba(0,0,0,.16)}
+.gbar .c.over{background:repeating-linear-gradient(45deg,#e46a6a,#e46a6a 4px,transparent 4px,transparent 8px)}
+.gnums{display:flex; gap:3px; font-size:13px; color:var(--muted); margin-top:3px; flex-wrap:wrap}
+.gnums span{white-space:nowrap}
+.gnums b{color:var(--ink)}
+.gnums .d{font-weight:700; margin-left:2px}
+.gnums .d.up{color:var(--traffic)} .gnums .d.dn{color:var(--hosp)}
+.gsum{text-align:right; font-size:15px; font-weight:700}
+.gsum.ok{color:var(--traffic)} .gsum.no{color:var(--hosp)}
+.board-tools{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; align-items:center; margin-top:14px}
+.board-tools .tool{font-size:14px}
+
+/* editor modal */
+.modal-bg{position:fixed; inset:0; z-index:80; background:rgba(5,8,20,.6); display:flex; align-items:center; justify-content:center; padding:16px; animation:enter .2s both}
+.modal{width:min(720px, 100%); max-height:92dvh; overflow:auto; background:var(--card-strong); border:1px solid var(--line); border-radius:22px; padding:24px; backdrop-filter:blur(14px)}
+body[data-theme="night"] .modal{background:#1a2450}
+.modal h3{font-size:24px; display:flex; justify-content:space-between; align-items:center; gap:10px}
+.counters{display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:12px; margin:18px 0}
+.counter{border-radius:var(--r-sm); border:1px solid var(--line); padding:12px; text-align:center; border-top:5px solid var(--c)}
+.counter .lab{font-size:18px; font-weight:700}
+.counter .need{font-size:12px; color:var(--muted); display:block}
+.counter .row{display:flex; align-items:center; justify-content:center; gap:10px; margin-top:8px}
+.counter .row button{width:44px; height:44px; border-radius:50%; border:1px solid var(--line); font-size:24px; font-weight:700; background:var(--card)}
+.counter .row b{font-size:32px; min-width:42px; font-variant-numeric:tabular-nums}
+
+/* energy cards */
+.energy-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-top:24px}
+.ecard{overflow:hidden; padding:0; transition:transform .2s, box-shadow .2s; text-align:left; display:flex; flex-direction:column}
+.ecard:hover{transform:translateY(-3px); box-shadow:0 12px 34px rgba(0,0,0,.15)}
+.ecard .img{aspect-ratio:4/3; background:var(--bg2); position:relative; overflow:hidden}
+.ecard .img img{width:100%; height:100%; object-fit:cover; display:block}
+.ecard .img span{position:absolute; left:12px; top:10px; font-size:42px; filter:drop-shadow(0 2px 6px rgba(0,0,0,.3))}
+.ecard .body{padding:14px 16px 18px}
+.ecard h4{font-size:clamp(20px, 2vw, 27px); font-weight:900; border-left:6px solid var(--c); padding-left:10px}
+.ecard p{font-size:clamp(14px, 1.35vw, 17px); line-height:1.6; color:var(--muted); margin-top:8px}
+.ecard p b{color:var(--ink)}
+
+/* share */
+.share-head{display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap}
+.share-head .gname{font-size:clamp(26px, 3vw, 40px)}
+.share-head button{width:44px; height:44px; border-radius:50%; border:1px solid var(--line); font-size:20px; background:var(--card)}
+.qlist{display:grid; grid-template-columns:repeat(2, 1fr); gap:14px; margin-top:22px}
+.qitem{display:flex; gap:14px; align-items:center; padding:18px 20px}
+.qitem .no{flex:none; width:48px; height:48px; border-radius:14px; background:var(--accent); color:var(--accent-ink); font-weight:900; font-size:24px; display:flex; align-items:center; justify-content:center}
+.qitem p{font-size:clamp(19px, 2vw, 28px); font-weight:700; line-height:1.4}
+.mini-bar{max-width:720px; margin:16px auto 0}
+
+/* actions */
+.act-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-top:24px}
+.act{position:relative; padding:18px 14px; text-align:center; cursor:pointer; user-select:none; transition:transform .15s, box-shadow .2s}
+.act:hover{transform:translateY(-2px)}
+.act .ico{font-size:clamp(34px, 3.6vw, 48px)}
+.act .t{font-size:clamp(16px, 1.6vw, 21px); font-weight:700; margin-top:8px; line-height:1.4}
+.act .cnt{position:absolute; top:8px; right:10px; min-width:30px; height:30px; padding:0 8px; border-radius:99px; background:var(--accent); color:var(--accent-ink); font-weight:900; display:none; align-items:center; justify-content:center}
+.act.has .cnt{display:flex}
+.act.has{box-shadow:0 0 0 2px var(--accent)}
+.promise{
+  margin-top:24px; text-align:center; font-family:var(--serif); font-weight:700; font-size:clamp(22px, 2.7vw, 36px); line-height:1.7;
+}
+.promise u{text-decoration:none; display:inline-block; min-width:6em; border-bottom:3px solid var(--accent)}
+
+/* core */
+.core{display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; margin-top:28px}
+.core .card{text-align:center; padding:26px 14px}
+.core .no{font-size:15px; color:var(--accent); font-weight:900; letter-spacing:.1em}
+.core p{font-family:var(--serif); font-size:clamp(22px, 2.5vw, 34px); font-weight:900; margin-top:8px}
+.motto{
+  margin-top:34px; text-align:center; font-family:var(--serif); font-weight:900; line-height:1.6;
+  font-size:clamp(26px, 3.6vw, 52px); text-shadow:0 0 30px var(--glow);
+}
+
+/* event card */
+.event{
+  max-width:640px; margin:18px auto 0; padding:22px 26px; border-radius:20px; text-align:left;
+  background:linear-gradient(135deg, var(--card-strong), var(--card)); border:2px solid var(--accent);
+  box-shadow:0 0 30px var(--glow); animation:enter .4s both;
+}
+.event .tag{font-size:13px; font-weight:900; color:var(--accent); letter-spacing:.12em}
+.event h4{font-size:clamp(24px, 2.6vw, 34px); margin-top:4px}
+.event p{font-size:clamp(17px, 1.8vw, 23px); line-height:1.6; margin-top:8px}
+.two{display:grid; grid-template-columns:1fr 1.25fr; gap:24px; align-items:center}
+.two.slim{grid-template-columns:minmax(0,.8fr) 1.6fr}
+.two.slim .thumb img{max-height:30vh}
+.thumb{border-radius:var(--r); overflow:hidden; box-shadow:0 12px 40px rgba(0,0,0,.3); line-height:0}
+.thumb img{width:100%; aspect-ratio:4/3; object-fit:cover; display:block}
+
+/* bottom nav */
+.navbar{
+  position:fixed; bottom:0; left:0; right:0; height:var(--bottom); z-index:50;
+  display:flex; align-items:center; justify-content:space-between; gap:12px; padding:0 14px;
+  background:var(--bar); backdrop-filter:blur(10px); border-top:1px solid var(--line);
+}
+.navbtn{height:44px; padding:0 20px; border-radius:12px; border:1px solid var(--line); font-size:16px; font-weight:700; display:inline-flex; align-items:center; gap:6px; flex:none}
+.navbtn.next{background:var(--accent); color:var(--accent-ink); border-color:transparent}
+.navbtn:disabled{opacity:.3; cursor:default}
+.where{flex:1; min-width:0; text-align:center}
+.where .lab{font-size:15px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.prog{height:5px; background:var(--empty); border-radius:99px; margin-top:6px; overflow:hidden; max-width:520px; margin-left:auto; margin-right:auto}
+.prog i{display:block; height:100%; background:var(--accent); border-radius:99px; transition:width .4s}
+
+/* teacher drawer */
+.drawer{
+  position:fixed; top:var(--top); right:0; bottom:var(--bottom); width:min(420px, 100%); z-index:60;
+  background:#fffdf8; color:#2d261f; border-left:1px solid rgba(96,72,48,.15);
+  box-shadow:-20px 0 60px rgba(0,0,0,.25); transform:translateX(105%); transition:transform .3s ease;
+  display:flex; flex-direction:column;
+}
+.drawer.open{transform:none}
+.drawer-tabs{display:flex; border-bottom:1px solid rgba(96,72,48,.15); flex:none}
+.drawer-tabs button{flex:1; padding:13px 6px; font-size:14px; color:#665849; border-bottom:3px solid transparent}
+.drawer-tabs button.on{color:#2d261f; font-weight:700; border-color:#e7a521}
+.drawer-body{overflow:auto; padding:18px 20px 30px; font-size:15px; line-height:1.75}
+.drawer h5{font-size:13px; letter-spacing:.08em; color:#9a7a3a; margin:16px 0 6px}
+.drawer h5:first-child{margin-top:0}
+.drawer .say{background:#fbf3df; border-left:4px solid #e7a521; padding:10px 14px; border-radius:0 10px 10px 0}
+.drawer .node{font-size:18px; font-weight:900; margin-bottom:4px}
+.drawer .meta{font-size:13px; color:#9a8874}
+.drawer .faq{border:1px solid rgba(96,72,48,.15); border-radius:12px; padding:12px 14px; margin-bottom:10px}
+.drawer .faq b{display:block; margin-bottom:4px}
+.drawer table{width:100%; border-collapse:collapse; font-size:14px}
+.drawer td{border-bottom:1px solid rgba(96,72,48,.12); padding:7px 4px; vertical-align:top}
+.drawer .key{display:inline-block; border:1px solid #c9b8a4; border-radius:5px; padding:0 6px; font-size:12px; background:#f6efe4; margin:0 2px}
+.drawer .lic{margin-top:22px; padding-top:14px; border-top:1px solid rgba(42,32,24,.08); font-size:12px; color:#9a8878; line-height:1.9}
+.drawer .lic a{color:#7a8878; text-decoration:underline; text-underline-offset:2px}
+
+.toast{
+  position:fixed; left:50%; top:calc(var(--top) + 10px); transform:translateX(-50%); z-index:90;
+  background:#2d261f; color:#fffdf8; padding:10px 18px; border-radius:12px; font-size:14px; max-width:92vw;
+  box-shadow:0 10px 30px rgba(0,0,0,.3); line-height:1.6;
+}
+.toast button{margin-left:10px; color:#e7a521; font-weight:700}
+
+/* print-only worksheet */
+.print-sheet{display:none}
+@media print{
+  @page{size:A4; margin:14mm}
+  body{overflow:visible; background:#fff; color:#000}
+  body::before,body::after,.topbar,.navbar,.stage,.drawer,.backdrop,.toast,.modal-bg{display:none !important}
+  .print-sheet{display:block; font-family:var(--font); color:#000}
+  .print-sheet h2{font-family:var(--serif); font-size:20pt; text-align:center}
+  .print-sheet .s{text-align:center; font-size:11pt; color:#555; margin:4px 0 14px}
+  .print-sheet h3{font-size:13pt; margin:16px 0 8px; border-left:5px solid #e7a521; padding-left:8px}
+  .print-sheet table{width:100%; border-collapse:collapse; font-size:12pt}
+  .print-sheet th,.print-sheet td{border:1px solid #888; padding:9px 8px; text-align:center}
+  .print-sheet td.why{height:16mm; width:45%}
+  .print-sheet .box20{display:grid; grid-template-columns:repeat(10, 1fr); gap:3mm; margin:8px 0}
+  .print-sheet .box20 i{border:1.5px solid #888; border-radius:2mm; aspect-ratio:1}
+  .print-sheet ul{list-style:none; columns:2; font-size:12pt; line-height:2.1}
+  .print-sheet .line{font-size:13pt; margin-top:12px; line-height:2.2}
+  .print-sheet .draw{border:1.5px dashed #999; height:45mm; border-radius:3mm; margin-top:8px; display:flex; align-items:flex-start; padding:6px 10px; font-size:10pt; color:#888}
+  .print-sheet .foot{margin-top:14px; font-size:9pt; color:#888; text-align:center}
+}
+
+/* responsive */
+@media (max-width:1100px){
+  .step-chip .t,.step-chip .m{display:none}
+  .fac-grid{grid-template-columns:repeat(3, 1fr)}
+  .energy-grid,.act-grid,.core{grid-template-columns:repeat(2, 1fr)}
+}
+@media (max-width:760px){
+  :root{--top:54px; --bottom:60px}
+  .topbar{gap:6px; padding:0 8px}
+  .home-btn .tx,.tool .tx,.title-mini{display:none}
+  .steps{gap:3px}
+  .step-chip{padding:5px 8px}
+  .step-chip .en{display:none}
+  .stage{padding:14px 16px}
+  .fac-grid{grid-template-columns:repeat(2, 1fr)}
+  .task,.two,.qlist{grid-template-columns:1fr}
+  .needs{grid-template-columns:repeat(3, auto)}
+  .grow{grid-template-columns:60px 1fr; }
+  .gsum{grid-column:2; text-align:left}
+  .frame img{height:auto; width:100%}
+  .fallback{width:100%}
+  .navbtn{padding:0 12px}
+  .navbtn .tx{display:none}
+  .grade button{padding:0 8px}
+}
+@media (max-width:460px){
+  .energy-grid,.act-grid,.core{grid-template-columns:1fr}
+  .steps{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none !important; transition:none !important}}
+</style>
+</head>
+<body data-theme="night">
+
+<header class="topbar">
+  <a class="home-btn" href="index.html" aria-label="返回資源中心">← <span class="tx">資源中心</span></a>
+  <nav class="steps" id="steps" aria-label="課程步驟"></nav>
+  <div class="tools">
+    <span class="timer-pill" id="timerPill" title="活動計時器"></span>
+    <div class="grade" role="group" aria-label="年段">
+      <button data-grade="low" title="國小 2～3 年級">低</button>
+      <button data-grade="high" title="國小 4～6 年級">高</button>
+    </div>
+    <button class="tool" id="teacherBtn" title="教師小抄（T）">📋 <span class="tx">教師</span></button>
+    <button class="tool" id="fsBtn" title="全螢幕（F）">⛶</button>
+  </div>
+</header>
+
+<div class="backdrop" id="backdrop"></div>
+<main class="stage" id="stage" aria-live="polite"></main>
+
+<footer class="navbar">
+  <button class="navbtn" id="prevBtn">‹ <span class="tx">上一頁</span></button>
+  <div class="where"><div class="lab" id="whereLab"></div><div class="prog"><i id="progBar"></i></div></div>
+  <button class="navbtn next" id="nextBtn"><span class="tx">下一頁</span> ›</button>
+</footer>
+
+<aside class="drawer" id="drawer" aria-label="教師小抄">
+  <div class="drawer-tabs">
+    <button data-tab="now" class="on">這一頁</button>
+    <button data-tab="faq">常見狀況</button>
+    <button data-tab="eval">評量・操作</button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</aside>
+
+<div class="print-sheet" id="printSheet"></div>
+
+<script>
+/* ═══════════ 資料 ═══════════ */
+const IMG_DIR = 'hope-city/';
+const STORY = {
+  1:'《停電了！希望城市怎麼辦？》\n即使黑暗降臨，我們仍能點亮希望！',
+  2:'今天晚上，希望城市突然停電了。\n路燈不亮了，房子黑黑的，大家都嚇了一跳。',
+  3:'「怎麼辦？」小陽說。\n「醫院需要電，學校需要電，家裡也需要電呀！」小雨好著急。',
+  4:'這時，能源爺爺出現了。\n他說：「別擔心，我這裡還有20格能源，\n但你們要想一想，先把電送到哪裡。」',
+  5:'小陽說：「先給醫院吧！生病的人最需要幫助。」\n小風說：「可是家裡沒有電，也很不方便呀！」\n小雨說：「學校也很重要，大家明天還要上課呢。」',
+  6:'他們想了想，決定先把電送給：醫院、家裡、學校。\n遊樂場先等一下，交通也先省著用。',
+  7:'可是，小風問：「如果明天還是沒有電，怎麼辦？」\n能源爺爺笑著說：「那就要靠你們，打造未來能源城！」',
+  8:'小陽想到了太陽能。\n白天可以把陽光變成電！他在屋頂上裝了好多太陽能板。',
+  9:'小風想到了風力發電。\n風來的時候，大風車就能幫忙發電！草地旁，一座座風車轉呀轉。',
+  10:'小雨想到了水力和生質能。\n水流可以幫忙發電，農田裡的廢棄物也能變成能源呢！',
+  11:'三個孩子一起用積木蓋出一座新的城市。\n這座城市有醫院、有學校，有住家，還有會自己發電的房子！',
+  12:'這時，城市裡來了一位怕冷的奶奶。\n小雨說：「我們再分一點電給奶奶家吧！」大家點點頭。\n原來，能源不只是分配，還要想到誰更需要幫助。',
+  13:'晚上，希望城市重新亮了起來。\n能源爺爺說：「你們不只會蓋城市，\n也學會了做選擇、照顧別人，還保護了地球。」',
+  14:'小陽說：「我要隨手關燈！」\n小風說：「我要多用自然光！」\n小雨說：「我要提醒家人一起節約用電！」',
+  15:'如果你也有20格能源，你會先把電送給誰呢？'
+};
+const FAC = [
+  {k:'h', name:'醫院',  icon:'🏥', need:8, c:'var(--hosp)',
+    hint:['醫療機器不能用','病人需要照顧，急救會受影響','藥品需要冷藏']},
+  {k:'r', name:'住宅',  icon:'🏠', need:6, c:'var(--home)',
+    hint:['很黑、很熱或很冷','冰箱的食物會壞掉','手機不能充電，聯絡不到家人']},
+  {k:'s', name:'學校',  icon:'🏫', need:5, c:'var(--school)',
+    hint:['電燈、電腦、投影都不能用','午餐冰箱停了','明天可能沒辦法上課']},
+  {k:'t', name:'交通',  icon:'🚌', need:5, c:'var(--traffic)',
+    hint:['紅綠燈不亮，路口很危險','電車、捷運可能停下來','救護車也會被塞住']},
+  {k:'p', name:'遊樂場',icon:'🎡', need:4, c:'var(--park)',
+    hint:['遊樂設施停下來','大家少了放鬆的地方','可以晚一點再玩嗎？']}
+];
+const GRAN = {k:'g', name:'奶奶家', icon:'👵', c:'var(--gran)'};
+const STEPS = [
+  {id:'feel',  en:'Feel',  zh:'感受', min:8},
+  {id:'think', en:'Think', zh:'思考', min:9},
+  {id:'do',    en:'Do',    zh:'行動', min:23},
+  {id:'share', en:'Share', zh:'分享', min:7},
+  {id:'act',   en:'Act',   zh:'實踐', min:3}
+];
+const EVENTS = [
+  {t:'連續陰雨', i:'🌧️', p:'一連下了五天雨，太陽能板發的電變少了。你們的城市還有別的電可以用嗎？要怎麼調整？'},
+  {t:'強風來了', i:'🌬️', p:'風好大，風車轉得特別快，多發了 2 格電！這 2 格你們要給誰？為什麼？'},
+  {t:'寒流來襲', i:'🥶', p:'好冷！很多家庭都需要保暖，住宅還需要多 2 格電。這 2 格要從哪裡來？'},
+  {t:'人口增加', i:'🧳', p:'希望城市搬來了很多新居民，住宅和交通都需要更多電。怎麼辦？'},
+  {t:'設備故障', i:'🔧', p:'醫院有一台發電機壞了，醫院暫時需要多 1 格電。你們會從哪裡調整？'},
+  {t:'大晴天',   i:'☀️', p:'今天大太陽，太陽能板多發了 2 格電！你們會先給誰？為什麼？'}
+];
+const ACTIONS = [
+  {i:'💡', t:'離開房間隨手關燈'}, {i:'🪟', t:'白天多使用自然光'}, {i:'❄️', t:'冷氣溫度不要太低'},
+  {i:'🔌', t:'不使用電器時關閉電源'}, {i:'🚶', t:'少搭一次電梯'}, {i:'👨‍👩‍👧', t:'提醒家人一起節約用電'},
+  {i:'✏️', t:'其他：我自己的想法'}
+];
+const PATROL_ALLOC = ['你們為什麼醫院放這麼多格？','住宅完全沒電會怎樣？','有沒有最低限度也需要電的地方？','誰的想法還沒有被聽到？','你們的理由是什麼？'];
+const PATROL_BUILD = ['它解決什麼問題？','能源從哪裡來？','它幫助了誰？','有不同意見時，你們怎麼決定？','如果沒有它，城市會怎麼樣？'];
+
+/* ═══════════ 狀態 ═══════════ */
+const LS = 'hopeCityEnergy.v1';
+function load(){ try{ return JSON.parse(localStorage.getItem(LS)) || {}; }catch(e){ return {}; } }
+function save(){ try{ localStorage.setItem(LS, JSON.stringify(S)); }catch(e){} }
+const blankRow = () => ({h:0,r:0,s:0,t:0,p:0,g:0});
+let S = Object.assign({i:0, grade:'low', groups:6, rows:[], base:null, caps:false, acts:{}, shareG:0, checks:{}}, load());
+while(S.rows.length < 8) S.rows.push(blankRow());
+const UI = {pick:[], flip:{}, revealed:{}, event:null, patrol:0, tab:'now', drawer:false, editing:null, imgFail:false, toastShown:false};
+
+/* ═══════════ 小工具 ═══════════ */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pad = n => String(n).padStart(2,'0');
+let ALT_NAMES = false; // true → 檔名為 1.jpg～15.jpg（Canva 打包下載的預設檔名）
+const imgSrc = (n, flip) => IMG_DIR + ((ALT_NAMES !== !!flip) ? n : 'p' + pad(n)) + '.jpg';
+const resolved = {};
+function img(n, cls=''){
+  const src = resolved[n] || imgSrc(n);
+  return `<img class="${cls}" src="${src}" alt="繪本第 ${n} 頁：${esc(STORY[n].replace(/\n/g,''))}" data-p="${n}" onerror="imgErr(this)" onload="imgOk(this)">`;
+}
+function imgOk(el){ resolved[el.dataset.p] = el.getAttribute('src'); }
+function imgErr(el){
+  const n = +el.dataset.p;
+  if(!el.dataset.tried){ el.dataset.tried = 1; el.src = imgSrc(n, true); return; }
+  if(el.closest('.frame')){
+    const fb = document.createElement('div');
+    fb.className = 'fallback';
+    fb.innerHTML = `<div class="pg">繪本第 ${n} 頁</div><div class="txt">${esc(STORY[n])}</div>`;
+    el.replaceWith(fb);
+  } else el.style.visibility = 'hidden';
+  if(!UI.toastShown){ UI.toastShown = true; toast('還沒找到繪本圖片：請把 Canva 匯出的 15 張 JPG 放進 <b>sel/hope-city/</b>，檔名 p01.jpg～p15.jpg（或 1.jpg～15.jpg）。目前先以文字顯示。'); }
+}
+function toast(html, ms=9000){
+  const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = html + '<button>知道了</button>';
+  t.querySelector('button').onclick = () => t.remove();
+  document.body.appendChild(t); setTimeout(() => t.remove(), ms);
+}
+const kick = (label, time) => `<div class="kicker">${label}${time ? `<span class="time">${time}</span>` : ''}</div>`;
+const hi = () => S.grade === 'high';
+
+/* ═══════════ 計時器 ═══════════ */
+const T = {total:0, left:0, run:false, label:'', id:null, end:false};
+function tSet(sec, label){ tStop(); Object.assign(T, {total:sec, left:sec, label, end:false}); tPaint(); }
+function tStart(){ if(T.left <= 0) return; T.run = true; T.end = false; T.id = setInterval(tick, 1000); tPaint(); }
+function tStop(){ T.run = false; clearInterval(T.id); tPaint(); }
+function tick(){
+  T.left--; if(T.left <= 0){ T.left = 0; tStop(); T.end = true; chime(); }
+  tPaint();
+}
+function tAdd(sec){ T.left = Math.max(0, T.left + sec); T.total = Math.max(T.total, T.left); T.end = false; tPaint(); }
+const fmt = s => `${Math.floor(s/60)}:${pad(s%60)}`;
+function tPaint(){
+  const pill = $('#timerPill');
+  pill.className = 'timer-pill' + (T.total ? ' show' : '') + (T.run ? ' run' : '') + (T.end ? ' end' : '');
+  pill.innerHTML = `⏱ ${fmt(T.left)}`;
+  pill.title = T.label;
+  const box = $('.bigtimer'); if(!box) return;
+  box.classList.toggle('end', T.end);
+  box.querySelector('.val').textContent = fmt(T.left);
+  const C = 2*Math.PI*45, pr = box.querySelector('.prog');
+  pr.style.strokeDasharray = C; pr.style.strokeDashoffset = C * (1 - (T.total ? T.left/T.total : 0));
+  box.querySelector('[data-t="go"]').textContent = T.run ? '暫停' : (T.left === T.total ? '開始' : (T.left ? '繼續' : '時間到'));
+}
+function chime(){
+  try{
+    const a = new (window.AudioContext || window.webkitAudioContext)();
+    [523.25, 659.25, 783.99].forEach((f, i) => {
+      const o = a.createOscillator(), g = a.createGain(); o.type = 'sine'; o.frequency.value = f;
+      o.connect(g); g.connect(a.destination);
+      const t0 = a.currentTime + i*0.22; g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(0.25, t0 + 0.03); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.9);
+      o.start(t0); o.stop(t0 + 1);
+    });
+  }catch(e){}
+}
+function bigTimer(sec, label){
+  if(T.label !== label) tSet(sec, label);
+  return `<div class="bigtimer card">
+    <div class="ring"><svg viewBox="0 0 100 100"><circle class="track" cx="50" cy="50" r="45" fill="none" stroke-width="7"/><circle class="prog" cx="50" cy="50" r="45" fill="none" stroke-width="7" stroke-linecap="round"/></svg><div class="val"></div></div>
+    <div class="tbtns">
+      <button data-t="-60">−1分</button><button class="main" data-t="go">開始</button><button data-t="+60">+1分</button><button data-t="reset" data-sec="${sec}" data-label="${esc(label)}">重設</button>
+    </div></div>`;
+}
+
+/* ═══════════ 能源配置板 ═══════════ */
+const facs = withG => withG ? [...FAC, GRAN] : FAC;
+const sum = (r, withG) => facs(withG).reduce((a, f) => a + (r[f.k]||0), 0);
+function barCells(r, withG){
+  let html = '', n = 0;
+  facs(withG).forEach(f => { for(let i=0;i<(r[f.k]||0);i++){ html += `<i class="c f${n>=20?' over':''}" style="--c:${f.c}"></i>`; n++; } });
+  for(; n<20; n++) html += '<i class="c"></i>';
+  return {html, cols: Math.max(20, n)};
+}
+function rowHTML(gi, withG){
+  const r = S.rows[gi], tot = sum(r, withG), b = barCells(r, withG), base = withG && S.base ? S.base[gi] : null;
+  const nums = facs(withG).map(f => {
+    const v = r[f.k]||0, d = base ? v - (base[f.k]||0) : 0;
+    return `<span>${f.icon}<b>${v}</b>${d ? `<span class="d ${d>0?'up':'dn'}">${d>0?'+':''}${d}</span>` : ''}</span>`;
+  }).join('　');
+  const st = tot === 20 ? '<span class="gsum ok">✓ 20 格</span>' : tot < 20 ? `<span class="gsum no">還剩 ${20-tot}</span>` : `<span class="gsum no">多了 ${tot-20}</span>`;
+  return `<div class="grow${UI.pick.includes(gi)?' pick':''}" data-edit="${gi}" title="點一下修改；按住 Shift 點選可比較">
+    <div class="gname">第 ${gi+1} 組</div>
+    <div><div class="gbar" style="--cols:${b.cols}">${b.html}</div><div class="gnums">${nums}</div></div>${st}</div>`;
+}
+function board(withG){
+  const rows = Array.from({length:S.groups}, (_, i) => rowHTML(i, withG)).join('');
+  const legend = facs(withG).map(f => `<span><i style="--c:${f.c}"></i>${f.name}${f.need ? `（需要 ${f.need}）` : ''}</span>`).join('');
+  return `<div class="legend">${legend}</div>
+  <div class="board${UI.pick.length?' picking':''}">${rows}</div>
+  <div class="board-tools">
+    <button class="tool" data-act="pickmode">${UI.pick.length ? '✕ 取消比較' : '⇄ 選兩組比較'}</button>
+    <button class="tool" data-act="groups" data-d="-1">− 組</button><span style="font-size:14px;color:var(--muted)">${S.groups} 組</span><button class="tool" data-act="groups" data-d="1">＋ 組</button>
+    ${withG ? '<button class="tool" data-act="rebase">記下目前為基準</button>' : ''}
+    <button class="tool" data-act="clearall">清空</button>
+  </div>`;
+}
+function openEditor(gi, withG){
+  UI.editing = {gi, withG};
+  const r = S.rows[gi], tot = sum(r, withG);
+  const html = `<div class="modal-bg" data-act="closeEd"><div class="modal" role="dialog" aria-modal="true" aria-label="第 ${gi+1} 組能源配置">
+    <h3>第 ${gi+1} 組的能源配置 <button class="tool" data-act="closeEd">完成</button></h3>
+    <div class="counters">${facs(withG).map(f => `<div class="counter" style="--c:${f.c}">
+      <div class="lab">${f.icon} ${f.name}</div><span class="need">${f.need ? `完整需求 ${f.need} 格` : '新的需要'}</span>
+      <div class="row"><button data-inc="${f.k}" data-d="-1" aria-label="${f.name}減一">−</button><b>${r[f.k]||0}</b><button data-inc="${f.k}" data-d="1" aria-label="${f.name}加一">＋</button></div></div>`).join('')}
+    </div>
+    <div class="gbar" style="--cols:${barCells(r, withG).cols}">${barCells(r, withG).html}</div>
+    <p style="text-align:center;margin-top:12px;font-weight:700;color:${tot===20?'var(--traffic)':'var(--hosp)'}">${tot===20?'✓ 20 格全部分完':tot<20?`還有 ${20-tot} 格沒分`:`超過了 ${tot-20} 格`}</p>
+  </div></div>`;
+  const old = $('.modal-bg');
+  if(old){ const tmp = document.createElement('div'); tmp.innerHTML = html; old.replaceChildren(...tmp.firstElementChild.childNodes); return; }
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+function closeEditor(silent){ const m = $('.modal-bg'); if(m) m.remove(); if(!silent){ UI.editing = null; render(false); } }
+
+/* ═══════════ 場景 ═══════════ */
+const story = (step, p, theme, node, teach) => ({step, kind:'story', p, theme, label:`繪本 ${p}｜${node}`, teach});
+const SCENES = [
+  /* ── Step 1 Feel ── */
+  story(0, 1, 'night', '故事進場', {node:'故事進場', time:'1 分', say:'「今天我們要去一座叫希望城市的地方，可是昨天晚上發生了一件大事……」', expect:'學生注意畫面、猜測發生什麼事。', observe:'是否能進入情境並說出初步觀察。'}),
+  story(0, 2, 'night', '停電了', {node:'故事進場', say:'讀到「啪！」時可以停一下，讓教室安靜一秒：「整座城市突然停電了。」', expect:'驚訝、開始猜想。'}),
+  {step:0, kind:'ask', theme:'night', bg:2, label:'經驗連結',
+    teach:{node:'經驗連結', time:'2 分', say:'「你有遇過停電嗎？停電時最不方便的是什麼？」適時把回答連回「很多生活功能都需要電」。', expect:'很黑、很熱、手機不能充電、冰箱不能用、電視不能看。', observe:'能否連結生活經驗與能源需求。'},
+    html:() => `<div class="center">${kick('Step 1｜Feel・經驗連結','2 分')}<h1 class="q">你有遇過停電嗎？</h1><p class="sub">停電的時候，最不方便的是什麼？</p>
+      <div class="chips mt" style="opacity:.85"><span class="chip">💡 燈</span><span class="chip">🧊 冰箱</span><span class="chip">📱 手機</span><span class="chip">🌀 冷氣・電扇</span><span class="chip">📺 電視</span><span class="chip">🚿 熱水</span></div></div>`},
+  story(0, 3, 'night', '大家都需要電', {node:'銜接城市需求', say:'「小雨說醫院、學校、家裡都需要電。希望城市裡還有哪些地方需要電？我們一個一個來看。」'}),
+  {step:0, kind:'fac', theme:'night', bg:3, label:'城市需求',
+    teach:{node:'城市需求', time:'3 分', say:'依序翻開醫院、學校、住宅、交通、遊樂場。每翻一張先問：「如果這裡沒有電，可能發生什麼？」等學生說完再點卡片看提示。', expect:'醫院機器不能用、學校無法使用設備、住宅不方便、交通混亂、遊樂場可以先停等。', observe:'能說出不同設施停電後的影響。'},
+    html:() => `<div class="center">${kick('Step 1｜Feel・城市需求','3 分')}<h1 class="q" style="font-size:clamp(28px,3.8vw,52px)">如果這裡沒有電，可能發生什麼？</h1></div>
+      <div class="fac-grid">${FAC.map((f, i) => `<div class="flip${UI.flip[f.k]?' open':''}" data-flip="${f.k}" role="button" tabindex="0" aria-label="${f.name}">
+        <div class="flip-in"><div class="face" style="--c:${f.c};border-top:6px solid ${f.c}"><div class="ico">${f.icon}</div><div class="nm">${f.name}</div><div class="hint">點一下看看</div></div>
+        <div class="face back" style="--c:${f.c}"><div class="nm">${f.icon} ${f.name}沒有電</div><ul>${f.hint.map(h => `<li>${h}</li>`).join('')}</ul></div></div></div>`).join('')}</div>`},
+  {step:0, kind:'feel', theme:'night', bg:3, label:'情緒覺察',
+    teach:{node:'情緒覺察', time:'2 分', say:'追問：「如果你是裡面的人，你可能有什麼感受？」最後收斂：「同樣是停電，不同地方受到的影響不太一樣。」', expect:'害怕、緊張、不舒服、擔心、生氣、困擾。', observe:'能從角色角度辨識感受與需求。', low:'低年級多用角色感受提問：「如果你是醫院裡生病的人，你會怎麼樣？」', high:'高年級可追問：「誰受到的影響最大？為什麼？」'},
+    html:() => `<div class="center">${kick('Step 1｜Feel・情緒覺察','2 分')}
+      <h1 class="q">${hi() ? '如果你是裡面的人，<br>你可能有什麼感受？' : '如果你是醫院裡的病人、<br>家裡的小朋友，你會怎麼樣？'}</h1>
+      ${hi() ? '<p class="sub">誰受到的影響最大？為什麼？</p>' : ''}
+      <div class="chips mt">${['😨 害怕','😬 緊張','😣 不舒服','😟 擔心','😠 生氣','😵 困擾','😰 著急'].map(e => `<span class="chip">${e}</span>`).join('')}</div>
+      ${UI.revealed.feel ? '<div class="reveal">同樣是停電，不同地方受到的影響不太一樣。</div>' : '<div class="mt"><button class="btn ghost" data-reveal="feel">✨ 收斂</button></div>'}</div>`},
+
+  /* ── Step 2 Think ── */
+  story(1, 4, 'night', '能源爺爺出現了', {node:'公布任務', say:'讀完後拿出 20 顆能源積木：「能源爺爺只找到 20 格能源。」'}),
+  {step:1, kind:'needs', theme:'night', bg:4, label:'公布任務：28 格 vs 20 格',
+    teach:{node:'公布任務', time:'2 分', say:'「能源爺爺只找到20格能源，但整座城市完整運作需要28格。」展示需求：醫院8、住宅6、學校5、交通5、遊樂場4。問：「現在發生什麼問題？」', expect:'「不夠！」、「一定有人分不到。」', observe:'能理解「有限資源」與需求總量。'},
+    html:() => `<div class="center">${kick('Step 2｜Think・公布任務','2 分')}<h1 class="q" style="font-size:clamp(26px,3.4vw,46px)">希望城市完整運作，需要多少能源？</h1>
+      <div class="needs">${FAC.map(f => `<div class="need"><div class="cells">${('<i class="cell" style="--c:'+f.c+'"></i>').repeat(f.need)}</div><div class="lab">${f.icon} ${f.name}</div><div class="num">${f.need} 格</div></div>`).join('')}</div>
+      <div class="vs"><div class="big-num"><b>28</b><span>城市需要</span></div>
+        ${UI.revealed.needs ? `<div class="big-num energy"><b>20</b><span>能源爺爺只有</span><div class="energy-cells">${'<i class="ecell"></i>'.repeat(20)}</div></div><div class="gap-badge">差 8 格！</div>`
+          : '<button class="btn" data-reveal="needs">🔋 能源爺爺有多少？</button>'}</div>
+      ${UI.revealed.needs ? '<p class="sub">現在發生什麼問題？</p>' : ''}</div>`},
+  {step:1, kind:'rules', theme:'night', bg:4, label:'小組分配（5 分鐘）',
+    teach:{node:'小組分配', time:'5 分', say:'說明三條規則後按開始。巡迴時只追問、不給答案：「你們為什麼醫院放8格？」「住宅完全沒電會怎樣？」（下方問題可點一下換下一句）', expect:'討論、爭辯、調整分配；形成不同配置。', observe:'能做出分配並提出理由；能傾聽夥伴。'},
+    html:() => `${kick('Step 2｜Think・小組分配','5 分')}<h1 class="q" style="font-size:clamp(28px,3.6vw,50px)">20 格能源，你們要怎麼分？</h1>
+      <div class="task"><div class="rules">
+        <div class="card rule"><div class="no">1</div><p>20 格要<b>全部分完</b></p></div>
+        <div class="card rule"><div class="no">2</div><p>可以<b>少於</b>完整需求</p></div>
+        <div class="card rule"><div class="no">3</div><p>小組要能說出<b>「為什麼」</b></p></div>
+        <div class="patrol" data-act="patrol">💭 ${PATROL_ALLOC[UI.patrol % PATROL_ALLOC.length]} <small>（換一句）</small></div>
+      </div>${bigTimer(300, 'alloc')}</div>`},
+  {step:1, kind:'compare', theme:'night', label:'比較選擇',
+    teach:{node:'比較選擇', time:'2 分', say:'點一下組別，用 ＋／− 輸入各組的配置。邀請 2 組快速分享，按「選兩組比較」並點那兩組。問：「兩組哪裡不一樣？理由有沒有道理？」強調不是找唯一答案。', expect:'比較不同組別、說出理由與差異。', observe:'能理解同一問題可有不同合理解法。', high:'高年級加問：「為什麼選醫院而不是交通？」「每個地方都拿4格是不是最公平？」'},
+    html:() => `<div class="center">${kick('Step 2｜Think・比較選擇','2 分')}<h1 class="q" style="font-size:clamp(26px,3.2vw,44px)">${UI.pick.length===2 ? '這兩組哪裡不一樣？理由有沒有道理？' : '各組的能源配置'}</h1>
+      ${hi() && UI.pick.length!==2 ? '<p class="sub" style="font-size:clamp(16px,1.8vw,24px)">每個地方都拿 4 格，是不是最公平？</p>' : ''}</div>${board(false)}`},
+  story(1, 5, 'night', '故事裡的孩子怎麼想', {node:'對照故事', say:'「故事裡的三個孩子也在討論。他們的想法，跟你們組裡的哪個想法很像？」', expect:'學生找到與自己相似的理由。'}),
+  story(1, 6, 'night', '他們的選擇', {node:'對照故事', say:'「故事裡的孩子這樣選，跟你們一樣嗎？哪裡不一樣？」提醒：沒有唯一答案，重要的是說得出理由。', observe:'能比較自己與故事角色的選擇並說明差異。'}),
+
+  /* ── Step 3 Do ── */
+  story(2, 7, 'night', '問題升級', {node:'問題升級', time:'2 分', say:'「你們解決的是今天晚上。可是，如果明天還是沒有電呢？難道每天都等能源爺爺送20格？」宣布：「希望城市能源工程師任務開始！」', expect:'提出「自己發電」「做太陽能」等想法。', observe:'能從短期分配轉向長期解決方案。'}),
+  story(2, 8, 'day', '太陽能', {node:'能源小知識', time:'4 分', say:'太陽能：來源是太陽光。「你在哪裡看過太陽能板？」', expect:'屋頂、路燈、學校。'}),
+  story(2, 9, 'day', '風力發電', {node:'能源小知識', say:'風力：風吹動風機的葉片轉動發電。「雲林海邊就看得到大風車！」'}),
+  story(2, 10, 'day', '水力與生質能', {node:'能源小知識', say:'水力：流動的水推動水車或渦輪。生質能：稻草、稻殼、農作物廢棄物、廚餘等，經過適當處理可以轉化成能源。可連結雲林的農田生活。'}),
+  {step:2, kind:'energy', theme:'day', label:'四種潔淨能源',
+    teach:{node:'能源小知識', say:'每種只講來源與生活化例子，不要求精準原理。可以請學生說：「我最想在城市裡放哪一種？」', expect:'辨認圖卡、連結生活經驗。', observe:'能辨識至少 2 種潔淨能源。'},
+    html:() => `<div class="center">${kick('Step 3｜Do・能源小知識','4 分')}<h1 class="q" style="font-size:clamp(28px,3.6vw,50px)">城市可以自己發電！</h1></div>
+      <div class="energy-grid">${[
+        {n:'太陽能', i:'☀️', p:8, c:'#f2b632', src:'太陽光', ex:'屋頂的太陽能板、太陽能路燈'},
+        {n:'風力', i:'🌬️', p:9, c:'#4f9fe0', src:'風吹動大風車', ex:'海邊、空曠草地上的風機'},
+        {n:'水力', i:'💧', p:10, pos:'left center', c:'#3bb3c4', src:'流動的水', ex:'水車、水庫的發電廠'},
+        {n:'生質能', i:'🌾', p:10, pos:'right center', c:'#4fb37a', src:'稻草、稻殼、農作物廢棄物、廚餘', ex:'經過適當處理，田裡的廢棄物也能變能源'}
+      ].map(e => `<div class="card ecard"><div class="img">${img(e.p).replace('<img ', `<img style="object-position:${e.pos||'center'}" `)}<span>${e.i}</span></div>
+        <div class="body"><h4 style="--c:${e.c}">${e.n}</h4><p><b>來源：</b>${e.src}</p><p><b>例子：</b>${e.ex}</p></div></div>`).join('')}</div>`},
+  story(2, 11, 'day', '一起蓋新城市', {node:'發下建構積木', say:'「故事裡的孩子用積木蓋出一座新城市。現在輪到你們了！」此時才發下正式建構積木。'}),
+  {step:2, kind:'build', theme:'day', bg:11, label:'積木建構（12 分鐘）',
+    teach:{node:'積木建構', time:'12 分', say:'每組打造「未來能源城」。巡迴問：「它解決什麼問題？」「能源從哪裡來？」「幫助誰？」「有不同意見時怎麼決定？」清單可以點一下打勾，示範檢核。', expect:'分工建構；可能設計太陽能屋頂、風車、儲能塔、發電公園、太陽能公車等。', observe:'能提出具體解法；能分工、協調與合作。'},
+    html:() => `${kick('Step 3｜Do・積木建構','12 分')}<h1 class="q" style="font-size:clamp(28px,3.6vw,50px)">打造「未來能源城」</h1>
+      <div class="task"><div class="rules"><ul class="checks">${['☀️ 至少一種潔淨能源','🏥 醫院','🏫 學校','🏠 住宅','🚌 交通設施','⭐ 一項「秘密能源發明」'].map((c, i) => `<li class="${S.checks['b'+i]?'ok':''}" data-check="b${i}"><span class="box">${S.checks['b'+i]?'✓':''}</span>${c}</li>`).join('')}</ul>
+        <div class="patrol" data-act="patrol">💭 ${PATROL_BUILD[UI.patrol % PATROL_BUILD.length]} <small>（換一句）</small></div></div>
+      ${bigTimer(720, 'build')}</div>`},
+  {step:2, kind:'wrap', theme:'day', bg:11, label:'完成整理（2 分鐘）',
+    teach:{node:'完成整理', time:'2 分', say:'提醒剩餘2分鐘，請小組準備一句「我們最重要的能源決定」與一項「秘密發明」，並推選分享者。', expect:'整理作品、推選分享者。', observe:'能抓住作品重點並準備表達。'},
+    html:() => `${kick('Step 3｜Do・完成整理','2 分')}<h1 class="q" style="font-size:clamp(28px,3.6vw,50px)">準備分享！</h1>
+      <div class="task"><div class="rules">
+        <div class="card rule"><div class="no">1</div><p>一句話：我們<b>最重要的能源決定</b>是＿＿＿</p></div>
+        <div class="card rule"><div class="no">2</div><p>我們的<b>秘密能源發明</b>是＿＿＿</p></div>
+        <div class="card rule"><div class="no">3</div><p>選出<b>分享的人</b></p></div>
+      </div>${bigTimer(120, 'wrap')}</div>`},
+  story(2, 12, 'day', '怕冷的奶奶', {node:'事件卡：奶奶', say:'讀完先停住：「城市裡來了一位怕冷的奶奶，她家沒有電。」看看各組桌上的 20 格能源。'}),
+  {step:2, kind:'grandma', theme:'day', label:'事件卡：怕冷的奶奶',
+    teach:{node:'事件卡：奶奶', time:'3 分', say:'問：「要不要重新分？如果要，從哪裡拿？如果不改，你的理由是什麼？」在配置表中把格子移到「奶奶家」，數字旁會顯示 +／− 變化。帶出：「公平不一定每個人一樣，而是看誰現在更需要。」', expect:'有人願意調整；有人擔心其他區域不足；提出替代方法（例如用自己城市發的電）。', observe:'能覺察弱勢／急迫需求；能重新思考與修正決定。', high:'高年級可再按「抽事件卡」：連續陰雨、強風、寒流、人口增加、設備故障，要求重新調整。'},
+    html:() => `<div class="two slim"><div class="thumb">${img(12)}</div><div>
+      ${kick('事件卡','3 分')}<h1 class="q" style="font-size:clamp(26px,3.2vw,44px)">要不要重新分？</h1>
+      <p class="sub" style="font-size:clamp(17px,1.9vw,25px)">如果要，從哪裡拿？<br>如果不改，你的理由是什麼？</p>
+      ${UI.revealed.gran ? '<div class="reveal" style="text-align:left;font-size:clamp(20px,2.3vw,30px)">公平不一定每個人一樣，<br>而是看誰現在更需要。</div>' : '<div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn ghost" data-reveal="gran">✨ 收斂</button>' + (hi() ? '<button class="btn" data-act="draw">🎴 抽事件卡</button>' : '') + '</div>'}
+      ${UI.revealed.gran && hi() ? '<div style="margin-top:14px"><button class="btn" data-act="draw">🎴 抽事件卡</button></div>' : ''}
+      ${UI.event !== null && hi() ? `<div class="event" style="margin:16px 0 0;max-width:none"><div class="tag">城市突發事件</div><h4>${EVENTS[UI.event].i} ${EVENTS[UI.event].t}</h4><p>${EVENTS[UI.event].p}</p></div>` : ''}
+      </div></div>
+      ${board(true)}`},
+
+  /* ── Step 4 Share ── */
+  story(3, 13, 'night', '城市重新亮起來', {node:'小組分享', say:'「希望城市重新亮了起來。現在請各組介紹你們的未來能源城！」'}),
+  {step:3, kind:'share', theme:'night', label:'小組分享',
+    teach:{node:'小組分享', time:'5 分', say:'每組只回答四題。用上方箭頭切換組別，會顯示該組的能源配置作為參考。', expect:'以作品為依據說明選擇與設計。', observe:'能說明決策理由與設計功能。'},
+    html:() => { const g = S.shareG % S.groups;
+      return `<div class="center">${kick('Step 4｜Share・小組分享','5 分')}
+      <div class="share-head"><button data-act="shareG" data-d="-1" aria-label="上一組">‹</button><span class="gname">第 ${g+1} 組</span><button data-act="shareG" data-d="1" aria-label="下一組">›</button></div>
+      ${sum(S.rows[g], true) ? `<div class="mini-bar">${rowHTML(g, true).replace('data-edit', 'data-x')}</div>` : ''}</div>
+      <div class="qlist">${['最先把電給誰？','為什麼？','使用哪一種潔淨能源？','秘密能源發明是什麼？'].map((q, i) => `<div class="card qitem"><div class="no">${i+1}</div><p>${q}</p></div>`).join('')}</div>`; }},
+  {step:3, kind:'ask', theme:'night', label:'合作回顧',
+    teach:{node:'合作回顧', time:'1 分', say:'追問：「你們有沒有意見不一樣？最後怎麼決定？」', expect:'投票、輪流說、合併想法、折衷等。', observe:'能覺察合作歷程與協調方式。'},
+    html:() => `<div class="center">${kick('Step 4｜Share・合作回顧','1 分')}<h1 class="q">你們有沒有意見不一樣？</h1><p class="sub">最後是怎麼決定的？</p>
+      <div class="chips mt">${['🗳️ 投票','🔁 輪流說','🧩 合併想法','🤝 各退一步','🧪 先試試看'].map(e => `<span class="chip">${e}</span>`).join('')}</div></div>`},
+  {step:3, kind:'bonus', theme:'night', label:'5 格挑戰',
+    teach:{node:'5格挑戰', time:'1 分', say:'再拿出5顆能源：「如果現在再多5格，你會給誰？為什麼？」', expect:'可能給遊樂場、住宅、交通、醫院等。', observe:'能根據新條件重新做決定。'},
+    html:() => `<div class="center">${kick('Step 4｜Share・5 格挑戰','1 分')}
+      <div class="energy-cells" style="grid-template-columns:repeat(5,1fr);width:max-content;margin:10px auto 26px;gap:14px">${'<i class="ecell" style="width:clamp(44px,6vw,80px)"></i>'.repeat(5)}</div>
+      <h1 class="q">如果現在再多 5 格，<br>你會給誰？</h1><p class="sub">為什麼？</p></div>`},
+
+  /* ── Step 5 Act ── */
+  story(4, 14, 'day', '我的節能行動', {node:'從城市回到自己', time:'1 分', say:'「剛剛我們幫一座城市想辦法，但我們平常不一定能蓋一座太陽能城市。那我們自己可以做什麼？」'}),
+  {step:4, kind:'acts', theme:'day', label:'行動承諾',
+    teach:{node:'行動承諾', time:'2 分', say:'學生在行動承諾卡上勾選或填寫：「我願意從＿＿＿＿開始。」可點卡片統計舉手人數。', expect:'關燈、用自然光、冷氣不要太低、拔除不用插頭等。', observe:'行動是否具體、可執行。', low:'低年級可圈選＋畫圖。', high:'高年級加寫「因為＿＿＿＿」。'},
+    html:() => `<div class="center">${kick('Step 5｜Act・我的節能小行動','2 分')}<h1 class="q" style="font-size:clamp(28px,3.6vw,50px)">我們自己可以做什麼？</h1></div>
+      <div class="act-grid">${ACTIONS.map((a, i) => { const n = S.acts[i]||0;
+        return `<div class="card act${n?' has':''}" data-actn="${i}" role="button" tabindex="0"><span class="cnt">${n}</span><div class="ico">${a.i}</div><div class="t">${a.t}</div></div>`; }).join('')}
+        <div class="card act" data-act="actsReset" role="button" tabindex="0" style="opacity:.6"><div class="ico">↺</div><div class="t">歸零</div></div></div>
+      <div class="promise">我願意從 <u>&nbsp;</u> 開始。${hi() ? '<br>因為 <u style="min-width:10em">&nbsp;</u>。' : ''}</div>`},
+  {step:4, kind:'core', theme:'night', bg:13, label:'教師總結',
+    teach:{node:'教師總結', say:'「今天你們做的不只是蓋積木。你們先發現問題，再做選擇；不只想到自己，也開始想到別人的需要；最後還用自己的方法，讓城市變得更好。」最後全班一起念收斂句。'},
+    html:() => `<div class="center">${kick('今天的四個問題')}</div>
+      <div class="core">${['誰需要？','為什麼需要？','我們可以怎麼做？','我的選擇會影響誰？'].map((q, i) => `<div class="card"><div class="no">${'①②③④'[i]}</div><p>${q}</p></div>`).join('')}</div>
+      <div class="motto">能源有限，選擇有力量。<br>看見需要，一起讓希望城市發光。</div>`},
+  {step:4, kind:'sheet', theme:'day', label:'學習單',
+    teach:{node:'學習單', say:'按「列印學習單」會依目前的低／高年段輸出 A4 版本（能源配置表＋節能行動承諾卡）。可在課前先印好。'},
+    html:() => `<div class="two"><div class="thumb">${img(15)}</div><div>
+      ${kick('帶回家想一想')}<h1 class="q" style="font-size:clamp(28px,3.4vw,48px)">如果你也有 20 格能源，<br>你會先把電送給誰呢？</h1>
+      <div style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn" data-act="print">🖨️ 列印學習單（${hi() ? '高' : '低'}年級版）</button></div>
+      <p style="margin-top:14px;color:var(--muted);font-size:14px">右上角「低／高」可切換版本</p></div></div>`}
+];
+
+/* ═══════════ 繪製 ═══════════ */
+function storyHTML(sc){
+  const p = sc.p;
+  return `<div class="story${S.caps?' with-cap':''}"><div class="frame">${img(p)}
+    <div class="story-tools"><button data-act="speak">🔊 朗讀</button><button data-act="caps" class="${S.caps?'on':''}">字幕</button></div></div>
+    ${S.caps ? `<div class="caption">${esc(STORY[p])}</div>` : ''}</div>`;
+}
+function render(anim = true){
+  const sc = SCENES[S.i];
+  document.body.dataset.theme = sc.theme;
+  const bgP = sc.bg;
+  $('#backdrop').style.backgroundImage = bgP ? `url('${resolved[bgP] || imgSrc(bgP)}')` : 'none';
+  const st = $('#stage');
+  const scroll = anim ? 0 : st.scrollTop;
+  st.innerHTML = `<div class="scene" style="${anim ? '' : 'animation:none'}">${sc.kind === 'story' ? storyHTML(sc) : sc.html()}</div>`;
+  st.scrollTop = scroll;
+  // steps
+  $('#steps').innerHTML = STEPS.map((s, i) => `<button class="step-chip${i===sc.step?' on':''}${i<sc.step?' done':''}" data-step="${i}" title="Step ${i+1} ${s.en}・${s.zh}（約 ${s.min} 分）"><span class="n">${i+1}</span><span class="en">${s.en}</span><span class="t">${s.zh}</span><span class="m">${s.min}′</span></button>`).join('');
+  document.querySelectorAll('.grade button').forEach(b => b.classList.toggle('on', b.dataset.grade === S.grade));
+  $('#whereLab').textContent = `${S.i+1} / ${SCENES.length}　${sc.label}`;
+  $('#progBar').style.width = ((S.i+1)/SCENES.length*100) + '%';
+  $('#prevBtn').disabled = S.i === 0; $('#nextBtn').disabled = S.i === SCENES.length-1;
+  tPaint(); drawer(); save();
+  try{ history.replaceState(null, '', '#' + (S.i+1)); }catch(e){}
+  // preload next image
+  const nx = SCENES[S.i+1]; if(nx && nx.p){ const im = new Image(); im.src = resolved[nx.p] || imgSrc(nx.p); }
+}
+function go(i){
+  i = Math.max(0, Math.min(SCENES.length-1, i));
+  if(i === S.i) return;
+  speechSynthesis && speechSynthesis.cancel();
+  UI.pick = []; S.i = i;
+  if(SCENES[i].kind === 'grandma' && !S.base) S.base = S.rows.map(r => Object.assign({}, r, {g:0}));
+  render();
+}
+
+/* ═══════════ 教師小抄 ═══════════ */
+function drawer(){
+  document.querySelectorAll('.drawer-tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === UI.tab));
+  $('#drawer').classList.toggle('open', UI.drawer); $('#teacherBtn').classList.toggle('on', UI.drawer);
+  const sc = SCENES[S.i], t = sc.teach || {}, st = STEPS[sc.step];
+  let h = '';
+  if(UI.tab === 'now'){
+    h = `<div class="meta">Step ${sc.step+1}｜${st.en}・${st.zh}（約 ${st.min} 分）</div><div class="node">${esc(t.node || sc.label)}${t.time ? `<span class="meta">　${t.time}</span>` : ''}</div>
+      ${sc.p ? `<h5>本頁故事</h5><div style="white-space:pre-line">${esc(STORY[sc.p])}</div>` : ''}
+      ${t.say ? `<h5>教師引導</h5><div class="say">${esc(t.say)}</div>` : ''}
+      ${t.expect ? `<h5>學生可能反應</h5><div>${esc(t.expect)}</div>` : ''}
+      ${t.observe ? `<h5>評量／觀察</h5><div>${esc(t.observe)}</div>` : ''}
+      ${t.low && !hi() ? `<h5>低年級提醒</h5><div>${esc(t.low)}</div>` : ''}
+      ${t.high && hi() ? `<h5>高年級加深</h5><div>${esc(t.high)}</div>` : ''}`;
+  } else if(UI.tab === 'faq'){
+    h = [
+      ['全組把電幾乎都給醫院','不要直接判斷對錯，可問：「那住宅完全沒電會怎麼樣？」「有沒有最低限度也需要電的地方？」讓學生自己發現影響。'],
+      ['學生堅持遊樂場一定要有電','先肯定其需求觀點，追問：「為什麼遊樂場對你很重要？」若回答「大家需要快樂」，再問：「當資源真的不夠時，你會怎麼取捨？」'],
+      ['小組因分配爭吵','把衝突轉成SEL素材：「我發現你們有兩種不同想法，我們先不要決定誰對，每個人先說一句理由。」再問：「有沒有第三種方法？」'],
+      ['學生只顧蓋作品、不談能源','巡迴追問：「這個設施的能源從哪裡來？」「它幫助了誰？」「如果沒有它，城市會怎麼樣？」把作品重新連回問題。']
+    ].map(([q, a]) => `<div class="faq"><b>${q}</b>${a}</div>`).join('') +
+    `<h5>分齡調整</h5><div><b>2～3 年級：</b>重點放在「誰比較需要？」；直接用20顆積木操作；多用角色感受提問；學習單以圈選、畫圖為主。</div>
+     <div style="margin-top:6px"><b>4～6 年級：</b>增加取捨與公平討論；可加入能源事件卡，要求重新調整能源配置。</div>
+     <h5>課前環境</h5><div>每組先放20顆能源積木＋配置圖＋設施卡；正式建構積木等完成能源決策後再發，避免學生過早只想蓋積木。</div>`;
+  } else {
+    h = `<h5>形成性評量</h5><table>${[
+      ['問題理解','能說明停電對城市設施可能造成的影響'],['負責任決定','能進行能源分配，並說出選擇理由'],
+      ['社會覺察／同理','能看見不同角色的需求，並在新事件出現時重新思考'],['合作溝通','能傾聽夥伴、表達想法，並共同完成作品'],
+      ['創意問題解決','能利用積木提出至少一項能源解決方案'],['行動轉化','能提出一項具體可行的節能行動']
+    ].map(([a, b]) => `<tr><td style="white-space:nowrap;font-weight:700">${a}</td><td>${b}</td></tr>`).join('')}</table>
+    <h5>操作方式</h5><div><span class="key">→</span><span class="key">空白鍵</span> 下一頁　<span class="key">←</span> 上一頁<br><span class="key">T</span> 開關小抄　<span class="key">F</span> 全螢幕<br>上方 1～5 可直接跳到各步驟。配置表的資料會留在這台電腦的瀏覽器裡，換班上課前可按「清空」。</div>
+    <h5>重設</h5><button class="tool" style="border-color:#c9b8a4" data-act="resetAll">清除本堂課所有紀錄</button>
+    <div class="lic">© 永齡希望小學雲科大分校<br>本作品採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hant" target="_blank" rel="noopener">創用 CC 姓名標示－非商業性－相同方式分享 4.0</a> 授權・使用請保留出處標示</div>`;
+  }
+  $('#drawerBody').innerHTML = h;
+}
+
+/* ═══════════ 學習單列印 ═══════════ */
+function printSheet(){
+  const H = hi();
+  $('#printSheet').innerHTML = `<h2>「積」起改變的力量｜停電了！拯救希望城市</h2>
+    <div class="s">姓名：＿＿＿＿＿＿＿　組別：第＿＿組　日期：＿＿＿＿＿＿</div>
+    <h3>一、20 格能源分配任務表</h3>
+    <p style="font-size:11pt">全城完整供電共需 28 格，但我們只有 20 格。${H ? '請討論並完成分配，寫下理由。' : '請塗一塗、圈一圈，也可以用畫的說明理由。'}</p>
+    <div class="box20">${'<i></i>'.repeat(20)}</div>
+    <table><tr><th>城市設施</th><th>完整需求</th><th>本組分配</th><th>${H ? '我們的理由' : '我們的理由（可以用畫的）'}</th></tr>
+    ${FAC.map(f => `<tr><td>${f.icon} ${f.name}</td><td>${f.need} 格</td><td>＿＿ 格</td><td class="why"></td></tr>`).join('')}
+    <tr><th>合計</th><th>28 格</th><th>20 格</th><td></td></tr></table>
+    <h3>二、我的節能小行動</h3>
+    <ul>${ACTIONS.map(a => `<li>□ ${a.t === '其他：我自己的想法' ? '其他：＿＿＿＿＿＿＿＿' : a.t}</li>`).join('')}</ul>
+    <div class="line">我的能源承諾：我願意從＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿開始。</div>
+    ${H ? '<div class="line">因為＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿。</div>' : '<div class="draw">畫一畫：我正在做我的節能小行動</div>'}
+    <div class="foot">© 永齡希望小學雲科大分校・CC BY-NC-SA 4.0</div>`;
+  window.print();
+}
+
+/* ═══════════ 事件 ═══════════ */
+function speak(){
+  const sc = SCENES[S.i]; if(!sc.p || !('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(STORY[sc.p].replace(/[《》]/g, ''));
+  u.lang = 'zh-TW'; u.rate = 0.9;
+  const v = speechSynthesis.getVoices().find(v => /zh[-_]TW/i.test(v.lang)); if(v) u.voice = v;
+  speechSynthesis.speak(u);
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-act],[data-step],[data-grade],[data-tab],[data-flip],[data-reveal],[data-edit],[data-inc],[data-check],[data-actn],[data-t]');
+  if(!t) return;
+  const d = t.dataset, sc = SCENES[S.i];
+  if(d.step !== undefined) return go(SCENES.findIndex(s => s.step === +d.step));
+  if(d.grade){ S.grade = d.grade; return render(false); }
+  if(d.tab){ UI.tab = d.tab; return drawer(); }
+  if(d.flip){ UI.flip[d.flip] = !UI.flip[d.flip]; t.classList.toggle('open'); return; }
+  if(d.reveal){ UI.revealed[d.reveal] = true; return render(false); }
+  if(d.check){ S.checks[d.check] = !S.checks[d.check]; return render(false); }
+  if(d.actn !== undefined){ S.acts[d.actn] = (S.acts[d.actn]||0) + 1; return render(false); }
+  if(d.t){
+    if(d.t === 'go') T.run ? tStop() : tStart();
+    else if(d.t === 'reset') tSet(+d.sec, d.label);
+    else tAdd(+d.t);
+    return;
+  }
+  if(d.edit !== undefined){
+    const gi = +d.edit;
+    if(UI.pickMode || e.shiftKey){
+      UI.pick = UI.pick.includes(gi) ? UI.pick.filter(x => x !== gi) : [...UI.pick, gi].slice(-2);
+      if(!UI.pick.length) UI.pickMode = false;
+      return render(false);
+    }
+    return openEditor(gi, sc.kind === 'grandma');
+  }
+  if(d.inc){
+    const {gi, withG} = UI.editing, r = S.rows[gi];
+    r[d.inc] = Math.max(0, Math.min(20, (r[d.inc]||0) + (+d.d)));
+    save(); render(false); return openEditor(gi, withG);
+  }
+  switch(d.act){
+    case 'closeEd': if(e.target === t || t.tagName === 'BUTTON') closeEditor(); break;
+    case 'pickmode': if(UI.pick.length || UI.pickMode){ UI.pick = []; UI.pickMode = false; } else { UI.pickMode = true; UI.pick = []; toast('點兩個組別來比較', 2500); } render(false); break;
+    case 'groups': S.groups = Math.max(2, Math.min(8, S.groups + (+d.d))); render(false); break;
+    case 'rebase': S.base = S.rows.map(r => Object.assign({}, r)); render(false); break;
+    case 'clearall': if(confirmClear()){ S.rows = S.rows.map(blankRow); S.base = null; if(sc.kind === 'grandma') S.base = S.rows.map(r => Object.assign({}, r)); render(false); } break;
+    case 'patrol': UI.patrol++; render(false); break;
+    case 'draw': { let n; do{ n = Math.floor(Math.random()*EVENTS.length); }while(n === UI.event && EVENTS.length > 1); UI.event = n; render(false); break; }
+    case 'shareG': S.shareG = (S.shareG + (+d.d) + S.groups) % S.groups; render(false); break;
+    case 'actsReset': S.acts = {}; render(false); break;
+    case 'speak': speak(); break;
+    case 'caps': S.caps = !S.caps; render(false); break;
+    case 'print': printSheet(); break;
+    case 'resetAll': if(confirmClear()){ const keep = {grade:S.grade, groups:S.groups}; S = Object.assign({i:S.i, caps:false, rows:[], base:null, acts:{}, shareG:0, checks:{}}, keep); while(S.rows.length < 8) S.rows.push(blankRow()); UI.revealed = {}; UI.flip = {}; UI.event = null; tSet(0, ''); render(false); } break;
+  }
+});
+// 二次確認改用頁內按鈕狀態，避免瀏覽器對話框卡住投影
+let clearArm = 0;
+function confirmClear(){
+  if(Date.now() - clearArm < 4000){ clearArm = 0; return true; }
+  clearArm = Date.now(); toast('再按一次即可清空', 3500); return false;
+}
+$('#prevBtn').onclick = () => go(S.i - 1);
+$('#nextBtn').onclick = () => go(S.i + 1);
+$('#teacherBtn').onclick = () => { UI.drawer = !UI.drawer; drawer(); };
+$('#fsBtn').onclick = toggleFS;
+$('#timerPill').onclick = () => { if(T.total) T.run ? tStop() : tStart(); };
+function toggleFS(){ try{ document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }catch(e){} }
+document.addEventListener('keydown', e => {
+  if(e.target.matches('input,textarea')) return;
+  if($('.modal-bg')){ if(e.key === 'Escape') closeEditor(); return; }
+  if(['ArrowRight','PageDown',' '].includes(e.key)){ e.preventDefault(); go(S.i + 1); }
+  else if(['ArrowLeft','PageUp'].includes(e.key)){ e.preventDefault(); go(S.i - 1); }
+  else if(e.key === 't' || e.key === 'T'){ UI.drawer = !UI.drawer; drawer(); }
+  else if(e.key === 'f' || e.key === 'F') toggleFS();
+  else if(e.key === 'Enter' && e.target.matches('[role=button]')) e.target.click();
+});
+// 觸控滑動翻頁（故事頁）
+let tx = null;
+$('#stage').addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, {passive:true});
+$('#stage').addEventListener('touchend', e => {
+  if(tx === null || SCENES[S.i].kind !== 'story') return;
+  const dx = e.changedTouches[0].clientX - tx; tx = null;
+  if(Math.abs(dx) > 60) go(S.i + (dx < 0 ? 1 : -1));
+});
+
+/* ═══════════ 啟動 ═══════════ */
+const h = parseInt(location.hash.slice(1), 10);
+if(h >= 1 && h <= SCENES.length) S.i = h - 1;
+if(S.i >= SCENES.length) S.i = 0;
+render();
+// 偵測圖片檔名格式：p01.jpg 或 1.jpg
+(function probe(){
+  const a = new Image();
+  a.onerror = () => { const b = new Image(); b.onload = () => { ALT_NAMES = true; render(false); }; b.src = IMG_DIR + '1.jpg'; };
+  a.src = IMG_DIR + 'p01.jpg';
+})();
+</script>
+</body>
+</html>
