@@ -135,6 +135,8 @@ main{min-width:0;display:flex;flex-direction:column;gap:14px}
 
 .backups{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:10px}
 .backups h3{font-family:var(--font-display);font-weight:400;font-size:17px;margin:0}
+.backups-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.backups .field input{margin-top:6px}
 .backups .list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 @media (max-width:620px){.backups .list{grid-template-columns:1fr}}
 
@@ -463,14 +465,22 @@ function renderChild(){
     h += `</li>`;
   }
   h += `</ol>`;
-  const bank = subj().bank;
-  const b0 = st.backups[0] || '';
-  h += `<section class="backups" aria-labelledby="h-backup"><h3 id="h-backup">備用任務</h3>
-    <p class="hint">孩子提早完成時使用。第 1 項須為${esc(state.meta.subject)}學習任務並優先執行，其他兩項可選其他類，執行方式請與社工討論。</p>
+  const bank = subj().bank, bankAll = [...bank, ...DATA.other];
+  const other = st.backupOther || [];
+  const backupField = (i, label, list) => {
+    const val = st.backups[i] || '';
+    const isOther = other[i] || (val && !list.includes(val));
+    return `<div class="field"><label for="bs-${i}">${label}</label>
+      <select id="bs-${i}" data-bsel="${i}"><option value="">請選擇</option>${list.map(x => `<option${!isOther && x===val ? ' selected' : ''}>${esc(x)}</option>`).join('')}<option value="__other__"${isOther ? ' selected' : ''}>其他（自行輸入）</option></select>
+      ${isOther ? `<input id="b-${i}" data-b="${i}" value="${esc(val)}" placeholder="輸入備用任務" aria-label="${label}自行輸入">` : ''}</div>`;
+  };
+  h += `<section class="backups" aria-labelledby="h-backup">
+    <div class="backups-head"><h3 id="h-backup">備用任務</h3><button class="link" data-act="apply-backups">套用到全班</button></div>
+    <p class="hint">孩子提早完成時使用。第 1 項須為${esc(state.meta.subject)}學習任務並優先執行，其他兩項可選其他類，執行方式請與社工討論。選單沒有的項目請選「其他」自行輸入。</p>
     <div class="list">
-      <div class="field"><label for="b-0">第 1 項（${esc(state.meta.subject)}）</label><select id="b-0" data-b="0"><option value="">請選擇</option>${(b0 && !bank.includes(b0) ? `<option selected>${esc(b0)}</option>` : '')}${bank.map(x => `<option${x===b0?' selected':''}>${esc(x)}</option>`).join('')}</select></div>
-      <div class="field"><label for="b-1">第 2 項</label><input id="b-1" data-b="1" list="acts-all" value="${esc(st.backups[1]||'')}"></div>
-      <div class="field"><label for="b-2">第 3 項</label><input id="b-2" data-b="2" list="acts-all" value="${esc(st.backups[2]||'')}"></div>
+      ${backupField(0, `第 1 項（${esc(state.meta.subject)}）`, bank)}
+      ${backupField(1, '第 2 項', bankAll)}
+      ${backupField(2, '第 3 項', bankAll)}
     </div></section>`;
   $('#view').innerHTML = h;
 }
@@ -530,6 +540,14 @@ document.addEventListener('change', e => {
   if (el.name === 'taskLen'){ state.meta.taskLen = Number(el.value); render(); return; }
   if (el.name === 'view'){ ui.view = el.value; render(); return; }
   if (el.dataset.m === 'template'){ render(); return; }
+  if (el.dataset.bsel !== undefined){
+    const st = cur(), i = Number(el.dataset.bsel);
+    st.backupOther = st.backupOther || [false,false,false];
+    if (el.value === '__other__'){ st.backupOther[i] = true; st.backups[i] = ''; }
+    else { st.backupOther[i] = false; st.backups[i] = el.value; }
+    renderChild(); light();
+    const f = document.getElementById(el.value === '__other__' ? 'b-'+i : 'bs-'+i); if (f) f.focus(); return;
+  }
   if (el.dataset.ty){
     const st = cur(), k = 't'+el.dataset.ty;
     const ex = EXTRA_TYPES[el.value];
@@ -565,11 +583,16 @@ document.addEventListener('click', e => {
     if (t){ t.scrollIntoView({block:'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); t.classList.add('flash'); const a = document.getElementById('a-'+no); if (a) a.focus({preventScroll:true}); }
     return;
   }
+  if (d.act === 'apply-backups'){
+    const src = cur(); if (!src) return;
+    state.students.forEach(s => { s.backups = [...src.backups]; s.backupOther = [...(src.backupOther || [false,false,false])]; });
+    render(); toast(`已把備用任務套用到全班 ${state.students.length} 位孩子`); return;
+  }
   if (d.act === 'clear-sample'){ state = blankState(); ui.cur = 0; renderMetaValues(); render(); toast('已清空範例，可以開始輸入班上的孩子'); return; }
   if (d.act === 'keep-today'){ state.meta.date = today(); renderMetaValues(); render(); toast('已改成今天的日期，任務保留'); return; }
   if (d.act === 'clear-today'){
     const m = state.meta; state.meta = {...m, date:today(), calm:'', reminder:'', tools:''};
-    state.students.forEach(s => { s.tasks = {}; s.note = ''; s.backups = ['','','']; });
+    state.students.forEach(s => { s.tasks = {}; s.note = ''; s.backups = ['','','']; s.backupOther = [false,false,false]; });
     renderMetaValues(); render(); toast('已保留孩子名單和今日進度，任務清空'); return;
   }
 });
