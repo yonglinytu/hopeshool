@@ -1080,11 +1080,16 @@ function kidRec(st){
 }
 const findKid = sid => state.students.find(s => s.id === sid);
 // 從課前排課取出這位孩子今天排了哪些任務
-function plannedTasks(st){
+// all=true：當天所有任務都列出來（沒排內容的標「未填內容」），課後紀錄勾選沒完成的任務時用
+function plannedTasks(st, all){
   const tasks = allTasks(buildFlow()), res = resolved(st, tasks);
   return tasks.map(t => {
     const v = st.tasks['t'+t.no] || {}, ty = taskType(v), act = (v.act||'').trim(), unit = res[t.no] || '';
-    if (!act && !ty) return null;
+    if (!act && !ty){
+      if (!all) return null;
+      const head = `${state.meta.subject}（未填內容）`;
+      return {no:t.no, label: head + (unit ? '｜' + unit : ''), act: head, unit, empty:true};
+    }
     let label;
     if (ty === '家課') label = '【家課】' + (unit || '學校作業');
     else if (ty === '其他') label = '【其他】' + [act, unit].filter(Boolean).join('｜');
@@ -1157,11 +1162,11 @@ function recCard(st){
     if (HW_NOTE.includes(r.hw)) hw += txt('hwNote', sid, r.hwNote, '原因或還差哪些', {label:'作業說明'});
     h += rrow('學校作業', hw);
 
-    const P = plannedTasks(st);
+    const A = plannedTasks(st, true), planned = A.filter(p => !p.empty).length;
     let tk = chipGroup('taskAll', sid, TASK_ALL, r.taskAll, {label:'今日任務完成度'});
-    if (!P.length) tk += `<p class="hint">課前排課沒有這位孩子的任務，只記整體完成度。</p>`;
+    if (!planned) tk += `<p class="hint">課前排課還沒有填這位孩子的任務內容。</p>`;
     if (r.taskAll && r.taskAll !== '全部完成'){
-      if (P.length) tk += `<div class="tags"><p class="hint" style="margin:0 0 6px">沒完成的是哪幾項？</p>${chipGroup('taskMiss', sid, P.map(p => [String(p.no), `${p.no}. ${p.act}`]), r.taskMiss, {multi:true, small:true, label:'沒完成的任務'})}</div>`;
+      if (A.length) tk += `<div class="tags"><p class="hint" style="margin:0 0 6px">沒完成的是哪幾項？</p>${chipGroup('taskMiss', sid, A.map(p => [String(p.no), `${p.no}. ${p.act}`]), r.taskMiss, {multi:true, small:true, label:'沒完成的任務'})}</div>`;
       tk += txt('taskNote', sid, r.taskNote, '沒完成的原因', {label:'任務未完成原因'});
     }
     h += rrow('今日任務', tk);
@@ -1312,7 +1317,7 @@ const recBase = () => [state.meta.date, state.meta.cls || '未填班別', state.
 function recRows(stamp){
   const m = state.meta;
   return state.students.filter(st => st.name).map(st => {
-    const r = kidRec(st), ab = isAbsent(r), P = plannedTasks(st), e = r.ev;
+    const r = kidRec(st), ab = isAbsent(r), P = plannedTasks(st, true), e = r.ev;
     let tDone = '', tDetail = '';
     if (!ab){
       tDone = r.taskAll || '';
@@ -1497,7 +1502,7 @@ function parseRec(o, st){
   const an = o['出席說明'] || '';
   r.attNote = (r.att === '遲到' || r.att === '早退') ? an.replace(/\s*分鐘$/, '') : an;
   r.hw = o['學校作業'] || ''; r.hwNote = o['作業說明'] || '';
-  const P = plannedTasks(st), det = o['任務明細'] || '', tc = o['任務完成'] || '';
+  const P = plannedTasks(st, true), det = o['任務明細'] || '', tc = o['任務完成'] || '';
   if (TASK_ALL.includes(tc)) r.taskAll = tc;
   else if (/／/.test(tc)) r.taskAll = det ? '大部分完成' : '全部完成';   // 舊格式（逐項）的紀錄
   const nos = new Set(P.map(p => String(p.no)));
