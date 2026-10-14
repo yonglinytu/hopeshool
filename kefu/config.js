@@ -1,4 +1,4 @@
-// 雲端版設定：把 Apps Script 部署後的網址（…/exec）貼在引號裡
+// 雲端版設定：Apps Script 部署後的網址（…/exec）
 window.YL_CLOUD = {
-  api: '',
+  api: 'https://script.google.com/macros/s/AKfycbwDuamq27XgoJix1vGUGvWHJ3Hj34xfqNKZiRaV-5Win3buwSIvi4r6yPiFLd7lKfsvKQ/exec',
 };
