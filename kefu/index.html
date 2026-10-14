@@ -379,6 +379,10 @@ table.flow { border-collapse: collapse; width: 100%; min-width: 760px; table-lay
 .flow .task .st.ok { color: var(--good); } .flow .task .st.part { color: var(--warn); } .flow .task .st.no { color: var(--critical); }
 .flow input.prog { width: 100%; border: 0; background: transparent; outline: none; padding: 2px 0; border-bottom: 1px dashed transparent; }
 .flow input.prog:focus { border-bottom-color: var(--accent); }
+.flow select.prog { width: 100%; min-width: 120px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); padding: 3px 4px; font-size: 13px; }
+.flow .task .muted { color: var(--muted); }
+.seg.task-cat { align-self: flex-start; }
+.seg.task-cat button { height: 32px; padding: 0 14px; font-size: 13.5px; }
 
 /* ── 課後紀錄 ── */
 .kid-row { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line-2); }
@@ -1546,13 +1550,24 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
           {
             "key": "type",
             "label": "類別",
-            "kind": "ref",
-            "ref": "taskTypes"
+            "kind": "text",
+            "hint": "本科（國語／英語／數學）、家課、閱讀、SEL、其他"
+          },
+          {
+            "key": "unit",
+            "label": "單元／教材",
+            "kind": "text",
+            "hint": "空白代表同上"
           },
           {
             "key": "content",
             "label": "內容",
             "kind": "text"
+          },
+          {
+            "key": "detail",
+            "label": "說明",
+            "kind": "longtext"
           },
           {
             "key": "status",
@@ -2292,6 +2307,43 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
           {
             "key": "name",
             "label": "選項名稱",
+            "kind": "text",
+            "required": true
+          }
+        ]
+      },
+      "units": {
+        "key": "units",
+        "sheet": "單元清單",
+        "label": "單元清單",
+        "idKey": "id",
+        "idPrefix": "UN",
+        "idWidth": 3,
+        "scope": "global",
+        "group": "master",
+        "note": "教學流程「今日進度」與本科任務「單元／教材」的選項；科目填國語／英語／數學",
+        "cols": [
+          {
+            "key": "id",
+            "label": "單元ID",
+            "kind": "text"
+          },
+          {
+            "key": "subject",
+            "label": "科目",
+            "kind": "text",
+            "required": true,
+            "hint": "國語／英語／數學"
+          },
+          {
+            "key": "series",
+            "label": "分組",
+            "kind": "text",
+            "hint": "選填，例如：玩魔數 5；空白時依名稱自動分組"
+          },
+          {
+            "key": "name",
+            "label": "單元名稱",
             "kind": "text",
             "required": true
           }
@@ -3306,7 +3358,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
   // src/js/db.js
   var TDEF = SCHEMA.tables;
-  var LIST_TABLES = ["selActivities", "backupOptions", "readingList"];
+  var LIST_TABLES = ["units", "selActivities", "backupOptions", "readingList"];
   var BASE_TABLES = ["semesters", "defaultSlots", "holidays", "subjects", "taskTypes", "teachers", "students", "classes", "classSlots", "enrollments", "resources", ...LIST_TABLES];
   var TX_TABLES = ["sessions", "blocks", "tasks", "records", "incidents", "evaluations", "feedback", "posts", "replies", "submissions"];
   var ALL_TABLES = [...BASE_TABLES, ...TX_TABLES];
@@ -3819,10 +3871,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         ops.push({ table: "blocks", row: b });
         const keepT = /* @__PURE__ */ new Set();
         if (b.mode === "個別" || b.mode === "備用") for (const ti of bi.tasks || []) {
-          if (!ti.studentId || !(ti.type || ti.content || ti.status)) continue;
+          if (!ti.studentId || !(ti.type || ti.content || ti.unit || ti.detail)) continue;
           const tid = `TK-${bid}-${ti.studentId}`;
           keepT.add(tid);
-          ops.push({ table: "tasks", row: { id: tid, blockId: bid, studentId: ti.studentId, type: ti.type || "", content: ti.content || "", status: ti.status || "" } });
+          ops.push({ table: "tasks", row: { id: tid, blockId: bid, studentId: ti.studentId, type: ti.type || "", unit: ti.unit || "", content: ti.content || "", detail: ti.detail || "", status: ti.status || "" } });
         }
         for (const t of rows("tasks").filter((t3) => t3.blockId === bid)) if (!keepT.has(t.id)) ops.push({ table: "tasks", id: t.id, delete: true });
       });
@@ -3854,7 +3906,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         if (!t || (t.status || "") === (ts.status || "")) continue;
         const blk = getRow("blocks", t.blockId);
         if (!blk || blk.sessionId !== id) continue;
-        ops.push({ table: "tasks", row: { id: t.id, blockId: t.blockId, studentId: t.studentId, type: t.type || "", content: t.content || "", status: ts.status || "" } });
+        ops.push({ table: "tasks", row: { id: t.id, blockId: t.blockId, studentId: t.studentId, type: t.type || "", unit: t.unit || "", content: t.content || "", detail: t.detail || "", status: ts.status || "" } });
       }
     }
     if (parts.has("record") && payload.incidents) {
@@ -4809,6 +4861,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     "semesters",
     "holidays",
     "resources",
+    "units",
     "selActivities",
     "backupOptions",
     "readingList",
@@ -4921,6 +4974,31 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     throw new DbError("不支援的下載：" + url);
   }
 
+  // src/js/flowdata.js
+  var SEL_ACTS = [["基礎入門", [["B-1", "情緒小夥伴——開心", 10], ["B-2", "情緒光譜——開心", 10], ["B-3", "情緒小偵探——開心", 10], ["B-4", "情緒小夥伴——難過", 10], ["B-5", "情緒光譜——難過", 10], ["B-6", "情緒小偵探——難過", 10], ["B-7", "情緒小夥伴——生氣", 10], ["B-8", "情緒光譜——生氣", 10], ["B-9", "情緒小偵探——生氣", 10], ["B-10", "情緒小夥伴——噁心或厭惡", 10], ["B-11", "情緒光譜——噁心或厭惡", 10], ["B-12", "情緒小偵探——噁心或厭惡", 10], ["B-13", "情緒小夥伴——害怕", 10], ["B-14", "情緒光譜——害怕", 10], ["B-15", "情緒小偵探——害怕", 10], ["B-16", "情緒小夥伴——驚訝或驚喜", 10], ["B-17", "情緒光譜——驚訝或驚喜", 10], ["B-18", "情緒小偵探——驚訝或驚喜", 10]]], ["情緒覺察工具", [["T-1", "認識我的外星夥伴", 10], ["T-2", "情緒動物代言人", 10], ["T-3", "情緒紅綠燈", 10], ["T-4", "情緒遙控器", 10], ["T-5", "情緒 Check In", 10], ["T-6", "情緒探索號帶動唱", 10], ["T-7", "聽聽音樂 情緒流動", 10], ["T-8", "自由畫畫", 10], ["T-9", "自由書寫", 10], ["T-10", "情緒 Check In——今天我在哪個家族的家", 10], ["T-11", "情緒光譜排隊", 15], ["T-12", "傳遞杯子——專注、合作與情緒調節", 10]]], ["HOPE牌卡", [["H-1", "安心地圖——找到讓我心安的地方", 10], ["H-2", "喜悅存摺——收集今天的好事", 15], ["H-3", "給自己的獎狀", 10], ["H-4", "我的舒適圈——界線雷達", 15], ["H-5", "拒絕句練習站", 10], ["H-6", "委屈翻譯機", 15], ["H-7", "我的求救名單", 15], ["H-8", "情緒許可證", 15], ["H-9", "表情漫畫家", 10], ["H-10", "好奇心偵探", 15], ["H-11", "身體的警報器：我的害怕地圖", 15], ["H-12", "我的安全盾牌", 15], ["H-13", "怒火溫度計：我的情緒溫度", 15], ["H-14", "界線用語工廠", 15], ["H-15", "情緒光譜排隊", 10], ["H-16", "今天我在哪個家族的家", 10], ["H-17", "情境小劇場——你怎麼了？", 20], ["H-18", "回穩工具箱：我的情緒急救包", 15], ["H-19", "給情緒的一封信", 20], ["H-20", "情緒抽卡說故事", 15], ["H-21", "感恩三明治：把謝謝說清楚", 15], ["H-22", "幸福快照：我的美好瞬間相簿", 10], ["H-23", "鼓勵信：寫給一個月後的自己", 12], ["H-24", "怪怪的雷達：身體小提醒", 15], ["H-25", "從怪怪的，到慢慢懂自己", 15], ["H-26", "感覺翻譯機", 15], ["H-27", "心願氣球", 12], ["H-28", "好好聽你說", 15], ["H-29", "意外來了怎麼辦：停看選練習", 10], ["H-30", "我發現的哇世界", 15], ["H-31", "煩惱分類站", 15], ["H-32", "緊張小貓來了，我知道怎麼辦", 15], ["H-33", "生氣小偵探", 15], ["H-34", "好好說對不起", 12], ["H-35", "情緒觀察員：今天的班級情緒天氣", 15], ["H-36", "情緒自畫像", 20], ["H-37", "身體掃描", 15], ["H-38", "交換情緒便利貼", 15], ["H-39", "我的情緒小故事", 20], ["H-40", "情緒成長紀錄", 15], ["H-41", "情緒解碼大作戰", 40]]], ["冷靜工具箱", [["C-1", "呼吸小夥伴", 10], ["C-2", "爬爬五指山", 10], ["C-3", "吹蠟燭呼吸法", 10], ["C-4", "緊張小貓五步驟", 10], ["C-5", "自創冷靜魔法", 10], ["C-6", "找尋每一個人的冷靜空間", 10]]], ["正念覺察", [["M-1", "身體掃描", 15], ["M-2", "跟身體做朋友", 10], ["M-3", "感受當下——運用五感回到此刻", 10], ["M-4", "雲冥想", 10], ["M-5", "正念散步——感官覺察之旅", 15], ["M-6", "禪繞靜心繪圖", 15], ["M-7", "正念隨身行——戶外五感尋寶", 15]]], ["情境故事", [["S-1", "故事時間（一）——掉落的霜淇淋", 10], ["S-2", "故事時間（二）——弟弟的眼淚", 10], ["S-3", "故事時間（三）——借不借的兩難", 10], ["S-4", "故事時間（四）——操場上的爭執", 10], ["S-5", "故事時間（五）——爭奪遙控器的夜晚", 10], ["S-6", "故事時間（六）——上台的勇氣", 10], ["S-7", "故事時間（七）——面對全新的挑戰", 10], ["S-8", "故事時間（八）——變化中的驚喜", 10], ["S-9", "故事時間（九）——等待中的情緒", 10], ["S-10", "故事時間（十）——孤單中的努力", 10]]], ["延伸活動", [["E-1", "情緒對對碰——翻出你的感受力", 10], ["E-2", "樂動紓壓 5 招——身體是最好的情緒出口", 10], ["E-3", "單腳平衡——專注當下的身體練習", 10], ["E-4", "袋子裡面有什麼——情緒觸摸遊戲", 10], ["E-5", "情緒迷宮桌遊——選擇與後果的體驗", 40], ["E-6", "我的超能力——認識自己的優勢", 18], ["E-7", "我的選擇清單——回顧好決定", 15], ["E-8", "夢想目標樹——種下成長的種子", 15]]], ["積木創作", [["L-A", "情緒建築師", 40], ["L-B", "我的情緒機器人", 40], ["L-C", "友誼動物園", 40], ["L-D", "合作塔", 15], ["L-E", "感恩花園", 40], ["L-F", "衝突解決迷宮", 40]]]];
+  var SEL_MIN = Object.fromEntries(SEL_ACTS.flatMap(([, list]) => list.map(([c, n, m]) => [`${c} ${n}`, m])));
+  var BACKUP_BANK = { "國語": ["注音符號遊戲", "共讀國語繪本", "聆聽有聲故事", "國字銀行", "國語日報漫畫/短文閱讀", "節慶國語活動", "拼字類/造句桌遊", "故事骰桌遊", "說書人桌遊"], "英語": ["英語撲克牌卡", "英語BRAIN STONE桌遊", "英語字母街桌遊", "英語字卡相關活動", "平板英語教材", "節慶英語活動", "共讀英語繪本", "聆聽英語有聲故事/影音", "酷英單字挑戰/句型挑戰", "Wordwall"], "數學": ["數學撲克牌卡", "共讀數學繪本", "PagamO、均一、因才網、雲林STUDY", "數學類積木", "平板數學教材"] };
+  var BACKUP_OTHER = ["積木", "其他類桌遊", "曼陀羅畫/禪繞畫", "專注力訓練遊戲", "著色畫(請與社工討論)", "學生有興趣的繪本", "onestudy線上學院"];
+  var BACKUP_COUNT = 3;
+  var BACKUP_MODE = "備用";
+  var READING_ACTS = ["共讀繪本", "自主閱讀", "聆聽有聲故事", "國語日報漫畫/短文閱讀", "學生有興趣的繪本"];
+  var UNITS = { "國語": ["ㄅㄆㄇ注音王國1", "ㄅㄆㄇ注音王國2", "ㄅㄆㄇ注音王國3", "ㄅㄆㄇ注音王國4", "ㄅㄆㄇ注音王國5", "ㄅㄆㄇ注音王國6", "ㄅㄆㄇ注音王國7", "ㄅㄆㄇ注音王國8", "奇妙文字國1-1", "奇妙文字國1-2", "奇妙文字國1-3", "奇妙文字國1-4", "奇妙文字國1-5", "奇妙文字國1-6", "奇妙文字國1-7", "奇妙文字國1-8", "奇妙文字國1-9", "奇妙文字國1-閱讀", "奇妙文字國2-1", "奇妙文字國2-2", "奇妙文字國2-3", "奇妙文字國2-4", "奇妙文字國2-5", "奇妙文字國2-6", "奇妙文字國2-7", "奇妙文字國2-8", "奇妙文字國2-9", "奇妙文字國2-閱讀", "奇妙文字國3-1", "奇妙文字國3-2", "奇妙文字國3-3", "奇妙文字國3-4", "奇妙文字國3-5", "奇妙文字國3-6", "奇妙文字國3-7", "奇妙文字國3-8", "奇妙文字國3-9", "奇妙文字國4-1", "奇妙文字國4-閱讀1", "奇妙文字國4-2", "奇妙文字國4-閱讀2", "奇妙文字國4-3", "奇妙文字國4-閱讀3", "奇妙文字國4-4", "奇妙文字國4-閱讀4", "奇妙文字國4-5", "奇妙文字國4-閱讀5", "奇妙文字國4-6", "奇妙文字國4-閱讀6", "奇妙文字國5-1", "奇妙文字國5-2", "奇妙文字國5-閱讀1", "奇妙文字國5-3", "奇妙文字國5-4", "奇妙文字國5-閱讀2", "奇妙文字國5-5", "奇妙文字國5-6", "奇妙文字國5-閱讀3"], "英語": ["Starter L1-2", "Starter L3-4", "Starter L5-6", "Starter L7-8", "Starter 總複習", "ABC-1 字母音", "ABC-2 字母音", "ABC-3 短母音", "ABC-4 長母音", "ABC-5 混淆音", "ABC-6 混淆音", "ABC-7 雙元音", "新式第一冊 CH1", "新式第一冊 CH2", "新式第一冊 CH3", "新式第一冊1-3複習", "新式第一冊 CH4", "新式第一冊 CH5", "新式第一冊 CH6", "新式第一冊4-6複習", "新式第一冊 CH7", "新式第一冊 CH8", "新式第一冊 CH9", "新式第一冊7-9複習", "新式第一冊1-9複習", "新式第二冊 CH1", "新式第二冊 CH2", "新式第二冊 CH3", "新式第二冊1-3複習", "新式第二冊 CH4", "新式第二冊 CH5", "新式第二冊 CH6", "新式第二冊4-6複習", "新式第二冊 CH7", "新式第二冊 CH8", "新式第二冊 CH9", "新式第二冊7-9複習", "新式第二冊1-9複習", "新式第三冊 CH1", "新式第三冊 CH2", "新式第三冊 CH3", "新式第三冊1-3複習", "新式第三冊 CH4", "新式第三冊 CH5", "新式第三冊 CH6", "新式第三冊4-6複習", "新式第三冊 CH7", "新式第三冊 CH8", "新式第三冊 CH9", "新式第三冊7-9複習", "新式第三冊1-9複習", "新式第四冊 CH1", "新式第四冊 CH2", "新式第四冊 CH3", "新式第四冊1-3複習", "新式第四冊 CH4", "新式第四冊 CH5", "新式第四冊 CH6", "新式第四冊4-6複習", "新式第四冊 CH7", "新式第四冊 CH8", "新式第四冊 CH9", "新式第四冊7-9複習", "新式第四冊1-9複習"], "數學": ["玩魔數1-1", "玩魔數1-2", "玩魔數1-3", "玩魔數1-4", "玩魔數1-5", "玩魔數2-1", "玩魔數2-2", "玩魔數2-3", "玩魔數2-4", "玩魔數2-5", "玩魔數3-1", "玩魔數3-2", "玩魔數3-3", "玩魔數3-4", "玩魔數3-5", "玩魔數4-1", "玩魔數4-2", "玩魔數4-3", "玩魔數4-4", "玩魔數4-5", "玩魔數5-1", "玩魔數5-2", "玩魔數5-3", "玩魔數5-4", "玩魔數5-5", "玩魔數6-1", "玩魔數6-2", "玩魔數6-3", "玩魔數6-4", "玩魔數6-5", "玩魔數7-1", "玩魔數7-2", "玩魔數7-3", "玩魔數7-4", "玩魔數7-5", "玩魔數8-1", "玩魔數8-2", "玩魔數8-3", "玩魔數8-4", "玩魔數8-5", "玩魔數9-1", "玩魔數9-2", "玩魔數9-3", "玩魔數9-4", "玩魔數9-5", "玩魔數10-1", "玩魔數10-2", "玩魔數10-3", "玩魔數10-4", "玩魔數10-5", "玩魔數11-1", "玩魔數11-2", "玩魔數11-3", "玩魔數11-4", "玩魔數11-5", "玩魔數12-1", "玩魔數12-2", "玩魔數12-3", "玩魔數12-4", "玩魔數12-5"] };
+  function unitSeries(name) {
+    const n = String(name || "");
+    let m;
+    if (m = /^玩魔數(\d+)-/.exec(n)) return `玩魔數 ${m[1]}`;
+    if (m = /^奇妙文字國(\d+)-/.exec(n)) return `奇妙文字國 ${m[1]}`;
+    if (m = /^(新式第.冊)/.exec(n)) return m[1];
+    if (/^ㄅㄆㄇ/.test(n)) return "ㄅㄆㄇ注音王國";
+    if (/^Starter/i.test(n)) return "Starter";
+    if (/^ABC/i.test(n)) return "ABC 自然發音";
+    if (m = /^(.+?)\s*\d+(-\d+)?$/.exec(n)) return m[1];
+    return "";
+  }
+  var TASK_CATS = ["本科", "家課", "閱讀", "SEL", "其他"];
+  var SUBJECT_TASK_HINTS = ["習作", "學習單練習", "課本練習", "單字／生字練習", "單元複習", "單元小考", "平板教材"];
+  var OTHER_ACTS_EXTRA = ["班級活動", "戶外活動", "節慶活動"];
+
   // src/js/store.js
   var TABLES = [
     "semesters",
@@ -4944,6 +5022,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     "posts",
     "replies",
     "submissions",
+    "units",
     "selActivities",
     "backupOptions",
     "readingList"
@@ -5209,6 +5288,43 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   }
   function openPosts() {
     return S.data.posts.filter((p) => ["open"].includes(postState(p).key));
+  }
+  var byListId2 = (a, b) => String(a.id).localeCompare(String(b.id), "en", { numeric: true });
+  function unitGroups(subj) {
+    const rows2 = (S.data.units || []).filter((u) => u.subject === subj).sort(byListId2);
+    const names = rows2.length ? rows2.map((u) => [u.series || unitSeries(u.name), u.name]) : (UNITS[subj] || []).map((n) => [unitSeries(n), n]);
+    const g = /* @__PURE__ */ new Map();
+    for (const [k, n] of names) {
+      if (!g.has(k)) g.set(k, []);
+      g.get(k).push(n);
+    }
+    return [...g];
+  }
+  function taskCat(type) {
+    if (!type) return "";
+    if (["家課", "閱讀", "SEL", "其他"].includes(type)) return type;
+    if (type === "桌遊") return "其他";
+    return "本科";
+  }
+  function resolveUnits(tasks, start = "") {
+    let cur = start || "";
+    return tasks.map((t) => {
+      if (!t || taskCat(t.type) !== "本科") return null;
+      if (t.unit) cur = t.unit;
+      return { unit: cur, inherited: !t.unit };
+    });
+  }
+  function taskText(t, subj, unit = "") {
+    const cat = taskCat(t.type);
+    const c = (t.content || "").trim();
+    if (cat === "本科") {
+      const tag = t.type === "本科" || !t.type || ["國語", "英語", "數學"].includes(t.type) ? subj || t.type : t.type;
+      return `【${tag}】${[unit, c].filter(Boolean).join("・") || "（未填內容）"}`;
+    }
+    if (cat === "家課") return `【家課】學校作業${c && c !== "學校作業" ? "・" + c : ""}`;
+    if (cat === "SEL") return `【SEL】${c || "（未選活動）"}`;
+    if (cat === "閱讀") return `【閱讀】${c || "（未選）"}`;
+    return `【${t.type || "其他"}】${c || "（未填內容）"}`;
   }
 
   // src/js/api.js
@@ -5806,29 +5922,22 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     }
   };
 
-  // src/js/flowdata.js
-  var SEL_ACTS = [["基礎入門", [["B-1", "情緒小夥伴——開心", 10], ["B-2", "情緒光譜——開心", 10], ["B-3", "情緒小偵探——開心", 10], ["B-4", "情緒小夥伴——難過", 10], ["B-5", "情緒光譜——難過", 10], ["B-6", "情緒小偵探——難過", 10], ["B-7", "情緒小夥伴——生氣", 10], ["B-8", "情緒光譜——生氣", 10], ["B-9", "情緒小偵探——生氣", 10], ["B-10", "情緒小夥伴——噁心或厭惡", 10], ["B-11", "情緒光譜——噁心或厭惡", 10], ["B-12", "情緒小偵探——噁心或厭惡", 10], ["B-13", "情緒小夥伴——害怕", 10], ["B-14", "情緒光譜——害怕", 10], ["B-15", "情緒小偵探——害怕", 10], ["B-16", "情緒小夥伴——驚訝或驚喜", 10], ["B-17", "情緒光譜——驚訝或驚喜", 10], ["B-18", "情緒小偵探——驚訝或驚喜", 10]]], ["情緒覺察工具", [["T-1", "認識我的外星夥伴", 10], ["T-2", "情緒動物代言人", 10], ["T-3", "情緒紅綠燈", 10], ["T-4", "情緒遙控器", 10], ["T-5", "情緒 Check In", 10], ["T-6", "情緒探索號帶動唱", 10], ["T-7", "聽聽音樂 情緒流動", 10], ["T-8", "自由畫畫", 10], ["T-9", "自由書寫", 10], ["T-10", "情緒 Check In——今天我在哪個家族的家", 10], ["T-11", "情緒光譜排隊", 15], ["T-12", "傳遞杯子——專注、合作與情緒調節", 10]]], ["HOPE牌卡", [["H-1", "安心地圖——找到讓我心安的地方", 10], ["H-2", "喜悅存摺——收集今天的好事", 15], ["H-3", "給自己的獎狀", 10], ["H-4", "我的舒適圈——界線雷達", 15], ["H-5", "拒絕句練習站", 10], ["H-6", "委屈翻譯機", 15], ["H-7", "我的求救名單", 15], ["H-8", "情緒許可證", 15], ["H-9", "表情漫畫家", 10], ["H-10", "好奇心偵探", 15], ["H-11", "身體的警報器：我的害怕地圖", 15], ["H-12", "我的安全盾牌", 15], ["H-13", "怒火溫度計：我的情緒溫度", 15], ["H-14", "界線用語工廠", 15], ["H-15", "情緒光譜排隊", 10], ["H-16", "今天我在哪個家族的家", 10], ["H-17", "情境小劇場——你怎麼了？", 20], ["H-18", "回穩工具箱：我的情緒急救包", 15], ["H-19", "給情緒的一封信", 20], ["H-20", "情緒抽卡說故事", 15], ["H-21", "感恩三明治：把謝謝說清楚", 15], ["H-22", "幸福快照：我的美好瞬間相簿", 10], ["H-23", "鼓勵信：寫給一個月後的自己", 12], ["H-24", "怪怪的雷達：身體小提醒", 15], ["H-25", "從怪怪的，到慢慢懂自己", 15], ["H-26", "感覺翻譯機", 15], ["H-27", "心願氣球", 12], ["H-28", "好好聽你說", 15], ["H-29", "意外來了怎麼辦：停看選練習", 10], ["H-30", "我發現的哇世界", 15], ["H-31", "煩惱分類站", 15], ["H-32", "緊張小貓來了，我知道怎麼辦", 15], ["H-33", "生氣小偵探", 15], ["H-34", "好好說對不起", 12], ["H-35", "情緒觀察員：今天的班級情緒天氣", 15], ["H-36", "情緒自畫像", 20], ["H-37", "身體掃描", 15], ["H-38", "交換情緒便利貼", 15], ["H-39", "我的情緒小故事", 20], ["H-40", "情緒成長紀錄", 15], ["H-41", "情緒解碼大作戰", 40]]], ["冷靜工具箱", [["C-1", "呼吸小夥伴", 10], ["C-2", "爬爬五指山", 10], ["C-3", "吹蠟燭呼吸法", 10], ["C-4", "緊張小貓五步驟", 10], ["C-5", "自創冷靜魔法", 10], ["C-6", "找尋每一個人的冷靜空間", 10]]], ["正念覺察", [["M-1", "身體掃描", 15], ["M-2", "跟身體做朋友", 10], ["M-3", "感受當下——運用五感回到此刻", 10], ["M-4", "雲冥想", 10], ["M-5", "正念散步——感官覺察之旅", 15], ["M-6", "禪繞靜心繪圖", 15], ["M-7", "正念隨身行——戶外五感尋寶", 15]]], ["情境故事", [["S-1", "故事時間（一）——掉落的霜淇淋", 10], ["S-2", "故事時間（二）——弟弟的眼淚", 10], ["S-3", "故事時間（三）——借不借的兩難", 10], ["S-4", "故事時間（四）——操場上的爭執", 10], ["S-5", "故事時間（五）——爭奪遙控器的夜晚", 10], ["S-6", "故事時間（六）——上台的勇氣", 10], ["S-7", "故事時間（七）——面對全新的挑戰", 10], ["S-8", "故事時間（八）——變化中的驚喜", 10], ["S-9", "故事時間（九）——等待中的情緒", 10], ["S-10", "故事時間（十）——孤單中的努力", 10]]], ["延伸活動", [["E-1", "情緒對對碰——翻出你的感受力", 10], ["E-2", "樂動紓壓 5 招——身體是最好的情緒出口", 10], ["E-3", "單腳平衡——專注當下的身體練習", 10], ["E-4", "袋子裡面有什麼——情緒觸摸遊戲", 10], ["E-5", "情緒迷宮桌遊——選擇與後果的體驗", 40], ["E-6", "我的超能力——認識自己的優勢", 18], ["E-7", "我的選擇清單——回顧好決定", 15], ["E-8", "夢想目標樹——種下成長的種子", 15]]], ["積木創作", [["L-A", "情緒建築師", 40], ["L-B", "我的情緒機器人", 40], ["L-C", "友誼動物園", 40], ["L-D", "合作塔", 15], ["L-E", "感恩花園", 40], ["L-F", "衝突解決迷宮", 40]]]];
-  var SEL_MIN = Object.fromEntries(SEL_ACTS.flatMap(([, list]) => list.map(([c, n, m]) => [`${c} ${n}`, m])));
-  var BACKUP_BANK = { "國語": ["注音符號遊戲", "共讀國語繪本", "聆聽有聲故事", "國字銀行", "國語日報漫畫/短文閱讀", "節慶國語活動", "拼字類/造句桌遊", "故事骰桌遊", "說書人桌遊"], "英語": ["英語撲克牌卡", "英語BRAIN STONE桌遊", "英語字母街桌遊", "英語字卡相關活動", "平板英語教材", "節慶英語活動", "共讀英語繪本", "聆聽英語有聲故事/影音", "酷英單字挑戰/句型挑戰", "Wordwall"], "數學": ["數學撲克牌卡", "共讀數學繪本", "PagamO、均一、因才網、雲林STUDY", "數學類積木", "平板數學教材"] };
-  var BACKUP_OTHER = ["積木", "其他類桌遊", "曼陀羅畫/禪繞畫", "專注力訓練遊戲", "著色畫(請與社工討論)", "學生有興趣的繪本", "onestudy線上學院"];
-  var BACKUP_COUNT = 3;
-  var BACKUP_MODE = "備用";
-  var READING_ACTS = ["共讀繪本", "自主閱讀", "聆聽有聲故事", "國語日報漫畫/短文閱讀", "學生有興趣的繪本"];
-  var HOMEWORK_DEFAULT = "學校作業";
-
   // src/js/pages/flow.js
   var st = null;
   var ctxRef = null;
-  var SERIES = ["--s1", "--s2", "--s3", "--s4", "--s5", "--s6", "--s7", "--s8"];
-  function typeColor(type) {
-    const i = S.data.taskTypes.findIndex((t) => t.id === type);
-    return i < 0 ? "var(--mark-neutral)" : `var(${SERIES[i % SERIES.length]})`;
+  var SERIES = ["--s1", "--s2", "--s3", "--s4", "--s5"];
+  var CAT_NOTE = { 本科: "永齡教材、習作、學習單等本科學習", 家課: "學校作業", 閱讀: "閱讀與閱讀理解", SEL: "社會情緒學習活動（HOPE SEL 課程）", 其他: "班級活動、桌遊、積木等" };
+  function catColor(cat) {
+    const i = TASK_CATS.indexOf(cat);
+    return i < 0 ? "var(--mark-neutral)" : `var(${SERIES[i]})`;
   }
   function typeTag(type) {
     if (!type) return "";
-    return `<span class="tag" style="background:color-mix(in srgb, ${typeColor(type)} 18%, transparent)">${esc(type)}</span>`;
+    const cat = taskCat(type);
+    const label = cat === "本科" && (type === "本科" || ["國語", "英語", "數學"].includes(type)) ? subjectOfClass(st.cls) : type;
+    return `<span class="tag" style="background:color-mix(in srgb, ${catColor(cat)} 18%, transparent)">${esc(label)}</span>`;
   }
-  var ST_MARK = { "完成": ["ok", "✓ 完成"], "部分完成": ["part", "◐ 部分"], "未完成": ["no", "✗ 未完成"] };
+  var taskOf = (t) => ({ type: t.type || "", unit: t.unit || "", content: t.content || "", detail: t.detail || "", status: t.status || "" });
   var draftKey = () => `draft:flow:${st.cid}:${st.date}`;
   var t2 = (m) => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
   var TASK_MIN_KEY = "flow:taskMinutes";
@@ -5877,7 +5986,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         end: b.end,
         mode: b.mode,
         content: b.content || "",
-        tasks: Object.fromEntries(tasksOf(b.id).map((t) => [t.studentId, { type: t.type, content: t.content, status: t.status }]))
+        tasks: Object.fromEntries(tasksOf(b.id).map((t) => [t.studentId, taskOf(t)]))
       }));
     } else {
       const res = await getJ(templateUrl(start, end));
@@ -5924,11 +6033,26 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     const f = $("#flow-foot-msg");
     if (f) f.innerHTML = `<span class="chip warn">尚未儲存</span> <span class="small muted">草稿已自動保存在這台電腦</span>`;
   }
+  function progField(kid, val, prev) {
+    const subj = subjectOfClass(st.cls);
+    const groups = unitGroups(subj);
+    const all = groups.flatMap(([, l]) => l);
+    if (!all.length || st.customProg?.has(kid)) return `<input class="prog" data-prog="${kid}" value="${esc(val)}" placeholder="${esc(prev ? "上次：" + prev : "自行輸入")}">`;
+    const opt = (n) => `<option value="${esc(n)}" ${n === val ? "selected" : ""}>${esc(n)}</option>`;
+    const at = all.indexOf(prev);
+    const sug = at >= 0 ? [all[at + 1], prev].filter(Boolean) : [];
+    return `<select class="prog" data-prog="${kid}" title="${esc(prev ? "上次：" + prev : "")}"><option value="">${esc(prev ? "上次：" + prev : "— 選單元")}</option>
+    ${sug.length && !val ? `<optgroup label="建議">${sug.map((n, j) => `<option value="${esc(n)}">${esc(n)}${j === 0 && n !== prev ? "（接續上次）" : "（同上次）"}</option>`).join("")}</optgroup>` : ""}
+    ${groups.map(([g, l]) => g ? `<optgroup label="${esc(g)}">${l.map(opt).join("")}</optgroup>` : l.map(opt).join("")).join("")}
+    ${val && !all.includes(val) ? `<option value="${esc(val)}" selected>${esc(val)}</option>` : ""}<option value="__custom__">其他（自行輸入）</option></select>`;
+  }
   function grid() {
     const kids = st.kids;
     const n = kids.length || 1;
     const prevProg = Object.fromEntries(kids.map((k) => [k.id, lastProgress(k.id, st.cid, st.date)]));
     const firstBackup = st.blocks.findIndex(isBackup);
+    const subj = subjectOfClass(st.cls);
+    const units = Object.fromEntries(kids.map((k) => [k.id, resolveUnits(st.blocks.map((b) => b.mode === "個別" ? b.tasks[k.id] : null), st.progress[k.id] || "")]));
     const rows2 = st.blocks.map((b, i) => {
       if (isBackup(b)) {
         const no = backupNo(b);
@@ -5948,16 +6072,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       }
       return `<tr>${time}${kids.map((k) => {
         const t = b.tasks[k.id];
-        if (!t || !(t.type || t.content || t.status)) return `<td class="cell" data-b="${i}" data-k="${k.id}"><span class="none">—</span></td>`;
-        const mk = ST_MARK[t.status];
-        return `<td class="cell" data-b="${i}" data-k="${k.id}"><div class="task">${typeTag(t.type)}<span>${esc(t.content || "")}</span>
-        ${mk ? `<span class="st ${mk[0]}">${mk[1]}</span>` : ""}</div></td>`;
+        if (!t || !(t.type || t.content || t.unit)) return `<td class="cell" data-b="${i}" data-k="${k.id}"><span class="none">—</span></td>`;
+        const u = units[k.id][i];
+        const text = taskText(t, subj, "").replace(/^【[^】]*】/, "").replace(/^（未填內容）$/, "");
+        return `<td class="cell" data-b="${i}" data-k="${k.id}"><div class="task">${typeTag(t.type)}
+        ${u && u.unit ? `<span class="${u.inherited ? "muted" : ""}">${esc(u.unit)}</span>` : ""}${text ? `<span>${esc(text)}</span>` : ""}</div>
+        ${t.detail ? `<div class="small muted mt4">${esc(t.detail)}</div>` : ""}</td>`;
       }).join("")}</tr>`;
     }).join("");
     return `<table class="flow"><colgroup><col style="width:150px">${kids.map(() => '<col style="min-width:130px">').join("")}</colgroup>
     <thead><tr><th class="time">時間</th>${kids.map((k) => `<th class="kid">${esc(k.name)}<small>${k.grade ? k.grade + " 年級" : ""}</small></th>`).join("") || "<th>（尚未建立孩子名單）</th>"}</tr></thead>
-    <tbody><tr class="progress"><td class="time"><b>今日進度</b><span>可直接輸入</span></td>${kids.map((k) => `<td><input class="prog" data-prog="${k.id}"
-      value="${esc(st.progress[k.id] || "")}" placeholder="${esc(prevProg[k.id] ? "上次：" + prevProg[k.id].progress : "—")}"></td>`).join("")}</tr>
+    <tbody><tr class="progress"><td class="time"><b>今日進度</b><span>選${esc(subj)}單元</span></td>${kids.map((k) => `<td>${progField(k.id, st.progress[k.id] || "", prevProg[k.id]?.progress || "")}</td>`).join("")}</tr>
     ${rows2}</tbody></table>`;
   }
   function renderAll() {
@@ -5991,7 +6116,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         <button class="btn sm" id="f-regen" title="依上方時間重新產生區塊（保留同名區塊的任務）">${icon("refresh", "sm")}依時間重排</button>
         ${st.fromTemplate ? "" : `<button class="btn sm" id="f-copy">${icon("copy", "sm")}複製上一堂</button>`}</span></div>
     <div class="flow-grid-wrap" id="f-grid">${grid()}</div>
-    <div class="row wrap mt8 small muted no-print" style="gap:4px 14px">${S.data.taskTypes.map((t) => `<span>${typeTag(t.id)} ${esc(t.note || "")}</span>`).join("")}</div>
+    <div class="row wrap mt8 small muted no-print" style="gap:4px 14px">${TASK_CATS.map((c2) => `<span>${typeTag(c2)} ${esc(CAT_NOTE[c2])}</span>`).join("")}<span>灰字＝同上（沿用前一個任務或今日進度的單元）</span></div>
     <div class="sticky-foot"><span id="flow-foot-msg">${st.dirty ? '<span class="chip warn">尚未儲存</span> <span class="small muted">草稿已自動保存在這台電腦</span>' : st.sessionId ? `<span class="small muted">已儲存${st.updatedAt ? "・" + esc(st.updatedAt) : ""}</span>` : ""}</span><span class="sp"></span>
       <a class="btn" href="#/record?class=${st.cid}&date=${st.date}">${icon("edit", "sm")}填寫課後紀錄</a>
       <button class="btn primary" id="f-save">${icon("save", "sm")}儲存教學流程</button></div>`;
@@ -6069,7 +6194,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         end: b.end,
         mode: b.mode,
         content: b.content || "",
-        tasks: Object.fromEntries(tasksOf(b.id).map((t) => [t.studentId, { type: t.type, content: t.content, status: "" }]))
+        tasks: Object.fromEntries(tasksOf(b.id).map((t) => [t.studentId, { ...taskOf(t), status: "" }]))
       })));
       st.mindful = st.mindful || prev.mindful || "";
       st.fromTemplate = false;
@@ -6110,53 +6235,72 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     if (!r.length) return { bank: BACKUP_BANK[subj] || [], other: BACKUP_OTHER };
     return { bank: r.filter((x) => x.subject === subj).map((x) => x.name), other: r.filter((x) => x.subject === "其他").map((x) => x.name) };
   }
-  function contentField(type, val, bmin) {
-    if (type === "SEL") {
-      const m = selMin(val);
-      const known = m !== null;
-      const hint = m ? m > bmin && bmin > 0 ? `<span style="color:var(--critical)">建議 ${m} 分鐘，超過這個區塊的 ${bmin} 分鐘，可連排幾個任務</span>` : `建議 ${m} 分鐘` : "活動內容可在 HOPE SEL 課程活動地圖查看";
-      const groups = selGroups();
-      const opts = (list) => list.map((o) => `<option value="${esc(o.value)}" ${o.value === val ? "selected" : ""}>${esc(o.label)}${o.min ? `（${o.min} 分）` : ""}</option>`).join("");
-      return `<select class="select" data-x="content"><option value="">請選擇 SEL 活動</option>${groups.map(([part, list]) => part ? `<optgroup label="${esc(part)}">${opts(list)}</optgroup>` : opts(list)).join("")}${val && !known ? `<option selected>${esc(val)}</option>` : ""}</select>
-      <div class="small muted mt4" data-x="selhint">${hint}</div>`;
+  function otherActs() {
+    return [.../* @__PURE__ */ new Set([...OTHER_ACTS_EXTRA, ...backupLists(subjectOfClass(st.cls)).other])];
+  }
+  function taskFields(cat, t, bmin, inherit) {
+    const subj = subjectOfClass(st.cls);
+    if (cat === "本科") {
+      const groups = unitGroups(subj);
+      const all = groups.flatMap(([, l]) => l);
+      const opt = (n) => `<option value="${esc(n)}" ${n === t.unit ? "selected" : ""}>${esc(n)}</option>`;
+      return `<div class="grid g2" style="gap:10px"><label class="field"><span>單元／教材</span><select class="select" data-x="unit">
+        <option value="">同上（${esc(inherit || "未選")}）</option>
+        ${groups.map(([g, l]) => g ? `<optgroup label="${esc(g)}">${l.map(opt).join("")}</optgroup>` : l.map(opt).join("")).join("")}
+        ${t.unit && !all.includes(t.unit) ? `<option selected>${esc(t.unit)}</option>` : ""}</select></label>
+      <label class="field"><span>任務內容</span><input class="input" data-x="content" value="${esc(t.content)}" list="task-subj" placeholder="選擇或輸入，例如：習作／學習單練習"></label></div>`;
     }
-    const ph = type === "家課" ? "學校作業（可補充，例如：數學習作 p.20）" : type === "閱讀" ? "閱讀內容，例如：共讀繪本" : "例：學校作業、Unit 3 p.12";
-    return `<input class="input" data-x="content" value="${esc(val || "")}" list="${type === "閱讀" ? "task-read" : "task-recent"}" placeholder="${esc(ph)}">`;
+    if (cat === "家課") {
+      const c = t.content === "學校作業" ? "" : t.content;
+      return `<label class="field"><span>學校作業說明（選填）</span><input class="input" data-x="content" value="${esc(c)}" placeholder="例如：數學習作 p.20"></label>`;
+    }
+    if (cat === "閱讀") return `<label class="field"><span>閱讀內容</span><input class="input" data-x="content" value="${esc(t.content)}" list="task-read" placeholder="選擇或輸入，例如：自選繪本"></label>`;
+    if (cat === "SEL") {
+      const m = selMin(t.content);
+      const known = m !== null;
+      const hint = m ? m > bmin && bmin > 0 ? `<span style="color:var(--critical)">建議 ${m} 分鐘，超過這個任務的 ${bmin} 分鐘，可連排幾個任務</span>` : `建議 ${m} 分鐘` : "活動內容可在 HOPE SEL 課程活動地圖查看";
+      const opts = (list) => list.map((o) => `<option value="${esc(o.value)}" ${o.value === t.content ? "selected" : ""}>${esc(o.label)}${o.min ? `（${o.min} 分）` : ""}</option>`).join("");
+      return `<label class="field"><span>SEL 活動</span><select class="select" data-x="content"><option value="">請選擇 SEL 活動</option>${selGroups().map(([part, list]) => part ? `<optgroup label="${esc(part)}">${opts(list)}</optgroup>` : opts(list)).join("")}${t.content && !known ? `<option selected>${esc(t.content)}</option>` : ""}</select></label>
+      <div class="small muted">${hint}</div>`;
+    }
+    return `<label class="field"><span>活動內容</span><input class="input" data-x="content" value="${esc(t.content)}" list="task-other" placeholder="選擇或輸入，例如：班級活動"></label>
+    <label class="field"><span>說明</span><textarea class="textarea" data-x="detail" rows="3" placeholder="這個任務要做什麼、需要注意的地方">${esc(t.detail)}</textarea></label>`;
   }
   function editTask(anchor, bi, kid) {
     const b = st.blocks[bi];
-    const t = b.tasks[kid] || { type: "", content: "", status: "" };
+    const t0 = b.tasks[kid] ? taskOf(b.tasks[kid]) : taskOf({});
+    const subj = subjectOfClass(st.cls);
+    let cat = taskCat(t0.type) || "本科";
     const kidName2 = get("students", kid)?.name || "";
     const bmin = minutes(b.end) - minutes(b.start) || 0;
-    const recent = [...new Set(S.data.tasks.filter((x) => x.type && x.content && x.type !== "SEL").slice(-200).map((x) => x.content))].slice(-30);
-    const body = h(`<div class="stack gap12"><div class="row"><b>${esc(kidName2)}</b><span class="muted small">${esc(b.title)}　${esc(b.start)}–${esc(b.end)}</span></div>
-    <label class="field"><span>類別</span><select class="select" data-x="type"><option value="">（無）</option>${S.data.taskTypes.map((x) => `<option ${x.id === t.type ? "selected" : ""}>${esc(x.id)}</option>`).join("")}</select></label>
-    <div class="field"><span class="small ink2">內容</span><div data-x="cwrap">${contentField(t.type, t.content, bmin)}</div></div>
-    <datalist id="task-recent">${recent.map((r) => `<option value="${esc(r)}">`).join("")}</datalist>
+    const prevU = resolveUnits(st.blocks.slice(0, bi).map((x) => x.mode === "個別" ? x.tasks[kid] : null), st.progress[kid] || "").filter(Boolean).pop()?.unit || st.progress[kid] || "";
+    const recent = [...new Set(S.data.tasks.filter((x) => taskCat(x.type) === "本科" && x.content).slice(-200).map((x) => x.content))].slice(-20);
+    const cats = TASK_CATS.map((c) => [c, c === "本科" ? subj : c]);
+    const body = h(`<div class="stack gap12"><div class="row"><b>${esc(kidName2)}</b><span class="muted small">${esc(b.title)}　${esc(b.start)}–${esc(b.end)}${bmin > 0 ? `・${bmin} 分鐘` : ""}</span></div>
+    ${segHtml(cats, cat, { cls: "task-cat", name: "cat" })}
+    <div data-x="fields" class="stack" style="gap:10px">${taskFields(cat, t0, bmin, prevU)}</div>
+    <datalist id="task-subj">${[.../* @__PURE__ */ new Set([...SUBJECT_TASK_HINTS, ...recent])].map((r) => `<option value="${esc(r)}">`).join("")}</datalist>
     <datalist id="task-read">${readingList().map((r) => `<option value="${esc(r)}">`).join("")}</datalist>
-    <div class="field"><span class="small ink2">完成狀況</span>${segHtml([["完成", "完成"], ["部分完成", "部分"], ["未完成", "未完成"]], t.status, { cls: "sm", name: "status" })}</div>
+    <datalist id="task-other">${otherActs().map((r) => `<option value="${esc(r)}">`).join("")}</datalist>
     <div class="row"><button class="btn sm" data-x="all">套用到這列所有孩子</button><button class="btn sm ghost" data-x="clear">清除</button><span class="sp"></span>
       <button class="btn sm primary" data-x="ok">完成</button></div></div>`);
-    const pop = popover(anchor, body, { width: 340 });
-    const read = () => ({ type: $("[data-x=type]", body).value, content: $("[data-x=content]", body).value.trim(), status: $(".seg button.on", body)?.dataset.v || "" });
-    body.addEventListener("change", (e) => {
-      const x = e.target.dataset.x;
-      if (x === "type") {
-        const type = e.target.value;
-        let cur = $("[data-x=content]", body).value.trim();
-        if (type === "家課" && !cur) cur = HOMEWORK_DEFAULT;
-        if (type === "SEL" && selMin(cur) === null) cur = "";
-        $("[data-x=cwrap]", body).innerHTML = contentField(type, cur, bmin);
-        $("[data-x=content]", body).focus();
-      }
-      if (x === "content" && e.target.tagName === "SELECT") $("[data-x=cwrap]", body).innerHTML = contentField("SEL", e.target.value, bmin);
-    });
+    const pop = popover(anchor, body, { width: 420 });
+    const read = () => {
+      const v = (k) => ($(`[data-x=${k}]`, body)?.value || "").trim();
+      const type = cat === "本科" ? subj : cat;
+      return { type, unit: cat === "本科" ? v("unit") : "", content: v("content"), detail: cat === "其他" ? v("detail") : "", status: b.tasks[kid]?.status || "" };
+    };
+    const focus = () => setTimeout(() => $("[data-x=content]", body)?.focus(), 30);
     body.addEventListener("click", (e) => {
       const sb = e.target.closest(".seg button");
       if (sb) {
-        const on2 = sb.classList.contains("on");
-        body.querySelectorAll(".seg button").forEach((x2) => x2.classList.remove("on"));
-        if (!on2) sb.classList.add("on");
+        if (sb.dataset.v === cat) return;
+        const cur = read();
+        cat = sb.dataset.v;
+        body.querySelectorAll(".seg button").forEach((x2) => x2.classList.toggle("on", x2 === sb));
+        const keep = cat === "SEL" ? selMin(cur.content) === null ? "" : cur.content : cat === "家課" ? "" : cur.content;
+        $("[data-x=fields]", body).innerHTML = taskFields(cat, { ...cur, content: keep }, bmin, prevU);
+        focus();
         return;
       }
       const x = e.target.closest("[data-x]")?.dataset.x;
@@ -6174,11 +6318,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       }
       if (x === "all") {
         const v = read();
-        for (const k of st.kids) b.tasks[k.id] = { ...v, status: k.id === kid ? v.status : b.tasks[k.id]?.status || "" };
+        for (const k of st.kids) b.tasks[k.id] = { ...v, status: b.tasks[k.id]?.status || "" };
         touch();
         rerenderGrid();
         pop.close();
       }
+    });
+    body.addEventListener("change", (e) => {
+      if (e.target.dataset.x === "content" && e.target.tagName === "SELECT") $("[data-x=fields]", body).innerHTML = taskFields("SEL", { ...read(), content: e.target.value }, bmin, prevU);
     });
     body.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && e.target.tagName === "INPUT") {
@@ -6188,7 +6335,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         pop.close();
       }
     });
-    setTimeout(() => $("[data-x=content]", body).focus(), 30);
+    focus();
   }
   function editBackup(anchor, bi, kid) {
     const b = st.blocks[bi];
@@ -6344,13 +6491,24 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       }
       if (!ctx.query.get("class") || !ctx.query.get("date")) ctx.setQuery({ class: cid, date });
       if (!st || st.cid !== cid || st.date !== date || !st.dirty) st = await loadState(cid, date);
-      ctx.el.addEventListener("input", (e) => {
+      const onProg = (e) => {
         const p = e.target.closest("[data-prog]");
-        if (p) {
-          st.progress[p.dataset.prog] = p.value;
-          touch();
+        if (!p) return;
+        const kid = p.dataset.prog;
+        if (p.value === "__custom__") {
+          (st.customProg ||= /* @__PURE__ */ new Set()).add(kid);
+          const cell2 = p.parentElement;
+          cell2.innerHTML = progField(kid, "", lastProgress(kid, st.cid, st.date)?.progress || "");
+          $("input", cell2)?.focus();
+          return;
         }
-      });
+        if (st.progress[kid] === p.value) return;
+        st.progress[kid] = p.value;
+        touch();
+        if (p.tagName === "SELECT") rerenderGrid();
+      };
+      ctx.el.addEventListener("input", onProg);
+      ctx.el.addEventListener("change", onProg);
       renderAll();
     },
     destroy() {
@@ -6374,16 +6532,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   var isHere = (a) => ["出席", "遲到", "早退"].includes(a);
   var splitList = (v) => String(v || "").split(/[；、]/).map((x) => x.trim()).filter(Boolean);
   var UNDONE_SEP = "；";
-  function kidTasks(sessionId, kid, subj) {
+  function kidTasks(sessionId, kid, subj, progress) {
     if (!sessionId) return [];
-    const out = [];
-    for (const b of blocksOf(sessionId)) {
-      if (b.mode !== "個別") continue;
-      const t = tasksOf(b.id).find((x) => x.studentId === kid);
-      if (!t || !(t.type || t.content)) continue;
-      out.push({ id: t.id, status: t.status || "", label: `${out.length + 1}. ${t.type ? `【${t.type}】` : subj}${t.content || "（未填內容）"}` });
-    }
-    return out;
+    const ts = blocksOf(sessionId).filter((b) => b.mode === "個別").map((b) => tasksOf(b.id).find((x) => x.studentId === kid)).filter((t) => t && (t.type || t.content || t.unit));
+    const units = resolveUnits(ts, progress);
+    return ts.map((t, i) => ({ id: t.id, status: t.status || "", label: `${i + 1}. ${taskText(t, subj, units[i]?.unit || "")}` }));
   }
   var draftKey2 = () => `draft:record:${rs.cid}:${rs.date}`;
   function pickDefaults2(ctx) {
@@ -6402,7 +6555,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     const extra = [...recs.keys()].filter((id) => !kids.some((k) => k.id === id)).map((id) => get("students", id)).filter(Boolean);
     const all = [...kids, ...extra];
     const subj = subjectOfClass(get("classes", cid));
-    const tasks = Object.fromEntries(all.map((k) => [k.id, kidTasks(s?.id, k.id, subj)]));
+    const tasks = Object.fromEntries(all.map((k) => [k.id, kidTasks(s?.id, k.id, subj, recs.get(k.id)?.progress || "")]));
     const state = {
       cid,
       date,
@@ -7903,6 +8056,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     if (ok && plan.tables.teachers) await commitPlan(plan, "帳號清單已匯入");
   }
   var LIST_INFO = {
+    units: { title: "單元清單", need: "「科目」和「單元名稱」兩欄（可另加「分組」）；科目填國語／英語／數學", name: ["單元名稱", "單元", "名稱"], extra: { subject: ["科目"], series: ["分組", "系列"] } },
     selActivities: { title: "SEL 活動清單", need: "「活動名稱」一欄就可以（可另加「系列」「建議分鐘」）", name: ["活動名稱", "名稱", "SEL活動"], extra: { series: ["系列"], minutes: ["建議分鐘", "分鐘"] } },
     backupOptions: { title: "備用任務選項", need: "「科目」和「選項名稱」兩欄；科目填國語／數學／英語，填「其他」是第 2、3 項可選的其他類", name: ["選項名稱", "備用任務", "名稱"], extra: { subject: ["科目"] } },
     readingList: { title: "閱讀清單", need: "「閱讀內容」一欄", name: ["閱讀內容", "名稱", "書名"], extra: {} }
@@ -7913,11 +8067,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     const nameKey = info.name.find((k) => keys.includes(k)) || keys[0];
     if (!nameKey) throw new DbError("檔案是空的");
     const ex = Object.fromEntries(Object.entries(info.extra).map(([f, alts]) => [f, alts.find((k) => keys.includes(k))]));
-    if (table === "backupOptions" && !ex.subject) throw new DbError("備用任務選項需要「科目」欄");
+    if ((table === "backupOptions" || table === "units") && !ex.subject) throw new DbError(`${info.title}需要「科目」欄`);
     const out = [];
     const seen = /* @__PURE__ */ new Set();
     for (const r of list) {
-      const name = r[nameKey];
+      const name = String(r[nameKey] ?? "").replace(/\s+/g, " ").trim();
       if (!name) continue;
       const row = { name };
       if (table === "selActivities") {
@@ -7927,6 +8081,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       }
       if (table === "backupOptions") {
         row.subject = r[ex.subject] || "其他";
+      }
+      if (table === "units") {
+        row.subject = String(r[ex.subject] || "").trim();
+        row.series = ex.series ? String(r[ex.series] || "").trim() : "";
+        if (!row.subject) continue;
       }
       const k = JSON.stringify([row.subject || "", name]);
       if (seen.has(k)) continue;
@@ -7964,11 +8123,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       return;
     }
     const X = window.XLSX;
-    const head = { selActivities: ["活動名稱", "系列", "建議分鐘"], backupOptions: ["科目", "選項名稱"], readingList: ["閱讀內容"] }[table];
-    const list = [...rows(table)].sort((a, b) => String(a.id).localeCompare(String(b.id), "en", { numeric: true }));
-    const body = list.map((r) => table === "selActivities" ? [r.name, r.series || "", r.minutes ?? ""] : table === "backupOptions" ? [r.subject, r.name] : [r.name]);
+    const head = { units: ["科目", "分組", "單元名稱"], selActivities: ["活動名稱", "系列", "建議分鐘"], backupOptions: ["科目", "選項名稱"], readingList: ["閱讀內容"] }[table];
+    let list = [...rows(table)].sort((a, b) => String(a.id).localeCompare(String(b.id), "en", { numeric: true }));
+    if (!list.length && table === "units") list = Object.entries(UNITS).flatMap(([subject, l]) => l.map((name) => ({ subject, series: unitSeries(name), name })));
+    if (!list.length && table === "readingList") list = READING_ACTS.map((name) => ({ name }));
+    const body = list.map((r) => table === "units" ? [r.subject, r.series || "", r.name] : table === "selActivities" ? [r.name, r.series || "", r.minutes ?? ""] : table === "backupOptions" ? [r.subject, r.name] : [r.name]);
     const ws = X.utils.aoa_to_sheet([head, ...body]);
-    ws["!cols"] = head.map((h2, i) => ({ wch: i === 0 && table !== "backupOptions" ? 36 : 14 }));
+    ws["!cols"] = head.map((h2, i) => ({ wch: table === "units" ? [8, 16, 24][i] : i === 0 && table !== "backupOptions" ? 36 : 14 }));
     const wb = X.utils.book_new();
     X.utils.book_append_sheet(wb, ws, LIST_INFO[table].title.slice(0, 31));
     X.writeFile(wb, `${LIST_INFO[table].title}.xlsx`);
@@ -8245,6 +8406,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     "enrollments",
     "subjects",
     "taskTypes",
+    "units",
     "selActivities",
     "backupOptions",
     "readingList",
