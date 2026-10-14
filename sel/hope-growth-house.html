@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#d4956a"><title>希望成長屋 · 加分工具箱</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet"><style>
+*{box-sizing:border-box}body{margin:0;background:#f8f9f5;color:#293d35;font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;font-size:14px}button,input,textarea,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.4;cursor:default}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #d49b4e;outline-offset:3px}button{transition:background .18s,transform .18s}button:hover:not(:disabled){transform:translateY(-1px)}.sidebar{position:fixed;inset:0 auto 0 0;width:235px;background:#fff;border-right:1px solid #e8ece5;padding:34px 23px;display:flex;flex-direction:column}.brand{text-decoration:none;color:#305f4f;display:flex;align-items:center;gap:10px;font-size:21px;font-weight:800}.brand-icon{background:#305f4f;color:#fff;border-radius:13px;width:44px;height:44px;display:grid;place-items:center;font-size:36px;font-weight:400}.brand small{display:block;font-size:10px;font-weight:400;letter-spacing:.5px;margin-top:7px;color:#829085}.nav-label{font-size:11px;color:#94a096;margin:47px 14px 12px}.nav{display:flex;align-items:center;gap:13px;border:0;width:100%;text-align:left;background:none;color:#758177;padding:14px;border-radius:10px;margin-bottom:7px;font-size:18px}.nav span{font-size:14px}.nav.active{background:#eaf1e8;color:#305f4f;font-weight:650}.sidebar-bottom{margin-top:auto;padding:26px 12px 0}.seed{font-size:32px;margin-bottom:13px}.sidebar-bottom b{font-size:13px}.sidebar-bottom p{font-size:12px;color:#899087;line-height:1.9}.text-button{border:0;background:transparent;color:#587763;padding:9px 0;font-size:13px}.local-label{font-size:10px;color:#899687;border-top:1px solid #eee;padding-top:20px;margin-top:22px}main{margin-left:235px;max-width:1540px;padding:29px 42px}header{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}.breadcrumb{font-size:11px;color:#8e9a90}.class-line{display:flex;align-items:center;gap:10px;margin-top:9px}.class-line input{font-weight:750;font-size:18px;color:#334f40;width:180px;border:0;background:transparent;padding:2px}.badge{font-size:10px;color:#768877;border:1px solid #dce6d8;border-radius:6px;padding:3px 6px}.outline{background:white;color:#536552;border:1px solid #dde4d9;padding:10px 15px;border-radius:9px;font-size:12px}.intro{background:#eaf0e4;border-radius:19px;padding:31px 34px;display:flex;justify-content:space-between;position:relative;overflow:hidden;min-height:184px}.eyebrow{font-size:10px;letter-spacing:1.8px;font-weight:650;color:#84967b}h1{font-size:clamp(23px,2.2vw,32px);letter-spacing:.5px;margin:14px 0 11px}p{color:#839080;line-height:1.65;margin:0}.intro-art{position:relative;width:210px;min-width:180px;height:125px}.art-home{position:absolute;left:28px;bottom:-8px;font-size:99px;filter:saturate(.65)}.sun{position:absolute;font-size:42px;color:#daa64b;right:12px;top:-10px}.art-sprout{position:absolute;right:5px;bottom:-12px;font-size:49px}.art-star{position:absolute;top:24px;left:7px;font-size:24px;color:#abbd91}.tool-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin:25px 0 31px}.tool{border:1px solid #e2e7de;border-radius:13px;background:white;padding:19px 16px;display:flex;flex-direction:column;align-items:flex-start;position:relative;text-align:left;min-height:160px;color:#3f5042}.tool.selected{border:1.5px solid #5c8063;box-shadow:0 3px 12px #305f4f09;background:#fcfdf9}.tool-icon{width:44px;height:44px;display:grid;place-items:center;font-size:26px;border-radius:12px;margin-bottom:13px}.peach{background:#fbecdf}.lilac{background:#f0ebf6}.yellow{background:#fff5d5}.mint{background:#e5f0e9}.tool-copy b{display:block;font-size:14px}.tool-copy small{display:block;color:#94a08e;margin-top:6px;font-size:11px}.tool-tag{position:absolute;right:11px;top:17px;border:1px solid #e6ebdf;border-radius:5px;padding:3px 5px;font-size:9px;color:#8c9984}.work-area{background:white;border:1px solid #e7ebe3;border-radius:16px;padding:25px}.section-title{display:flex;align-items:center;justify-content:space-between;gap:10px}h2{font-size:18px;margin:0 0 7px}.section-title p{font-size:12px}.small{padding:8px 12px;white-space:nowrap}.toolbar{margin:23px 0 21px;display:flex;align-items:center;justify-content:space-between;gap:12px}.view-control{display:flex;background:#f3f5f0;padding:4px;border-radius:8px}.view-control button{border:0;border-radius:6px;background:none;color:#8b9787;font-size:11px;padding:7px 14px}.view-control button.active{background:#fff;color:#42664d;box-shadow:0 1px 4px #0001}.toolbar-right{display:flex;align-items:center;gap:16px;color:#94a08e;font-size:11px}.toolbar-right input{accent-color:#537962}.students{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.student{border:1px solid #e4e9e0;background:#fff;border-radius:12px;padding:15px 12px;color:#425342;position:relative;text-align:center;min-width:0}.student.chosen{border:2px solid #648368;padding:14px 11px;background:#f8fbf5}.student.chosen:before{content:'✓';position:absolute;right:9px;top:9px;color:white;background:#66856a;border-radius:50%;width:18px;height:18px;font-size:11px;display:grid;place-items:center}.student-name{font-size:14px;font-weight:700;overflow-wrap:anywhere}.stage-label{display:block;font-size:10px;color:#91a086;margin-top:5px}.scene{height:112px;display:grid;place-items:center;position:relative;margin:5px 0 11px;background:radial-gradient(ellipse at center,#f1f5ea,transparent 69%)}.scene svg{width:136px;height:106px}.pet-display{font-size:73px;filter:saturate(.75)}.pet-display small{font-size:20px;position:absolute;top:13px;right:20px}.stars-display{font-size:27px;color:#e3b45a;line-height:1.4;letter-spacing:5px}.stars-display .dim{color:#e7ece1}.map-path{display:flex;align-items:center;justify-content:center;gap:3px;flex-wrap:wrap;max-width:160px}.map-stop{border-radius:50%;background:#edf0e9;width:31px;height:31px;display:grid;place-items:center;font-size:17px;filter:grayscale(1);opacity:.55}.map-stop.done{background:#e9f0db;filter:none;opacity:1}.points{font-size:18px;font-weight:750;color:#57775a}.points small{font-size:10px;font-weight:400;color:#96a08e;margin-left:3px}.progress{height:5px;background:#edf0e7;border-radius:5px;margin:12px 0 8px;overflow:hidden}.progress div{height:100%;background:#adc595;border-radius:5px}.next-label{font-size:10px;color:#899783;min-height:15px}.students.focus{grid-template-columns:1fr;max-width:640px;margin:0 auto}.focus .scene{height:185px}.focus .scene svg{height:173px;width:220px}.focus .pet-display{font-size:120px}.focus .student-name{font-size:22px}.focus .map-stop{width:48px;height:48px;font-size:28px}.focus .map-path{max-width:340px}.focus .stars-display{font-size:40px}.focus .points{font-size:30px}.award-bar{background:#fff;border:1px solid #e7ebe3;border-radius:16px;padding:24px;margin-top:23px}.award-head{display:flex;align-items:center;justify-content:space-between}.award-head h2{font-size:18px;margin-top:7px}.award-head p{font-size:12px}.selection-chip{font-size:11px;background:#eff4e8;border-radius:20px;padding:8px 12px;color:#739062;max-width:40%;overflow-wrap:anywhere}.reasons{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:22px}.reason{background:#fafbf6;color:#54704c;border:1px solid #e5ebdc;border-radius:10px;padding:14px 8px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px}.reason strong{font-size:11px;border-radius:5px;background:#e8f0df;padding:3px 5px}.award-bottom{display:flex;justify-content:space-between;margin-top:14px;padding-top:5px;border-top:1px solid #f0f2ec}footer{display:flex;justify-content:space-between;gap:15px;font-size:10px;color:#a1aa98;padding:22px 0}dialog{border:0;border-radius:17px;max-width:590px;width:calc(100% - 30px);padding:25px;box-shadow:0 20px 100px #15352625;color:#334c3d}dialog::backdrop{background:#233d3066;backdrop-filter:blur(3px)}.dialog-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.icon-button{border:0;background:#f0f3ed;border-radius:50%;width:30px;height:30px;font-size:22px;color:#758873}.field{display:block;margin:15px 0;font-size:12px;color:#687c65}.field input,.field textarea,.field select{display:block;width:100%;padding:11px;margin-top:7px;border:1px solid #dbe3d4;border-radius:8px;background:white;color:#3c5444}.field textarea{resize:vertical;min-height:110px}.primary{border:0;background:#39644f;color:white;border-radius:9px;padding:12px 18px}.muted{font-size:12px;color:#91a088;line-height:1.8}.dialog-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.roster-row,.history-row{padding:12px 0;border-bottom:1px solid #edf0e9;display:flex;align-items:center;gap:10px;justify-content:space-between}.history-list{max-height:340px;overflow:auto}.history-row small{display:block;color:#93a18b;margin-top:5px;font-size:10px}.danger{color:#a66452}.empty{text-align:center;padding:30px}.empty>span{font-size:44px}.empty .primary{display:block;margin:17px auto 3px}#toast{position:fixed;left:calc(50% + 100px);bottom:25px;transform:translateX(-50%);background:#305f4f;color:white;padding:13px 22px;border-radius:12px;box-shadow:0 5px 20px #143c3525;opacity:0;pointer-events:none;transition:opacity .2s;z-index:5;max-width:90%;font-size:13px}#toast.show{opacity:1}.mission{background:#f1f5e8;padding:27px;border-radius:12px;text-align:center;margin:16px 0;font-size:20px;line-height:1.7}.guide{line-height:1.9;font-size:13px}.guide li{margin-bottom:12px}.celebrate{animation:bloom .45s ease}@keyframes bloom{50%{transform:scale(1.06)}}.reason-settings{display:grid;grid-template-columns:1fr 65px;gap:8px}.reason-settings input{width:100%;border:1px solid #dbe3d4;border-radius:6px;padding:9px;margin-bottom:7px}.note{padding:12px;background:#f8f4e9;color:#8b7955;border-radius:9px;font-size:11px;line-height:1.7;margin-top:15px}.milestone{color:#9a783d;font-size:11px;margin-top:9px}
+@media(min-width:1600px){main{margin-right:auto;margin-left:235px}}@media(max-width:1150px){.sidebar{width:195px;padding:28px 16px}.brand{font-size:18px}.brand small{font-size:8px}main{margin-left:195px;padding:25px}.tool-grid{gap:9px}.tool{padding:15px 12px}.tool-tag{display:none}.students{grid-template-columns:repeat(3,1fr)}.intro-art{min-width:145px;width:150px}.art-home{font-size:85px;left:0}}@media(max-width:800px){.sidebar{position:static;width:100%;height:auto;padding:17px 22px;border-right:0;border-bottom:1px solid #e8ece5}.sidebar-bottom,.nav-label,.nav{display:none}.brand small{font-size:10px}.brand{font-size:20px}main{margin:0;padding:20px}.tool-grid{grid-template-columns:repeat(2,1fr);margin-bottom:24px}.tool{min-height:130px}.intro{padding:24px}.intro-art{display:none}.intro p{font-size:12px}.students{grid-template-columns:repeat(2,1fr)}.reasons{grid-template-columns:repeat(2,1fr)}#toast{left:50%}footer{flex-direction:column;gap:6px}.work-area{padding:18px}.award-bar{padding:20px}.toolbar{align-items:flex-start}.toolbar-right{flex-direction:column;gap:7px}.class-line input{width:150px}.outline{padding:9px 10px}.section-title{align-items:flex-start}.award-head{gap:12px}.selection-chip{max-width:35%}.scene{height:105px}}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+</style><style>
+
+:root{
+  --cream:#faf6f0;--cream2:#f4ede3;--cream3:#eeddd0;
+  --warm1:#2a2018;--warm2:#5c4e40;--warm3:#9a8878;
+  --accent:#d4956a;--accent2:#c07850;--accent-soft:#f5e6d8;
+  --green:#4a7c59;--green-soft:#e8f0e4;
+  --border:rgba(42,32,24,0.12);
+}
+body{
+  background:var(--cream);
+  color:var(--warm1);
+  font-family:'Noto Sans TC','Noto Serif TC',sans-serif;
+}
+/* Sidebar */
+.sidebar{
+  background:#fff9f4;
+  border-color:var(--border);
+}
+.brand{color:var(--accent2)}
+.brand-icon{
+  background:linear-gradient(135deg,#d4956a,#c06e4a);
+  box-shadow:0 5px 13px rgba(212,149,106,0.3);
+}
+.brand small{color:var(--warm3)}
+.nav-label{color:var(--warm3)}
+.nav{color:var(--warm2)}
+.nav.active{background:var(--accent-soft);color:var(--accent2)}
+.sidebar-bottom p{color:var(--warm3)}
+.text-button{color:var(--accent)}
+.local-label{color:var(--warm3)}
+/* Header */
+.breadcrumb{color:var(--warm3)}
+.class-line input{color:var(--warm1);font-family:'Noto Serif TC',serif}
+.badge{border-color:var(--cream3);background:var(--accent-soft);color:var(--accent2)}
+.outline{border-color:var(--cream3);color:var(--warm2);background:#fff9f4}
+/* Intro banner */
+.intro{
+  background:linear-gradient(115deg,#f5e8d8 0%,#fdebd0 53%,#faf3e0 100%);
+  box-shadow:0 7px 22px rgba(212,149,106,0.1);
+  border:1px solid var(--cream3);
+}
+.intro h1{color:var(--warm1);font-family:'Noto Serif TC',serif}
+.intro p{color:var(--warm2)}
+.intro .eyebrow{color:var(--accent);letter-spacing:1px}
+.eyebrow{color:var(--accent2)}
+/* Tool cards */
+.tool{
+  border:2px solid transparent;
+  min-height:155px;
+  box-shadow:0 3px 10px rgba(42,32,24,0.05);
+  background:#fff9f4;
+  color:var(--warm2);
+}
+.tool:nth-child(8n+1){--accent-c:#e97635;--soft-c:#fff0e0;--border-c:#ffce9d}
+.tool:nth-child(8n+2){--accent-c:#c06e8a;--soft-c:#fef0f3;--border-c:#f5c0ce}
+.tool:nth-child(8n+3){--accent-c:#b88210;--soft-c:#fff8d6;--border-c:#ffe07b}
+.tool:nth-child(8n+4){--accent-c:#4a7c59;--soft-c:#e8f5ee;--border-c:#a8d5b5}
+.tool:nth-child(8n+5){--accent-c:#c06848;--soft-c:#ffeee6;--border-c:#f5c0a0}
+.tool:nth-child(8n+6){--accent-c:#7a6040;--soft-c:#f5eedd;--border-c:#d5c09a}
+.tool:nth-child(8n+7){--accent-c:#4a7080;--soft-c:#e5f5f8;--border-c:#9ad5e4}
+.tool:nth-child(8n+8){--accent-c:#a06050;--soft-c:#fdf0ec;--border-c:#efc0b0}
+.tool{background:var(--soft-c);color:var(--warm1)}
+.tool:hover{border-color:var(--border-c);box-shadow:0 5px 16px rgba(42,32,24,0.1)}
+.tool.selected{border-color:var(--accent-c);background:var(--soft-c);box-shadow:0 5px 16px rgba(212,149,106,0.2)}
+.tool.selected:after{content:'✓';position:absolute;right:12px;bottom:13px;border-radius:50%;background:var(--accent-c);color:white;width:18px;height:18px;display:grid;place-items:center;font-size:11px}
+.tool-icon{background:rgba(250,246,240,0.9)!important;box-shadow:0 3px 9px rgba(42,32,24,0.1)}
+.tool-copy b{color:var(--warm1)}
+.tool-copy small{color:var(--warm3)}
+.tool-tag{border-color:var(--border-c);color:var(--accent-c);background:rgba(255,255,255,0.7)}
+/* Utility grid */
+.utility-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:8px 0 12px}
+.utility-heading h2{font-size:16px;margin:0;font-family:'Noto Serif TC',serif}
+.utility-heading>span{font-size:11px;color:var(--warm3)}
+.utility-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:26px}
+.utility-grid button{display:grid;grid-template-columns:38px 1fr;gap:4px 9px;text-align:left;padding:17px 12px;border:1px solid var(--cream3);border-radius:13px;background:#fff9f4;color:var(--warm2)}
+.utility-grid button>span{grid-row:span 2;font-size:27px;align-self:center}
+.utility-grid button b{font-size:13px;color:var(--warm1)}
+.utility-grid button small{font-size:10px;color:var(--warm3)}
+.utility-grid button:hover{background:var(--accent-soft);border-color:var(--cream3)}
+/* Work area */
+.work-area,.award-bar{border-color:var(--cream3);box-shadow:0 4px 17px rgba(42,32,24,0.05)}
+h2{font-family:'Noto Serif TC',serif;color:var(--warm1)}
+.section-title p{color:var(--warm3)}
+.view-control{background:var(--cream2)}
+.view-control button{color:var(--warm3)}
+.view-control button.active{color:var(--accent2)}
+.toolbar-right{color:var(--warm3)}
+.toolbar-right input{accent-color:var(--accent)}
+/* Student cards */
+.student{border:2px solid var(--cream3);color:var(--warm2);background:#fff9f4}
+.student:nth-child(4n+1){background:#fffaf5}
+.student:nth-child(4n+2){background:#fdf7f0}
+.student:nth-child(4n+3){background:#f9f4ee}
+.student:nth-child(4n+4){background:#faf6f0}
+.student.chosen{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 4px 13px rgba(212,149,106,0.25)}
+.student.chosen:before{background:var(--accent)}
+.student-name{color:var(--warm1);font-weight:700}
+.stage-label,.next-label{color:var(--warm3)}
+.points{color:var(--accent2)}
+.points small{color:var(--warm3)}
+.scene{background:radial-gradient(ellipse at center,var(--cream2),transparent 72%)}
+.progress{background:var(--cream3);height:7px}
+.progress div{background:linear-gradient(90deg,#d4956a,#e8b580,#f0d090)}
+/* Award bar */
+.selection-chip{background:var(--accent-soft);color:var(--accent2)}
+.reason{border-color:var(--cream3);background:#fff9f4;color:var(--warm2)}
+.reason:nth-child(2){background:#fff8ee;border-color:#f5ddb0;color:#8a6020}
+.reason:nth-child(3){background:#f0f8f0;border-color:#b0d8b0;color:#3a7050}
+.reason:nth-child(4){background:#fff4f0;border-color:#f5c8b8;color:#a04840}
+.reason strong{background:rgba(255,255,255,0.8);color:inherit}
+.award-head p{color:var(--warm3)}
+.award-bottom{border-color:var(--cream3)}
+/* Dialog */
+.primary{background:linear-gradient(100deg,#d4956a,#c07850);box-shadow:0 4px 10px rgba(212,149,106,0.3)}
+.dialog-top h2{color:var(--warm1);font-family:'Noto Serif TC',serif}
+.icon-button{background:var(--cream2);color:var(--warm2)}
+dialog{color:var(--warm1)}
+.muted{color:var(--warm3)}
+.field{color:var(--warm2)}
+.field input,.field textarea,.field select{border-color:var(--cream3);color:var(--warm1)}
+.mission{background:linear-gradient(120deg,var(--accent-soft),#fff0e0);color:var(--warm1)}
+.note{background:#fff8ee;color:#8a6020}
+.roster-row,.history-row{border-color:var(--cream3)}
+footer{color:var(--warm3)}
+#toast{background:var(--accent2)}
+/* Wheel */
+.wheel-wrap{position:relative;display:flex;justify-content:center;margin:25px 0 15px}
+.wheel-visual{width:210px;height:210px;border:9px solid #fff;border-radius:50%;background:conic-gradient(#e97655 0deg 60deg,#d4956a 60deg 120deg,#c8a050 120deg 180deg,#6a9e78 180deg 240deg,#7ab0c0 240deg 300deg,#c06880 300deg 360deg);box-shadow:0 0 0 3px var(--cream3),0 5px 15px rgba(42,32,24,0.15);transition:transform 1.5s cubic-bezier(.12,.64,.19,1);position:relative;display:grid;place-items:center}
+.wheel-visual>span{background:white;border-radius:50%;width:56px;height:56px;display:grid;place-items:center;font-size:32px;z-index:1}
+.wheel-number{position:absolute;transform:translate(-50%,-50%);font-size:20px;font-weight:800;color:var(--warm1)}
+.wheel-pointer{position:absolute;top:-13px;color:var(--accent2);font-size:30px;z-index:2;text-shadow:0 3px white}
+.wheel-result{padding:13px;background:var(--accent-soft);color:var(--accent2);border-radius:11px;text-align:center;font-weight:700}
+.wheel-legend{display:grid;grid-template-columns:1fr 1fr;gap:10px;list-style:none;padding:0;margin:20px 0;font-size:11px;color:var(--warm2)}
+.wheel-legend b{display:inline-grid;place-items:center;background:var(--cream2);color:var(--accent2);border-radius:50%;width:20px;height:20px;margin-right:5px}
+/* Timer */
+.timer-ring{--progress:0deg;width:205px;height:205px;background:conic-gradient(var(--accent) 0deg var(--progress),var(--cream3) var(--progress) 360deg);border-radius:50%;display:grid;place-items:center;margin:23px auto}
+.timer-ring>div{display:grid;place-items:center;background:#fffaf5;width:173px;height:173px;border-radius:50%;font-size:43px;letter-spacing:2px;color:var(--accent2);font-variant-numeric:tabular-nums;font-weight:750}
+.timer-status{text-align:center;color:var(--warm3);font-size:12px;margin-bottom:20px}
+/* Bingo */
+.bingo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:21px 0}
+.bingo-cell{border:2px solid var(--cream3);border-radius:12px;background:var(--cream2);padding:16px 6px;color:var(--warm2);font-size:12px;line-height:1.5;min-height:104px}
+.bingo-cell>span{display:block;font-size:26px;margin-bottom:7px}
+.bingo-cell.checked{background:#e8f5ee;border-color:#a8d5b5;color:#3a7050}
+.bingo-summary{padding:13px;background:#fff8ee;color:#8a6020;border-radius:10px;text-align:center;font-weight:650;margin-bottom:15px}
+.capacity-panel{margin-top:22px;border-radius:12px;padding:16px;background:var(--cream2);border:1px solid var(--cream3);font-size:12px}
+.capacity-panel p{margin:8px 0;color:var(--warm2)}
+.capacity-panel small{color:var(--warm3);line-height:1.7}
+/* Mobile bottom nav */
+@media(max-width:800px){
+  body{padding-bottom:64px}
+  .bottom-nav{display:flex!important}
+  .sidebar{position:static;width:100%;height:auto;padding:12px 18px;border-right:0;border-bottom:1px solid var(--cream3)}
+  .sidebar-bottom,.nav-label,.nav{display:none}
+  .brand small{font-size:10px}
+  .brand{font-size:20px}
+  main{margin:0;padding:16px}
+}
+@media(min-width:801px){
+  .bottom-nav{display:none!important}
+}
+/* Bottom nav bar */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:#fff9f4;
+  border-top:1px solid var(--cream3);
+  display:flex;
+  align-items:stretch;
+  box-shadow:0 -2px 12px rgba(42,32,24,0.09);
+}
+.bottom-nav button{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;border:0;background:none;padding:10px 4px 8px;
+  font-size:10px;color:var(--warm3);border-radius:0;transform:none!important;transition:none!important;
+}
+.bottom-nav button.bn-active{color:var(--accent2)}
+.bottom-nav button span.bn-icon{font-size:20px;display:block}
+/* Misc */
+.reason-settings{display:grid;grid-template-columns:1fr 65px;gap:8px}
+.reason-settings input{width:100%;border:1px solid var(--cream3);border-radius:6px;padding:9px;margin-bottom:7px;color:var(--warm1)}
+.milestone{color:var(--accent2);font-size:11px;margin-top:9px}
+body[data-mode="ocean"] .scene{background:radial-gradient(ellipse,#e4f7ff,transparent 72%)}
+body[data-mode="garden"] .scene{background:radial-gradient(ellipse,#f0f8e8,transparent 72%)}
+@media(max-width:1150px){.utility-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:800px){.utility-heading{align-items:flex-start;flex-direction:column;gap:6px}.tool-grid{gap:11px;grid-template-columns:repeat(2,1fr)}.tool{min-height:139px}.utility-grid{gap:10px;grid-template-columns:repeat(2,1fr)}.utility-grid button{padding:14px 10px;grid-template-columns:30px 1fr;gap:4px 7px}.utility-grid button>span{font-size:23px}.utility-grid button small{line-height:1.6}.wheel-legend{grid-template-columns:1fr}.bingo-cell{padding:13px 5px;font-size:11px}.intro .eyebrow{font-size:10px}.capacity-panel{line-height:1.8}.reasons{grid-template-columns:repeat(2,1fr)}.toolbar{align-items:flex-start}.toolbar-right{flex-direction:column;gap:7px}}
+@media(prefers-reduced-motion:reduce){.wheel-visual{transition:none}}
+
+</style></head>
+<body><a href="index.html" style="position:fixed;top:16px;left:16px;z-index:9999;display:inline-flex;align-items:center;gap:7px;background:rgba(250,246,240,0.92);backdrop-filter:blur(8px);border:1px solid rgba(42,32,24,0.12);border-radius:20px;padding:7px 16px;font-family:'Noto Sans TC',sans-serif;font-size:0.8rem;color:#4a4040;text-decoration:none;box-shadow:0 2px 12px rgba(42,32,24,0.09);">← 資源中心</a>
+<aside class="sidebar"><a class="brand" href="#"> <span class="brand-icon">⌂</span><span>希望成長屋<small>每一小步，都值得被看見</small></span></a><div class="nav-label">我的教室</div><button class="nav active" data-tab="home">▦ <span>成長工具箱</span></button><button class="nav" id="historyBtn">◷ <span>加分紀錄</span></button><button class="nav" id="rosterBtn">♧ <span>孩子名單</span></button><div class="sidebar-bottom"><div class="seed">🌱</div><b>看見努力，陪伴成長</b><p>與昨天的自己比一比。<br>每個孩子，都有自己的節奏。</p><button class="text-button" id="guideBtn">使用小指南 ↗</button><div class="local-label">● 紀錄保存在此瀏覽器</div></div></aside>
+<main><header><div><span class="breadcrumb">我的教室 / 成長工具箱</span><div class="class-line"><input id="className" aria-label="班級名稱" maxlength="30"><span class="badge">老師工具</span></div></div><button class="outline" id="settingsBtn">⚙ 工具設定</button></header>
+<section class="intro"><div><span class="eyebrow">8 種計分活動 · 4 種互動工具</span><h1>把努力，變成看得見的成長。</h1><p>選一個今天的玩法，陪孩子累積屬於自己的小小成就。</p></div><div class="intro-art" aria-hidden="true"><span class="sun">☀</span><span class="art-home">🏡</span><span class="art-sprout">🌱</span><span class="art-star">✦</span></div></section>
+<section class="tool-grid" aria-label="計分活動"><button class="tool selected" data-mode="house"><span class="tool-icon peach">🏡</span><span class="tool-copy"><b>蓋一座希望小屋</b><small>一點一滴，建造自己的家</small></span><span class="tool-tag">小屋建造</span></button><button class="tool" data-mode="pet"><span class="tool-icon lilac">🐣</span><span class="tool-copy"><b>我的成長夥伴</b><small>從小小蛋，陪伴到長大</small></span><span class="tool-tag">角色養成</span></button><button class="tool" data-mode="stars"><span class="tool-icon yellow">⭐</span><span class="tool-copy"><b>星星收集冊</b><small>把每一次努力收藏起來</small></span><span class="tool-tag">代幣集點</span></button><button class="tool" data-mode="map"><span class="tool-icon mint">🗺️</span><span class="tool-copy"><b>勇氣探險地圖</b><small>踏出下一步，解鎖新風景</small></span><span class="tool-tag">目標闖關</span></button></section>
+<div class="utility-heading"><h2>🎈 課堂互動小工具</h2><span>完成任務，由老師確認加分</span></div><section class="utility-grid"><button data-utility="bingo"><span>🎯</span><b>努力賓果</b><small>九個小任務，練習好習慣</small></button><button data-utility="wheel"><span>🎡</span><b>鼓勵轉盤</b><small>抽一個溫暖的慶祝方式</small></button><button data-utility="timer"><span>⏳</span><b>專注沙漏</b><small>設定一段剛剛好的練習時間</small></button><button data-utility="mission"><span>🎲</span><b>努力任務卡</b><small>抽一張今天的小挑戰</small></button></section>
+<section class="work-area"><div class="section-title"><div><h2 id="modeTitle">🏡 蓋一座希望小屋</h2><p id="modeHint"></p></div><button class="outline small" id="rosterBtn2">＋ 管理孩子</button></div><div class="toolbar"><div class="view-control"><button class="active" id="allView">全班成長</button><button id="focusView">專注展示</button></div><div class="toolbar-right"><label><input type="checkbox" id="multi"> 多人一起加分</label><span id="count"></span></div></div><div id="students" class="students"></div><div id="empty" hidden class="empty"><span>🌱</span><h3>從第一位孩子開始</h3><p>加入孩子的暱稱，再選一個喜歡的成長玩法。</p><button class="primary" id="addFirst">＋ 建立孩子名單</button><button class="text-button" id="demoBtn">先用示範名單體驗</button></div></section>
+<section class="award-bar"><div class="award-head"><div><span class="eyebrow">NOTICE THE GOOD</span><h2>我看見你的努力了！</h2><p id="selectionHint">先點選一位孩子，再選擇加分原因。</p></div><span class="selection-chip" id="selectionChip">尚未選擇</span></div><div id="reasons" class="reasons"></div><div class="award-bottom"><button class="text-button" id="challengeBtn">🎲 抽一張努力任務卡</button><button class="text-button" id="undoBtn">↶ 撤銷上次加分</button></div></section>
+<footer><span>希望成長屋 · 讓鼓勵成為孩子前進的力量</span><span id="saveStatus">本機保存 · 建議定期匯出備份</span></footer></main>
+<dialog id="dialog"><div class="dialog-top"><h2 id="dialogTitle"></h2><button class="icon-button" id="closeDialog" aria-label="關閉">×</button></div><div id="dialogBody"></div></dialog><div id="toast" role="status" aria-live="polite"></div><script>
+'use strict';
+const KEY='hope-growth-v1';
+const defaults=()=>({version:1,className:'我的希望班',mode:'house',goal:20,students:[],history:[],reasons:[{label:'🎯 專心學習',points:1},{label:'🌱 勇敢嘗試',points:2},{label:'🤝 幫助同學',points:2},{label:'💛 安頓情緒',points:1}]});
+const modes={house:{title:'🏡 蓋一座希望小屋',hint:'把努力變成磚瓦，從一片草地到溫暖的家。',stages:['一片希望草地','打好穩穩地基','蓋起小屋牆壁','添上遮雨屋頂','我的溫暖小屋']},pet:{title:'🐣 我的成長夥伴',hint:'每一次嘗試，都讓小夥伴長大一點。',stages:['等待孵化的小蛋','探出頭的小生命','好奇的小夥伴','學會展翅的夥伴','閃亮的成長夥伴']},stars:{title:'⭐ 星星收集冊',hint:'每一點是一顆星，收滿一冊，再開啟下一冊。',stages:[]},map:{title:'🗺️ 勇氣探險地圖',hint:'从起點出發，一站一站探索屬於自己的風景。'.replace('从','從'),stages:['草地起點','森林小徑','花園溪流','山丘營地','星光城堡']}};
+const $=s=>document.querySelector(s);
+Object.assign(modes,{
+ garden:{title:'🌻 我的繽紛花園',hint:'播下努力的種子，照顧一座會開花的花園。',stages:['種下一顆種子','冒出小小新芽','長出綠色葉子','綻放第一朵花','花園盛開了']},
+ rocket:{title:'🚀 夢想火箭升空',hint:'累積每一份努力，讓夢想火箭飛向星空。',stages:['設計我的火箭','完成發射準備','點火！準備出發','飛越彩色星球','抵達夢想星空']},
+ ocean:{title:'🐠 海底寶藏探險',hint:'探索海洋，逐步發現珊瑚、小魚與寶藏。',stages:['海洋入口','發現彩色小魚','走進珊瑚花園','遇見海龜朋友','找到海底寶藏']},
+ puzzle:{title:'🧩 彩虹夢想拼圖',hint:'累積點數收集 8 塊拼圖，拼出一幅彩虹。',stages:[]}
+});
+const extraTools=[['garden','🌻','我的繽紛花園','播種、長葉，讓努力開花','花園種植'],['rocket','🚀','夢想火箭升空','準備好，向夢想出發','太空冒險'],['ocean','🐠','海底寶藏探險','發現海洋裡的小小驚喜','寶藏探索'],['puzzle','🧩','彩虹夢想拼圖','集齊八片，拼出彩虹','拼圖收集']];
+for(const [mode,icon,title,description,tag]of extraTools){const b=document.createElement('button');b.className='tool';b.dataset.mode=mode;b.innerHTML=`<span class="tool-icon">${icon}</span><span class="tool-copy"><b>${title}</b><small>${description}</small></span><span class="tool-tag">${tag}</span>`;$('.tool-grid').append(b)}
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let state=defaults(),selected=new Set(),focus=false,multi=false,toastTimer,loadError=false;
+function validate(data){
+ if(!data||data.version!==1||typeof data.className!=='string'||data.className.length>30||!modes[data.mode]||!Number.isInteger(data.goal)||data.goal<4||data.goal>100||!Array.isArray(data.students)||data.students.length>60||!Array.isArray(data.history)||data.history.length>10000||!Array.isArray(data.reasons)||data.reasons.length!==4)throw Error('備份格式不符');
+ const ids=new Set();for(const s of data.students){if(!s||typeof s.id!=='string'||s.id.length>80||ids.has(s.id)||typeof s.name!=='string'||!s.name.trim()||s.name.length>20||!Number.isInteger(s.points)||s.points<0||s.points>1000000)throw Error('孩子資料不符');if(s.bingo!==undefined&&(!Array.isArray(s.bingo)||s.bingo.length>9||new Set(s.bingo).size!==s.bingo.length||s.bingo.some(x=>!Number.isInteger(x)||x<0||x>8)))throw Error('賓果資料不符');ids.add(s.id)}
+ for(const r of data.reasons)if(!r||typeof r.label!=='string'||!r.label.trim()||r.label.length>30||!Number.isInteger(r.points)||r.points<1||r.points>10)throw Error('加分項目不符');
+ for(const h of data.history){if(h?.bingoCell!==undefined&&(!Number.isInteger(h.bingoCell)||h.bingoCell<0||h.bingoCell>8||h.entries?.length!==1))throw Error('賓果紀錄不符');if(!h||typeof h.id!=='string'||typeof h.reason!=='string'||h.reason.length>100||typeof h.time!=='string'||!Number.isFinite(Date.parse(h.time))||typeof h.undone!=='boolean'||!Array.isArray(h.entries)||h.entries.length>60)throw Error('紀錄格式不符');const used=new Set();for(const e of h.entries)if(!e||typeof e.id!=='string'||used.has(e.id)||typeof e.name!=='string'||e.name.length>20||!Number.isInteger(e.points)||e.points<1||e.points>10)throw Error('紀錄項目不符');else used.add(e.id)}
+ return data;
+}
+try{const raw=localStorage.getItem(KEY);if(raw)state=validate(JSON.parse(raw))}catch(e){loadError=true}
+function clone(){return structuredClone(state)}
+function commit(next){try{validate(next);localStorage.setItem(KEY,JSON.stringify(next));state=next;$('#saveStatus').textContent='已保存在此瀏覽器 · 建議定期匯出備份';return true}catch(e){toast('未能保存。請先匯出備份，確認瀏覽器儲存空間。');$('#saveStatus').textContent='保存失敗 · 請匯出備份';return false}}
+function toast(message){clearTimeout(toastTimer);$('#toast').textContent=message;$('#toast').classList.add('show');toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),3400)}
+function stage(points){return Math.min(4,Math.floor(points*4/state.goal))}
+function houseSvg(level){return `<svg viewBox="0 0 180 135" aria-hidden="true"><ellipse cx="92" cy="119" rx="77" ry="10" fill="#c9edaa"/><path d="M18 117v-13m0 5-6-6m6 4 6-8M157 117v-17m0 7-7-7m7 4 7-8" stroke="#58c482" stroke-width="3" stroke-linecap="round"/>${level===0?'<path d="M81 115V95m0 9c-20 0-16-19 0-9m0 5c21 1 21-23 0-11" fill="#77d456" stroke="#31a760" stroke-width="2"/>':''}${level>=1?'<path d="M41 112h99v7H41z" fill="#fbc15e"/><path d="M48 115h16m7 0h20m7 0h17m7 0h11" stroke="#d99739" stroke-width="2"/>':''}${level>=2?'<rect x="48" y="59" width="83" height="53" rx="3" fill="#ffe387"/><path d="M48 76h83m-83 17h83M68 60v16m42 0v17m-41 0v18" stroke="#f3c652" stroke-width="1"/>':''}${level>=3?'<path d="M38 62L89 22l54 40z" fill="#ff7193"/><path d="M38 62L89 22l54 40" fill="none" stroke="#dc486d" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><rect x="113" y="24" width="11" height="24" fill="#ec5d83"/>':''}${level>=4?'<rect x="78" y="78" width="24" height="34" rx="11" fill="#7b6be0"/><circle cx="96" cy="96" r="2" fill="#ffe678"/><rect x="56" y="73" width="15" height="17" rx="3" fill="#83dfff" stroke="#bb8650" stroke-width="2"/><path d="M63.5 74v15m-7-7h14" stroke="#fff6d5" stroke-width="2"/><rect x="108" y="73" width="15" height="17" rx="3" fill="#83dfff" stroke="#bb8650" stroke-width="2"/><path d="M115.5 74v15m-7-7h14" stroke="#fff6d5" stroke-width="2"/><path d="M137 110v-12m-6 6h12" stroke="#40b86e" stroke-width="2"/><circle cx="137" cy="96" r="6" fill="#fc6db0"/><text x="153" y="35" font-size="20" fill="#ffc337">✦</text>':''}</svg>`}
+function scene(s){const lv=stage(s.points);if(state.mode==='garden')return gardenSvg(lv);if(state.mode==='rocket')return rocketSvg(lv);if(state.mode==='ocean')return oceanSvg(lv);if(state.mode==='puzzle')return puzzleSvg(s.points);if(state.mode==='house')return houseSvg(lv);if(state.mode==='pet')return `<span class="pet-display">${['🥚','🐣','🐥','🐤','🦉'][lv]}${lv===4?'<small>✨</small>':''}</span>`;if(state.mode==='stars'){const current=s.points%10,lit=current===0&&s.points>0?10:current;return `<div class="stars-display">${Array.from({length:10},(_,i)=>`<span class="${i<lit?'':'dim'}">★</span>${i===4?'<br>':''}`).join('')}</div>`}return `<div class="map-path">${['🌱','🌳','🌷','⛺','🏰'].map((x,i)=>`<span class="map-stop ${i<=lv?'done':''}">${x}</span>${i<4?'<span style="color:#bdcbb2">·</span>':''}`).join('')}</div>`}
+function details(s){const lv=stage(s.points);if(state.mode==='puzzle'){const pieces=Math.min(8,Math.floor(s.points*8/state.goal));return{label:`已收集 ${pieces} / 8 塊彩虹拼圖`,next:pieces===8?'彩虹完成了！為你的努力喝采！':`再 ${Math.ceil((pieces+1)*state.goal/8)-s.points} 點，收集下一塊`,percent:Math.min(100,s.points/state.goal*100)}}if(state.mode==='stars'){const full=Math.floor(s.points/10);return{label:`第 ${Math.max(1,Math.ceil(s.points/10))} 冊 · 已完成 ${full} 冊`,next:s.points>0&&s.points%10===0?'收滿一冊了！下一點開啟新的一冊。':`再 ${10-s.points%10} 點，收滿這一冊`,percent:s.points>0&&s.points%10===0?100:s.points%10*10}}return{label:modes[state.mode].stages[lv],next:lv===4?'目標完成！每一份努力都繼續累積。':`再 ${Math.ceil((lv+1)*state.goal/4)-s.points} 點，解鎖下一階段`,percent:Math.min(100,s.points/state.goal*100)}}
+function render(){
+ document.body.dataset.mode=state.mode;
+ $('#className').value=state.className;$('#modeTitle').textContent=modes[state.mode].title;$('#modeHint').textContent=modes[state.mode].hint+ (state.mode==='stars'?' 每冊 10 顆星。':` 成長目標：${state.goal} 點。`);
+ document.querySelectorAll('[data-mode]').forEach(el=>el.classList.toggle('selected',el.dataset.mode===state.mode));$('#count').textContent=`${state.students.length} 位孩子`;
+ $('#empty').hidden=state.students.length>0;$('#students').classList.toggle('focus',focus);
+ let list=state.students;if(focus)list=state.students.filter(s=>selected.has(s.id)).slice(0,1);if(focus&&!list.length&&state.students.length)list=[state.students[0]];
+ $('#students').innerHTML=list.map(s=>{const d=details(s);return `<button class="student ${selected.has(s.id)?'chosen':''}" data-student="${esc(s.id)}" aria-pressed="${selected.has(s.id)}" aria-label="${esc(s.name)}，${s.points}點。點選加分"><span class="student-name">${esc(s.name)}</span><span class="stage-label">${esc(d.label)}</span><div class="scene">${scene(s)}</div><div class="points">${s.points}<small>成長點數</small></div><div class="progress"><div style="width:${d.percent}%"></div></div><div class="next-label">${esc(d.next)}</div></button>`}).join('');
+ const names=state.students.filter(s=>selected.has(s.id)).map(s=>s.name);$('#selectionChip').textContent=names.length?names.join('、'):'尚未選擇';$('#selectionHint').textContent=names.length?`為 ${names.join('、')} 選擇一個具體的努力原因。`:'先點選一位孩子，再選擇加分原因。';
+ $('#reasons').innerHTML=state.reasons.map((r,i)=>`<button class="reason" data-reason="${i}" ${names.length?'':'disabled'}><span>${esc(r.label)}</span><strong>＋${r.points}</strong></button>`).join('');$('#undoBtn').disabled=!state.history.some(h=>!h.undone&&h.entries.some(e=>state.students.some(s=>s.id===e.id)));$('#challengeBtn').disabled=!names.length;
+ $('#allView').classList.toggle('active',!focus);$('#focusView').classList.toggle('active',focus);
+}
+function award(reason,points,bingoCell){if(!selected.size)return toast('請先選擇孩子');const next=clone();const entries=[];let unlock=false;for(const s of next.students)if(selected.has(s.id)){const old=stage(s.points);if(s.points+points>1000000)return toast('點數已達上限，請先備份並建立新名單');s.points+=points;unlock||=stage(s.points)>old;entries.push({id:s.id,name:s.name,points})}if(!entries.length)return false;if(bingoCell!==undefined){if(entries.length!==1)return false;const student=next.students.find(s=>s.id===entries[0].id);student.bingo=student.bingo||[];if(student.bingo.includes(bingoCell))return false;student.bingo.push(bingoCell)}next.history.push({bingoCell,id:crypto.randomUUID(),time:new Date().toISOString(),reason,entries,undone:false});if(next.history.length>10000)return toast('紀錄已滿，請匯出備份後開始新一輪');if(commit(next)){render();document.querySelectorAll('.chosen').forEach(el=>el.classList.add('celebrate'));toast(`${entries.map(e=>e.name).join('、')} ＋${points} 點${unlock?' · 新階段解鎖！':' · 努力被看見了！'}`);return true}return false}
+function undo(){const next=clone(),h=[...next.history].reverse().find(h=>!h.undone&&h.entries.some(e=>next.students.some(s=>s.id===e.id)));if(!h)return;for(const e of h.entries){const s=next.students.find(s=>s.id===e.id);if(s){if(s.points<e.points)return toast('紀錄與點數不一致，無法撤銷');s.points-=e.points;if(h.bingoCell!==undefined)s.bingo=(s.bingo||[]).filter(cell=>cell!==h.bingoCell)}}h.undone=true;if(commit(next)){render();toast('已撤銷最近一次加分')}}
+function dialog(title,body){$('#dialogTitle').textContent=title;$('#dialogBody').innerHTML=body;if(!$('#dialog').open)$('#dialog').showModal()}
+function close(){$('#dialog').close()}
+function roster(){dialog('孩子名單',`<p class="muted">使用孩子容易辨認的暱稱（例如「小晴」「阿宇」）；避免使用全名，最多 60 位。點數保留在這個瀏覽器。</p><div class="history-list">${state.students.map(s=>`<div class="roster-row"><span>${esc(s.name)} <small class="muted">${s.points} 點</small></span><div><button class="text-button" data-rename="${esc(s.id)}">改名</button> <button class="text-button danger" data-remove="${esc(s.id)}">移除</button></div></div>`).join('')}</div><label class="field">新增孩子（每行一位，也可用逗號分隔）<textarea id="newNames" placeholder="小晴&#10;小宇&#10;小安（建議使用暱稱）" maxlength="1500"></textarea></label><button class="primary" id="saveNames">加入名單</button>`)}
+function addNames(){const names=$('#newNames').value.split(/[\n,，]/).map(x=>x.trim()).filter(Boolean);if(!names.length)return toast('請輸入孩子的暱稱');if(names.some(n=>n.length>20))return toast('暱稱請控制在 20 字以內');if(state.students.length+names.length>60)return toast('每份名單最多 60 位孩子');const next=clone();next.students.push(...names.map(name=>({id:crypto.randomUUID(),name,points:0})));if(commit(next)){render();roster();toast(`已加入 ${names.length} 位孩子`)}}
+function history(){dialog('加分紀錄',`<p class="muted">共 ${state.history.filter(h=>!h.undone).length} 次有效加分。顯示最近 100 筆。</p><div class="history-list">${[...state.history].reverse().slice(0,100).map(h=>`<div class="history-row"><div>${esc(h.entries.map(e=>e.name).join('、'))}<small>${esc(h.reason)} · ${new Date(h.time).toLocaleString('zh-TW',{timeZone:'Asia/Taipei'})}</small></div><b class="${h.undone?'muted':''}">${h.undone?'已撤銷':`＋${h.entries[0]?.points||0}`}</b></div>`).join('')||'<div class="empty">還沒有加分紀錄，從一次小小的鼓勵開始吧。</div>'}</div><div class="dialog-actions"><button class="outline" id="exportHistory">匯出紀錄 CSV</button><button class="outline" id="exportBackup">匯出完整備份</button></div>`)}
+function settings(){dialog('工具設定',`<label class="field">成長活動的目標（4–100 點）<input id="goalInput" type="number" min="4" max="100" value="${state.goal}"></label><p class="muted">養成活動分為 4 個成長階段，拼圖分為 8 片。調整目標會更新外觀，累積點數仍保留。集星每冊固定 10 點。</p><label class="field">加分項目與每次點數（1–10 點）</label><div class="reason-settings">${state.reasons.map((r,i)=>`<input id="label${i}" aria-label="加分項目 ${i+1}" value="${esc(r.label)}" maxlength="30"><input id="point${i}" aria-label="項目 ${i+1} 點數" type="number" min="1" max="10" value="${r.points}">`).join('')}</div><button class="primary" id="saveSettings">儲存設定</button><div class="capacity-panel"><b>💾 儲存容量</b><p>這份名單與紀錄約使用 <strong>${storageUsage()}</strong></p><small>以字元數 × 2 估計，不含其他網站資料。剩餘空間由瀏覽器管理，無法精確計算。備份檔可轉移到其他裝置。</small></div><div class="note">資料不會跨裝置同步。換電腦或瀏覽器前，請先匯出完整備份，再於新裝置匯入。</div><div class="dialog-actions"><button class="outline" id="exportBackup">↓ 匯出完整備份</button><button class="outline" id="importBtn">↑ 匯入備份</button><input hidden id="importFile" type="file" accept="application/json,.json"><button class="text-button danger" id="resetBtn">開始新一輪（清零點數）</button></div>`)}
+function download(text,name,type){const url=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function backup(){download(JSON.stringify(state,null,2),`希望成長屋_備份_${new Date().toLocaleDateString('sv-SE',{timeZone:'Asia/Taipei'})}.json`,'application/json')}
+function csv(){const safe=v=>{const t=String(v);return '"'+(/^[=+@\-\t\r]/.test(t)?"'"+t:t).replace(/"/g,'""')+'"'};const rows=[['時間','孩子','原因','點數','狀態']];for(const h of state.history)for(const e of h.entries)rows.push([new Date(h.time).toLocaleString('zh-TW',{timeZone:'Asia/Taipei'}),e.name,h.reason,e.points,h.undone?'已撤銷':'有效']);download('\uFEFF'+rows.map(r=>r.map(safe).join(',')).join('\r\n'),'希望成長屋_加分紀錄.csv','text/csv;charset=utf-8')}
+const missions=['遇到一題不會的，先試一個方法，再舉手求助。','練習慢慢呼吸三次，再開始下一個任務。','對一位同學說一句具體的鼓勵。','完成一個自己訂下的小任務。','發現需要幫忙的地方，先詢問再提供協助。','分享今天學到的一件事，或提出一個問題。','把使用過的材料收回原位。','說出現在的感受，以及一個可以照顧自己的方法。'];
+function challenge(){const mission=missions[Math.floor(Math.random()*missions.length)];dialog('🎲 今天的努力任務',`<p class="muted">給 ${esc(state.students.filter(s=>selected.has(s.id)).map(s=>s.name).join('、'))} 的小挑戰。可依孩子能力調整，不計時、不競速。</p><div class="mission">${esc(mission)}</div><p class="muted">完成後由老師觀察並確認，加 2 點。孩子可以選擇換一張或稍後再試。</p><div class="dialog-actions"><button class="primary" id="finishMission">老師確認完成 ＋2</button><button class="outline" id="reroll">換一張</button></div>`);$('#finishMission').onclick=()=>{award('努力任務：'+mission,2);close()};$('#reroll').onclick=challenge}
+function guide(){dialog('讓加分成為溫暖的鼓勵',`<ol class="guide"><li><b>先約定，再開始。</b><br>建立名單，跟孩子說明什麼行動能得到點數；在設定調整目標與加分項目。</li><li><b>點孩子，點原因。</b><br>例如：「我看見你遇到難題，還願意試另一個方法。」多人加分時只選實際完成的孩子。</li><li><b>換一種玩法，保留進步。</b><br>八種計分活動共用點數；賓果任務與專注練習完成後也可確認加分。專注展示只顯示一位孩子；多人加分與專注展示分開使用。</li><li><b>目標達成，一起慶祝。</b><br>可約定選一本故事、當小幫手等活動獎勵。完成後點數持續累積，老師可備份後開始新一輪。</li><li><b>定期備份。</b><br>名單與紀錄保存在此瀏覽器，無跨裝置同步。清除瀏覽器資料會移除紀錄；請用完整備份保存及轉移。</li></ol><p class="note">這裡不提供排名或扣分。練習安頓情緒時，鼓勵具體的調節行動，讓所有情緒都有被理解的空間。</p>`)}
+$('#students').onclick=e=>{const b=e.target.closest('[data-student]');if(!b)return;const id=b.dataset.student;if(multi){selected.has(id)?selected.delete(id):selected.add(id)}else selected=new Set([id]);render()};
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{const next=clone();next.mode=b.dataset.mode;if(commit(next))render()});
+$('#reasons').onclick=e=>{const b=e.target.closest('[data-reason]');if(b){const r=state.reasons[+b.dataset.reason];award(r.label,r.points)}};
+$('#multi').onchange=e=>{multi=e.target.checked;if(multi){focus=false}else selected=new Set([...selected].slice(0,1));render()};
+$('#allView').onclick=()=>{focus=false;render()};$('#focusView').onclick=()=>{if(!state.students.length)return toast('請先建立名單');focus=true;multi=false;$('#multi').checked=false;selected=new Set([[...selected][0]||state.students[0].id]);render()};
+$('#className').onchange=e=>{const next=clone();next.className=e.target.value.trim()||'我的希望班';commit(next);render()};
+for(const id of ['rosterBtn','rosterBtn2','addFirst'])$('#'+id).onclick=roster;
+$('#historyBtn').onclick=history;$('#settingsBtn').onclick=settings;$('#guideBtn').onclick=guide;$('#closeDialog').onclick=close;$('#undoBtn').onclick=undo;$('#challengeBtn').onclick=challenge;
+$('#demoBtn').onclick=()=>{if(state.students.length)return;const next=clone();next.students=['小晴','小宇','小安','小樂','小恩','小雨','小禾','小光'].map((name,i)=>({id:crypto.randomUUID(),name:name+'（示範）',points:[0,5,10,15,20,3,8,12][i]}));if(commit(next)){render();toast('已加入示範名單，可在孩子名單中改名或移除')}};
+$('#dialogBody').onclick=e=>{
+ const b=e.target.closest('button');if(!b)return;
+ if(b.id==='saveNames')return addNames();if(b.id==='exportBackup')return backup();if(b.id==='exportHistory')return csv();if(b.id==='importBtn')return $('#importFile').click();
+ if(b.id==='saveSettings'){const next=clone();next.goal=Number($('#goalInput').value);next.reasons=state.reasons.map((r,i)=>({label:$('#label'+i).value.trim(),points:Number($('#point'+i).value)}));try{validate(next)}catch{return toast('請檢查目標（4–100）、點數（1–10）與加分項目名稱')}if(commit(next)){render();close();toast('設定已儲存')}return}
+ if(b.dataset.rename){const s=state.students.find(s=>s.id===b.dataset.rename);const name=prompt('修改孩子的暱稱',s.name);if(name===null)return;if(!name.trim()||name.trim().length>20)return toast('請輸入 1–20 字的暱稱');const next=clone();next.students.find(x=>x.id===s.id).name=name.trim();if(commit(next)){render();roster()}return}
+ if(b.dataset.remove){const s=state.students.find(s=>s.id===b.dataset.remove);if(!confirm(`移除「${s.name}」及其點數？原有加分紀錄仍會保留。建議先匯出備份。`))return;const next=clone();next.students=next.students.filter(x=>x.id!==s.id);if(commit(next)){selected.delete(s.id);render();roster()}return}
+ if(b.id==='resetBtn'){if(!confirm('開始新一輪會將所有孩子的點數歸零，並清除加分紀錄。請先匯出完整備份。確定繼續？'))return;const next=clone();next.students.forEach(s=>{s.points=0;s.bingo=[]});next.history=[];if(commit(next)){render();close();toast('新一輪開始了，陪孩子再踏出一步！')}}
+};
+$('#dialogBody').onchange=async e=>{if(e.target.id!=='importFile')return;const file=e.target.files[0];if(!file)return;try{if(file.size>10000000)throw Error();const next=validate(JSON.parse(await file.text()));if(!confirm(`匯入「${next.className}」的 ${next.students.length} 位孩子？這會取代目前所有資料，建議先匯出現有備份。`))return;if(commit(next)){selected.clear();focus=false;render();close();toast('完整備份已匯入')}}catch{toast('無法匯入，請選擇本工具匯出的有效 JSON 備份')}e.target.value=''};
+function storageUsage(){try{const raw=localStorage.getItem(KEY)||JSON.stringify(state);const bytes=raw.length*2;return bytes<1024?`${bytes} B`:`${(bytes/1024).toFixed(1)} KB`}catch{return '無法讀取'}}
+function gardenSvg(level){return `<svg viewBox="0 0 180 135" aria-hidden="true"><circle cx="145" cy="24" r="15" fill="#ffd24d"/><ellipse cx="90" cy="117" rx="76" ry="13" fill="#8ddb65"/><path d="M38 117q52-18 104 0" fill="#b77b51"/>${level===0?'<ellipse cx="90" cy="106" rx="9" ry="5" fill="#e7b968"/>':`<path d="M90 111V${[0,83,63,54,49][level]}" stroke="#2da75c" stroke-width="6" stroke-linecap="round"/><ellipse cx="77" cy="87" rx="14" ry="7" transform="rotate(30 77 87)" fill="#55c660"/><ellipse cx="105" cy="77" rx="15" ry="7" transform="rotate(-30 105 77)" fill="#28b271"/>`}${level>=3?flower(90,48,'#ff688a'):''}${level===4?`${flower(42,76,'#a16aee')}${flower(137,71,'#ff9b3d')}<text x="19" y="35" font-size="24">🦋</text>`:''}</svg>`}
+function flower(x,y,color){return `<path d="M${x} ${y}v${116-y}" stroke="#27ab69" stroke-width="3"/>${[[0,-9],[9,-3],[6,8],[-6,8],[-9,-3]].map(([dx,dy])=>`<circle cx="${x+dx}" cy="${y+dy}" r="9" fill="${color}"/>`).join('')}<circle cx="${x}" cy="${y}" r="6" fill="#ffd942"/>`}
+function rocketSvg(level){const y=[64,54,35,17,5][level];return `<svg viewBox="0 0 180 135" aria-hidden="true"><rect x="7" y="4" width="166" height="124" rx="19" fill="#ede5ff"/>${[[25,20],[135,50],[152,18],[29,74],[125,107]].map(([x,y])=>`<text x="${x}" y="${y}" fill="#9563e0" font-size="14">✦</text>`).join('')}${level>=3?'<circle cx="35" cy="97" r="18" fill="#ffb354"/><ellipse cx="35" cy="97" rx="27" ry="7" fill="none" stroke="#ee84ab" stroke-width="4" transform="rotate(-20 35 97)"/>':''}<g transform="translate(70 ${y})"><path d="M0 52L-12 69l15-2m24-15 12 17-15-2" fill="#965deb"/><path d="M0 54V27Q0 10 14 0q14 10 14 27v27z" fill="#fafaff" stroke="#afa1e3" stroke-width="2"/><path d="M2 17Q6 5 14 0q9 6 12 17" fill="#ff6888"/><circle cx="14" cy="30" r="8" fill="#59c9e7" stroke="#875cdc" stroke-width="3"/>${level>=2?'<path d="M6 58l8 30 8-30" fill="#ff9340"/><path d="M11 58l3 17 4-17" fill="#ffe260"/>':''}</g>${level===4?'<text x="126" y="97" font-size="27">🌟</text>':''}</svg>`}
+function oceanSvg(level){return `<svg viewBox="0 0 180 135" aria-hidden="true"><rect x="7" y="4" width="166" height="124" rx="19" fill="#d4f3ff"/><path d="M8 31q12-8 24 0t24 0t24 0t24 0t24 0t24 0t24 0" stroke="#63c8f0" stroke-width="4" fill="none"/><path d="M8 115q65-15 164 0v13H8" fill="#ffe0a0"/><path d="M25 118q-11-21 0-35m0 19 9-13M146 118q10-20 0-32" stroke="#35c19c" stroke-width="5" fill="none"/>${[0,1,2,3].filter(i=>i<=level).map((i)=>`<circle cx="${120+i*11}" cy="${73-i*16}" r="${3+i}" fill="none" stroke="#85d6ed" stroke-width="2"/>`).join('')}${level>=1?'<text x="34" y="77" font-size="29">🐠</text>':''}${level>=2?'<text x="48" y="116" font-size="27">🪸</text>':''}${level>=3?'<text x="105" y="69" font-size="27">🐢</text>':''}${level===4?'<rect x="98" y="92" width="35" height="23" rx="5" fill="#c18746" stroke="#985723" stroke-width="2"/><path d="M98 99h35m-18-7v23" stroke="#ffd54f" stroke-width="4"/><text x="106" y="86" font-size="21">✨</text>':''}</svg>`}
+function puzzleSvg(points){const count=Math.min(8,Math.floor(points*8/state.goal));const colors=['#f86691','#ff9d48','#ffd54f','#6dcc7c','#38c7d3','#5797ee','#9163e7','#c96ddb'];return `<svg viewBox="0 0 180 135" aria-hidden="true"><rect x="5" y="13" width="170" height="109" rx="14" fill="#f5efff"/>${colors.map((color,i)=>{const x=13+i%4*39,y=28+Math.floor(i/4)*42;return `<g transform="translate(${x} ${y})"><path d="M0 0h12q-3-9 6-9t6 9h12v12q-9-3-9 6t9 6v14H24q3-9-6-9t-6 9H0V24q9 3 9-6t-9-6z" fill="${i<count?color:'#e4dcec'}" stroke="white" stroke-width="2"/>${i<count?'<text x="12" y="26" font-size="17" fill="white">✦</text>':''}</g>`}).join('')}${count===8?'<text x="144" y="24" font-size="18">🌈</text>':''}</svg>`}
+const bingoTasks=['試一個新方法','把材料歸位','分享一個想法','練習慢慢呼吸','完成小任務','禮貌詢問幫忙','鼓勵一位同學','說出自己的感受','耐心等待輪流'];
+const bingoLines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+function bingo(){if(selected.size!==1)return toast('努力賓果請先選擇一位孩子');const child=state.students.find(s=>selected.has(s.id));if(!child)return;const cells=child.bingo||[];const lines=bingoLines.filter(line=>line.every(i=>cells.includes(i))).length;dialog(`🎯 ${child.name} 的努力賓果`,`<p class="muted">老師觀察到任務完成後，點一格確認加 1 點。每格只加一次，連線一起慶祝！</p><div class="bingo-grid">${bingoTasks.map((task,i)=>`<button class="bingo-cell ${cells.includes(i)?'checked':''}" data-bingo="${i}" ${cells.includes(i)?'disabled':''}><span>${cells.includes(i)?'✅':['🌱','🧺','💬','🌬️','🎯','🙋','💛','🫶','🤝'][i]}</span>${task}</button>`).join('')}</div><div class="bingo-summary">已完成 ${cells.length} / 9 格 · ${lines?'🎉 '+lines+' 條連線！':'朝第一條連線前進'}</div><p class="muted">賓果紀錄會一起備份。「開始新一輪」可清空；誤點可用撤銷上次加分復原。</p>`)}
+function stampBingo(cell){if(selected.size!==1||!Number.isInteger(cell)||cell<0||cell>8)return;const child=state.students.find(s=>selected.has(s.id));if(!child||(child.bingo||[]).includes(cell))return;if(!confirm(`確認「${child.name}」已完成「${bingoTasks[cell]}」並加 1 點？`))return;if(award('努力賓果：'+bingoTasks[cell],1,cell))bingo()}
+const celebrations=['選一本今天想聽的故事','當一次課堂小幫手','選一張自己喜歡的鼓勵貼紙','分享一件讓自己開心的小事','請老師說一句具體的鼓勵','邀一位同學一起完成創作'];
+let wheelSpinning=false,wheelRotation=0;
+function wheel(){dialog('🎡 溫暖的鼓勵轉盤',`<p class="muted">達成約定目標時，抽一個慶祝方式。可依課堂安排調整，不加點、不扣點。</p><div class="wheel-wrap"><span class="wheel-pointer">▼</span><div id="wheelVisual" class="wheel-visual" style="transform:rotate(${wheelRotation}deg)"><span>🌟</span>${Array.from({length:6},(_,i)=>{const angle=(i*60+30)*Math.PI/180;return `<b class="wheel-number" style="left:${96+Math.sin(angle)*65}px;top:${96-Math.cos(angle)*65}px">${i+1}</b>`}).join('')}</div></div><div id="wheelResult" class="wheel-result">今天，要怎麼慶祝呢？</div><ol class="wheel-legend">${celebrations.map((x,i)=>`<li><b>${i+1}</b> ${x}</li>`).join('')}</ol><button class="primary" id="spinWheel">轉動鼓勵轉盤</button>`);$('#spinWheel').onclick=spinWheel}
+function spinWheel(){if(wheelSpinning)return;wheelSpinning=true;$('#spinWheel').disabled=true;const target=Math.floor(Math.random()*celebrations.length);const desired=(360-(target*60+30))%360;wheelRotation+=1080+(desired-wheelRotation%360+360)%360;$('#wheelVisual').style.transform=`rotate(${wheelRotation}deg)`;setTimeout(()=>{wheelSpinning=false;if($('#spinWheel')){$('#spinWheel').disabled=false;$('#wheelResult').textContent=celebrations[target];$('#wheelResult').classList.add('celebrate')}},1600)}
+let timerState={remaining:180,duration:180,end:0,running:false,complete:false,awarded:false,ids:[]};
+let timerInterval;
+function tickTimer(){if(!timerState.running)return;timerState.remaining=Math.max(0,Math.ceil((timerState.end-Date.now())/1000));if(timerState.remaining===0){timerState.running=false;timerState.complete=true;clearInterval(timerInterval);toast('專注時間到了！邀請孩子回顧剛剛的努力。')}paintTimer()}
+function paintTimer(){const display=$('#timerDisplay');if(!display)return;display.textContent=`${String(Math.floor(timerState.remaining/60)).padStart(2,'0')}:${String(timerState.remaining%60).padStart(2,'0')}`;$('#timerStatus').textContent=timerState.complete?'時間到了！一起回顧剛剛的努力。':timerState.running?'照自己的步調，練習眼前的小任務。':'先約定一個可完成的小任務。';$('#timerStart').textContent=timerState.running?'暫停':timerState.remaining<timerState.duration?'繼續':'開始';$('#timerStart').disabled=timerState.complete;$('#timerMinutes').disabled=timerState.running||timerState.complete;$('#timerAward').disabled=!timerState.complete||timerState.awarded||!timerState.ids.some(id=>state.students.some(s=>s.id===id));$('#timerRing').style.setProperty('--progress',`${(1-timerState.remaining/timerState.duration)*360}deg`)}
+function timer(){dialog('⏳ 專注沙漏',`<p class="muted">設定 1–30 分鐘。結束後由老師確認具體努力再加分，可依孩子需求提前暫停。</p><label class="field">練習時間（分鐘）<input id="timerMinutes" type="number" min="1" max="30" value="${Math.round(timerState.duration/60)}"></label><div id="timerRing" class="timer-ring"><div id="timerDisplay"></div></div><p id="timerStatus" class="timer-status"></p><div class="dialog-actions"><button class="primary" id="timerStart">開始</button><button class="outline" id="timerReset">重設</button><button class="outline" id="timerAward">老師確認努力 ＋2</button></div><p class="muted" style="margin-top:16px">加分對象會在開始時固定；關閉視窗仍繼續計時，重新整理網頁則會重設。</p>`);paintTimer();$('#timerStart').onclick=()=>{if(timerState.running){tickTimer();timerState.running=false;clearInterval(timerInterval)}else{if(timerState.remaining===timerState.duration){const minutes=Number($('#timerMinutes').value);if(!Number.isInteger(minutes)||minutes<1||minutes>30)return toast('時間請設定為 1–30 分鐘');timerState.duration=timerState.remaining=minutes*60;timerState.ids=[...selected]}timerState.end=Date.now()+timerState.remaining*1000;timerState.running=true;clearInterval(timerInterval);timerInterval=setInterval(tickTimer,250)}paintTimer()};$('#timerReset').onclick=()=>{clearInterval(timerInterval);timerState={remaining:180,duration:180,end:0,running:false,complete:false,awarded:false,ids:[]};timer()};$('#timerAward').onclick=()=>{if(!timerState.complete||timerState.awarded)return;if(!confirm('確認孩子在這段時間有完成約定的努力，並加 2 點？'))return;const previous=selected;selected=new Set(timerState.ids.filter(id=>state.students.some(s=>s.id===id)));if(award('專注沙漏：完成約定練習',2))timerState.awarded=true;selected=previous;render();paintTimer()}}
+function initUtilities(){document.querySelectorAll('[data-utility]').forEach(b=>b.onclick=()=>{const key=b.dataset.utility;if(key==='bingo')bingo();if(key==='wheel')wheel();if(key==='timer')timer();if(key==='mission'){if(!selected.size)return toast('先選擇一位或多位孩子，再抽任務卡');challenge()}});$('#dialogBody').addEventListener('click',e=>{const b=e.target.closest('[data-bingo]');if(b)stampBingo(Number(b.dataset.bingo))})}
+window.addEventListener('storage',e=>{if(e.key!==KEY)return;try{state=e.newValue?validate(JSON.parse(e.newValue)):defaults();selected.clear();render();if($('#dialog').open)close();toast('已更新另一個分頁的紀錄')}catch{toast('另一分頁的資料無法讀取，請確認備份')}});
+initUtilities();render();checkWelcome();if(loadError)setTimeout(()=>toast('原有資料無法讀取；請匯入有效備份後再使用。'),300);
+
+
+
+// Bottom nav bar actions
+document.querySelectorAll('[data-bn]').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('[data-bn]').forEach(b => b.classList.remove('bn-active'));
+    btn.classList.add('bn-active');
+    const key = btn.dataset.bn;
+    if(key === 'home') { /* already on home */ }
+    if(key === 'history') history();
+    if(key === 'roster') roster();
+    if(key === 'guide') guide();
+  };
+});
+
+// Welcome screen
+function dismissWelcome() {
+  document.getElementById('welcomeScreen').style.display = 'none';
+  try { localStorage.setItem('hope-growth-welcomed', '1'); } catch(e) {}
+}
+function checkWelcome() {
+  let welcomed = false;
+  try { welcomed = localStorage.getItem('hope-growth-welcomed') === '1'; } catch(e) {}
+  // Also consider if there are already students = not first time
+  if (!welcomed && state.students.length === 0) {
+    document.getElementById('welcomeScreen').style.display = 'flex';
+  } else {
+    document.getElementById('welcomeScreen').style.display = 'none';
+  }
+}
+
+</script>
+<nav class="bottom-nav" id="bottomNav" aria-label="底部導覽">
+  <button class="bn-active" data-bn="home"><span class="bn-icon">🏠</span>工具箱</button>
+  <button data-bn="history"><span class="bn-icon">◷</span>加分紀錄</button>
+  <button data-bn="roster"><span class="bn-icon">♧</span>孩子名單</button>
+  <button data-bn="guide"><span class="bn-icon">📖</span>使用指南</button>
+</nav>
+
+<div id="welcomeScreen" style="position:fixed;inset:0;z-index:10000;background:rgba(42,32,24,0.55);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff9f4;border-radius:22px;max-width:480px;width:100%;padding:32px 28px;box-shadow:0 20px 80px rgba(42,32,24,0.25);font-family:'Noto Sans TC',sans-serif">
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:52px;margin-bottom:12px">🏡</div>
+      <h2 style="margin:0 0 8px;font-family:'Noto Serif TC',serif;font-size:22px;color:#2a2018">歡迎來到希望成長屋</h2>
+      <p style="margin:0;color:#9a8878;font-size:13px;line-height:1.7">讓每一份努力都被看見，陪孩子一點一滴成長。</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:28px">
+      <div style="display:flex;align-items:flex-start;gap:14px;background:#faf6f0;border-radius:14px;padding:16px">
+        <div style="background:#d4956a;color:white;border-radius:50%;width:28px;height:28px;display:grid;place-items:center;font-size:13px;font-weight:700;flex-shrink:0">1</div>
+        <div>
+          <b style="display:block;color:#2a2018;font-size:14px;margin-bottom:4px">建立孩子名單</b>
+          <span style="color:#9a8878;font-size:12px;line-height:1.6">輸入孩子的暱稱（如「小晴」「阿宇」），避免使用全名，最多 60 位。</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;background:#faf6f0;border-radius:14px;padding:16px">
+        <div style="background:#d4956a;color:white;border-radius:50%;width:28px;height:28px;display:grid;place-items:center;font-size:13px;font-weight:700;flex-shrink:0">2</div>
+        <div>
+          <b style="display:block;color:#2a2018;font-size:14px;margin-bottom:4px">選一種成長玩法</b>
+          <span style="color:#9a8878;font-size:12px;line-height:1.6">從 8 種計分主題中選一個，每種都有獨特的成長視覺。</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;background:#faf6f0;border-radius:14px;padding:16px">
+        <div style="background:#d4956a;color:white;border-radius:50%;width:28px;height:28px;display:grid;place-items:center;font-size:13px;font-weight:700;flex-shrink:0">3</div>
+        <div>
+          <b style="display:block;color:#2a2018;font-size:14px;margin-bottom:4px">點孩子，再加分</b>
+          <span style="color:#9a8878;font-size:12px;line-height:1.6">點選孩子，選擇具體的努力原因，讓鼓勵更有意義。</span>
+        </div>
+      </div>
+    </div>
+    <button onclick="dismissWelcome()" style="width:100%;border:0;background:linear-gradient(100deg,#d4956a,#c07850);color:white;border-radius:12px;padding:14px;font-size:15px;font-family:'Noto Sans TC',sans-serif;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(212,149,106,0.35)">開始使用 →</button>
+    <p style="text-align:center;margin:12px 0 0;font-size:11px;color:#c0a890">資料保存在此瀏覽器，建議定期匯出備份。</p>
+  </div>
+</div>
+</body></html>
