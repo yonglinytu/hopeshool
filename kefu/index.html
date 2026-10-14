@@ -575,6 +575,58 @@ table.flow { border-collapse: collapse; width: 100%; min-width: 760px; table-lay
 
 [hidden] { display: none !important; }
 
+/* ───────── 列印輸出：教學流程（A4 橫印）與孩子任務單（A4 一張兩位） ───────── */
+#yl-print { position: fixed; left: -10000px; top: 0; }
+.pt, .ts-page { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+@media print {
+  body.yl-printing > *:not(#yl-print) { display: none !important; }
+  body.yl-printing { background: #fff; }
+  body.yl-printing #yl-print { position: static; left: auto; }
+}
+.pt { width: 281mm; font-size: 10px; color: #111; background: #fff; }
+.pt-head h1 { font-size: 16px; margin: 0 0 2px; }
+.pt-head div { font-size: 11px; color: #444; margin-bottom: 6px; }
+.pt-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.pt-table th, .pt-table td { border: 1px solid #999; padding: 3px 4px; vertical-align: top; text-align: left; word-break: break-word; }
+.pt-table tr { break-inside: avoid; }
+.pt-table thead th { background: #eef2f7; font-size: 11px; }
+.pt-table thead th span { display: block; font-weight: 400; color: #555; font-size: 9px; }
+.pt-table tbody th { background: #f6f6f6; font-weight: 700; }
+.pt-table tbody th div { font-weight: 400; color: #555; font-size: 9px; }
+.pt-whole td { background: #eef6ee; }
+.pt-prog td { background: #fafafa; font-weight: 600; }
+.pt-backup th, .pt-backup td { background: #fdf8ec; }
+.pt-tag { font-size: 9px; padding: 0 3px; border: 1px solid #bbb; border-radius: 3px; }
+.pt-detail { color: #555; font-size: 9px; margin-top: 2px; }
+
+.ts-page { width: 210mm; height: 296mm; background: #fff; color: #111; overflow: hidden; break-after: page; }
+.ts-page:last-child { break-after: auto; }
+.ts-sheet { height: 148mm; box-sizing: border-box; padding: 9mm 13mm 7mm; display: flex; flex-direction: column; overflow: hidden; font-size: 16px; line-height: 1.45; }
+.ts-sheet + .ts-sheet { border-top: 1px dashed #999; }
+.ts-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 6mm; border-bottom: 2px solid #222; padding-bottom: 2mm; margin-bottom: 2.5mm; }
+.ts-title { font-size: .85em; color: #555; letter-spacing: 2px; }
+.ts-name { font-size: 1.7em; font-weight: 800; line-height: 1.2; }
+.ts-meta { text-align: right; font-size: .9em; color: #333; }
+.ts-list { list-style: none; margin: 0; padding: 0; flex: 1; }
+.ts-task { display: flex; align-items: flex-start; gap: 2.5mm; padding: 1.5mm 0; border-bottom: 1px solid #e2e2e2; }
+.ts-box { flex: none; display: inline-block; width: 1em; height: 1em; border: 1.5px solid #222; border-radius: 1mm; margin-top: .2em; }
+.ts-no { font-weight: 800; min-width: 1.1em; }
+.ts-tag { flex: none; font-size: .8em; font-weight: 700; border: 1px solid #888; border-radius: 1mm; padding: 0 1.5mm; margin-top: .15em; }
+.ts-text { flex: 1; }
+.ts-text small { display: block; color: #555; font-size: .85em; }
+.ts-light { color: #8a8a8a; font-size: .82em; padding: .6mm 0 .6mm 6.7mm; }
+.ts-extra { margin-top: 2mm; padding: 1.8mm 3mm; border: 1px solid #c8c8c8; border-radius: 2mm; display: flex; flex-wrap: wrap; align-items: center; gap: 1mm 5mm; font-size: .92em; }
+.ts-extra span { display: inline-flex; align-items: center; gap: 1.5mm; }
+.ts-extra .ts-box { margin-top: 0; }
+.ts-exit { margin-top: 2mm; padding-top: 2mm; border-top: 2px solid #222; display: flex; flex-wrap: wrap; align-items: center; gap: 2mm 6mm; }
+.ts-blank { display: inline-block; width: 12mm; height: 1em; border-bottom: 1.5px solid #222; vertical-align: bottom; }
+.ts-mood { display: inline-flex; align-items: center; gap: 2.5mm; font-size: .85em; }
+.ts-face { display: inline-flex; flex-direction: column; align-items: center; line-height: 1.1; }
+.ts-face small { font-size: .72em; color: #555; }
+.ts-preview-wrap { max-height: 60vh; overflow: auto; background: var(--surface-3); border-radius: 10px; padding: 12px; }
+.ts-preview { zoom: .55; display: flex; flex-direction: column; gap: 8mm; }
+.ts-preview .ts-page { margin: 0 auto; box-shadow: 0 1px 8px rgba(0,0,0,.25); }
+
 </style>
   <script>
     try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
@@ -5922,6 +5974,207 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     }
   };
 
+  // src/js/pages/flowout.js
+  var isBackup = (b) => b.mode === BACKUP_MODE;
+  var hasTask = (t) => !!t && !!(t.type || t.content || t.unit);
+  var tagOf = (t, subj) => {
+    const cat = taskCat(t.type);
+    return cat === "本科" && (!t.type || t.type === "本科" || ["國語", "英語", "數學"].includes(t.type)) ? subj : t.type || "其他";
+  };
+  var bodyOf = (t, subj, unit) => taskText(t, subj, unit).replace(/^【[^】]*】/, "").replace(/^（未填內容）$/, "");
+  function kidPlan(st2, kid) {
+    const subj = subjectOfClass(st2.cls);
+    const main = st2.blocks.filter((b) => !isBackup(b));
+    const units = resolveUnits(main.map((b) => b.mode === "個別" ? b.tasks[kid] : null), st2.progress[kid] || "");
+    const items = [];
+    let n = 0;
+    main.forEach((b, i) => {
+      if (b.mode === "個別") {
+        const t = b.tasks[kid];
+        if (!hasTask(t)) return;
+        n++;
+        items.push({ kind: "task", no: n, block: b, tag: tagOf(t, subj), cat: taskCat(t.type), unit: units[i]?.unit || "", text: bodyOf(t, subj, units[i]?.unit || ""), detail: t.detail || "", status: t.status || "", t });
+      } else items.push({ kind: b.mode === "休息" ? "rest" : "class", block: b, text: b.title, detail: b.content || "" });
+    });
+    const backups = st2.blocks.filter(isBackup).map((b) => b.tasks[kid]?.content || "").filter(Boolean);
+    return { items, tasks: items.filter((x) => x.kind === "task"), backups };
+  }
+  function printHtml(html, { landscape = false, margin = "0" } = {}) {
+    $("#yl-print")?.remove();
+    $("#yl-print-page")?.remove();
+    const root = h(`<div id="yl-print">${html}</div>`);
+    const style = h(`<style id="yl-print-page">@page { size: A4 ${landscape ? "landscape" : "portrait"}; margin: ${margin}; }</style>`);
+    document.head.appendChild(style);
+    document.body.appendChild(root);
+    document.body.classList.add("yl-printing");
+    fitSheets(root);
+    const done = () => {
+      root.remove();
+      style.remove();
+      document.body.classList.remove("yl-printing");
+      removeEventListener("afterprint", done);
+    };
+    addEventListener("afterprint", done);
+    setTimeout(() => window.print(), 60);
+  }
+  function fitSheets(root) {
+    for (const s of $$(".ts-sheet", root)) {
+      let size = 16;
+      s.style.fontSize = size + "px";
+      while (s.scrollHeight > s.clientHeight + 1 && size > 8.5) {
+        size -= 0.5;
+        s.style.fontSize = size + "px";
+      }
+    }
+  }
+  function printFlow(st2) {
+    const c = st2.cls;
+    const subj = subjectOfClass(c);
+    const kids = st2.kids;
+    const wk = weekNo(st2.date);
+    const plans = Object.fromEntries(kids.map((k) => [k.id, kidPlan(st2, k.id)]));
+    const cellOf = (k, b) => {
+      const it = plans[k.id].items.find((x) => x.block === b && x.kind === "task");
+      if (!it) return "";
+      return `<b class="pt-tag">${esc(it.tag)}</b> ${esc(it.text)}${it.detail ? `<div class="pt-detail">${esc(it.detail)}</div>` : ""}`;
+    };
+    const backups = st2.blocks.filter(isBackup);
+    const rows2 = st2.blocks.filter((b) => !isBackup(b)).map((b) => b.mode === "個別" ? `<tr><th>${esc(b.start || "")}–${esc(b.end || "")}<div>${esc(b.title)}</div></th>${kids.map((k) => `<td>${cellOf(k, b)}</td>`).join("")}</tr>` : `<tr class="pt-whole"><th>${esc(b.start || "")}–${esc(b.end || "")}<div>${esc(b.title)}</div></th><td colspan="${kids.length}"><b>${esc(b.title)}</b>${b.content ? `　${esc(b.content)}` : ""}</td></tr>`).join("");
+    const brows = backups.map((b, i) => `<tr class="pt-backup"><th>備用 ${i + 1}<div>${i === 0 ? esc(subj) + "學習任務" : "可選其他類"}</div></th>${kids.map((k) => `<td>${esc(b.tasks[k.id]?.content || "")}</td>`).join("")}</tr>`).join("");
+    const html = `<div class="pt">
+    <div class="pt-head"><h1>${esc(c.name)}　${esc(subj)}　教學流程</h1>
+      <div>${esc(mdw(st2.date))}${wk > 0 ? `・第 ${wk} 週` : ""}・${esc(st2.start)}–${esc(st2.end)}・課輔老師 ${esc(teacherOfClass(c))}${st2.mindful ? `・靜心活動 ${esc(st2.mindful)}` : ""}</div></div>
+    <table class="pt-table"><colgroup><col style="width:24mm">${kids.map(() => "<col>").join("")}</colgroup>
+      <thead><tr><th>時間</th>${kids.map((k) => `<th>${esc(k.name)}${k.grade ? `<span>${esc(k.grade)}年級</span>` : ""}</th>`).join("")}</tr></thead>
+      <tbody><tr class="pt-prog"><th>今日進度</th>${kids.map((k) => `<td>${esc(st2.progress[k.id] || "")}</td>`).join("")}</tr>${rows2}${brows}</tbody></table></div>`;
+    printHtml(html, { landscape: true, margin: "8mm" });
+  }
+  function downloadFlowXlsx(st2) {
+    const X = window.XLSX;
+    if (!X) {
+      toast("Excel 元件沒有載入", "err");
+      return;
+    }
+    const c = st2.cls;
+    const subj = subjectOfClass(c);
+    const kids = st2.kids;
+    const plans = Object.fromEntries(kids.map((k) => [k.id, kidPlan(st2, k.id)]));
+    const main = st2.blocks.filter((b) => !isBackup(b));
+    const backups = st2.blocks.filter(isBackup);
+    const cellText = (it) => it ? `[${it.tag}] ${it.text}${it.detail ? `（${it.detail}）` : ""}` : "";
+    const wb = X.utils.book_new();
+    const info = [["班級", c.name], ["科目", subj], ["日期", mdw(st2.date)], ["時間", `${st2.start}–${st2.end}`], ["課輔老師", teacherOfClass(c)], ["靜心活動", st2.mindful || ""], []];
+    const head = ["時間", "區塊", ...kids.map((k) => k.name)];
+    const body = [["", "今日進度", ...kids.map((k) => st2.progress[k.id] || "")]];
+    const merges = [];
+    for (const b of main) {
+      if (b.mode === "個別") body.push([`${b.start || ""}–${b.end || ""}`, b.title, ...kids.map((k) => cellText(plans[k.id].items.find((x) => x.block === b && x.kind === "task")))]);
+      else {
+        merges.push({ s: { r: info.length + 1 + body.length, c: 2 }, e: { r: info.length + 1 + body.length, c: 1 + kids.length } });
+        body.push([`${b.start || ""}–${b.end || ""}`, b.title, `（${b.mode}）${b.content || ""}`, ...kids.slice(1).map(() => "")]);
+      }
+    }
+    backups.forEach((b, i) => body.push(["", `備用任務 ${i + 1}`, ...kids.map((k) => b.tasks[k.id]?.content || "")]));
+    const ws1 = X.utils.aoa_to_sheet([...info, head, ...body]);
+    ws1["!cols"] = [{ wch: 12 }, { wch: 18 }, ...kids.map(() => ({ wch: 24 }))];
+    if (kids.length > 1) ws1["!merges"] = merges;
+    X.utils.book_append_sheet(wb, ws1, "總表");
+    const dHead = ["孩子", "年級", "順序", "時間", "區塊", "類別", "單元／教材", "內容", "說明", "完成狀況（課後紀錄）"];
+    const dRows = [];
+    for (const k of kids) {
+      const p = plans[k.id];
+      for (const it of p.tasks) dRows.push([k.name, k.grade || "", it.no, `${it.block.start || ""}–${it.block.end || ""}`, it.block.title, it.tag, it.cat === "本科" ? it.unit : "", it.cat === "本科" ? it.t.content || "" : it.text, it.detail, it.status]);
+      p.backups.forEach((v, i) => dRows.push([k.name, k.grade || "", `備用 ${i + 1}`, "", "備用任務", "備用", "", v, "", ""]));
+    }
+    const ws2 = X.utils.aoa_to_sheet([dHead, ...dRows]);
+    ws2["!cols"] = [10, 6, 8, 12, 14, 8, 18, 28, 26, 14].map((w) => ({ wch: w }));
+    X.utils.book_append_sheet(wb, ws2, "明細");
+    const used = /* @__PURE__ */ new Set(["總表", "明細"]);
+    for (const k of kids) {
+      const p = plans[k.id];
+      let name = String(k.name || k.id).replace(/[\\/?*[\]:]/g, "").slice(0, 28) || k.id;
+      while (used.has(name)) name += "_";
+      used.add(name);
+      const aoa = [
+        ["姓名", k.name],
+        ["日期", mdw(st2.date)],
+        ["班級・科目", `${c.name}・${subj}`],
+        ["今日進度", st2.progress[k.id] || ""],
+        [],
+        ["順序", "類別", "單元／教材", "內容", "說明"],
+        ...p.tasks.map((it) => [it.no, it.tag, it.cat === "本科" ? it.unit : "", it.cat === "本科" ? it.t.content || "" : it.text, it.detail]),
+        [],
+        ["提早完成可以做"],
+        ...p.backups.map((v, i) => [`備用 ${i + 1}`, v])
+      ];
+      const ws = X.utils.aoa_to_sheet(aoa);
+      ws["!cols"] = [{ wch: 12 }, { wch: 10 }, { wch: 18 }, { wch: 28 }, { wch: 26 }];
+      X.utils.book_append_sheet(wb, ws, name);
+    }
+    X.writeFile(wb, `教學流程_${c.name}_${subj}_${st2.date}.xlsx`);
+  }
+  var FACES = [["很開心", "M7 13.5 Q12 18.5 17 13.5"], ["開心", "M8 14 Q12 16.5 16 14"], ["普通", "M8 15 L16 15"], ["有點難過", "M8 16 Q12 14 16 16"], ["難過", "M7 17 Q12 12.5 17 17"]];
+  var face = ([label, mouth]) => `<span class="ts-face"><svg viewBox="0 0 24 24" width="1.9em" height="1.9em" aria-hidden="true"><circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <circle cx="8.6" cy="9.5" r="1.2" fill="currentColor"/><circle cx="15.4" cy="9.5" r="1.2" fill="currentColor"/><path d="${mouth}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><small>${label}</small></span>`;
+  function sheetHtml(st2, k) {
+    const c = st2.cls;
+    const subj = subjectOfClass(c);
+    const p = kidPlan(st2, k.id);
+    const box = '<span class="ts-box"></span>';
+    const list = p.items.map((it) => it.kind === "task" ? `<li class="ts-task">${box}<span class="ts-no">${it.no}</span><span class="ts-tag">${esc(it.tag)}</span><span class="ts-text">${esc(it.text || "（老師會再說明）")}${it.detail ? `<small>${esc(it.detail)}</small>` : ""}</span></li>` : `<li class="ts-light">${it.kind === "rest" ? "下課" : "全班"}・${esc(it.text)}${it.kind === "class" && it.detail ? `：${esc(it.detail)}` : ""}</li>`).join("");
+    return `<section class="ts-sheet">
+    <header class="ts-head"><div><div class="ts-title">我的任務單</div><div class="ts-name">${esc(k.name)}</div></div>
+      <div class="ts-meta"><div>${esc(mdw(st2.date))}</div><div>${esc(c.name)}・${esc(subj)}</div>${st2.progress[k.id] ? `<div>今日進度：<b>${esc(st2.progress[k.id])}</b></div>` : ""}</div></header>
+    <ol class="ts-list">${list || '<li class="ts-light">今天的任務老師會再告訴你</li>'}</ol>
+    ${p.backups.length ? `<div class="ts-extra"><b>提早完成可以做</b>${p.backups.map((v, i) => `<span>${box}${i + 1}. ${esc(v)}</span>`).join("")}</div>` : ""}
+    <footer class="ts-exit"><b>出場券</b><span>今天完成了 <span class="ts-blank"></span> 項</span><span class="ts-mood">今天的心情（圈一個）${FACES.map(face).join("")}</span></footer>
+  </section>`;
+  }
+  function sheetsHtml(st2, kids) {
+    const pages = [];
+    for (let i = 0; i < kids.length; i += 2) pages.push(`<div class="ts-page">${sheetHtml(st2, kids[i])}${kids[i + 1] ? sheetHtml(st2, kids[i + 1]) : '<section class="ts-sheet ts-empty"></section>'}</div>`);
+    return pages.join("");
+  }
+  function openTaskSheets(st2) {
+    const kids = st2.kids;
+    if (!kids.length) {
+      toast("這個班還沒有孩子名單", "err");
+      return;
+    }
+    const noTask = kids.filter((k) => !kidPlan(st2, k.id).tasks.length).map((k) => k.name);
+    const body = h(`<div class="stack" style="gap:12px">
+    <div class="small muted">任務單的內容來自這堂課的教學流程（含還沒儲存的修改）。A4 直印，一張印兩位；按「列印／另存 PDF」後，在列印視窗的「目的地」選「另存為 PDF」就能存檔。</div>
+    ${noTask.length ? `<div class="callout warn small">還沒排個別任務：${esc(noTask.join("、"))}</div>` : ""}
+    <div class="row wrap" style="gap:6px 14px"><label class="row small" style="gap:6px"><input type="checkbox" id="ts-all" checked><b>全選</b></label>
+      ${kids.map((k) => `<label class="row small" style="gap:6px"><input type="checkbox" class="ts-pick" value="${esc(k.id)}" checked>${esc(k.name)}</label>`).join("")}</div>
+    <div class="ts-preview-wrap"><div class="ts-preview" id="ts-preview"></div></div></div>`);
+    const picked = () => $$(".ts-pick", body).filter((x) => x.checked).map((x) => kids.find((k) => k.id === x.value));
+    const draw = () => {
+      const list = picked();
+      $("#ts-preview", body).innerHTML = list.length ? sheetsHtml(st2, list) : '<div class="empty small">請勾選要印的孩子</div>';
+      requestAnimationFrame(() => fitSheets($("#ts-preview", body)));
+    };
+    body.addEventListener("change", (e) => {
+      if (e.target.id === "ts-all") $$(".ts-pick", body).forEach((x) => {
+        x.checked = e.target.checked;
+      });
+      else $("#ts-all", body).checked = $$(".ts-pick", body).every((x) => x.checked);
+      draw();
+    });
+    const done = openModal({ title: "孩子任務單", body, buttons: [{ text: "關閉", value: null }, { text: "列印／另存 PDF", value: () => picked(), primary: true }] });
+    const m = body.closest(".modal");
+    if (m) m.style.width = "min(900px, calc(100vw - 32px))";
+    draw();
+    done.then((list) => {
+      if (!list) return;
+      if (!list.length) {
+        toast("沒有勾選孩子", "err");
+        return;
+      }
+      printHtml(`<div class="ts-print">${sheetsHtml(st2, list)}</div>`);
+    });
+  }
+
   // src/js/pages/flow.js
   var st = null;
   var ctxRef = null;
@@ -5943,10 +6196,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   var TASK_MIN_KEY = "flow:taskMinutes";
   var taskMin = () => [10, 15, 20].includes(Number(LS.get(TASK_MIN_KEY))) ? Number(LS.get(TASK_MIN_KEY)) : 15;
   var templateUrl = (start, end) => `/api/flow/template?start=${start}&end=${end}&task=${taskMin()}`;
-  var isBackup = (b) => b.mode === BACKUP_MODE;
+  var isBackup2 = (b) => b.mode === BACKUP_MODE;
   function withBackups(blocks) {
-    const main = blocks.filter((b) => !isBackup(b));
-    const old = blocks.filter(isBackup);
+    const main = blocks.filter((b) => !isBackup2(b));
+    const old = blocks.filter(isBackup2);
     const out = [...main];
     for (let i = 1; i <= BACKUP_COUNT; i++) {
       const b = old.find((x) => x.title === `備用任務${i}`) || old[i - 1];
@@ -6050,11 +6303,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     const kids = st.kids;
     const n = kids.length || 1;
     const prevProg = Object.fromEntries(kids.map((k) => [k.id, lastProgress(k.id, st.cid, st.date)]));
-    const firstBackup = st.blocks.findIndex(isBackup);
+    const firstBackup = st.blocks.findIndex(isBackup2);
     const subj = subjectOfClass(st.cls);
     const units = Object.fromEntries(kids.map((k) => [k.id, resolveUnits(st.blocks.map((b) => b.mode === "個別" ? b.tasks[k.id] : null), st.progress[k.id] || "")]));
     const rows2 = st.blocks.map((b, i) => {
-      if (isBackup(b)) {
+      if (isBackup2(b)) {
         const no = backupNo(b);
         const head = i === firstBackup ? `<tr class="backup-head"><td colspan="${n + 1}"><b>備用任務</b>　孩子提早完成時使用；第 1 項須為${esc(subjectOfClass(st.cls))}學習任務並優先執行，第 2、3 項可選其他類，執行方式請與社工討論。</td></tr>` : "";
         return `${head}<tr class="backup"><td class="time nolink"><b>備用 ${no}</b><span>${no === 1 ? esc(subjectOfClass(st.cls)) + "學習任務" : "可選其他類"}</span></td>${kids.map((k) => {
@@ -6095,12 +6348,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     const a = ctx.actions(`<select class="select" id="f-class">${pool.map((x) => `<option value="${x.id}" ${x.id === st.cid ? "selected" : ""}>${esc(x.name)}　${esc(subjectOfClass(x))}</option>`).join("")}</select>
     <select class="select" id="f-date">${(dates.includes(st.date) ? dates : [...dates, st.date].sort()).map((d) => `<option value="${d}" ${d === st.date ? "selected" : ""}>${mdw(d)}　${esc(subjectOfClass(c))}</option>`).join("")}</select>
     <button class="btn" id="f-prev" ${idx <= 0 ? "disabled" : ""}>‹ 前一堂</button><button class="btn" id="f-next" ${idx < 0 || idx >= dates.length - 1 ? "disabled" : ""}>後一堂 ›</button>
-    <button class="btn ghost" id="f-print" title="列印">${icon("print")}</button>`);
+    <button class="btn" id="f-sheets" title="每位孩子一張任務單，A4 一張印兩位">${icon("file", "sm")}孩子任務單</button>
+    <button class="btn" id="f-xlsx" title="下載這堂課的 Excel：總表、明細、每位孩子一張">${icon("download", "sm")}Excel</button>
+    <button class="btn" id="f-print" title="A4 橫印，可在列印視窗另存成 PDF">${icon("print", "sm")}列印／PDF</button>`);
     $("#f-class", a).onchange = (e) => leave(() => ctx.go(`#/flow?class=${e.target.value}`));
     $("#f-date", a).onchange = (e) => leave(() => ctx.go(`#/flow?class=${st.cid}&date=${e.target.value}`));
     $("#f-prev", a).onclick = () => leave(() => ctx.go(`#/flow?class=${st.cid}&date=${dates[idx - 1]}`));
     $("#f-next", a).onclick = () => leave(() => ctx.go(`#/flow?class=${st.cid}&date=${dates[idx + 1]}`));
-    $("#f-print", a).onclick = () => print();
+    $("#f-print", a).onclick = () => printFlow(st);
+    $("#f-xlsx", a).onclick = () => downloadFlowXlsx(st);
+    $("#f-sheets", a).onclick = () => openTaskSheets(st);
     ctx.title("教學流程", `${esc(c.name)}・${mdw(st.date)}${st.sessionId ? "" : "・尚未建立"}`);
     ctx.el.innerHTML = `
     ${st.restored ? `<div class="callout accent mb8 no-print">${icon("info", "sm")} 已還原 ${esc(st.restored)} 未儲存的草稿。<button class="btn sm ghost" id="f-discard">捨棄草稿</button></div>` : ""}
@@ -6148,20 +6405,20 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       renderAll();
     });
     $("#f-add", el).onclick = () => {
-      const main = st.blocks.filter((b) => !isBackup(b));
+      const main = st.blocks.filter((b) => !isBackup2(b));
       const last = main[main.length - 1];
       const s = last?.end || st.start;
       main.push({ id: null, title: `任務${main.filter((b) => b.mode === "個別").length + 1}`, start: s, end: t2(Math.min(minutes(s) + taskMin(), 24 * 60 - 1)), mode: "個別", content: "", tasks: {} });
-      st.blocks = withBackups([...main, ...st.blocks.filter(isBackup)]);
+      st.blocks = withBackups([...main, ...st.blocks.filter(isBackup2)]);
       touch();
       rerenderGrid();
     };
     const regen = async () => {
       const res = await getJ(templateUrl(st.start, st.end));
-      const old = new Map(st.blocks.filter((b) => !isBackup(b)).map((b) => [b.title, b]));
+      const old = new Map(st.blocks.filter((b) => !isBackup2(b)).map((b) => [b.title, b]));
       st.blocks = withBackups([
         ...res.blocks.map((b) => ({ ...b, id: old.get(b.title)?.id || null, content: old.get(b.title)?.content || "", tasks: old.get(b.title)?.tasks || {} })),
-        ...st.blocks.filter(isBackup)
+        ...st.blocks.filter(isBackup2)
       ]);
       touch();
       rerenderGrid();
@@ -6173,7 +6430,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     $("#f-taskmin", el).onchange = async (e) => {
       const prev = taskMin();
       LS.set(TASK_MIN_KEY, Number(e.target.value));
-      const hasTasks = st.blocks.some((b) => !isBackup(b) && Object.keys(b.tasks || {}).length);
+      const hasTasks = st.blocks.some((b) => !isBackup2(b) && Object.keys(b.tasks || {}).length);
       if (hasTasks && !await confirmBox(`改成每個任務 ${e.target.value} 分鐘，並依時間重新切分任務？同名區塊（例如「任務2」）的孩子任務會保留。`, { okText: "重排" })) {
         LS.set(TASK_MIN_KEY, prev);
         e.target.value = String(prev);
@@ -6205,7 +6462,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     $("#f-save", el).onclick = save;
     $("#f-grid", el).addEventListener("click", (e) => {
       const cell2 = e.target.closest("td.cell");
-      if (cell2) return isBackup(st.blocks[+cell2.dataset.b]) ? editBackup(cell2, +cell2.dataset.b, cell2.dataset.k) : editTask(cell2, +cell2.dataset.b, cell2.dataset.k);
+      if (cell2) return isBackup2(st.blocks[+cell2.dataset.b]) ? editBackup(cell2, +cell2.dataset.b, cell2.dataset.k) : editTask(cell2, +cell2.dataset.b, cell2.dataset.k);
       const blk = e.target.closest("[data-block]");
       if (blk) return editBlock(blk, +blk.dataset.block);
     });
@@ -6378,7 +6635,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       }
       if (x === "allrows") {
         put(kid, read());
-        for (const bb of st.blocks.filter(isBackup)) {
+        for (const bb of st.blocks.filter(isBackup2)) {
           const v = bb.tasks[kid]?.content || "";
           for (const k of st.kids) {
             if (v) bb.tasks[k.id] = { type: "", content: v, status: "" };
