@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f6efe4">
+<title>希望積木島｜50格拼圖冒險</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#213b38;--green:#26715d;--paper:#f6efe4;--paper2:#fffdf8;
+  --gold:#d5ab55;--muted:#665849;--light:#9a8874;
+  --shadow:0 8px 32px rgba(66,45,28,.12);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Noto Sans TC',system-ui,sans-serif}
+button,a{-webkit-tap-highlight-color:transparent}
+button{font:inherit;cursor:pointer;border:1px solid #d4cbbf;border-radius:12px;padding:10px 15px;background:var(--paper2);color:var(--ink);font-weight:600;transition:transform .18s,border-color .18s,background .18s}
+button:hover{border-color:var(--green);transform:translateY(-1px)}
+button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+button:disabled{cursor:not-allowed;opacity:.4;transform:none}
+
+.back-btn{
+  position:fixed;top:16px;left:16px;z-index:9999;
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 14px;border-radius:999px;
+  background:rgba(255,253,248,.88);border:1px solid rgba(84,62,42,.16);
+  color:var(--ink);font-size:.82rem;font-weight:600;
+  text-decoration:none;
+  box-shadow:0 4px 14px rgba(66,45,28,.10);
+  backdrop-filter:blur(8px);
+  transition:background .18s,transform .18s;
+}
+.back-btn:hover{background:#fffdf8;transform:translateY(-1px)}
+
+header{max-width:1220px;margin:auto;padding:26px 28px 26px 130px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(84,62,42,.12)}
+.brand{text-decoration:none;color:var(--ink);font-weight:900;font-size:20px;font-family:'Noto Serif TC',serif}
+.brand small{font-size:10px;letter-spacing:2px;margin-left:12px;font-family:'Noto Sans TC',sans-serif;color:var(--muted)}
+main{max-width:1220px;margin:auto;padding:30px 28px}
+.intro{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;gap:24px}
+.eyebrow{font-size:12px;letter-spacing:2px;font-weight:800;color:#608078}
+h1{font-size:42px;line-height:1.3;margin:10px 0;letter-spacing:-1px;font-family:'Noto Serif TC',serif}
+h1 span{color:#c07850}
+.intro p{color:var(--muted);font-size:14px;line-height:1.8}
+.wallet{display:flex;background:var(--paper2);border:1px solid rgba(84,62,42,.12);border-radius:22px;padding:20px 10px;box-shadow:var(--shadow)}
+.wallet>div{min-width:110px;text-align:center;font-size:20px;padding:0 16px;border-right:1px solid rgba(84,62,42,.10)}
+.wallet>div:last-child{border:0}
+.wallet strong{font-size:26px}
+.wallet span{display:block;font-size:12px;color:var(--muted);margin-top:6px}
+nav{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:22px}
+nav button{padding:14px 8px;border-radius:16px;background:rgba(255,253,248,.7);text-align:left}
+nav button.active{background:var(--green);color:white;border-color:var(--green)}
+nav small{display:block;margin-top:4px;opacity:.75}
+.workspace{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(290px,1fr);gap:22px}
+.game,.trayPanel,.mapPanel{background:var(--paper2);border:1px solid rgba(84,62,42,.11);border-radius:24px;padding:24px;box-shadow:var(--shadow)}
+.game{align-self:start}
+.gamehead,.sectionTitle{display:flex;justify-content:space-between;align-items:center}
+h2{font-size:20px;margin:6px 0 18px;font-family:'Noto Serif TC',serif}
+.badge{background:#f3edda;color:#8c6b28;border-radius:30px;padding:7px 13px;font-size:12px}
+#board{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;padding:10px;border-radius:17px;background:#ddd8cc;box-shadow:inset 0 2px 6px #b8b09a;touch-action:manipulation}
+.cell{aspect-ratio:1;border:0;border-radius:7px;padding:0;background:#f0ebe2;min-width:0;box-shadow:inset 0 -3px 0 #ccc6b8;position:relative;font-size:11px}
+.cell.piece{background:var(--c);box-shadow:inset 0 -4px 0 #0002,inset 0 2px 0 #fff7}
+.cell.ghost{outline:2px dashed #26715d;outline-offset:-3px;opacity:.65}
+.cell:hover{filter:brightness(1.08);transform:none}
+.cell span{color:#fff;text-shadow:0 1px 2px #3337}
+#message{min-height:52px;padding:12px 0;font-size:13px;color:#53746c;line-height:1.7}
+.actions,.hintline{display:flex;gap:8px;flex-wrap:wrap}
+.actions button{flex:1;padding:10px 6px;font-size:13px}
+.hintline{margin-top:12px}
+.primary{background:var(--green);color:white;border-color:var(--green)}
+.selection{display:flex;align-items:center;justify-content:space-between;background:rgba(246,239,228,.6);border-radius:14px;padding:12px 16px;margin-top:16px;font-size:13px;min-height:96px;border:1px solid rgba(84,62,42,.08)}
+.muted{font-size:12px;line-height:1.85;color:var(--muted)}
+.sectionTitle h2{margin:0}
+.sectionTitle span{font-size:12px;color:var(--muted)}
+#tray{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin:16px 0}
+.tile{padding:9px 4px;min-height:88px;display:flex;align-items:center;flex-direction:column;gap:8px;border:2px solid rgba(84,62,42,.12);border-radius:12px;background:var(--paper2)}
+.tile.selected{border-color:var(--green);background:#edf5ed}
+.tile.placed{opacity:.5}
+.tile small{font-size:10px}
+.mini{display:grid;gap:2px;margin:auto}
+.mini i{width:11px;height:11px;border-radius:3px}
+.mini i.on{background:var(--c);box-shadow:inset 0 -2px 0 #0002;position:relative}
+.mini i.anchor:after{content:'';position:absolute;width:4px;height:4px;border-radius:50%;background:white;top:2px;left:2px}
+#preview .mini i{width:18px;height:18px}
+.mapPanel{margin-top:16px}
+#levels{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:16px}
+#levels button{padding:10px 0;font-size:12px}
+#levels .current{border:2px solid var(--green)}
+#levels .done{background:#e4f1df}
+details{margin-top:24px;padding:18px;border:1px solid rgba(84,62,42,.12);border-radius:16px;font-size:13px;line-height:1.9;background:var(--paper2)}
+summary{cursor:pointer;font-weight:600;font-family:'Noto Serif TC',serif}
+footer{font-size:12px;color:var(--light);padding:26px 0;display:flex;justify-content:space-between;border-top:1px solid rgba(84,62,42,.10);margin-top:10px}
+dialog{border:0;border-radius:26px;padding:35px;max-width:440px;width:90%;text-align:center;color:var(--ink);box-shadow:0 20px 80px rgba(33,59,56,.22);background:var(--paper2)}
+dialog::backdrop{background:rgba(33,59,56,.45);backdrop-filter:blur(4px)}
+dialog p{line-height:1.9;color:var(--muted)}
+.celebrate{font-size:70px;color:var(--gold)}
+dialog h2{font-size:26px;font-family:'Noto Serif TC',serif}
+dialog button{margin:5px}
+.sel-quote{margin:14px 0 0;padding:12px 16px;background:rgba(213,171,85,.12);border-left:3px solid var(--gold);border-radius:0 10px 10px 0;font-size:13px;color:#6f5b3d;line-height:1.75;text-align:left;font-family:'Noto Serif TC',serif}
+
+/* Welcome overlay */
+#welcome{
+  position:fixed;inset:0;z-index:10000;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(33,59,56,.55);backdrop-filter:blur(6px);
+}
+.welcome-card{
+  background:var(--paper2);border-radius:28px;padding:40px 36px;
+  max-width:420px;width:90%;text-align:center;
+  box-shadow:0 24px 80px rgba(33,59,56,.28);
+  border:1px solid rgba(255,255,255,.72);
+}
+.welcome-card .w-icon{font-size:52px;margin-bottom:6px}
+.welcome-card h2{font-family:'Noto Serif TC',serif;font-size:1.65rem;color:var(--ink);margin:8px 0 6px}
+.welcome-card .w-sub{color:var(--muted);font-size:.88rem;margin-bottom:22px;line-height:1.7}
+.welcome-steps{display:grid;gap:10px;text-align:left;margin-bottom:26px}
+.welcome-steps .step{display:flex;align-items:flex-start;gap:12px;background:rgba(246,239,228,.6);border-radius:12px;padding:11px 14px}
+.welcome-steps .step-num{width:26px;height:26px;border-radius:50%;background:var(--green);color:white;font-size:.8rem;font-weight:700;display:grid;place-items:center;flex-shrink:0;margin-top:1px}
+.welcome-steps .step p{margin:0;font-size:.84rem;line-height:1.65;color:var(--muted)}
+.welcome-steps .step p strong{color:var(--ink)}
+.welcome-start{
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--green),#4a9b7a);
+  color:white;border:none;border-radius:999px;
+  padding:13px 28px;font-size:1rem;font-weight:700;
+  cursor:pointer;box-shadow:0 8px 22px rgba(38,113,93,.28);
+  transition:transform .18s,box-shadow .18s;
+}
+.welcome-start:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(38,113,93,.34)}
+
+@media(max-width:850px){
+  .workspace{grid-template-columns:1fr}
+  .intro{align-items:flex-start}
+  .wallet>div{min-width:72px;padding:0 8px}
+  .wallet{padding:18px 6px}
+  .wallet strong{font-size:21px}
+  h1{font-size:33px}
+  #tray{grid-template-columns:repeat(5,1fr)}
+  .mini i{width:15px;height:15px}
+}
+@media(max-width:540px){
+  header{padding:18px 18px 18px 110px}
+  .brand small{display:none}
+  main{padding:20px 14px}
+  .intro{display:block}
+  .wallet{margin-top:20px;justify-content:space-around}
+  .wallet>div{flex:1}
+  h1{font-size:28px}
+  h1 br{display:none}
+  .intro p{font-size:12px}
+  nav{gap:4px}
+  nav button{font-size:11px;padding:11px 4px;text-align:center}
+  nav small{font-size:10px}
+  .game,.trayPanel,.mapPanel{padding:16px;border-radius:18px}
+  #board{gap:3px;padding:7px}
+  .cell{border-radius:5px}
+  .gamehead h2{font-size:17px}
+  footer{display:block}
+  footer span{display:block;margin-top:8px}
+  .tile{min-height:96px}
+  .mini i{width:11px;height:11px}
+  .welcome-card{padding:28px 20px}
+}
+</style>
+</head>
+<body>
+
+<a class="back-btn" href="index.html">← 資源中心</a>
+
+<div id="welcome">
+  <div class="welcome-card">
+    <div class="w-icon">🧩</div>
+    <h2>希望積木島</h2>
+    <p class="w-sub">旋轉、翻面、試試看——讓 10 塊彩色積木，完整住進 50 格的小島。</p>
+    <div class="welcome-steps">
+      <div class="step"><div class="step-num">1</div><p>從右側<strong>積木補給站</strong>選一塊積木</p></div>
+      <div class="step"><div class="step-num">2</div><p>按<strong>旋轉</strong>或<strong>翻面</strong>調整方向，積木左上角白點是<strong>定位點</strong></p></div>
+      <div class="step"><div class="step-num">3</div><p>點棋盤上的格子，讓定位點落在那格——填滿 50 格就過關！</p></div>
+    </div>
+    <button class="welcome-start" id="welcomeStart">開始冒險 →</button>
+  </div>
+</div>
+
+<header>
+  <a class="brand" href="#">✦ 希望積木島 <small>HOPE BLOCK ISLAND</small></a>
+  <button id="sound" aria-label="切換音效">♪ 音效開</button>
+</header>
+
+<main>
+  <section class="intro">
+    <div>
+      <span class="eyebrow">動動腦，把每一格變成可能</span>
+      <h1>小小積木，<br>大大<span>挑戰！</span></h1>
+      <p>旋轉、翻面、試試看。讓 10 塊彩色積木，住進 50 格的希望小島。</p>
+    </div>
+    <div class="wallet">
+      <div>🪙 <strong id="coins">0</strong><span>冒險金幣</span></div>
+      <div>🧃 <strong id="drinks">1</strong><span>能量飲</span></div>
+      <div>✧ <strong id="hints">0</strong><span>可用提示</span></div>
+    </div>
+  </section>
+
+  <nav id="stages" aria-label="五個等級"></nav>
+
+  <div class="workspace">
+    <section class="game">
+      <div class="gamehead">
+        <div><span class="eyebrow" id="levelLabel"></span><h2 id="title"></h2></div>
+        <span class="badge" id="filled"></span>
+      </div>
+      <div id="board" role="group" aria-label="5乘10拼圖棋盤"></div>
+      <div id="message" role="status" aria-live="polite"></div>
+      <div class="actions">
+        <button id="rotate">↻ 旋轉</button>
+        <button id="flip">⇄ 翻面</button>
+        <button id="undo">↶ 上一步</button>
+        <button id="reset">重擺本關</button>
+      </div>
+      <div class="hintline">
+        <button class="primary" id="hint">✧ 給我提示</button>
+        <button id="drink">🧃 使用能量飲</button>
+      </div>
+      <div class="selection">
+        <span id="selectionText">選一塊積木開始</span>
+        <div id="preview"></div>
+      </div>
+    </section>
+
+    <aside>
+      <section class="trayPanel">
+        <div class="sectionTitle"><h2>積木補給站</h2><span id="remaining"></span></div>
+        <p class="muted">① 選積木　② 旋轉或翻面　③ 點棋盤</p>
+        <div id="tray"></div>
+        <p class="muted">積木左上方標有小白點的格子是定位點。點棋盤，讓定位點落在那一格。點已放積木可取回；🔒 是題目，不能移動。</p>
+      </section>
+      <section class="mapPanel">
+        <div class="sectionTitle"><h2>冒險路線</h2><span>每級 10 關</span></div>
+        <div id="levels"></div>
+        <p class="muted">完成本級全部關卡，下一座島才會解鎖。</p>
+      </section>
+    </aside>
+  </div>
+
+  <details>
+    <summary>遊戲規則與獎勵</summary>
+    <p>棋盤 5×10，共 50 格；10 種形狀，每塊 5 格。所有積木完整填滿即可過關，不限定唯一解。第 1～5 級分別預放 8、6、4、2、0 塊。</p>
+    <p>首次過關 +20 金幣；放置重疊或越界 -2 金幣，最低為 0。重玩不重複領獎。每級完成 10 關 +1 瓶能量飲；每瓶換 3 次提示。開始贈送 1 瓶。提示會放入一塊參考答案的積木，並取回衝突的自擺積木。</p>
+    <p>進度自動存在目前瀏覽器；不同裝置不會同步。音效需第一次點擊後啟用。</p>
+  </details>
+
+  <footer>每一次調整，都是大腦在成長。<span>50 格 · 10 積木 · 50 個挑戰</span></footer>
+</main>
+
+<dialog id="win">
+  <div class="celebrate">✦</div>
+  <span class="eyebrow">ISLAND COMPLETED</span>
+  <h2 id="winTitle">拼好了！</h2>
+  <p id="winText"></p>
+  <div class="sel-quote" id="selQuote"></div>
+  <div style="margin-top:18px">
+    <button id="next" class="primary">下一關 →</button>
+    <button id="stay">留在這一關</button>
+  </div>
+</dialog>
+
+<script>
+const SEL_QUOTES=["試錯不是失敗，是大腦在學習新路。", "堅持到最後一格，就是今天最好的練習。", "每一次調整，都讓你更接近答案。", "靜下來想一想，有時候最好的方法就藏在那裡。", "不放棄，就是你今天給自己最大的禮物。", "慢慢來，專注的力量比速度更重要。", "你願意再試一次，這就是成長的樣子。", "困難的關卡，正在訓練你最強的那一面。", "感覺卡住了？深呼吸，重新看看棋盤。", "每一塊積木找到位置，就像每種情緒都值得被安放。"];
+const SHAPES=[[[0, 0], [0, 1], [0, 2], [0, 3], [1, 3]], [[0, 0], [1, 0], [0, 1], [1, 1], [0, 2]], [[0, 0], [1, 0], [2, 0], [1, 1], [1, 2]], [[0, 0], [2, 0], [0, 1], [1, 1], [2, 1]], [[0, 0], [0, 1], [0, 2], [1, 2], [2, 2]], [[0, 0], [0, 1], [1, 1], [1, 2], [1, 3]], [[0, 0], [0, 1], [0, 2], [0, 3], [1, 1]], [[0, 0], [0, 1], [1, 1], [1, 2], [2, 2]], [[1, 0], [0, 1], [1, 1], [1, 2], [2, 2]], [[0, 0], [1, 0], [1, 1], [1, 2], [2, 2]]];
+const SOLUTIONS=[[[0, 1, 2, 3, 13], [4, 14, 5, 15, 6], [47, 28, 38, 48, 49], [24, 34, 44, 25, 45], [20, 30, 40, 41, 42], [10, 11, 12, 22, 23], [18, 9, 19, 29, 39], [16, 26, 7, 17, 8], [35, 36, 46, 27, 37], [21, 31, 32, 33, 43]], [[0, 1, 2, 3, 13], [34, 44, 35, 45, 46], [7, 8, 18, 28, 9], [4, 14, 24, 5, 25], [20, 30, 40, 41, 42], [10, 11, 12, 22, 23], [38, 19, 29, 39, 49], [26, 36, 37, 47, 48], [15, 6, 16, 17, 27], [21, 31, 32, 33, 43]], [[0, 1, 2, 3, 13], [47, 38, 48, 39, 49], [4, 5, 15, 25, 6], [8, 28, 9, 19, 29], [20, 30, 40, 41, 42], [10, 11, 12, 22, 23], [14, 24, 34, 44, 35], [45, 36, 46, 27, 37], [16, 26, 7, 17, 18], [21, 31, 32, 33, 43]], [[0, 1, 2, 3, 13], [7, 8, 18, 9, 19], [44, 25, 35, 45, 46], [28, 48, 29, 39, 49], [20, 30, 40, 41, 42], [10, 11, 12, 22, 23], [4, 14, 24, 34, 15], [5, 6, 16, 17, 27], [26, 36, 37, 47, 38], [21, 31, 32, 33, 43]], [[0, 1, 2, 3, 13], [32, 42, 33, 43, 34], [44, 25, 35, 45, 46], [37, 47, 48, 39, 49], [10, 20, 30, 11, 12], [28, 38, 9, 19, 29], [5, 6, 16, 7, 8], [26, 36, 17, 27, 18], [23, 4, 14, 24, 15], [40, 21, 31, 41, 22]], [[0, 1, 2, 3, 13], [37, 38, 48, 39, 49], [45, 26, 36, 46, 47], [17, 27, 28, 19, 29], [10, 20, 30, 11, 12], [42, 43, 34, 44, 35], [6, 7, 8, 18, 9], [32, 23, 33, 14, 24], [4, 5, 15, 25, 16], [40, 21, 31, 41, 22]], [[0, 1, 2, 3, 13], [8, 18, 28, 9, 19], [37, 38, 29, 39, 49], [6, 26, 7, 17, 27], [10, 20, 30, 11, 12], [42, 43, 34, 44, 35], [45, 36, 46, 47, 48], [32, 23, 33, 14, 24], [4, 5, 15, 25, 16], [40, 21, 31, 41, 22]], [[0, 1, 2, 3, 13], [8, 18, 28, 9, 19], [37, 38, 29, 39, 49], [6, 26, 7, 17, 27], [10, 20, 30, 11, 12], [35, 36, 46, 47, 48], [42, 43, 34, 44, 45], [32, 23, 33, 14, 24], [4, 5, 15, 25, 16], [40, 21, 31, 41, 22]], [[0, 1, 2, 3, 13], [46, 37, 47, 38, 48], [4, 5, 15, 25, 6], [7, 17, 8, 9, 19], [10, 20, 30, 11, 12], [18, 28, 29, 39, 49], [42, 43, 34, 44, 45], [32, 23, 33, 14, 24], [35, 16, 26, 36, 27], [40, 21, 31, 41, 22]], [[0, 1, 2, 3, 13], [16, 7, 17, 8, 18], [4, 5, 15, 25, 6], [37, 47, 48, 39, 49], [10, 20, 30, 11, 12], [28, 38, 9, 19, 29], [42, 43, 34, 44, 45], [32, 23, 33, 14, 24], [35, 26, 36, 46, 27], [40, 21, 31, 41, 22]], [[0, 1, 2, 3, 13], [18, 28, 38, 19, 29], [4, 5, 15, 25, 6], [37, 47, 48, 39, 49], [10, 20, 30, 11, 12], [16, 7, 17, 8, 9], [42, 43, 34, 44, 45], [32, 23, 33, 14, 24], [35, 26, 36, 46, 27], [40, 21, 31, 41, 22]], [[0, 1, 2, 3, 13], [32, 42, 33, 43, 44], [4, 5, 15, 25, 6], [7, 17, 8, 9, 19], [10, 20, 30, 11, 12], [18, 28, 29, 39, 49], [45, 36, 46, 47, 48], [16, 26, 27, 37, 38], [23, 14, 24, 34, 35], [40, 21, 31, 41, 22]], [[0, 1, 2, 3, 13], [8, 18, 9, 19, 29], [40, 21, 31, 41, 42], [37, 47, 48, 39, 49], [10, 20, 30, 11, 12], [7, 17, 27, 28, 38], [15, 6, 16, 26, 36], [22, 32, 33, 43, 44], [34, 25, 35, 45, 46], [23, 4, 14, 24, 5]], [[0, 1, 2, 3, 13], [38, 48, 29, 39, 49], [40, 21, 31, 41, 42], [7, 17, 8, 9, 19], [10, 20, 30, 11, 12], [27, 37, 47, 18, 28], [15, 6, 16, 26, 36], [22, 32, 33, 43, 44], [34, 25, 35, 45, 46], [23, 4, 14, 24, 5]], [[0, 1, 2, 3, 13], [27, 37, 47, 38, 48], [40, 21, 31, 41, 42], [7, 17, 8, 9, 19], [10, 20, 30, 11, 12], [18, 28, 29, 39, 49], [15, 6, 16, 26, 36], [22, 32, 33, 43, 44], [34, 25, 35, 45, 46], [23, 4, 14, 24, 5]], [[0, 1, 2, 3, 13], [7, 17, 27, 8, 18], [40, 21, 31, 41, 42], [37, 47, 48, 39, 49], [10, 20, 30, 11, 12], [28, 38, 9, 19, 29], [15, 6, 16, 26, 36], [22, 32, 33, 43, 44], [34, 25, 35, 45, 46], [23, 4, 14, 24, 5]], [[0, 1, 2, 3, 13], [47, 38, 48, 39, 49], [40, 21, 31, 41, 42], [25, 45, 26, 36, 46], [10, 20, 30, 11, 12], [4, 5, 15, 16, 17], [6, 7, 8, 18, 9], [22, 32, 33, 43, 44], [23, 14, 24, 34, 35], [27, 37, 28, 19, 29]], [[0, 1, 2, 3, 13], [47, 38, 48, 39, 49], [40, 21, 31, 41, 42], [25, 45, 26, 36, 46], [10, 20, 30, 11, 12], [16, 17, 8, 18, 9], [4, 5, 15, 6, 7], [22, 32, 33, 43, 44], [23, 14, 24, 34, 35], [27, 37, 28, 19, 29]], [[0, 1, 2, 3, 13], [34, 25, 35, 26, 36], [40, 21, 31, 41, 42], [28, 48, 29, 39, 49], [10, 20, 30, 11, 12], [45, 46, 37, 47, 38], [5, 6, 16, 7, 8], [22, 32, 33, 43, 44], [23, 4, 14, 24, 15], [17, 27, 18, 9, 19]], [[0, 1, 2, 3, 13], [4, 14, 5, 15, 6], [47, 28, 38, 48, 49], [24, 34, 44, 25, 45], [20, 30, 40, 41, 42], [12, 22, 23, 33, 43], [18, 9, 19, 29, 39], [16, 26, 7, 17, 8], [35, 36, 46, 27, 37], [10, 11, 21, 31, 32]], [[0, 1, 2, 3, 13], [34, 44, 35, 45, 46], [7, 8, 18, 28, 9], [4, 14, 24, 5, 25], [20, 30, 40, 41, 42], [12, 22, 23, 33, 43], [38, 19, 29, 39, 49], [26, 36, 37, 47, 48], [15, 6, 16, 17, 27], [10, 11, 21, 31, 32]], [[0, 1, 2, 3, 13], [47, 38, 48, 39, 49], [4, 5, 15, 25, 6], [8, 28, 9, 19, 29], [20, 30, 40, 41, 42], [12, 22, 23, 33, 43], [14, 24, 34, 44, 35], [45, 36, 46, 27, 37], [16, 26, 7, 17, 18], [10, 11, 21, 31, 32]], [[0, 1, 2, 3, 13], [7, 8, 18, 9, 19], [44, 25, 35, 45, 46], [28, 48, 29, 39, 49], [20, 30, 40, 41, 42], [12, 22, 23, 33, 43], [4, 14, 24, 34, 15], [5, 6, 16, 17, 27], [26, 36, 37, 47, 38], [10, 11, 21, 31, 32]], [[0, 1, 2, 3, 13], [44, 35, 45, 36, 46], [23, 4, 14, 24, 25], [10, 20, 11, 12, 22], [47, 48, 29, 39, 49], [41, 42, 33, 43, 34], [6, 7, 17, 8, 9], [5, 15, 16, 26, 27], [30, 40, 21, 31, 32], [37, 18, 28, 38, 19]], [[0, 1, 2, 3, 13], [4, 14, 5, 15, 6], [25, 26, 36, 46, 27], [10, 20, 11, 12, 22], [47, 48, 29, 39, 49], [16, 7, 17, 8, 9], [41, 42, 33, 43, 44], [23, 24, 34, 35, 45], [30, 40, 21, 31, 32], [37, 18, 28, 38, 19]], [[0, 1, 2, 3, 13], [30, 40, 21, 31, 41], [4, 5, 15, 25, 6], [10, 20, 11, 12, 22], [47, 48, 29, 39, 49], [16, 7, 17, 8, 9], [42, 43, 34, 44, 45], [32, 23, 33, 14, 24], [35, 26, 36, 46, 27], [37, 18, 28, 38, 19]], [[0, 1, 2, 3, 13], [8, 18, 9, 19, 29], [10, 11, 21, 31, 12], [37, 47, 48, 39, 49], [20, 30, 40, 41, 42], [7, 17, 27, 28, 38], [15, 6, 16, 26, 36], [22, 32, 33, 43, 44], [34, 25, 35, 45, 46], [23, 4, 14, 24, 5]], [[0, 1, 2, 3, 13], [38, 48, 29, 39, 49], [10, 11, 21, 31, 12], [7, 17, 8, 9, 19], [20, 30, 40, 41, 42], [27, 37, 47, 18, 28], [15, 6, 16, 26, 36], [22, 32, 33, 43, 44], [34, 25, 35, 45, 46], [23, 4, 14, 24, 5]], [[0, 1, 2, 3, 13], [27, 37, 47, 38, 48], [10, 11, 21, 31, 12], [7, 17, 8, 9, 19], [20, 30, 40, 41, 42], [18, 28, 29, 39, 49], [15, 6, 16, 26, 36], [22, 32, 33, 43, 44], [34, 25, 35, 45, 46], [23, 4, 14, 24, 5]], [[0, 1, 2, 3, 13], [7, 17, 27, 8, 18], [10, 11, 21, 31, 12], [37, 47, 48, 39, 49], [20, 30, 40, 41, 42], [28, 38, 9, 19, 29], [15, 6, 16, 26, 36], [22, 32, 33, 43, 44], [34, 25, 35, 45, 46], [23, 4, 14, 24, 5]], [[0, 1, 2, 3, 13], [47, 38, 48, 39, 49], [10, 11, 21, 31, 12], [25, 45, 26, 36, 46], [20, 30, 40, 41, 42], [4, 5, 15, 16, 17], [6, 7, 8, 18, 9], [22, 32, 33, 43, 44], [23, 14, 24, 34, 35], [27, 37, 28, 19, 29]], [[0, 1, 2, 3, 13], [47, 38, 48, 39, 49], [10, 11, 21, 31, 12], [25, 45, 26, 36, 46], [20, 30, 40, 41, 42], [16, 17, 8, 18, 9], [4, 5, 15, 6, 7], [22, 32, 33, 43, 44], [23, 14, 24, 34, 35], [27, 37, 28, 19, 29]], [[0, 1, 2, 3, 13], [34, 25, 35, 26, 36], [10, 11, 21, 31, 12], [28, 48, 29, 39, 49], [20, 30, 40, 41, 42], [45, 46, 37, 47, 38], [5, 6, 16, 7, 8], [22, 32, 33, 43, 44], [23, 4, 14, 24, 15], [17, 27, 18, 9, 19]], [[0, 1, 2, 3, 13], [10, 11, 21, 12, 22], [20, 30, 40, 31, 32], [8, 28, 9, 19, 29], [26, 36, 46, 47, 48], [5, 6, 7, 17, 18], [41, 42, 33, 43, 44], [23, 24, 34, 35, 45], [4, 14, 15, 25, 16], [27, 37, 38, 39, 49]], [[40, 41, 42, 33, 43], [2, 12, 3, 13, 14], [4, 5, 15, 25, 6], [7, 17, 8, 9, 19], [10, 20, 30, 31, 32], [18, 28, 29, 39, 49], [45, 36, 46, 47, 48], [16, 26, 27, 37, 38], [23, 24, 34, 44, 35], [0, 1, 11, 21, 22]], [[40, 41, 42, 33, 43], [6, 7, 17, 8, 18], [44, 25, 35, 45, 46], [37, 47, 48, 39, 49], [10, 20, 30, 31, 32], [28, 38, 9, 19, 29], [2, 3, 4, 14, 5], [12, 13, 23, 24, 34], [15, 16, 26, 36, 27], [0, 1, 11, 21, 22]], [[40, 41, 42, 33, 43], [36, 37, 47, 38, 48], [44, 25, 35, 45, 46], [7, 17, 8, 9, 19], [10, 20, 30, 31, 32], [18, 28, 29, 39, 49], [2, 3, 4, 14, 5], [12, 13, 23, 24, 34], [15, 6, 16, 26, 27], [0, 1, 11, 21, 22]], [[40, 41, 42, 33, 43], [18, 28, 38, 29, 39], [44, 25, 35, 45, 46], [7, 17, 8, 9, 19], [10, 20, 30, 31, 32], [36, 37, 47, 48, 49], [2, 3, 4, 14, 5], [12, 13, 23, 24, 34], [15, 6, 16, 26, 27], [0, 1, 11, 21, 22]], [[40, 41, 42, 33, 43], [28, 38, 48, 39, 49], [17, 18, 9, 19, 29], [26, 46, 27, 37, 47], [10, 20, 30, 31, 32], [15, 6, 16, 7, 8], [2, 3, 4, 14, 5], [12, 13, 23, 24, 34], [44, 25, 35, 45, 36], [0, 1, 11, 21, 22]], [[40, 41, 42, 33, 43], [2, 12, 3, 13, 4], [44, 25, 35, 45, 46], [37, 47, 48, 39, 49], [10, 20, 30, 31, 32], [28, 38, 9, 19, 29], [5, 6, 16, 7, 8], [26, 36, 17, 27, 18], [23, 14, 24, 34, 15], [0, 1, 11, 21, 22]], [[40, 41, 42, 33, 43], [28, 38, 48, 39, 49], [17, 18, 9, 19, 29], [26, 46, 27, 37, 47], [10, 20, 30, 31, 32], [2, 3, 4, 14, 15], [5, 6, 16, 7, 8], [12, 13, 23, 24, 34], [44, 25, 35, 45, 36], [0, 1, 11, 21, 22]], [[40, 41, 42, 33, 43], [17, 8, 18, 9, 19], [5, 6, 16, 26, 7], [27, 37, 28, 29, 39], [10, 20, 30, 31, 32], [2, 3, 4, 14, 15], [46, 47, 38, 48, 49], [12, 13, 23, 24, 34], [44, 25, 35, 45, 36], [0, 1, 11, 21, 22]], [[10, 20, 30, 40, 41], [2, 12, 3, 13, 14], [6, 16, 26, 17, 18], [4, 24, 5, 15, 25], [7, 8, 9, 19, 29], [43, 34, 44, 35, 36], [45, 46, 37, 47, 48], [27, 28, 38, 39, 49], [31, 32, 42, 23, 33], [0, 1, 11, 21, 22]], [[10, 20, 30, 40, 41], [2, 12, 3, 13, 14], [17, 18, 9, 19, 29], [4, 24, 5, 15, 25], [6, 16, 26, 7, 8], [43, 34, 44, 35, 36], [45, 46, 37, 47, 48], [27, 28, 38, 39, 49], [31, 32, 42, 23, 33], [0, 1, 11, 21, 22]], [[10, 20, 30, 40, 41], [2, 12, 3, 13, 14], [17, 18, 9, 19, 29], [4, 24, 5, 15, 25], [6, 16, 26, 7, 8], [35, 36, 37, 47, 48], [43, 34, 44, 45, 46], [27, 28, 38, 39, 49], [31, 32, 42, 23, 33], [0, 1, 11, 21, 22]], [[10, 20, 30, 40, 41], [2, 12, 3, 13, 14], [6, 16, 26, 17, 18], [4, 24, 5, 15, 25], [7, 8, 9, 19, 29], [35, 36, 37, 47, 48], [43, 34, 44, 45, 46], [27, 28, 38, 39, 49], [31, 32, 42, 23, 33], [0, 1, 11, 21, 22]], [[10, 20, 30, 40, 41], [6, 7, 17, 8, 18], [45, 26, 36, 46, 47], [2, 12, 3, 4, 14], [13, 23, 33, 34, 35], [31, 32, 42, 43, 44], [28, 9, 19, 29, 39], [27, 37, 38, 48, 49], [24, 5, 15, 25, 16], [0, 1, 11, 21, 22]], [[10, 20, 30, 40, 41], [18, 28, 19, 29, 39], [45, 26, 36, 46, 47], [2, 12, 3, 4, 14], [13, 23, 33, 34, 35], [31, 32, 42, 43, 44], [6, 7, 17, 8, 9], [27, 37, 38, 48, 49], [24, 5, 15, 25, 16], [0, 1, 11, 21, 22]], [[10, 20, 30, 40, 41], [38, 48, 29, 39, 49], [45, 26, 36, 46, 47], [2, 12, 3, 4, 14], [13, 23, 33, 34, 35], [31, 32, 42, 43, 44], [6, 7, 17, 8, 9], [27, 37, 18, 28, 19], [24, 5, 15, 25, 16], [0, 1, 11, 21, 22]], [[10, 20, 30, 40, 41], [6, 7, 17, 8, 18], [45, 26, 36, 46, 47], [2, 12, 3, 4, 14], [31, 32, 13, 23, 33], [42, 43, 34, 44, 35], [28, 9, 19, 29, 39], [27, 37, 38, 48, 49], [24, 5, 15, 25, 16], [0, 1, 11, 21, 22]]];
+const $=id=>document.getElementById(id);
+const COLORS=['#ed656b','#eea44e','#ecc448','#8ebc58','#35b99c','#46bcdc','#5881d8','#a185d5','#d875b2','#a77c60'];
+const NAMES=['珊瑚 L','橘子 P','陽光 T','青檸 U','森林 V','薄荷 N','天空 Y','星空 Z','莓果 F','可可階梯'];
+const STAGES=['嫩芽島','彩虹島','珊瑚島','星光島','能量王國'];
+
+let saved;try{saved=JSON.parse(localStorage.getItem('block-island-v1'))}catch{}
+let data=saved&&Array.isArray(saved.done)?saved:{coins:0,drinks:1,hints:0,done:[],level:0,boards:{},sound:true};
+data.boards=data.boards||{};
+data.level=Math.max(0,Math.min(49,data.level||0));
+let level=data.level,stage=Math.floor(level/10),placed={},locked=new Set(),selected=null,shape=[],history=[],ghost=[],hover=null,audioContext;
+
+const welcomed=localStorage.getItem('block-island-welcomed');
+if(welcomed)document.getElementById('welcome').style.display='none';
+document.getElementById('welcomeStart').onclick=()=>{
+  localStorage.setItem('block-island-welcomed','1');
+  document.getElementById('welcome').style.display='none';
+};
+
+const normalize=s=>{let x=Math.min(...s.map(p=>p[0])),y=Math.min(...s.map(p=>p[1]));return s.map(p=>[p[0]-x,p[1]-y]).sort((a,b)=>a[1]-b[1]||a[0]-b[0])};
+function store(){data.level=level;data.boards[level]=placed;try{localStorage.setItem('block-island-v1',JSON.stringify(data))}catch{say('此瀏覽器無法保存進度，請保持頁面開啟。')}}
+function sound(type){if(!data.sound)return;try{audioContext=audioContext||new(window.AudioContext||window.webkitAudioContext)();audioContext.resume();let notes=type==='bad'?[180,120]:type==='win'?[523,659,784,1047]:[520,780];notes.forEach((n,i)=>{let o=audioContext.createOscillator(),g=audioContext.createGain(),t=audioContext.currentTime+i*.12;o.type=type==='bad'?'triangle':'sine';o.frequency.value=n;g.gain.setValueAtTime(.09,t);g.gain.exponentialRampToValueAtTime(.001,t+.22);o.connect(g);g.connect(audioContext.destination);o.start(t);o.stop(t+.23)})}catch{}}
+function say(s){$('message').textContent=s}
+function unlocked(s){return s===0||Array.from({length:10},(_,i)=>(s-1)*10+i).every(n=>data.done.includes(n))}
+function fixedIds(n){let ids=Array.from({length:10},(_,i)=>i);let seed=123+n*127;for(let i=9;i>0;i--){seed=(seed*1664525+1013904223)>>>0;let j=seed%(i+1);[ids[i],ids[j]]=[ids[j],ids[i]]}return ids.slice(0,[8,6,4,2,0][Math.floor(n/10)])}
+function load(n){if(!unlocked(Math.floor(n/10)))return;level=n;stage=Math.floor(n/10);locked=new Set(fixedIds(n));placed=JSON.parse(JSON.stringify(data.boards[n]||{}));for(let i of locked)placed[i]=SOLUTIONS[n][i];selected=null;shape=[];history=[];ghost=[];hover=null;render();store();say(data.done.includes(n)?'這一關已完成，可以再練習；不會重複領獎。':'選積木，再點棋盤上的格子。')}
+function mini(s,color){let a=normalize(s),w=Math.max(...a.map(p=>p[0]))+1,h=Math.max(...a.map(p=>p[1]))+1;let el=document.createElement('div');el.className='mini';el.style.gridTemplateColumns=`repeat(${w},1fr)`;el.style.setProperty('--c',color);for(let y=0;y<h;y++)for(let x=0;x<w;x++){let i=document.createElement('i');if(a.some(p=>p[0]===x&&p[1]===y))i.className='on'+(a[0][0]===x&&a[0][1]===y?' anchor':'');el.append(i)}return el}
+function select(i){if(locked.has(i))return;if(placed[i]){remember();delete placed[i];store()}selected=i;shape=normalize(SHAPES[i]);ghost=[];render();say('以小白點為定位點，點棋盤放置；也可以先旋轉或翻面。')}
+function remember(){history.push(JSON.stringify(placed));if(history.length>100)history.shift()}
+function cellsAt(c){let x=c%10,y=Math.floor(c/10),anchor=shape[0];return shape.map(([a,b])=>[x+a-anchor[0],y+b-anchor[1]])}
+function attempt(c){if(selected===null){let i=Object.keys(placed).find(i=>placed[i].includes(c));if(i!==undefined){if(locked.has(+i)){say('🔒 這塊是題目積木，不能移動。');return}select(+i)}else say('先從補給站選一塊積木。');return}let coords=cellsAt(c),occupied=new Set(Object.values(placed).flat());if(coords.some(([x,y])=>x<0||x>=10||y<0||y>=5||occupied.has(y*10+x))){data.coins=Math.max(0,data.coins-2);sound('bad');say('還放不進去：積木重疊或超出棋盤。金幣 -2（最低 0）。試著轉一轉！');store();renderWallet();return}remember();placed[selected]=coords.map(([x,y])=>y*10+x);selected=null;ghost=[];sound('good');store();render();say('成功放入！還可以取回、換個方向試試。');checkWin()}
+function checkWin(){if(Object.keys(placed).length!==10||new Set(Object.values(placed).flat()).size!==50)return;sound('win');const q=SEL_QUOTES[Math.floor(Math.random()*SEL_QUOTES.length)];$('selQuote').textContent=q;if(data.done.includes(level)){say('再次完成！你越來越熟練了。');$('win').showModal();return}data.done.push(level);data.coins+=20;let complete=Array.from({length:10},(_,i)=>stage*10+i).every(n=>data.done.includes(n));if(complete)data.drinks++;store();render();$('winTitle').textContent=level===49?'50 關全部完成！':complete?'這座島完成了！':'拼好了，太棒了！';$('winText').textContent='獲得 20 枚金幣！'+(complete?'另獲得 1 瓶能量飲，可換 3 次提示。'+(stage<4?'下一座島已解鎖。':'你已成為積木能量大師！'):'每一次思考，都讓你更接近下一座島。');$('next').textContent=level===49?'回到冒險地圖':'下一關 →';$('win').showModal()}
+function renderWallet(){$('coins').textContent=data.coins;$('drinks').textContent=data.drinks;$('hints').textContent=data.hints;$('sound').textContent=data.sound?'♪ 音效開':'♪ 音效關'}
+function drawBoard(){let owners={};for(let [i,cs]of Object.entries(placed))for(let c of cs)owners[c]=+i;$('board').replaceChildren();for(let c=0;c<50;c++){let b=document.createElement('button'),i=owners[c];b.className='cell'+(i!==undefined?' piece':'')+(ghost.includes(c)?' ghost':'');b.style.setProperty('--c',COLORS[i??selected??0]);b.setAttribute('aria-label',`第 ${Math.floor(c/10)+1} 列、第 ${c%10+1} 格${i!==undefined?'，'+NAMES[i]+(locked.has(i)?'，固定':''):''}`);if(i!==undefined)b.innerHTML=`<span>${locked.has(i)?'·':String.fromCharCode(65+i)}</span>`;b.onclick=()=>attempt(c);b.onpointerenter=()=>{if(selected===null)return;hover=c;let coords=cellsAt(c);ghost=coords.filter(([x,y])=>x>=0&&x<10&&y>=0&&y<5).map(([x,y])=>y*10+x);for(let n=0;n<50;n++)$('board').children[n].classList.toggle('ghost',ghost.includes(n))};$('board').append(b)}}
+function render(){renderWallet();$('levelLabel').textContent=`LEVEL ${stage+1} / 5 · ${STAGES[stage]}`;$('title').textContent=`第 ${level%10+1} 關 · 填滿希望小島`;$('filled').textContent=`${Object.keys(placed).length*5} / 50 格`;$('remaining').textContent=`剩 ${10-Object.keys(placed).length} 塊`;$('stages').replaceChildren();STAGES.forEach((s,i)=>{let b=document.createElement('button');b.className=i===stage?'active':'';b.disabled=!unlocked(i);b.innerHTML=`${unlocked(i)?['🌱','🌈','🐚','⭐','👑'][i]:'🔒'} ${s}<small>LEVEL ${i+1} · ${data.done.filter(n=>Math.floor(n/10)===i).length}/10</small>`;b.onclick=()=>{let next=Array.from({length:10},(_,j)=>i*10+j).find(n=>!data.done.includes(n));load(next??i*10)};$('stages').append(b)});drawBoard();$('tray').replaceChildren();SHAPES.forEach((s,i)=>{let b=document.createElement('button');b.className='tile'+(selected===i?' selected':'')+(placed[i]?' placed':'');b.disabled=locked.has(i);b.setAttribute('aria-label',NAMES[i]+(placed[i]?' 已放入':' 選取'));b.append(mini(selected===i?shape:s,COLORS[i]));let t=document.createElement('small');t.textContent=(locked.has(i)?'🔒 ':placed[i]?'✓ ':'')+String.fromCharCode(65+i);b.append(t);b.onclick=()=>select(i);$('tray').append(b)});$('levels').replaceChildren();for(let i=0;i<10;i++){let n=stage*10+i,b=document.createElement('button');b.textContent=(data.done.includes(n)?'✓ ':'')+String(i+1).padStart(2,'0');b.className=(n===level?'current ':'')+(data.done.includes(n)?'done':'');b.onclick=()=>load(n);$('levels').append(b)}$('preview').replaceChildren();if(selected!==null)$('preview').append(mini(shape,COLORS[selected]));$('selectionText').textContent=selected===null?'選一塊積木開始':`${String.fromCharCode(65+selected)} · ${NAMES[selected]}（白點定位）`;$('rotate').disabled=$('flip').disabled=selected===null;$('undo').disabled=!history.length;$('drink').disabled=data.drinks<1;$('hint').disabled=data.hints<1||data.done.includes(level)}
+$('rotate').onclick=()=>{shape=normalize(shape.map(([x,y])=>[-y,x]));ghost=[];render()};
+$('flip').onclick=()=>{shape=normalize(shape.map(([x,y])=>[-x,y]));ghost=[];render()};
+$('undo').onclick=()=>{if(!history.length)return;placed=JSON.parse(history.pop());selected=null;ghost=[];store();render();say('已回到上一步，不扣金幣。')};
+$('reset').onclick=()=>{remember();placed={};for(let i of locked)placed[i]=SOLUTIONS[level][i];selected=null;ghost=[];store();render();say('重新思考，從這裡開始！')};
+$('drink').onclick=()=>{if(data.drinks<1)return;data.drinks--;data.hints+=3;store();render();sound('good');say('能量補充完成！獲得 3 次提示。')};
+$('hint').onclick=()=>{if(data.hints<1||data.done.includes(level))return;let i=SHAPES.findIndex((s,i)=>!placed[i]||placed[i].slice().sort((a,b)=>a-b).join()!==SOLUTIONS[level][i].slice().sort((a,b)=>a-b).join());if(i<0)return;remember();let target=SOLUTIONS[level][i],removed=0;for(let j of Object.keys(placed))if(+j!==i&&!locked.has(+j)&&placed[j].some(c=>target.includes(c))){delete placed[j];removed++}placed[i]=target.slice();data.hints--;selected=null;ghost=[];store();render();sound('good');say(`提示已放入積木 ${String.fromCharCode(65+i)}。${removed?'取回 '+removed+' 塊衝突積木，可以重新擺放。':''}剩 ${data.hints} 次提示。`);checkWin()};
+$('sound').onclick=()=>{data.sound=!data.sound;store();renderWallet();if(data.sound)sound('good')};
+$('stay').onclick=()=>$('win').close();
+$('next').onclick=()=>{$('win').close();if(level<49)load(level+1)};
+document.addEventListener('keydown',e=>{if(e.target.tagName==='BUTTON'||$('win').open)return;if(e.key.toLowerCase()==='r'&&selected!==null)$('rotate').click();if(e.key.toLowerCase()==='f'&&selected!==null)$('flip').click()});
+load(level);
+</script>
+</body>
+</html>

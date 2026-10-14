@@ -41,6 +41,7 @@
     --c9: #d3948f; --c9-soft: #faeae8; --c9-deep: #7a3a35;
     --c10: #7c8fe0; --c10-soft: #eef0fc; --c10-deep: #3d4d99;
     --c11: #c07850; --c11-soft: #f5e8d8; --c11-deep: #7a4820;
+    --c12: #4a7fa5; --c12-soft: #ddeef8; --c12-deep: #2a5070;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -461,6 +462,7 @@
   .card-9 { --accent: var(--c9); --accent-soft: var(--c9-soft); --accent-deep: var(--c9-deep); }
   .card-10 { --accent: var(--c10); --accent-soft: var(--c10-soft); --accent-deep: var(--c10-deep); }
   .card-11 { --accent: var(--c11); --accent-soft: var(--c11-soft); --accent-deep: var(--c11-deep); }
+  .card-12 { --accent: var(--c12); --accent-soft: var(--c12-soft); --accent-deep: var(--c12-deep); }
   .card-body {
     position: relative;
     z-index: 1;
@@ -686,6 +688,11 @@
                 <span class="stop-marker"><svg viewBox="0 0 32 32"><path d="M5 15.5L16 7l11 8.5"/><path d="M8.5 13.5v11a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1v-11"/><path d="M13 25.5v-7h6v7"/><path d="M16 7v3"/></svg></span>
                 <span class="stop-label"><span class="stop-title">希望成長屋</span><span class="stop-sub">繽紛加分工具箱</span></span>
               </a>
+
+              <a class="path-stop" href="#card-12" onclick="jumpToCard(event,'card-12')" style="--stop-accent:var(--c12);--stop-deep:var(--c12-deep)" aria-label="前往希望積木島拼圖冒險遊戲">
+                <span class="stop-marker"><svg viewBox="0 0 32 32"><rect x="5" y="5" width="9" height="9" rx="1.5"/><rect x="18" y="5" width="9" height="9" rx="1.5"/><rect x="5" y="18" width="9" height="9" rx="1.5"/><rect x="18" y="18" width="4" height="4" rx="1"/><rect x="23" y="18" width="4" height="4" rx="1"/><rect x="18" y="23" width="4" height="4" rx="1"/></svg></span>
+                <span class="stop-label"><span class="stop-title">希望積木島</span><span class="stop-sub">拼圖冒險遊戲</span></span>
+              </a>
             </div>
             <p class="path-note">這條小徑會一直延伸——之後每加一份新資源，就在小徑上多鋪一顆石頭。</p>
           </div>
@@ -814,6 +821,14 @@
             <p class="card-desc">用溫暖的房子意象，記錄孩子的每一次進步。加分、紀錄、查看名單，讓正向回饋成為班級日常的儀式感。</p>
             <div class="card-features"><span class="feature-chip">加分紀錄</span><span class="feature-chip">孩子名單管理</span><span class="feature-chip">暱稱設定</span><span class="feature-chip">歷史查詢</span></div>
             <div class="card-footer"><span class="card-audience">教師</span><span class="card-cta">前往 →</span></div>
+          </div>
+        </a>
+        <a class="resource-card card-12 fade-in" href="block-island.html" id="card-12" data-tags="student,teacher">
+          <div class="card-body">
+            <div class="card-top"><div class="card-icon-wrap">🧩</div><div><span class="card-tag">拼圖遊戲</span><div class="card-title">希望積木島｜50 格拼圖冒險</div></div></div>
+            <p class="card-desc">用 10 種彩色積木拼滿整座小島，共 50 道關卡橫跨 5 個主題島嶼。每一次嘗試都是問題解決的練習，過關後還有 SEL 小語陪你反思。</p>
+            <div class="card-features"><span class="feature-chip">50 道關卡</span><span class="feature-chip">5 座主題島嶼</span><span class="feature-chip">進度自動儲存</span><span class="feature-chip">SEL 小語</span></div>
+            <div class="card-footer"><span class="card-audience">學生 · 教師</span><span class="card-cta">前往 →</span></div>
           </div>
         </a>
       </div>
