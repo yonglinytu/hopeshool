@@ -3878,338 +3878,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     return counts;
   }
 
-  // src/js/localapi.js
-  var pad3 = (n) => String(n).padStart(2, "0");
-  var today = () => {
-    const d = /* @__PURE__ */ new Date();
-    return `${d.getFullYear()}-${pad3(d.getMonth() + 1)}-${pad3(d.getDate())}`;
-  };
-  var GLOBAL_TABLES = ["semesters", "defaultSlots", "holidays", "subjects", "taskTypes", "teachers", "students", "resources", "posts", "replies", ...LIST_TABLES];
-  function allData() {
-    return Object.fromEntries(ALL_TABLES.map((t) => [t, rows(t)]));
-  }
-  function semesterPayload(sem) {
-    const data = Object.fromEntries(GLOBAL_TABLES.map((t) => [t, rows(t)]));
-    const cls = rows("classes").filter((c) => c.semesterId === sem);
-    const cids = new Set(cls.map((c) => c.id));
-    const ses = rows("sessions").filter((s) => cids.has(s.classId));
-    const sids = new Set(ses.map((s) => s.id));
-    const blk = rows("blocks").filter((b) => sids.has(b.sessionId));
-    const bids = new Set(blk.map((b) => b.id));
-    Object.assign(data, {
-      classes: cls,
-      classSlots: rows("classSlots").filter((s) => cids.has(s.classId)),
-      enrollments: rows("enrollments").filter((e) => cids.has(e.classId)),
-      sessions: ses,
-      blocks: blk,
-      tasks: rows("tasks").filter((t) => bids.has(t.blockId)),
-      records: rows("records").filter((r) => sids.has(r.sessionId)),
-      incidents: rows("incidents").filter((i) => sids.has(i.sessionId)),
-      evaluations: rows("evaluations").filter((v) => v.semesterId === sem),
-      feedback: rows("feedback").filter((f) => sids.has(f.sessionId)),
-      submissions: rows("submissions").filter((f) => sids.has(f.sessionId))
-    });
-    return { mode: "full", epoch: DB.epoch, version: DB.version, semester: sem, data, settings: { ...DB.settings } };
-  }
-  var memo = /* @__PURE__ */ new Map();
-  function cached(key, fn) {
-    const k = `${DB.epoch}|${DB.version}|${key}`;
-    if (!memo.has(k)) {
-      if (memo.size > 30) memo.clear();
-      memo.set(k, fn());
-    }
-    return memo.get(k);
-  }
-  var scanner = null;
-  var scannerKey = "";
-  function getScanner() {
-    const k = `${DB.epoch}|${JSON.stringify(DB.rules.keywords || "").length}|${DB.version}`;
-    if (!scanner || scannerKey !== k) {
-      scanner = new KeywordScanner(DB.rules);
-      scannerKey = k;
-    }
-    return scanner;
-  }
-  function insights(sem, asOf) {
-    return cached(`ins|${sem}|${asOf || ""}`, () => new Analyzer(allData(), DB.rules, today()).analyze(sem, asOf || null));
-  }
-  var currentSem = () => DB.settings.currentSemester || [...rows("semesters")].sort((a, b) => (a.start || "").localeCompare(b.start || "")).pop()?.id || "";
-  function status() {
-    const files = [...DB.files.entries()].map(([path, f]) => ({ path, mtime: f.mtime, owner: f.doc.owner?.name || (path === BASE_FILE ? "基本資料（督導）" : ""), updatedAt: f.doc.updatedAt || "" }));
-    return {
-      path: DB.backend?.label || "",
-      storage: DB.backend?.kind || "",
-      writable: !!DB.backend?.writable,
-      myFile: DB.me ? myFile() : "",
-      files,
-      version: DB.version,
-      epoch: DB.epoch,
-      pending: 0,
-      lastFlushAt: DB.lastWrite ? fmt(DB.lastWrite) : "",
-      lastReadAt: DB.lastRead ? fmt(DB.lastRead) : "",
-      fileLocked: false,
-      lastError: DB.errors.join("；"),
-      counts: Object.fromEntries(ALL_TABLES.map((t) => [t, DB.T[t]?.size || 0]))
-    };
-  }
-  var fmt = (d) => `${d.getFullYear()}-${pad3(d.getMonth() + 1)}-${pad3(d.getDate())} ${pad3(d.getHours())}:${pad3(d.getMinutes())}:${pad3(d.getSeconds())}`;
-  async function handle(path, method, body, who) {
-    const u = new URL(path, "http://x");
-    const q = u.searchParams;
-    const p = u.pathname;
-    DB.me = who || null;
-    const b = body || {};
-    if (method === "GET") {
-      switch (p) {
-        case "/api/meta": {
-          const sems = rows("semesters").sort((a, b2) => (a.start || "").localeCompare(b2.start || ""));
-          return {
-            org: DB.settings.orgName || "永齡希望小學",
-            currentSemester: currentSem(),
-            semesters: sems,
-            demo: !!DB.settings.demo,
-            needCode: false,
-            ai: { enabled: false },
-            today: today(),
-            version: DB.version,
-            excel: DB.backend?.label || "",
-            flowTemplate: DB.settings.flowTemplate || null
-          };
-        }
-        case "/api/schema":
-          return SCHEMA;
-        case "/api/sync": {
-          await loadAll();
-          const sem = q.get("semester") || currentSem();
-          if (q.get("epoch") === DB.epoch && Number(q.get("since")) === DB.version) return { mode: "none", epoch: DB.epoch, version: DB.version };
-          return semesterPayload(sem);
-        }
-        case "/api/insights":
-          return insights(q.get("semester") || currentSem(), q.get("asOf"));
-        case "/api/integrity":
-          return { issues: cached("int|" + (q.get("semester") || ""), () => integrityIssues(allData(), q.get("semester") || null)) };
-        case "/api/attendance/month": {
-          const m = q.get("month") || today().slice(0, 7);
-          return cached(`m|${m}|${q.get("all")}`, () => monthAttendance(allData(), m, q.get("all") !== "1"));
-        }
-        case "/api/flow/template":
-          return { blocks: defaultBlocks(q.get("start") || "", q.get("end") || "", { ...DB.settings.flowTemplate || {}, ...Number(q.get("task")) ? { taskMinutes: Number(q.get("task")) } : {} }) };
-        case "/api/status":
-          return status();
-      }
-    } else {
-      switch (p) {
-        case "/api/save": {
-          const row = await upsert(b.table || "", b.row || {});
-          return { row, version: DB.version };
-        }
-        case "/api/delete":
-          await remove(b.table || "", String(b.id ?? ""));
-          return { ok: true, version: DB.version };
-        case "/api/settings":
-          await setSetting(b.key || "", b.value ?? "");
-          return { ok: true, settings: DB.settings, version: DB.version };
-        case "/api/rules":
-          await setRules(b.rules || {});
-          return { ok: true, rules: DB.rules };
-        case "/api/session/save":
-          return saveSession(b);
-        case "/api/session/feedback": {
-          const st2 = b.status || "已看過";
-          if (!["已看過", "已回饋"].includes(st2)) throw new DbError("回饋狀態不正確");
-          return { session: await feedback(b.sessionId || "", b.feedback, st2, who?.name || ""), version: DB.version };
-        }
-        case "/api/class/roster":
-          return setRoster(b.classId || "", b.studentIds || []);
-        case "/api/semester/rollover":
-          return rollover(b.from || "", b, !!b.copyRoster);
-        case "/api/tidy": {
-          const sc = getScanner();
-          if ("texts" in b) return { results: b.texts.map((t) => tidyNote(t || "", DB.rules, sc)) };
-          return tidyNote(b.text || "", DB.rules, sc);
-        }
-        case "/api/reload":
-          await loadAll(true);
-          return { ok: true, ...status() };
-        case "/api/flush":
-          return { result: "clean", ...status() };
-        case "/api/import/base":
-          return { counts: await importBase(b.tables || {}, b.deletes || {}), version: DB.version };
-      }
-      if (p.startsWith("/api/ai/")) throw new DbError("目前沒有啟用 AI，請使用「整理文字」（規則）");
-    }
-    throw new DbError("不支援的功能：" + p);
-  }
-  var XL = () => {
-    if (!window.XLSX) throw new DbError("Excel 元件沒有載入");
-    return window.XLSX;
-  };
-  function saveBook(wb, name) {
-    XL().writeFile(wb, name, { compression: true });
-  }
-  function sheet(aoa, widths, pctCols = []) {
-    const X = XL();
-    const ws = X.utils.aoa_to_sheet(aoa);
-    ws["!cols"] = widths.map((w) => ({ wch: w }));
-    for (let r = 1; r < aoa.length; r++) for (const c of pctCols) {
-      const a = X.utils.encode_cell({ r, c });
-      if (ws[a] && ws[a].t === "n") ws[a].z = "0%";
-    }
-    ws["!autofilter"] = { ref: X.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: Math.max(0, aoa.length - 1), c: Math.max(0, (aoa[0] || []).length - 1) } }) };
-    return ws;
-  }
-  var safeTitle = (name, used) => {
-    const base = String(name || "班級").replace(/[[\]*?/\\:]/g, "_").slice(0, 31) || "班級";
-    let t = base, n = 2;
-    while (used.has(t)) t = `${base.slice(0, 28)}_${n++}`;
-    used.add(t);
-    return t;
-  };
-  function exportMonth(m) {
-    const X = XL();
-    const res = monthAttendance(allData(), m, true);
-    const wb = X.utils.book_new();
-    const head = ["班別", "科目", "老師", "上課天數", "孩子", "出席率", "遲到", "早退", "請假", "缺席"];
-    X.utils.book_append_sheet(wb, sheet(
-      [head, ...res.classes.map((c) => [c.name, c.subject, c.teacher, c.days, c.kids, c.rate ?? "—", c.late, c.early, c.leave, c.absent])],
-      [10, 7, 9, 9, 6, 8, 6, 6, 6, 6],
-      [5]
-    ), "總覽");
-    const used = /* @__PURE__ */ new Set(["總覽"]);
-    for (const c of res.classes) {
-      const n = c.dates.length;
-      const aoa = [
-        ["孩子", "年級", ...c.dateLabels, "出席率", "遲到", "早退", "請假", "缺席"],
-        ...c.students.map((s) => [s.name, s.gradeLabel, ...c.dates.map((d) => s.marks[d] ?? ""), s.rate ?? "—", s.late, s.early, s.leave, s.absent])
-      ];
-      X.utils.book_append_sheet(wb, sheet(aoa, [10, 8, ...Array(n).fill(11), 8, 6, 6, 6, 6], [2 + n]), safeTitle(c.name, used));
-    }
-    saveBook(wb, `出席彙整_${m}.xlsx`);
-  }
-  var EXPORT_ORDER = [
-    "students",
-    "teachers",
-    "classes",
-    "classSlots",
-    "enrollments",
-    "subjects",
-    "taskTypes",
-    "defaultSlots",
-    "semesters",
-    "holidays",
-    "resources",
-    "selActivities",
-    "backupOptions",
-    "readingList",
-    "sessions",
-    "feedback",
-    "blocks",
-    "tasks",
-    "records",
-    "incidents",
-    "evaluations",
-    "posts",
-    "replies"
-  ];
-  function exportWorkbook({ baseOnly = false } = {}) {
-    const X = XL();
-    const wb = X.utils.book_new();
-    const readme = [
-      ["永齡課輔系統 資料匯出"],
-      [`匯出時間：${fmt(/* @__PURE__ */ new Date())}`],
-      [`資料夾：${DB.backend?.label || ""}`],
-      [""],
-      ["每個工作表 = 系統中的一張資料表；第一列是欄位名稱。"],
-      ["「基本資料」類工作表（孩子、老師、班級、上課時段、分班、科目…）可以修改後，由督導在「系統設定 → 從 Excel 匯入基本資料」匯回。"],
-      ["ID 欄空白 = 新增一筆（系統自動編號）；ID 相同 = 更新該筆。刪除請在系統中操作。"],
-      ["教學紀錄類工作表只供查詢與統計，匯回時會略過。"]
-    ];
-    const ws0 = X.utils.aoa_to_sheet(readme);
-    ws0["!cols"] = [{ wch: 100 }];
-    X.utils.book_append_sheet(wb, ws0, "說明");
-    for (const t of EXPORT_ORDER) {
-      if (baseOnly && !BASE_TABLES.includes(t)) continue;
-      const def = TDEF[t];
-      const cols = def.cols.filter((c) => c.kind !== "auto" && !(t === "sessions" && c.key === "updatedAt"));
-      const list = rows(t).sort((a, b) => String(a[def.idKey]).localeCompare(String(b[def.idKey]), "zh-Hant"));
-      const aoa = [cols.map((c) => c.label), ...list.map((r) => cols.map((c) => r[c.key] ?? ""))];
-      X.utils.book_append_sheet(wb, sheet(aoa, cols.map((c) => c.kind === "longtext" ? 40 : c.kind === "date" ? 11 : 12)), def.sheet.slice(0, 31));
-    }
-    if (!baseOnly) {
-      const sem = currentSem();
-      if (sem) {
-        const ins = insights(sem);
-        const aoa = [
-          ["孩子ID", "孩子", "年級", "風險等級", "風險分數", "學習狀態", "風險因子", "優勢", "需加強", "建議", "學習摘要"],
-          ...Object.values(ins.students).sort((a, b) => b.score - a.score).map((s) => [
-            s.studentId,
-            s.name,
-            s.grade,
-            s.levelLabel,
-            s.score,
-            s.status,
-            (s.factors || []).map((f) => `${f.label}（${f.detail}）`).join("；"),
-            (s.strengths || []).join("、"),
-            (s.weaknesses || []).join("、"),
-            (s.suggestions || []).join("；"),
-            s.summary
-          ])
-        ];
-        X.utils.book_append_sheet(wb, sheet(aoa, [8, 9, 6, 9, 8, 9, 50, 24, 24, 50, 70]), `學習摘要與風險_${sem}`.slice(0, 31));
-      }
-    }
-    const org = (DB.settings.orgName || "永齡課輔").replace(/[\\/:*?"<>|]/g, "_");
-    saveBook(wb, `${org}_${baseOnly ? "基本資料" : "完整資料"}_${fmt(/* @__PURE__ */ new Date()).replace(/[-: ]/g, "").slice(0, 12)}.xlsx`);
-  }
-  async function readBaseWorkbook(file) {
-    const X = XL();
-    const wb = X.read(await file.arrayBuffer(), { type: "array", cellDates: true });
-    const out = {}, report = [];
-    for (const t of BASE_TABLES) {
-      const def = TDEF[t];
-      const ws = wb.Sheets[def.sheet];
-      if (!ws) continue;
-      const aoa = X.utils.sheet_to_json(ws, { header: 1, raw: true, defval: "" });
-      if (!aoa.length) continue;
-      const head = aoa[0].map((h2) => String(h2).trim());
-      const map = head.map((h2) => def.cols.find((c) => c.kind !== "auto" && (c.label === h2 || c.key === h2))?.key || null);
-      const list = [];
-      for (const r of aoa.slice(1)) {
-        if (r.every((v) => v === "" || v == null)) continue;
-        const row = {};
-        map.forEach((k, i) => {
-          if (k) row[k] = cellValue(r[i], def.cols.find((c) => c.key === k));
-        });
-        list.push(row);
-      }
-      out[t] = list;
-      report.push(`${def.sheet} ${list.length} 筆`);
-    }
-    return { tables: out, report };
-  }
-  function cellValue(v, col) {
-    if (v instanceof Date) {
-      if (col.kind === "time") return `${pad3(v.getHours())}:${pad3(v.getMinutes())}`;
-      return `${v.getFullYear()}-${pad3(v.getMonth() + 1)}-${pad3(v.getDate())}`;
-    }
-    if (col.kind === "time" && typeof v === "number" && v < 1) {
-      const m = Math.round(v * 1440);
-      return `${pad3(Math.floor(m / 60))}:${pad3(m % 60)}`;
-    }
-    if (col.kind === "date" && typeof v === "string") {
-      const m = /^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/.exec(v.trim());
-      if (m) return `${m[1]}-${pad3(+m[2])}-${pad3(+m[3])}`;
-    }
-    if (col.kind === "int") return v === "" ? null : Number(v);
-    return typeof v === "string" ? v.trim() : String(v ?? "");
-  }
-  function handleDownload(url) {
-    const u = new URL(url, "http://x");
-    if (u.pathname === "/api/attendance/month/export") return exportMonth(u.searchParams.get("month") || today().slice(0, 7));
-    if (u.pathname === "/api/export/workbook") return exportWorkbook({ baseOnly: u.searchParams.get("base") === "1" });
-    throw new DbError("不支援的下載：" + url);
-  }
-
   // src/js/ui.js
   var $ = (sel, el = document) => el.querySelector(sel);
   var $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
@@ -4275,9 +3943,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     return `<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name] || ""}</svg>`;
   }
   var WD = "一二三四五六日";
-  var pad4 = (n) => String(n).padStart(2, "0");
+  var pad3 = (n) => String(n).padStart(2, "0");
   function iso2(d) {
-    return `${d.getFullYear()}-${pad4(d.getMonth() + 1)}-${pad4(d.getDate())}`;
+    return `${d.getFullYear()}-${pad3(d.getMonth() + 1)}-${pad3(d.getDate())}`;
   }
   function parseISO(s) {
     const [y, m, d] = String(s).slice(0, 10).split("-").map(Number);
@@ -4531,6 +4199,598 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       if (v !== "") b.classList.add("on");
       onChange(seg.dataset.seg, v, seg, b);
     });
+  }
+
+  // src/js/cloud.js
+  var CLOUD = typeof window !== "undefined" && window.YL_CLOUD && window.YL_CLOUD.api ? window.YL_CLOUD : null;
+  var CLOUD_UNSET = typeof window !== "undefined" && !!window.YL_CLOUD && !CLOUD;
+  var SESSION_KEY = "yl-cloud-session";
+  var EMAIL_KEY = "yl-cloud-email";
+  function loadSession() {
+    for (const store of [() => sessionStorage, () => localStorage]) {
+      try {
+        const s = JSON.parse(store().getItem(SESSION_KEY) || "null");
+        if (s && s.token && s.api === CLOUD.api) return s;
+      } catch {
+      }
+    }
+    return null;
+  }
+  function saveSession2(s) {
+    try {
+      (s.shared ? sessionStorage : localStorage).setItem(SESSION_KEY, JSON.stringify(s));
+    } catch {
+    }
+  }
+  function clearSession() {
+    try {
+      localStorage.removeItem(SESSION_KEY);
+    } catch {
+    }
+    try {
+      sessionStorage.removeItem(SESSION_KEY);
+    } catch {
+    }
+  }
+  async function cloudCall(action, payload = {}) {
+    let res;
+    try {
+      res = await fetch(CLOUD.api, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action, ...payload }) });
+    } catch {
+      const err = new DbError("連不上雲端主機，請檢查網路後再試一次");
+      err.offline = true;
+      throw err;
+    }
+    let j;
+    try {
+      j = await res.json();
+    } catch {
+      throw new DbError(`雲端主機沒有正確回應（${res.status}），請稍後再試`);
+    }
+    if (!j.ok) {
+      const err = new DbError(j.error || "雲端主機發生錯誤");
+      err.code = j.code || "error";
+      if (err.code === "conflict") err.conflict = true;
+      if (err.code === "auth") dispatchEvent(new CustomEvent("yl-auth", { detail: err.message }));
+      throw err;
+    }
+    return j;
+  }
+  var CloudBackend = class {
+    constructor(session) {
+      this.session = session;
+      this.kind = "cloud";
+      this.label = "Google 雲端硬碟";
+      this.writable = true;
+      this.serverBackup = true;
+      this.user = session.email;
+      this.shared = !!session.shared;
+      this.man = null;
+      this.at = 0;
+      this.texts = /* @__PURE__ */ new Map();
+      this.pending = null;
+    }
+    get me() {
+      return this.session.me;
+    }
+    async refresh() {
+      const known = {};
+      for (const [p, t] of this.texts) known[p] = t.mtime;
+      const r = await cloudCall("sync", { token: this.session.token, known });
+      for (const [p, text] of Object.entries(r.data || {})) this.texts.set(p, { text, mtime: r.files[p] });
+      for (const p of [...this.texts.keys()]) if (!(p in r.files)) this.texts.delete(p);
+      this.man = r.files;
+      this.at = Date.now();
+      this.ai = !!r.ai;
+      if (r.me) {
+        this.session.me = r.me;
+        saveSession2(this.session);
+      }
+    }
+    async ensure(maxAge = 1500) {
+      if (maxAge > 0 && this.man && Date.now() - this.at < maxAge && !this.pending) return;
+      if (this.pending && maxAge === 0) await this.pending.catch(() => {
+      });
+      if (!this.pending) this.pending = this.refresh().finally(() => {
+        this.pending = null;
+      });
+      await this.pending;
+    }
+    async list(dir) {
+      await this.ensure();
+      const pre = dir.replace(/\/$/, "") + "/";
+      return Object.keys(this.man).filter((p) => p.startsWith(pre) && !p.slice(pre.length).includes("/")).map((p) => p.slice(pre.length));
+    }
+    async stat(p) {
+      await this.ensure();
+      return this.man[p] ?? null;
+    }
+    async read(p, opts = {}) {
+      await this.ensure(opts.fresh ? 0 : 1500);
+      if (this.man[p] == null) return null;
+      const t = this.texts.get(p);
+      return t ? { text: t.text, mtime: t.mtime } : null;
+    }
+    async exists(p) {
+      return await this.stat(p) != null;
+    }
+    async write(p, text, expect) {
+      const r = await cloudCall("write", { token: this.session.token, path: p, text, expect: expect ?? null });
+      this.texts.set(p, { text, mtime: r.mtime });
+      if (this.man) this.man[p] = r.mtime;
+      return r.mtime;
+    }
+  };
+  function cloudLogin(note = "") {
+    return new Promise((resolve) => {
+      const el = $("#content");
+      $("#page-title").textContent = "登入";
+      $("#page-sub").textContent = "用老師名冊上的 Email 登入，系統會寄一組 6 位數驗證碼給你";
+      let email = "";
+      try {
+        email = localStorage.getItem(EMAIL_KEY) || "";
+      } catch {
+      }
+      const step1 = (msg = note) => {
+        el.innerHTML = `<div class="boot"><div class="card boot-card"><div class="card-body stack" style="gap:14px">
+        <div class="boot-icon">${icon("teacher")}</div>
+        <h2 style="margin:0">永齡課輔系統</h2>
+        <p class="ink2" style="margin:0;line-height:1.8">請輸入你在老師名冊上的 Email（通常是 Gmail），我們會寄驗證碼給你。</p>
+        ${msg ? `<div class="callout warn small">${icon("alert", "sm")} ${esc(msg)}</div>` : ""}
+        <form id="l-form1" class="stack" style="gap:10px">
+          <label class="field"><span>Email</span><input class="input" id="l-email" type="email" autocomplete="email" inputmode="email" required value="${esc(email)}" placeholder="例：name@gmail.com"></label>
+          <button class="btn primary lg" id="l-send" type="submit">${icon("send", "sm")}寄驗證碼</button>
+        </form>
+        <p class="small muted" style="margin:0;line-height:1.7">登入後，自己的電腦 30 天內不用再登入；共用電腦請在下一步勾選「這是共用電腦」。</p>
+      </div></div></div>`;
+        const inp = $("#l-email");
+        inp.focus();
+        $("#l-form1").onsubmit = async (e) => {
+          e.preventDefault();
+          email = inp.value.trim().toLowerCase();
+          const btn = $("#l-send");
+          btn.disabled = true;
+          btn.textContent = "寄送中…";
+          try {
+            await cloudCall("login.request", { email });
+            try {
+              localStorage.setItem(EMAIL_KEY, email);
+            } catch {
+            }
+            step2();
+          } catch (err) {
+            step1(err.message);
+          }
+        };
+      };
+      const step2 = (msg = "") => {
+        el.innerHTML = `<div class="boot"><div class="card boot-card"><div class="card-body stack" style="gap:14px">
+        <div class="boot-icon">${icon("send")}</div>
+        <h2 style="margin:0">輸入驗證碼</h2>
+        <p class="ink2" style="margin:0;line-height:1.8">驗證碼已寄到 <b>${esc(email)}</b>，10 分鐘內有效。<br><span class="small muted">沒收到的話，請看一下「垃圾郵件」或「促銷內容」。</span></p>
+        ${msg ? `<div class="callout warn small">${icon("alert", "sm")} ${esc(msg)}</div>` : ""}
+        <form id="l-form2" class="stack" style="gap:10px">
+          <label class="field"><span>6 位數驗證碼</span><input class="input" id="l-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required style="font-size:22px;letter-spacing:6px;text-align:center"></label>
+          <label class="row small" style="gap:8px;cursor:pointer"><input type="checkbox" id="l-shared">這是共用電腦（關掉瀏覽器就自動登出）</label>
+          <button class="btn primary lg" id="l-go" type="submit">${icon("check", "sm")}登入</button>
+        </form>
+        <div class="row"><button class="btn sm ghost" id="l-back">換一個 Email</button><span class="sp"></span><button class="btn sm" id="l-resend">重新寄送</button></div>
+      </div></div></div>`;
+        const inp = $("#l-code");
+        inp.focus();
+        $("#l-back").onclick = () => step1("");
+        $("#l-resend").onclick = async () => {
+          try {
+            await cloudCall("login.request", { email });
+            toast("已重新寄送驗證碼");
+          } catch (err) {
+            step2(err.message);
+          }
+        };
+        $("#l-form2").onsubmit = async (e) => {
+          e.preventDefault();
+          const btn = $("#l-go");
+          btn.disabled = true;
+          btn.textContent = "登入中…";
+          try {
+            const shared = !!$("#l-shared")?.checked;
+            const r = await cloudCall("login.verify", { email, code: inp.value, shared });
+            const s = { api: CLOUD.api, token: r.token, email, me: r.me, shared };
+            saveSession2(s);
+            resolve(s);
+          } catch (err) {
+            step2(err.message);
+          }
+        };
+      };
+      step1();
+    });
+  }
+  function cloudUnset() {
+    $("#page-title").textContent = "雲端版尚未設定";
+    $("#page-sub").textContent = "";
+    $("#content").innerHTML = `<div class="boot"><div class="card boot-card"><div class="card-body stack" style="gap:14px">
+    <div class="boot-icon">${icon("settings")}</div>
+    <h2 style="margin:0">還沒有設定雲端主機</h2>
+    <p class="ink2" style="margin:0;line-height:1.8">請督導把 Apps Script 部署後的網址（結尾是 <code>/exec</code>）填進這個網頁旁邊的 <code>config.js</code>。</p></div></div></div>`;
+    return new Promise(() => {
+    });
+  }
+  function cloudRetry(msg) {
+    return new Promise((resolve) => {
+      $("#page-title").textContent = "無法連線";
+      $("#page-sub").textContent = "";
+      $("#content").innerHTML = `<div class="boot"><div class="card boot-card"><div class="card-body stack" style="gap:14px">
+      <div class="boot-icon">${icon("alert")}</div>
+      <div class="callout warn">${esc(msg)}</div>
+      <button class="btn primary lg" id="l-retry">${icon("refresh", "sm")}再試一次</button>
+      <button class="btn sm ghost" id="l-out">改用其他帳號登入</button></div></div></div>`;
+      $("#l-retry").onclick = () => resolve("retry");
+      $("#l-out").onclick = () => resolve("logout");
+    });
+  }
+
+  // src/js/localapi.js
+  var pad4 = (n) => String(n).padStart(2, "0");
+  var today = () => {
+    const d = /* @__PURE__ */ new Date();
+    return `${d.getFullYear()}-${pad4(d.getMonth() + 1)}-${pad4(d.getDate())}`;
+  };
+  var GLOBAL_TABLES = ["semesters", "defaultSlots", "holidays", "subjects", "taskTypes", "teachers", "students", "resources", "posts", "replies", ...LIST_TABLES];
+  function allData() {
+    return Object.fromEntries(ALL_TABLES.map((t) => [t, rows(t)]));
+  }
+  function semesterPayload(sem) {
+    const data = Object.fromEntries(GLOBAL_TABLES.map((t) => [t, rows(t)]));
+    const cls = rows("classes").filter((c) => c.semesterId === sem);
+    const cids = new Set(cls.map((c) => c.id));
+    const ses = rows("sessions").filter((s) => cids.has(s.classId));
+    const sids = new Set(ses.map((s) => s.id));
+    const blk = rows("blocks").filter((b) => sids.has(b.sessionId));
+    const bids = new Set(blk.map((b) => b.id));
+    Object.assign(data, {
+      classes: cls,
+      classSlots: rows("classSlots").filter((s) => cids.has(s.classId)),
+      enrollments: rows("enrollments").filter((e) => cids.has(e.classId)),
+      sessions: ses,
+      blocks: blk,
+      tasks: rows("tasks").filter((t) => bids.has(t.blockId)),
+      records: rows("records").filter((r) => sids.has(r.sessionId)),
+      incidents: rows("incidents").filter((i) => sids.has(i.sessionId)),
+      evaluations: rows("evaluations").filter((v) => v.semesterId === sem),
+      feedback: rows("feedback").filter((f) => sids.has(f.sessionId)),
+      submissions: rows("submissions").filter((f) => sids.has(f.sessionId))
+    });
+    return { mode: "full", epoch: DB.epoch, version: DB.version, semester: sem, data, settings: { ...DB.settings } };
+  }
+  var memo = /* @__PURE__ */ new Map();
+  function cached(key, fn) {
+    const k = `${DB.epoch}|${DB.version}|${key}`;
+    if (!memo.has(k)) {
+      if (memo.size > 30) memo.clear();
+      memo.set(k, fn());
+    }
+    return memo.get(k);
+  }
+  var scanner = null;
+  var scannerKey = "";
+  function getScanner() {
+    const k = `${DB.epoch}|${JSON.stringify(DB.rules.keywords || "").length}|${DB.version}`;
+    if (!scanner || scannerKey !== k) {
+      scanner = new KeywordScanner(DB.rules);
+      scannerKey = k;
+    }
+    return scanner;
+  }
+  function insights(sem, asOf) {
+    return cached(`ins|${sem}|${asOf || ""}`, () => new Analyzer(allData(), DB.rules, today()).analyze(sem, asOf || null));
+  }
+  var currentSem = () => DB.settings.currentSemester || [...rows("semesters")].sort((a, b) => (a.start || "").localeCompare(b.start || "")).pop()?.id || "";
+  function status() {
+    const files = [...DB.files.entries()].map(([path, f]) => ({ path, mtime: f.mtime, owner: f.doc.owner?.name || (path === BASE_FILE ? "基本資料（督導）" : ""), updatedAt: f.doc.updatedAt || "" }));
+    return {
+      path: DB.backend?.label || "",
+      storage: DB.backend?.kind || "",
+      writable: !!DB.backend?.writable,
+      myFile: DB.me ? myFile() : "",
+      files,
+      version: DB.version,
+      epoch: DB.epoch,
+      pending: 0,
+      lastFlushAt: DB.lastWrite ? fmt(DB.lastWrite) : "",
+      lastReadAt: DB.lastRead ? fmt(DB.lastRead) : "",
+      fileLocked: false,
+      lastError: DB.errors.join("；"),
+      counts: Object.fromEntries(ALL_TABLES.map((t) => [t, DB.T[t]?.size || 0]))
+    };
+  }
+  var fmt = (d) => `${d.getFullYear()}-${pad4(d.getMonth() + 1)}-${pad4(d.getDate())} ${pad4(d.getHours())}:${pad4(d.getMinutes())}:${pad4(d.getSeconds())}`;
+  async function handle(path, method, body, who) {
+    const u = new URL(path, "http://x");
+    const q = u.searchParams;
+    const p = u.pathname;
+    DB.me = who || null;
+    const b = body || {};
+    if (method === "GET") {
+      switch (p) {
+        case "/api/meta": {
+          const sems = rows("semesters").sort((a, b2) => (a.start || "").localeCompare(b2.start || ""));
+          return {
+            org: DB.settings.orgName || "永齡希望小學",
+            currentSemester: currentSem(),
+            semesters: sems,
+            demo: !!DB.settings.demo,
+            needCode: false,
+            ai: { enabled: DB.backend?.kind === "cloud" && !!DB.backend.ai },
+            today: today(),
+            version: DB.version,
+            excel: DB.backend?.label || "",
+            flowTemplate: DB.settings.flowTemplate || null
+          };
+        }
+        case "/api/schema":
+          return SCHEMA;
+        case "/api/sync": {
+          await loadAll();
+          const sem = q.get("semester") || currentSem();
+          if (q.get("epoch") === DB.epoch && Number(q.get("since")) === DB.version) return { mode: "none", epoch: DB.epoch, version: DB.version };
+          return semesterPayload(sem);
+        }
+        case "/api/insights":
+          return insights(q.get("semester") || currentSem(), q.get("asOf"));
+        case "/api/integrity":
+          return { issues: cached("int|" + (q.get("semester") || ""), () => integrityIssues(allData(), q.get("semester") || null)) };
+        case "/api/attendance/month": {
+          const m = q.get("month") || today().slice(0, 7);
+          return cached(`m|${m}|${q.get("all")}`, () => monthAttendance(allData(), m, q.get("all") !== "1"));
+        }
+        case "/api/flow/template":
+          return { blocks: defaultBlocks(q.get("start") || "", q.get("end") || "", { ...DB.settings.flowTemplate || {}, ...Number(q.get("task")) ? { taskMinutes: Number(q.get("task")) } : {} }) };
+        case "/api/status":
+          return status();
+      }
+    } else {
+      switch (p) {
+        case "/api/save": {
+          const row = await upsert(b.table || "", b.row || {});
+          return { row, version: DB.version };
+        }
+        case "/api/delete":
+          await remove(b.table || "", String(b.id ?? ""));
+          return { ok: true, version: DB.version };
+        case "/api/settings":
+          await setSetting(b.key || "", b.value ?? "");
+          return { ok: true, settings: DB.settings, version: DB.version };
+        case "/api/rules":
+          await setRules(b.rules || {});
+          return { ok: true, rules: DB.rules };
+        case "/api/session/save":
+          return saveSession(b);
+        case "/api/session/feedback": {
+          const st2 = b.status || "已看過";
+          if (!["已看過", "已回饋"].includes(st2)) throw new DbError("回饋狀態不正確");
+          return { session: await feedback(b.sessionId || "", b.feedback, st2, who?.name || ""), version: DB.version };
+        }
+        case "/api/class/roster":
+          return setRoster(b.classId || "", b.studentIds || []);
+        case "/api/semester/rollover":
+          return rollover(b.from || "", b, !!b.copyRoster);
+        case "/api/tidy": {
+          const sc = getScanner();
+          if ("texts" in b) return { results: b.texts.map((t) => tidyNote(t || "", DB.rules, sc)) };
+          return tidyNote(b.text || "", DB.rules, sc);
+        }
+        case "/api/reload":
+          await loadAll(true);
+          return { ok: true, ...status() };
+        case "/api/flush":
+          return { result: "clean", ...status() };
+        case "/api/import/base":
+          return { counts: await importBase(b.tables || {}, b.deletes || {}), version: DB.version };
+      }
+      if (p === "/api/ai/polish" && DB.backend?.kind === "cloud" && DB.backend.ai) return aiPolish(b.text || "", b.context || {});
+      if (p.startsWith("/api/ai/")) throw new DbError("目前沒有啟用 AI，請使用「整理文字」（規則）");
+    }
+    throw new DbError("不支援的功能：" + p);
+  }
+  var CODE = (i) => "孩子" + (i < 26 ? String.fromCharCode(65 + i) : "Z" + (i - 25));
+  function maskNames(text) {
+    const names = /* @__PURE__ */ new Set();
+    for (const s of rows("students")) {
+      const n = String(s.name || "").trim();
+      if (n.length >= 2) names.add(n);
+      if (n.length === 3) names.add(n.slice(1));
+    }
+    const list = [...names].sort((a, b) => b.length - a.length);
+    const map = /* @__PURE__ */ new Map();
+    let out = text;
+    for (const n of list) {
+      if (!out.includes(n)) continue;
+      const code = CODE(map.size);
+      map.set(code, n);
+      out = out.split(n).join(code);
+    }
+    return { text: out, restore: (t) => {
+      let r = t;
+      for (const [code, n] of [...map].reverse()) r = r.split(code).join(n);
+      return r;
+    } };
+  }
+  async function aiPolish(text, context) {
+    if (!text.trim()) throw new DbError("請先輸入老師紀錄");
+    const m = maskNames(text);
+    const r = await cloudCall("ai.polish", { token: DB.backend.session.token, text: m.text, context });
+    const sg = tidyNote(m.restore(r.text || ""), DB.rules, getScanner());
+    return { ...sg, ai: true };
+  }
+  var XL = () => {
+    if (!window.XLSX) throw new DbError("Excel 元件沒有載入");
+    return window.XLSX;
+  };
+  function saveBook(wb, name) {
+    XL().writeFile(wb, name, { compression: true });
+  }
+  function sheet(aoa, widths, pctCols = []) {
+    const X = XL();
+    const ws = X.utils.aoa_to_sheet(aoa);
+    ws["!cols"] = widths.map((w) => ({ wch: w }));
+    for (let r = 1; r < aoa.length; r++) for (const c of pctCols) {
+      const a = X.utils.encode_cell({ r, c });
+      if (ws[a] && ws[a].t === "n") ws[a].z = "0%";
+    }
+    ws["!autofilter"] = { ref: X.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: Math.max(0, aoa.length - 1), c: Math.max(0, (aoa[0] || []).length - 1) } }) };
+    return ws;
+  }
+  var safeTitle = (name, used) => {
+    const base = String(name || "班級").replace(/[[\]*?/\\:]/g, "_").slice(0, 31) || "班級";
+    let t = base, n = 2;
+    while (used.has(t)) t = `${base.slice(0, 28)}_${n++}`;
+    used.add(t);
+    return t;
+  };
+  function exportMonth(m) {
+    const X = XL();
+    const res = monthAttendance(allData(), m, true);
+    const wb = X.utils.book_new();
+    const head = ["班別", "科目", "老師", "上課天數", "孩子", "出席率", "遲到", "早退", "請假", "缺席"];
+    X.utils.book_append_sheet(wb, sheet(
+      [head, ...res.classes.map((c) => [c.name, c.subject, c.teacher, c.days, c.kids, c.rate ?? "—", c.late, c.early, c.leave, c.absent])],
+      [10, 7, 9, 9, 6, 8, 6, 6, 6, 6],
+      [5]
+    ), "總覽");
+    const used = /* @__PURE__ */ new Set(["總覽"]);
+    for (const c of res.classes) {
+      const n = c.dates.length;
+      const aoa = [
+        ["孩子", "年級", ...c.dateLabels, "出席率", "遲到", "早退", "請假", "缺席"],
+        ...c.students.map((s) => [s.name, s.gradeLabel, ...c.dates.map((d) => s.marks[d] ?? ""), s.rate ?? "—", s.late, s.early, s.leave, s.absent])
+      ];
+      X.utils.book_append_sheet(wb, sheet(aoa, [10, 8, ...Array(n).fill(11), 8, 6, 6, 6, 6], [2 + n]), safeTitle(c.name, used));
+    }
+    saveBook(wb, `出席彙整_${m}.xlsx`);
+  }
+  var EXPORT_ORDER = [
+    "students",
+    "teachers",
+    "classes",
+    "classSlots",
+    "enrollments",
+    "subjects",
+    "taskTypes",
+    "defaultSlots",
+    "semesters",
+    "holidays",
+    "resources",
+    "selActivities",
+    "backupOptions",
+    "readingList",
+    "sessions",
+    "feedback",
+    "blocks",
+    "tasks",
+    "records",
+    "incidents",
+    "evaluations",
+    "posts",
+    "replies"
+  ];
+  function exportWorkbook({ baseOnly = false } = {}) {
+    const X = XL();
+    const wb = X.utils.book_new();
+    const readme = [
+      ["永齡課輔系統 資料匯出"],
+      [`匯出時間：${fmt(/* @__PURE__ */ new Date())}`],
+      [`資料夾：${DB.backend?.label || ""}`],
+      [""],
+      ["每個工作表 = 系統中的一張資料表；第一列是欄位名稱。"],
+      ["「基本資料」類工作表（孩子、老師、班級、上課時段、分班、科目…）可以修改後，由督導在「系統設定 → 從 Excel 匯入基本資料」匯回。"],
+      ["ID 欄空白 = 新增一筆（系統自動編號）；ID 相同 = 更新該筆。刪除請在系統中操作。"],
+      ["教學紀錄類工作表只供查詢與統計，匯回時會略過。"]
+    ];
+    const ws0 = X.utils.aoa_to_sheet(readme);
+    ws0["!cols"] = [{ wch: 100 }];
+    X.utils.book_append_sheet(wb, ws0, "說明");
+    for (const t of EXPORT_ORDER) {
+      if (baseOnly && !BASE_TABLES.includes(t)) continue;
+      const def = TDEF[t];
+      const cols = def.cols.filter((c) => c.kind !== "auto" && !(t === "sessions" && c.key === "updatedAt"));
+      const list = rows(t).sort((a, b) => String(a[def.idKey]).localeCompare(String(b[def.idKey]), "zh-Hant"));
+      const aoa = [cols.map((c) => c.label), ...list.map((r) => cols.map((c) => r[c.key] ?? ""))];
+      X.utils.book_append_sheet(wb, sheet(aoa, cols.map((c) => c.kind === "longtext" ? 40 : c.kind === "date" ? 11 : 12)), def.sheet.slice(0, 31));
+    }
+    if (!baseOnly) {
+      const sem = currentSem();
+      if (sem) {
+        const ins = insights(sem);
+        const aoa = [
+          ["孩子ID", "孩子", "年級", "風險等級", "風險分數", "學習狀態", "風險因子", "優勢", "需加強", "建議", "學習摘要"],
+          ...Object.values(ins.students).sort((a, b) => b.score - a.score).map((s) => [
+            s.studentId,
+            s.name,
+            s.grade,
+            s.levelLabel,
+            s.score,
+            s.status,
+            (s.factors || []).map((f) => `${f.label}（${f.detail}）`).join("；"),
+            (s.strengths || []).join("、"),
+            (s.weaknesses || []).join("、"),
+            (s.suggestions || []).join("；"),
+            s.summary
+          ])
+        ];
+        X.utils.book_append_sheet(wb, sheet(aoa, [8, 9, 6, 9, 8, 9, 50, 24, 24, 50, 70]), `學習摘要與風險_${sem}`.slice(0, 31));
+      }
+    }
+    const org = (DB.settings.orgName || "永齡課輔").replace(/[\\/:*?"<>|]/g, "_");
+    saveBook(wb, `${org}_${baseOnly ? "基本資料" : "完整資料"}_${fmt(/* @__PURE__ */ new Date()).replace(/[-: ]/g, "").slice(0, 12)}.xlsx`);
+  }
+  async function readBaseWorkbook(file) {
+    const X = XL();
+    const wb = X.read(await file.arrayBuffer(), { type: "array", cellDates: true });
+    const out = {}, report = [];
+    for (const t of BASE_TABLES) {
+      const def = TDEF[t];
+      const ws = wb.Sheets[def.sheet];
+      if (!ws) continue;
+      const aoa = X.utils.sheet_to_json(ws, { header: 1, raw: true, defval: "" });
+      if (!aoa.length) continue;
+      const head = aoa[0].map((h2) => String(h2).trim());
+      const map = head.map((h2) => def.cols.find((c) => c.kind !== "auto" && (c.label === h2 || c.key === h2))?.key || null);
+      const list = [];
+      for (const r of aoa.slice(1)) {
+        if (r.every((v) => v === "" || v == null)) continue;
+        const row = {};
+        map.forEach((k, i) => {
+          if (k) row[k] = cellValue(r[i], def.cols.find((c) => c.key === k));
+        });
+        list.push(row);
+      }
+      out[t] = list;
+      report.push(`${def.sheet} ${list.length} 筆`);
+    }
+    return { tables: out, report };
+  }
+  function cellValue(v, col) {
+    if (v instanceof Date) {
+      if (col.kind === "time") return `${pad4(v.getHours())}:${pad4(v.getMinutes())}`;
+      return `${v.getFullYear()}-${pad4(v.getMonth() + 1)}-${pad4(v.getDate())}`;
+    }
+    if (col.kind === "time" && typeof v === "number" && v < 1) {
+      const m = Math.round(v * 1440);
+      return `${pad4(Math.floor(m / 60))}:${pad4(m % 60)}`;
+    }
+    if (col.kind === "date" && typeof v === "string") {
+      const m = /^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/.exec(v.trim());
+      if (m) return `${m[1]}-${pad4(+m[2])}-${pad4(+m[3])}`;
+    }
+    if (col.kind === "int") return v === "" ? null : Number(v);
+    return typeof v === "string" ? v.trim() : String(v ?? "");
+  }
+  function handleDownload(url) {
+    const u = new URL(url, "http://x");
+    if (u.pathname === "/api/attendance/month/export") return exportMonth(u.searchParams.get("month") || today().slice(0, 7));
+    if (u.pathname === "/api/export/workbook") return exportWorkbook({ baseOnly: u.searchParams.get("base") === "1" });
+    throw new DbError("不支援的下載：" + url);
   }
 
   // src/js/store.js
@@ -4821,234 +5081,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   }
   function openPosts() {
     return S.data.posts.filter((p) => ["open"].includes(postState(p).key));
-  }
-
-  // src/js/cloud.js
-  var CLOUD = typeof window !== "undefined" && window.YL_CLOUD && window.YL_CLOUD.api ? window.YL_CLOUD : null;
-  var CLOUD_UNSET = typeof window !== "undefined" && !!window.YL_CLOUD && !CLOUD;
-  var SESSION_KEY = "yl-cloud-session";
-  var EMAIL_KEY = "yl-cloud-email";
-  function loadSession() {
-    for (const store of [() => sessionStorage, () => localStorage]) {
-      try {
-        const s = JSON.parse(store().getItem(SESSION_KEY) || "null");
-        if (s && s.token && s.api === CLOUD.api) return s;
-      } catch {
-      }
-    }
-    return null;
-  }
-  function saveSession2(s) {
-    try {
-      (s.shared ? sessionStorage : localStorage).setItem(SESSION_KEY, JSON.stringify(s));
-    } catch {
-    }
-  }
-  function clearSession() {
-    try {
-      localStorage.removeItem(SESSION_KEY);
-    } catch {
-    }
-    try {
-      sessionStorage.removeItem(SESSION_KEY);
-    } catch {
-    }
-  }
-  async function cloudCall(action, payload = {}) {
-    let res;
-    try {
-      res = await fetch(CLOUD.api, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action, ...payload }) });
-    } catch {
-      const err = new DbError("連不上雲端主機，請檢查網路後再試一次");
-      err.offline = true;
-      throw err;
-    }
-    let j;
-    try {
-      j = await res.json();
-    } catch {
-      throw new DbError(`雲端主機沒有正確回應（${res.status}），請稍後再試`);
-    }
-    if (!j.ok) {
-      const err = new DbError(j.error || "雲端主機發生錯誤");
-      err.code = j.code || "error";
-      if (err.code === "conflict") err.conflict = true;
-      if (err.code === "auth") dispatchEvent(new CustomEvent("yl-auth", { detail: err.message }));
-      throw err;
-    }
-    return j;
-  }
-  var CloudBackend = class {
-    constructor(session) {
-      this.session = session;
-      this.kind = "cloud";
-      this.label = "Google 雲端硬碟";
-      this.writable = true;
-      this.serverBackup = true;
-      this.user = session.email;
-      this.shared = !!session.shared;
-      this.man = null;
-      this.at = 0;
-      this.texts = /* @__PURE__ */ new Map();
-      this.pending = null;
-    }
-    get me() {
-      return this.session.me;
-    }
-    async refresh() {
-      const known = {};
-      for (const [p, t] of this.texts) known[p] = t.mtime;
-      const r = await cloudCall("sync", { token: this.session.token, known });
-      for (const [p, text] of Object.entries(r.data || {})) this.texts.set(p, { text, mtime: r.files[p] });
-      for (const p of [...this.texts.keys()]) if (!(p in r.files)) this.texts.delete(p);
-      this.man = r.files;
-      this.at = Date.now();
-      if (r.me) {
-        this.session.me = r.me;
-        saveSession2(this.session);
-      }
-    }
-    async ensure(maxAge = 1500) {
-      if (maxAge > 0 && this.man && Date.now() - this.at < maxAge && !this.pending) return;
-      if (this.pending && maxAge === 0) await this.pending.catch(() => {
-      });
-      if (!this.pending) this.pending = this.refresh().finally(() => {
-        this.pending = null;
-      });
-      await this.pending;
-    }
-    async list(dir) {
-      await this.ensure();
-      const pre = dir.replace(/\/$/, "") + "/";
-      return Object.keys(this.man).filter((p) => p.startsWith(pre) && !p.slice(pre.length).includes("/")).map((p) => p.slice(pre.length));
-    }
-    async stat(p) {
-      await this.ensure();
-      return this.man[p] ?? null;
-    }
-    async read(p, opts = {}) {
-      await this.ensure(opts.fresh ? 0 : 1500);
-      if (this.man[p] == null) return null;
-      const t = this.texts.get(p);
-      return t ? { text: t.text, mtime: t.mtime } : null;
-    }
-    async exists(p) {
-      return await this.stat(p) != null;
-    }
-    async write(p, text, expect) {
-      const r = await cloudCall("write", { token: this.session.token, path: p, text, expect: expect ?? null });
-      this.texts.set(p, { text, mtime: r.mtime });
-      if (this.man) this.man[p] = r.mtime;
-      return r.mtime;
-    }
-  };
-  function cloudLogin(note = "") {
-    return new Promise((resolve) => {
-      const el = $("#content");
-      $("#page-title").textContent = "登入";
-      $("#page-sub").textContent = "用老師名冊上的 Email 登入，系統會寄一組 6 位數驗證碼給你";
-      let email = "";
-      try {
-        email = localStorage.getItem(EMAIL_KEY) || "";
-      } catch {
-      }
-      const step1 = (msg = note) => {
-        el.innerHTML = `<div class="boot"><div class="card boot-card"><div class="card-body stack" style="gap:14px">
-        <div class="boot-icon">${icon("teacher")}</div>
-        <h2 style="margin:0">永齡課輔系統</h2>
-        <p class="ink2" style="margin:0;line-height:1.8">請輸入你在老師名冊上的 Email（通常是 Gmail），我們會寄驗證碼給你。</p>
-        ${msg ? `<div class="callout warn small">${icon("alert", "sm")} ${esc(msg)}</div>` : ""}
-        <form id="l-form1" class="stack" style="gap:10px">
-          <label class="field"><span>Email</span><input class="input" id="l-email" type="email" autocomplete="email" inputmode="email" required value="${esc(email)}" placeholder="例：name@gmail.com"></label>
-          <button class="btn primary lg" id="l-send" type="submit">${icon("send", "sm")}寄驗證碼</button>
-        </form>
-        <p class="small muted" style="margin:0;line-height:1.7">登入後，自己的電腦 30 天內不用再登入；共用電腦請在下一步勾選「這是共用電腦」。</p>
-      </div></div></div>`;
-        const inp = $("#l-email");
-        inp.focus();
-        $("#l-form1").onsubmit = async (e) => {
-          e.preventDefault();
-          email = inp.value.trim().toLowerCase();
-          const btn = $("#l-send");
-          btn.disabled = true;
-          btn.textContent = "寄送中…";
-          try {
-            await cloudCall("login.request", { email });
-            try {
-              localStorage.setItem(EMAIL_KEY, email);
-            } catch {
-            }
-            step2();
-          } catch (err) {
-            step1(err.message);
-          }
-        };
-      };
-      const step2 = (msg = "") => {
-        el.innerHTML = `<div class="boot"><div class="card boot-card"><div class="card-body stack" style="gap:14px">
-        <div class="boot-icon">${icon("send")}</div>
-        <h2 style="margin:0">輸入驗證碼</h2>
-        <p class="ink2" style="margin:0;line-height:1.8">驗證碼已寄到 <b>${esc(email)}</b>，10 分鐘內有效。<br><span class="small muted">沒收到的話，請看一下「垃圾郵件」或「促銷內容」。</span></p>
-        ${msg ? `<div class="callout warn small">${icon("alert", "sm")} ${esc(msg)}</div>` : ""}
-        <form id="l-form2" class="stack" style="gap:10px">
-          <label class="field"><span>6 位數驗證碼</span><input class="input" id="l-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required style="font-size:22px;letter-spacing:6px;text-align:center"></label>
-          <label class="row small" style="gap:8px;cursor:pointer"><input type="checkbox" id="l-shared">這是共用電腦（關掉瀏覽器就自動登出）</label>
-          <button class="btn primary lg" id="l-go" type="submit">${icon("check", "sm")}登入</button>
-        </form>
-        <div class="row"><button class="btn sm ghost" id="l-back">換一個 Email</button><span class="sp"></span><button class="btn sm" id="l-resend">重新寄送</button></div>
-      </div></div></div>`;
-        const inp = $("#l-code");
-        inp.focus();
-        $("#l-back").onclick = () => step1("");
-        $("#l-resend").onclick = async () => {
-          try {
-            await cloudCall("login.request", { email });
-            toast("已重新寄送驗證碼");
-          } catch (err) {
-            step2(err.message);
-          }
-        };
-        $("#l-form2").onsubmit = async (e) => {
-          e.preventDefault();
-          const btn = $("#l-go");
-          btn.disabled = true;
-          btn.textContent = "登入中…";
-          try {
-            const shared = !!$("#l-shared")?.checked;
-            const r = await cloudCall("login.verify", { email, code: inp.value, shared });
-            const s = { api: CLOUD.api, token: r.token, email, me: r.me, shared };
-            saveSession2(s);
-            resolve(s);
-          } catch (err) {
-            step2(err.message);
-          }
-        };
-      };
-      step1();
-    });
-  }
-  function cloudUnset() {
-    $("#page-title").textContent = "雲端版尚未設定";
-    $("#page-sub").textContent = "";
-    $("#content").innerHTML = `<div class="boot"><div class="card boot-card"><div class="card-body stack" style="gap:14px">
-    <div class="boot-icon">${icon("settings")}</div>
-    <h2 style="margin:0">還沒有設定雲端主機</h2>
-    <p class="ink2" style="margin:0;line-height:1.8">請督導把 Apps Script 部署後的網址（結尾是 <code>/exec</code>）填進這個網頁旁邊的 <code>config.js</code>。</p></div></div></div>`;
-    return new Promise(() => {
-    });
-  }
-  function cloudRetry(msg) {
-    return new Promise((resolve) => {
-      $("#page-title").textContent = "無法連線";
-      $("#page-sub").textContent = "";
-      $("#content").innerHTML = `<div class="boot"><div class="card boot-card"><div class="card-body stack" style="gap:14px">
-      <div class="boot-icon">${icon("alert")}</div>
-      <div class="callout warn">${esc(msg)}</div>
-      <button class="btn primary lg" id="l-retry">${icon("refresh", "sm")}再試一次</button>
-      <button class="btn sm ghost" id="l-out">改用其他帳號登入</button></div></div></div>`;
-      $("#l-retry").onclick = () => resolve("retry");
-      $("#l-out").onclick = () => resolve("logout");
-    });
   }
 
   // src/js/api.js
@@ -5591,12 +5623,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   function shift(m, n) {
     const [y, mo] = m.split("-").map(Number);
     const d = new Date(y, mo - 1 + n, 1);
-    return `${d.getFullYear()}-${pad4(d.getMonth() + 1)}`;
+    return `${d.getFullYear()}-${pad3(d.getMonth() + 1)}`;
   }
   var month_default = {
     async render(ctx) {
       const now = /* @__PURE__ */ new Date();
-      const m = ctx.query.get("m") || `${now.getFullYear()}-${pad4(now.getMonth() + 1)}`;
+      const m = ctx.query.get("m") || `${now.getFullYear()}-${pad3(now.getMonth() + 1)}`;
       const all = ctx.query.get("all") === "1";
       const sup = isSupervisor2();
       ctx.title("月出席", `${m.replace("-", " 年 ")} 月・出席率＝(出席＋遲到＋早退)÷已點名人次`);
@@ -6283,7 +6315,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     ${sg.changes?.length ? `<div class="changes">用語調整：${sg.changes.map((c) => `<del>${esc(c.from)}</del> → <ins>${esc(c.to)}</ins>`).join("；")}</div>` : ""}
     ${sg.warnings?.length ? `<div class="changes" style="color:var(--critical)">${sg.warnings.map((w) => "⚠ " + esc(w)).join("<br>")}</div>` : ""}
     ${(sg.tags || []).length ? `<div class="mt8">${sg.tags.map((t) => `<span class="chip outline" style="margin:1px">${esc(t)}</span>`).join("")}</div>` : ""}
-    ${sg.summary ? `<div class="small muted mt8">摘要：${esc(sg.summary)}</div>` : ""}</div>`;
+    ${sg.summary ? `<div class="small muted mt8">摘要：${esc(sg.summary)}</div>` : ""}
+    ${sg.ai ? '<div class="small muted mt8">AI 產生的文字，請確認內容正確、沒有多寫或漏寫再套用；原本的紀錄會保留。</div>' : ""}</div>`;
   }
   function kidRow(k) {
     const r = rs.recs[k.id];
@@ -6356,7 +6389,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       <div class="card-body" id="r-incs">${rs.incidents.map(incidentRow).join("") || '<div class="small muted">沒有事件</div>'}</div></div>
     <div class="card mt16"><div class="card-head"><h3>課後紀錄（整體）</h3><span class="sub">今天全班的狀況、需要督導協助的事</span></div>
       <div class="card-body"><textarea class="textarea" data-info="note" rows="3" placeholder="例：全班大致穩定，有兩位孩子進度落後，下次個別加強">${esc(rs.info.note)}</textarea>
-        <div class="row mt8"><button class="btn sm" data-tidy="__session">${icon("sparkle", "sm")}整理文字</button></div>
+        <div class="row mt8"><button class="btn sm" data-tidy="__session">${icon("sparkle", "sm")}整理文字</button>
+          ${S.meta?.ai?.enabled ? `<button class="btn sm" data-ai="__session">${icon("sparkle", "sm")}AI 潤稿</button>` : ""}</div>
         ${suggestBox("__session", rs.suggest.__session)}
         ${rs.info.polished ? `<label class="field mt8"><span>整理後</span><textarea class="textarea" data-info="polished" rows="2">${esc(rs.info.polished)}</textarea></label>` : ""}</div></div>
     <div class="sticky-foot"><span id="r-foot-msg">${rs.dirty ? '<span class="chip warn">尚未儲存</span> <span class="small muted">草稿已自動保存在這台電腦</span>' : `<span class="chip ${st2.chip}">${st2.label}</span> ${s?.submittedAt ? `<span class="small muted">送出於 ${esc(s.submittedAt)}</span>` : ""}`}</span><span class="sp"></span>
@@ -6493,21 +6527,28 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     }
   }
   async function aiOne(key, btn) {
-    const r = rs.recs[key];
-    if (!r.note.trim()) {
+    const isSession = key === "__session";
+    const r = isSession ? null : rs.recs[key];
+    const text = isSession ? rs.info.note : r.note;
+    if (!text.trim()) {
       toast("請先輸入老師紀錄", "err");
       return;
     }
     btn.disabled = true;
+    const label = btn.innerHTML;
+    btn.textContent = "AI 潤稿中…";
     try {
       const c = get("classes", rs.cid);
-      const res = await post("/api/ai/polish", { text: r.note, context: { 科目: subjectOfClass(c), 出席: r.attendance, 學習表現: r.score } });
+      const context = isSession ? { 科目: subjectOfClass(c), 類型: "全班課後紀錄" } : { 科目: subjectOfClass(c), 出席: r.attendance, 學習表現: r.score };
+      const res = await post("/api/ai/polish", { text, context });
       rs.suggest[key] = { ...res, ai: true };
-      rerenderKid(key);
+      if (isSession) renderAll2();
+      else rerenderKid(key);
     } catch (e) {
       toast(e.message, "err");
     } finally {
       btn.disabled = false;
+      btn.innerHTML = label;
     }
   }
   async function tidyAll() {
