@@ -382,6 +382,35 @@ table.flow { border-collapse: collapse; width: 100%; min-width: 760px; table-lay
 
 /* ── 課後紀錄 ── */
 .kid-row { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line-2); }
+/* 課後紀錄：每位孩子一張點選卡 */
+.kid-card { display: block; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; background: var(--surface); }
+.kid-card:last-child { border-bottom: 1px solid var(--line); }
+.kid-card.kid-row { grid-template-columns: none; }
+.kc-head { display: flex; align-items: center; gap: 8px; }
+.kc-head b { font-size: 16px; }
+.kid-card .needs { margin-top: 4px; font-size: 12px; color: var(--serious); display: flex; gap: 4px; }
+.kc-body { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.kc-line { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 10px; align-items: start; }
+.kc-lbl { font-size: 13px; color: var(--ink-2); padding-top: 7px; }
+.kc-val { min-width: 0; }
+.kc-tasks { margin-top: 6px; line-height: 1.6; }
+.seg.pick { display: flex; flex-wrap: wrap; gap: 6px; border: 0; background: transparent; overflow: visible; border-radius: 0; height: auto; min-width: 0; padding: 0; font-weight: inherit; }
+.seg.pick button { height: 34px; padding: 0 14px; border: 1px solid var(--line); border-left: 1px solid var(--line); border-radius: 999px; background: var(--surface-2, var(--surface)); color: var(--ink); font-size: 14px; }
+.seg.pick button:first-child { border-left: 1px solid var(--line); }
+.seg.pick button:hover { background: var(--surface-3); }
+.seg.pick button.on { background: #2e6b3f; border-color: #2e6b3f; color: #fff; font-weight: 700; }
+.seg.pick button.on.mid { background: #d9722c; border-color: #d9722c; }
+.seg.pick button.on.bad { background: #a8401f; border-color: #a8401f; }
+.seg.att.pick button.on[data-v="出席"] { background: #2e6b3f; border-color: #2e6b3f; color: #fff; }
+.seg.att.pick button.on[data-v="遲到"], .seg.att.pick button.on[data-v="早退"] { background: #d9722c; border-color: #d9722c; color: #fff; }
+.seg.att.pick button.on[data-v="請假"] { background: #5f6b76; border-color: #5f6b76; color: #fff; }
+.seg.att.pick button.on[data-v="缺席"] { background: #a8401f; border-color: #a8401f; color: #fff; }
+.pick-more { margin-top: 8px; padding: 10px 12px; border-radius: 10px; background: var(--serious-soft); }
+.pick-more .opts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.pick-more > .opts:first-child { margin-top: 0; }
+.pick-more button { height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 13.5px; cursor: pointer; text-align: left; }
+.pick-more button.on { background: #a8401f; border-color: #a8401f; color: #fff; font-weight: 600; }
+.btn.dashed { border-style: dashed; background: transparent; color: var(--ink-2); }
 .kid-row:last-child { border-bottom: 0; }
 .kid-name b { font-size: 15px; }
 .kid-name .needs { margin-top: 4px; font-size: 12px; color: var(--serious); display: flex; gap: 4px; }
@@ -469,6 +498,8 @@ table.flow { border-collapse: collapse; width: 100%; min-width: 760px; table-lay
   .sticky-foot { margin: 18px -16px -64px; padding: 10px 16px; }
   .g2, .g4 { grid-template-columns: minmax(0, 1fr); }
   .kid-row { grid-template-columns: 1fr; }
+  .kc-line { grid-template-columns: 1fr; gap: 4px; }
+  .kc-lbl { padding-top: 0; }
   .week, .week.with-weekend { grid-template-columns: 1fr; }
   .demo-banner { padding: 6px 16px; }
   .who-list { grid-template-columns: 1fr; }
@@ -1604,20 +1635,78 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             ]
           },
           {
+            "key": "homework",
+            "label": "學校作業",
+            "kind": "enum",
+            "options": [
+              "完成",
+              "未完成",
+              "完成未訂正",
+              "沒有作業",
+              "沒帶"
+            ]
+          },
+          {
+            "key": "taskDone",
+            "label": "今日任務",
+            "kind": "enum",
+            "options": [
+              "全部完成",
+              "大部分完成",
+              "大多沒完成"
+            ]
+          },
+          {
+            "key": "undone",
+            "label": "沒完成的任務",
+            "kind": "text"
+          },
+          {
+            "key": "learning",
+            "label": "學習表現",
+            "kind": "enum",
+            "options": [
+              "很好",
+              "普通",
+              "需要關注"
+            ]
+          },
+          {
+            "key": "learningTags",
+            "label": "學習需要關注",
+            "kind": "text"
+          },
+          {
+            "key": "behavior",
+            "label": "行為表現",
+            "kind": "enum",
+            "options": [
+              "很好",
+              "普通",
+              "需要關注"
+            ]
+          },
+          {
+            "key": "behaviorTags",
+            "label": "行為需要關注",
+            "kind": "text"
+          },
+          {
             "key": "progress",
             "label": "今日進度",
             "kind": "text"
           },
           {
             "key": "score",
-            "label": "學習表現(1-5)",
+            "label": "學習表現分數(1-5)",
             "kind": "int",
             "min": 1,
-            "max": 5
+            "max": 5,
+            "hint": "由學習表現自動換算：很好 5、普通 3、需要關注 2"
           },
           {
             "key": "note",
-            "label": "老師紀錄",
+            "label": "今日觀察",
             "kind": "longtext"
           },
           {
@@ -2266,6 +2355,23 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         "完成",
         "部分完成",
         "未完成"
+      ],
+      "homework": [
+        "完成",
+        "未完成",
+        "完成未訂正",
+        "沒有作業",
+        "沒帶"
+      ],
+      "taskDone": [
+        "全部完成",
+        "大部分完成",
+        "大多沒完成"
+      ],
+      "levels": [
+        "很好",
+        "普通",
+        "需要關注"
       ],
       "blockModes": [
         "全班",
@@ -3726,7 +3832,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       }
     }
     if (parts.has("record") && payload.records) {
-      const keys = ["attendance", "progress", "score", "note", "polished", "summary", "tags"];
+      const keys = ["attendance", "homework", "taskDone", "undone", "learning", "learningTags", "behavior", "behaviorTags", "progress", "score", "note", "polished", "summary", "tags"];
       for (const ri of payload.records) {
         if (!ri.studentId) continue;
         const rid2 = `R-${sin.classId}-${sin.date}-${ri.studentId}`;
@@ -3740,6 +3846,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
         const same = prev && keys.every((k) => (prev[k] ?? "") === (merged[k] ?? ""));
         if (!same) ops.push({ table: "records", row: { id: rid2, sessionId: id, studentId: ri.studentId, ...merged } });
+      }
+    }
+    if (parts.has("record") && payload.taskStatus) {
+      for (const ts of payload.taskStatus) {
+        const t = getRow("tasks", ts.id);
+        if (!t || (t.status || "") === (ts.status || "")) continue;
+        const blk = getRow("blocks", t.blockId);
+        if (!blk || blk.sessionId !== id) continue;
+        ops.push({ table: "tasks", row: { id: t.id, blockId: t.blockId, studentId: t.studentId, type: t.type || "", content: t.content || "", status: ts.status || "" } });
       }
     }
     if (parts.has("record") && payload.incidents) {
@@ -4000,6 +4115,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     if (!label) return '<span class="muted">—</span>';
     const s = score != null && label !== "資料不足" && label !== "穩定" ? ` ${score}` : "";
     return `<span class="risk ${LEVEL_CLS[label] || "insufficient"}">${esc(label)}${s}</span>`;
+  }
+  var R_TONE = { 完成: "good", 沒有作業: "good", 全部完成: "good", 很好: "good", 完成未訂正: "warn", 大部分完成: "warn", 普通: "warn", 未完成: "critical", 沒帶: "critical", 大多沒完成: "critical", 需要關注: "critical" };
+  function recordChips(r, { taskStat = null } = {}) {
+    if (!r) return "";
+    const learning = r.learning || (r.score === "" || r.score == null ? "" : Number(r.score) >= 4 ? "很好" : Number(r.score) >= 3 ? "普通" : "需要關注");
+    const chip = (label, v, extra = "") => v ? `<span class="chip ${R_TONE[v] || "outline"}" style="margin:1px">${label}${esc(v)}${extra ? "：" + esc(extra) : ""}</span>` : "";
+    const task = r.taskDone || (taskStat ? `${taskStat.done}/${taskStat.n}` : "");
+    return [
+      chip("作業 ", r.homework),
+      task ? `<span class="chip ${R_TONE[task] || "outline"}" style="margin:1px">任務 ${esc(task)}</span>` : "",
+      chip("學習 ", learning, r.learningTags),
+      chip("行為 ", r.behavior, r.behaviorTags)
+    ].join("") + (r.undone ? `<div class="small muted mt8">沒完成：${esc(String(r.undone).split("；").map((x) => x.replace(/^\d+\. /, "")).join("、"))}</div>` : "");
   }
   function attChip(a) {
     return a ? `<span class="att ${esc(a)}">${esc(a)}</span>` : '<span class="muted">—</span>';
@@ -5512,14 +5640,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         <dt>靜心活動</dt><dd>${esc(s.mindful || "—")}</dd><dt>教學重點</dt><dd>${esc(s.focus || "—")}</dd></dl>
       <dl class="kv"><dt>課堂氣氛</dt><dd>${moodText(s.mood)}</dd><dt>送出</dt><dd>${esc(s.submittedAt || "—")}${s.submitVersion > 1 ? `（第 ${esc(s.submitVersion)} 版）` : ""}　${esc(nameOf("teachers", s.teacherId) || teacherOfClass(x.cls))}</dd>
         <dt>課後紀錄</dt><dd>${esc(s.polished || s.note || "—")}</dd></dl></div>
-    <div class="tbl-wrap mt12"><table class="tbl"><thead><tr><th>孩子</th><th>出席</th><th>今日進度</th><th class="c">表現</th><th class="c">任務</th><th>老師紀錄</th></tr></thead><tbody>
+    <div class="tbl-wrap mt12"><table class="tbl"><thead><tr><th>孩子</th><th>出席</th><th>作業・任務・表現</th><th>今日觀察</th></tr></thead><tbody>
       ${[...kids, ...extra].map((k) => {
       const r = recs.get(k.id);
       const ts = taskStat.get(k.id);
       return `<tr><td class="nowrap"><a href="#/kids/${k.id}"><b>${esc(k.name)}</b></a><div class="small muted">${k.grade ? k.grade + " 年級" : ""}</div></td>
           <td>${r?.attendance ? attChip(r.attendance) : '<span class="chip outline">未點名</span>'}</td>
-          <td class="small">${esc(r?.progress || "")}</td><td class="c num">${r?.score ?? '<span class="muted">—</span>'}</td>
-          <td class="c num small">${ts ? `${ts.done}/${ts.n}` : '<span class="muted">—</span>'}</td>
+          <td style="min-width:220px">${recordChips(r, { taskStat: ts }) || '<span class="muted">—</span>'}${r?.progress ? `<div class="small muted mt8">進度：${esc(r.progress)}</div>` : ""}</td>
           <td class="small">${esc(r?.polished || r?.note || "")}${r?.tags ? `<div class="mt8">${r.tags.split(/[、,]/).filter(Boolean).map((t) => `<span class="chip outline" style="margin:1px">${esc(t)}</span>`).join("")}</div>` : ""}</td></tr>`;
     }).join("")}</tbody></table></div>
     ${incs.length ? `<div class="section-title">${icon("alert", "sm")}事件 ${incs.length} 件</div>${incs.map((i) => `<div class="callout ${i.severity === "高" ? "critical" : "warn"}" style="margin-bottom:6px">
@@ -6236,6 +6363,28 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   var ctxRef2 = null;
   var ATT = ["出席", "遲到", "早退", "請假", "缺席"];
   var SEV = ["低", "中", "高"];
+  var HW = ["完成", "未完成", "完成未訂正", "沒有作業", "沒帶"];
+  var TASK = ["全部完成", "大部分完成", "大多沒完成"];
+  var LEVEL = ["很好", "普通", "需要關注"];
+  var LEARN_TAGS = ["專注不足", "觀念不清", "粗心", "進度落後", "學習意願低", "需要個別指導"];
+  var BEHAV_TAGS = ["干擾他人", "情緒起伏大", "與同儕衝突", "不聽從指令", "擅自離座", "不當言語"];
+  var TONE = { 完成: "good", 沒有作業: "good", 全部完成: "good", 很好: "good", 完成未訂正: "mid", 大部分完成: "mid", 普通: "mid", 未完成: "bad", 沒帶: "bad", 大多沒完成: "bad", 需要關注: "bad" };
+  var SCORE = { 很好: 5, 普通: 3, 需要關注: 2 };
+  var fromScore = (v) => v === "" || v == null ? "" : Number(v) >= 4 ? "很好" : Number(v) >= 3 ? "普通" : "需要關注";
+  var isHere = (a) => ["出席", "遲到", "早退"].includes(a);
+  var splitList = (v) => String(v || "").split(/[；、]/).map((x) => x.trim()).filter(Boolean);
+  var UNDONE_SEP = "；";
+  function kidTasks(sessionId, kid, subj) {
+    if (!sessionId) return [];
+    const out = [];
+    for (const b of blocksOf(sessionId)) {
+      if (b.mode !== "個別") continue;
+      const t = tasksOf(b.id).find((x) => x.studentId === kid);
+      if (!t || !(t.type || t.content)) continue;
+      out.push({ id: t.id, status: t.status || "", label: `${out.length + 1}. ${t.type ? `【${t.type}】` : subj}${t.content || "（未填內容）"}` });
+    }
+    return out;
+  }
   var draftKey2 = () => `draft:record:${rs.cid}:${rs.date}`;
   function pickDefaults2(ctx) {
     const today3 = todayISO();
@@ -6252,24 +6401,41 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     const recs = s ? recordMap(s.id) : /* @__PURE__ */ new Map();
     const extra = [...recs.keys()].filter((id) => !kids.some((k) => k.id === id)).map((id) => get("students", id)).filter(Boolean);
     const all = [...kids, ...extra];
+    const subj = subjectOfClass(get("classes", cid));
+    const tasks = Object.fromEntries(all.map((k) => [k.id, kidTasks(s?.id, k.id, subj)]));
     const state = {
       cid,
       date,
       sessionId: s?.id || null,
       session: s,
+      tasks,
       info: { mindful: s?.mindful || "", focus: s?.focus || "", mood: s?.mood || "", note: s?.note || "", polished: s?.polished || "" },
       kids: all,
       recs: Object.fromEntries(all.map((k) => {
         const r = recs.get(k.id) || {};
-        return [k.id, {
+        const rec = {
           attendance: r.attendance || "",
+          homework: r.homework || "",
+          taskDone: r.taskDone || "",
+          undone: r.undone || "",
+          learning: r.learning || fromScore(r.score),
+          learningTags: r.learningTags || "",
+          behavior: r.behavior || "",
+          behaviorTags: r.behaviorTags || "",
           progress: r.progress || "",
           score: r.score ?? "",
           note: r.note || "",
           polished: r.polished || "",
           summary: r.summary || "",
           tags: r.tags || ""
-        }];
+        };
+        const ts = tasks[k.id];
+        if (!rec.taskDone && ts.length && ts.every((t) => t.status)) {
+          const no = ts.filter((t) => t.status !== "完成");
+          rec.taskDone = !no.length ? "全部完成" : no.length * 2 <= ts.length ? "大部分完成" : "大多沒完成";
+          rec.undone = no.map((t) => t.label).join(UNDONE_SEP);
+        }
+        return [k.id, rec];
       })),
       incidents: (s ? incidentsOf(s.id) : []).map((i) => ({ ...i })),
       dirty: false,
@@ -6318,24 +6484,52 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     ${sg.summary ? `<div class="small muted mt8">摘要：${esc(sg.summary)}</div>` : ""}
     ${sg.ai ? '<div class="small muted mt8">AI 產生的文字，請確認內容正確、沒有多寫或漏寫再套用；原本的紀錄會保留。</div>' : ""}</div>`;
   }
+  function kidDone(r) {
+    if (!r.attendance) return false;
+    if (!isHere(r.attendance)) return true;
+    return !!(r.homework && r.taskDone && r.learning && r.behavior);
+  }
+  function pick(field, opts, v, cls = "") {
+    return `<div class="seg pick ${cls}" data-seg="${field}">${opts.map((o) => `<button type="button" data-v="${esc(o)}" class="${TONE[o] || ""}${o === v ? " on" : ""}">${esc(o)}</button>`).join("")}</div>`;
+  }
+  function multi(field, opts, sel, title = "") {
+    const set = new Set(field === "undone" ? String(sel || "").split(UNDONE_SEP) : splitList(sel));
+    return `<div class="pick-more" data-multi="${field}">${title ? `<div class="small ink2">${esc(title)}</div>` : ""}<div class="opts">${opts.map((o) => `<button type="button" data-v="${esc(o)}" class="${set.has(o) ? "on" : ""}">${esc(o)}</button>`).join("")}</div></div>`;
+  }
+  var line2 = (label, body) => `<div class="kc-line"><span class="kc-lbl">${label}</span><div class="kc-val">${body}</div></div>`;
   function kidRow(k) {
     const r = rs.recs[k.id];
     const lp = lastProgress(k.id, rs.cid, rs.date);
-    const here = !r.attendance || ["出席", "遲到", "早退"].includes(r.attendance);
-    return `<div class="kid-row" data-kid="${k.id}">
-    <div class="kid-name"><a href="#/kids/${k.id}"><b>${esc(k.name)}</b></a> <span class="small muted">${k.grade ? k.grade + " 年級" : ""}</span>
-      ${k.needs ? `<div class="needs">${icon("alert", "sm")}<span>${esc(k.needs)}</span></div>` : ""}
-      ${lp ? `<div class="small muted mt8">上次進度（${md2(lp.date)}）：${esc(lp.progress)}</div>` : ""}</div>
-    <div class="stack" style="gap:8px">
-      <div class="kid-controls">${segHtml(ATT, r.attendance, { cls: "att", name: "attendance" })}
-        <span><span class="lbl">學習表現</span>${segHtml([1, 2, 3, 4, 5], r.score, { cls: "sm", name: "score" })}</span></div>
-      <div class="row wrap"><input class="input" data-f="progress" value="${esc(r.progress)}" placeholder="今日進度，例：Unit 3 p.12" style="flex:1 1 220px" ${here ? "" : "disabled"}></div>
-      <textarea class="textarea" data-f="note" rows="2" placeholder="老師紀錄（隨手寫即可，例：今天很專心，應用題第3題要再練習）">${esc(r.note)}</textarea>
-      <div class="row wrap gap4"><button class="btn sm" data-tidy="${k.id}">${icon("sparkle", "sm")}整理文字</button>
-        ${S.meta?.ai?.enabled ? `<button class="btn sm" data-ai="${k.id}">${icon("sparkle", "sm")}AI 潤稿</button>` : ""}
-        ${r.tags ? r.tags.split(/[、,]/).filter(Boolean).map((t) => `<span class="chip outline">${esc(t)}</span>`).join("") : ""}</div>
-      ${suggestBox(k.id, rs.suggest[k.id])}
-      ${r.polished ? `<label class="field"><span>整理後紀錄（督導與家長看到的版本，可再修改）</span><textarea class="textarea" data-f="polished" rows="2">${esc(r.polished)}</textarea></label>` : ""}
+    const here = !r.attendance || isHere(r.attendance);
+    const ts = rs.tasks[k.id] || [];
+    const done = kidDone(r);
+    let taskBody = pick("taskDone", TASK, r.taskDone);
+    if (r.taskDone && r.taskDone !== "全部完成") {
+      taskBody += ts.length ? multi("undone", ts.map((t) => t.label), r.undone, "沒完成的是哪幾項？") : '<div class="pick-more"><div class="small ink2">今天的教學流程還沒有排這位孩子的任務，可以在「今日觀察」寫下沒完成的部分。</div></div>';
+    } else if (ts.length) {
+      taskBody += `<div class="small muted kc-tasks">今天的任務：${ts.map((t) => esc(t.label.replace(/^\d+\. /, ""))).join("、")}</div>`;
+    } else if (rs.sessionId === null || !blocksOf(rs.sessionId).length) {
+      taskBody += `<div class="small muted kc-tasks">教學流程還沒排，<a href="#/flow?class=${rs.cid}&date=${rs.date}">先排流程</a>就會自動帶入任務。</div>`;
+    }
+    return `<div class="kid-row kid-card" data-kid="${k.id}">
+    <div class="kc-head"><a href="#/kids/${k.id}"><b>${esc(k.name)}</b></a> <span class="small muted">${k.grade ? k.grade + " 年級" : ""}</span>
+      <span class="sp"></span><span class="chip ${done ? "good" : "outline"} kc-status">${done ? "已完成" : "未完成"}</span></div>
+    ${k.needs ? `<div class="needs">${icon("alert", "sm")}<span>${esc(k.needs)}</span></div>` : ""}
+    ${lp ? `<div class="small muted">上次進度（${md2(lp.date)}）：${esc(lp.progress)}</div>` : ""}
+    <div class="kc-body">
+      ${line2("出席", segHtml(ATT, r.attendance, { cls: "att pick", name: "attendance" }))}
+      ${here ? `
+      ${line2("學校作業", pick("homework", HW, r.homework))}
+      ${line2("今日任務", taskBody)}
+      ${line2("學習表現", pick("learning", LEVEL, r.learning) + (r.learning === "需要關注" ? multi("learningTags", LEARN_TAGS, r.learningTags) : ""))}
+      ${line2("行為表現", pick("behavior", LEVEL, r.behavior) + (r.behavior === "需要關注" ? multi("behaviorTags", BEHAV_TAGS, r.behaviorTags) : ""))}` : ""}
+      ${line2("今日觀察", `<textarea class="textarea" data-f="note" rows="2" placeholder="選填：亮點、進步、想記下的事">${esc(r.note)}</textarea>
+        ${r.note.trim() ? `<div class="row wrap gap4 mt8"><button class="btn sm" data-tidy="${k.id}">${icon("sparkle", "sm")}整理文字</button>
+          ${S.meta?.ai?.enabled ? `<button class="btn sm" data-ai="${k.id}">${icon("sparkle", "sm")}AI 潤稿</button>` : ""}
+          ${r.tags ? r.tags.split(/[、,]/).filter(Boolean).map((t) => `<span class="chip outline">${esc(t)}</span>`).join("") : ""}</div>` : ""}
+        ${suggestBox(k.id, rs.suggest[k.id])}
+        ${r.polished ? `<label class="field mt8"><span>整理後紀錄（督導與家長看到的版本，可再修改）</span><textarea class="textarea" data-f="polished" rows="2">${esc(r.polished)}</textarea></label>` : ""}`)}
+      <div><button type="button" class="btn sm dashed" data-help="${k.id}">${icon("plus", "sm")}需要協助／事件</button></div>
     </div></div>`;
   }
   function incidentRow(inc2, i) {
@@ -6418,8 +6612,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     }
     const row = t.closest(".kid-row");
     if (row && t.dataset.f) {
-      rs.recs[row.dataset.kid][t.dataset.f] = t.value;
-      return touch2();
+      const r = rs.recs[row.dataset.kid];
+      const had = !!r.note.trim();
+      r[t.dataset.f] = t.value;
+      touch2();
+      if (e.type === "change" && t.dataset.f === "note" && had !== !!r.note.trim()) rerenderKid(row.dataset.kid);
+      return;
     }
     const inc2 = t.closest("[data-inc]");
     if (inc2 && t.dataset.i) {
@@ -6439,13 +6637,36 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       seg.querySelectorAll("button").forEach((b) => b.classList.remove("on"));
       let v = wasOn ? "" : segBtn.dataset.v;
       if (!wasOn) segBtn.classList.add("on");
-      if (field === "score") v = v === "" ? "" : Number(v);
-      rs.recs[row.dataset.kid][field] = v;
-      if (field === "attendance") {
-        const inp = $('input[data-f="progress"]', row);
-        if (inp) inp.disabled = !!v && !["出席", "遲到", "早退"].includes(v);
+      const r = rs.recs[row.dataset.kid];
+      r[field] = v;
+      if (field === "learning") {
+        r.score = SCORE[v] ?? "";
+        if (v !== "需要關注") r.learningTags = "";
       }
+      if (field === "behavior" && v !== "需要關注") r.behaviorTags = "";
+      if (field === "taskDone" && (!v || v === "全部完成")) r.undone = "";
+      touch2();
+      rerenderKid(row.dataset.kid);
+      return;
+    }
+    const mBtn = t.closest("[data-multi] button");
+    if (mBtn) {
+      const row = mBtn.closest(".kid-row");
+      const field = mBtn.closest("[data-multi]").dataset.multi;
+      mBtn.classList.toggle("on");
+      const sep = field === "undone" ? UNDONE_SEP : "、";
+      rs.recs[row.dataset.kid][field] = $$("button.on", mBtn.closest("[data-multi]")).map((b) => b.dataset.v).join(sep);
       return touch2();
+    }
+    const help = t.closest("[data-help]");
+    if (help) {
+      rs.incidents.push({ id: null, studentId: help.dataset.help, type: "其他", severity: "低", description: "", action: "", status: "待處理" });
+      touch2();
+      $("#r-incs").innerHTML = rs.incidents.map(incidentRow).join("");
+      const card2 = $(`#r-incs [data-inc="${rs.incidents.length - 1}"]`);
+      card2?.scrollIntoView({ behavior: "smooth", block: "center" });
+      $('[data-i="description"]', card2)?.focus({ preventScroll: true });
+      return;
     }
     const mood = t.closest("[data-mood]");
     if (mood) {
@@ -6539,7 +6760,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     btn.textContent = "AI 潤稿中…";
     try {
       const c = get("classes", rs.cid);
-      const context = isSession ? { 科目: subjectOfClass(c), 類型: "全班課後紀錄" } : { 科目: subjectOfClass(c), 出席: r.attendance, 學習表現: r.score };
+      const context = isSession ? { 科目: subjectOfClass(c), 類型: "全班課後紀錄" } : {
+        科目: subjectOfClass(c),
+        出席: r.attendance,
+        學校作業: r.homework,
+        今日任務: r.taskDone,
+        學習表現: [r.learning, r.learningTags].filter(Boolean).join("："),
+        行為表現: [r.behavior, r.behaviorTags].filter(Boolean).join("：")
+      };
       const res = await post("/api/ai/polish", { text, context });
       rs.suggest[key] = { ...res, ai: true };
       if (isSession) renderAll2();
@@ -6573,7 +6801,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   }
   async function save2(submit) {
     const unmarked = rs.kids.filter((k) => !rs.recs[k.id].attendance).length;
-    if (submit && unmarked && !await confirmBox(`還有 ${unmarked} 位孩子沒有點名，確定要送出？`, { okText: "送出" })) return;
+    const undone = rs.kids.filter((k) => rs.recs[k.id].attendance && !kidDone(rs.recs[k.id])).length;
+    if (submit && (unmarked || undone) && !await confirmBox([unmarked ? `還有 ${unmarked} 位孩子沒有點名` : "", undone ? `${undone} 位孩子的卡片還有欄位沒點` : ""].filter(Boolean).join("，") + "，確定要送出？", { okText: "送出" })) return;
     const bad = rs.incidents.find((i) => !(i.description || "").trim());
     if (bad) {
       toast("事件需要填寫描述", "err");
@@ -6590,7 +6819,20 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         ...rs.info,
         teacherId: S.who?.teacherId || c?.teacherId || ""
       },
-      records: rs.kids.map((k) => ({ studentId: k.id, ...rs.recs[k.id], score: rs.recs[k.id].score === "" ? null : rs.recs[k.id].score })),
+      records: rs.kids.map((k) => {
+        const r = rs.recs[k.id];
+        const here = !r.attendance || isHere(r.attendance);
+        const clear = here ? {} : { homework: "", taskDone: "", undone: "", learning: "", learningTags: "", behavior: "", behaviorTags: "", score: "" };
+        const o = { studentId: k.id, ...r, ...clear };
+        o.score = o.score === "" ? null : o.score;
+        return o;
+      }),
+      taskStatus: rs.kids.flatMap((k) => {
+        const r = rs.recs[k.id];
+        if (!r.taskDone || !isHere(r.attendance || "出席") || r.taskDone !== "全部完成" && !r.undone) return [];
+        const no = new Set(String(r.undone || "").split(UNDONE_SEP));
+        return (rs.tasks[k.id] || []).map((t) => ({ id: t.id, status: r.taskDone === "全部完成" || !no.has(t.label) ? "完成" : "未完成" }));
+      }),
       incidents: rs.incidents
     };
     if (!rs.sessionId) {
@@ -6732,7 +6974,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     items.sort((a, b) => b.date.localeCompare(a.date));
     if (!items.length) return `<div class="empty">${icon("book")}<div>還沒有上課紀錄</div></div>`;
     return `<div class="timeline">${items.map((x) => `<div class="tl-item"><div class="tl-date">${md2(x.date)}<span>${mdw(x.date).slice(-3)} ${esc(x.c?.name || "")}</span></div>
-    <div><div class="row wrap gap4">${attChip(x.r.attendance)}${x.r.score != null && x.r.score !== "" ? `<span class="chip outline">表現 ${x.r.score}</span>` : ""}
+    <div><div class="row wrap gap4">${attChip(x.r.attendance)}${recordChips({ ...x.r, undone: "" })}
       ${x.r.progress ? `<span class="chip accent">${esc(x.r.progress)}</span>` : ""}
       ${x.tasks.map((t) => `<span class="chip outline" title="${esc(t.content || "")}">${esc(t.type || "任務")}${t.status ? "・" + esc(t.status) : ""}</span>`).join("")}</div>
       ${x.r.polished || x.r.note ? `<div class="mt8">${esc(x.r.polished || x.r.note)}</div>` : ""}
