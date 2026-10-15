@@ -627,6 +627,35 @@ table.flow { border-collapse: collapse; width: 100%; min-width: 760px; table-lay
 .ts-preview { zoom: .55; display: flex; flex-direction: column; gap: 8mm; }
 .ts-preview .ts-page { margin: 0 auto; box-shadow: 0 1px 8px rgba(0,0,0,.25); }
 
+/* ───────── 社工專區 ───────── */
+.kp-sel { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+.kp-chip { display: inline-flex; align-items: center; gap: 4px; height: 30px; font-size: 13.5px; }
+.kp-chip small { color: var(--muted); font-weight: 400; }
+.kp-chip button { border: 0; background: transparent; cursor: pointer; font-size: 15px; line-height: 1; padding: 0 2px; color: inherit; }
+.kp-row { position: relative; max-width: 360px; }
+.kp-res { position: absolute; z-index: 20; left: 0; right: 0; top: calc(100% + 4px); background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow-lg); overflow: hidden; }
+.kp-res button { display: flex; width: 100%; gap: 8px; align-items: baseline; border: 0; background: transparent; padding: 8px 12px; cursor: pointer; text-align: left; }
+.kp-res button:hover { background: var(--surface-3); }
+.kp-res button span { font-size: 12px; color: var(--muted); }
+.kp-quick { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.kp-quick .chip { cursor: pointer; }
+.vp-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.vp-item { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; color: inherit; text-decoration: none; }
+.vp-item:hover { border-color: var(--accent); background: var(--accent-soft); }
+.vp-item span { font-size: 13px; color: var(--ink-2); } .vp-item small { color: var(--muted); }
+.vf-dim + .vf-dim { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line-2); }
+.vf-dim-h { font-weight: 700; margin-bottom: 6px; }
+.vf-item { padding: 6px 0; }
+.vf-q { font-size: 13.5px; margin-bottom: 6px; line-height: 1.5; }
+.vf-prev { margin-left: 8px; font-size: 12px; color: var(--muted); border: 1px dashed var(--line); border-radius: 999px; padding: 0 8px; white-space: nowrap; }
+.ev-bar { display: grid; grid-template-columns: 64px 1fr 34px; gap: 8px; align-items: center; margin: 6px 0; font-size: 13px; }
+.ev-track { height: 10px; border-radius: 999px; background: var(--surface-3); overflow: hidden; }
+.ev-track i { display: block; height: 100%; background: var(--mark-neutral); }
+.ev-track i.good { background: #2e6b3f; } .ev-track i.mid { background: #d9722c; } .ev-track i.bad { background: #a8401f; }
+.ev-note { padding: 8px 0; border-bottom: 1px solid var(--line-2); } .ev-note:last-child { border-bottom: 0; }
+.ok-text { color: var(--good); } .bad-text { color: var(--critical); }
+.social-card { border-color: var(--serious-soft); }
+
 </style>
   <script>
     try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
@@ -711,7 +740,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     FsBackend: () => FsBackend,
     HttpBackend: () => HttpBackend,
     LIST_TABLES: () => LIST_TABLES,
+    SOCIAL_TABLES: () => SOCIAL_TABLES,
     SUP_FILE: () => SUP_FILE,
+    SW_FILE: () => SW_FILE,
     TDEF: () => TDEF,
     TEACHER_DIR: () => TEACHER_DIR,
     TX_TABLES: () => TX_TABLES,
@@ -721,6 +752,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     feedback: () => feedback,
     getRow: () => getRow,
     importBase: () => importBase,
+    isSocial: () => isSocial,
     isSupervisor: () => isSupervisor,
     loadAll: () => loadAll,
     myFile: () => myFile,
@@ -2424,6 +2456,482 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             "required": true
           }
         ]
+      },
+      "visits": {
+        "key": "visits",
+        "sheet": "訪視紀錄",
+        "label": "訪視紀錄",
+        "idKey": "id",
+        "idPrefix": "",
+        "scope": "global",
+        "group": "social",
+        "note": "教學訪視／指導員訪視（只有社工／督導看得到）",
+        "cols": [
+          {
+            "key": "id",
+            "label": "訪視ID",
+            "kind": "text"
+          },
+          {
+            "key": "date",
+            "label": "紀錄時間",
+            "kind": "date",
+            "required": true
+          },
+          {
+            "key": "kind",
+            "label": "類別",
+            "kind": "enum",
+            "options": [
+              "教學訪視",
+              "指導員訪視"
+            ],
+            "required": true
+          },
+          {
+            "key": "recorder",
+            "label": "填表人",
+            "kind": "text"
+          },
+          {
+            "key": "semesterId",
+            "label": "學期",
+            "kind": "text"
+          },
+          {
+            "key": "classId",
+            "label": "班級ID",
+            "kind": "text"
+          },
+          {
+            "key": "school",
+            "label": "國小",
+            "kind": "text"
+          },
+          {
+            "key": "className",
+            "label": "班別",
+            "kind": "text"
+          },
+          {
+            "key": "subject",
+            "label": "科別",
+            "kind": "text"
+          },
+          {
+            "key": "teacherId",
+            "label": "課輔老師ID",
+            "kind": "text"
+          },
+          {
+            "key": "teacherName",
+            "label": "課輔老師姓名",
+            "kind": "text"
+          },
+          {
+            "key": "s11",
+            "label": "1.1進度掌握-能掌握學生的學習起點行為，擬定教學目標",
+            "kind": "enum",
+            "options": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "不適用"
+            ]
+          },
+          {
+            "key": "s12",
+            "label": "1.2進度掌握-能根據教學目標，設計適當教學活動",
+            "kind": "enum",
+            "options": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "不適用"
+            ]
+          },
+          {
+            "key": "s13",
+            "label": "1.3進度掌握-能妥善分配教學時間與教學流程",
+            "kind": "enum",
+            "options": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "不適用"
+            ]
+          },
+          {
+            "key": "s21",
+            "label": "2.1班級經營-師生之間階層關係(老師的地位)",
+            "kind": "enum",
+            "options": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "不適用"
+            ]
+          },
+          {
+            "key": "s22",
+            "label": "2.2班級經營-能建立與執行良好的教室常規，善用物理空間",
+            "kind": "enum",
+            "options": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "不適用"
+            ]
+          },
+          {
+            "key": "s23",
+            "label": "2.3班級經營-能善用獎懲增強策略",
+            "kind": "enum",
+            "options": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "不適用"
+            ]
+          },
+          {
+            "key": "s31",
+            "label": "3.1教學準備-能配合教學目標規劃合適的教學評量",
+            "kind": "enum",
+            "options": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "不適用"
+            ]
+          },
+          {
+            "key": "s32",
+            "label": "3.2教學準備-能因應教學需要尋找妥適的教學資源",
+            "kind": "enum",
+            "options": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "不適用"
+            ]
+          },
+          {
+            "key": "s33",
+            "label": "3.3教學準備-完成獨立作業時，能給予學生不同任務",
+            "kind": "enum",
+            "options": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "不適用"
+            ]
+          },
+          {
+            "key": "s41",
+            "label": "4.1教學效能-能評量學生表現並提供回饋與指導",
+            "kind": "enum",
+            "options": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "不適用"
+            ]
+          },
+          {
+            "key": "s42",
+            "label": "4.2教學效能-會製造各種機會讓學生參與學習，並讓各個學生都有表達的機會",
+            "kind": "enum",
+            "options": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "不適用"
+            ]
+          },
+          {
+            "key": "s43",
+            "label": "4.3教學效能-會運用各種評量方式來診斷學生學習成果及缺失，並作為改進教學之依據",
+            "kind": "enum",
+            "options": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "不適用"
+            ]
+          },
+          {
+            "key": "teachNote",
+            "label": "課師教學說明",
+            "kind": "longtext"
+          },
+          {
+            "key": "kidNote",
+            "label": "學童行為說明",
+            "kind": "longtext"
+          },
+          {
+            "key": "kidIds",
+            "label": "提到的孩子",
+            "kind": "text"
+          }
+        ]
+      },
+      "cases": {
+        "key": "cases",
+        "sheet": "個案工作",
+        "label": "個案工作",
+        "idKey": "id",
+        "idPrefix": "",
+        "scope": "global",
+        "group": "social",
+        "note": "個案工作紀錄（只有社工／督導看得到）",
+        "cols": [
+          {
+            "key": "id",
+            "label": "個案紀錄ID",
+            "kind": "text"
+          },
+          {
+            "key": "date",
+            "label": "紀錄時間",
+            "kind": "date",
+            "required": true
+          },
+          {
+            "key": "recorder",
+            "label": "填表人",
+            "kind": "text"
+          },
+          {
+            "key": "studentIds",
+            "label": "個案（孩子ID）",
+            "kind": "text",
+            "required": true
+          },
+          {
+            "key": "studentNames",
+            "label": "個案姓名",
+            "kind": "text"
+          },
+          {
+            "key": "school",
+            "label": "國小",
+            "kind": "text"
+          },
+          {
+            "key": "className",
+            "label": "班別",
+            "kind": "text"
+          },
+          {
+            "key": "methods",
+            "label": "工作內容",
+            "kind": "text",
+            "hint": "校訪、電訪、老師面談、家訪、其他，以「、」分隔"
+          },
+          {
+            "key": "methodOther",
+            "label": "工作內容（其他）",
+            "kind": "text"
+          },
+          {
+            "key": "targets",
+            "label": "工作對象",
+            "kind": "text"
+          },
+          {
+            "key": "goal",
+            "label": "工作目標",
+            "kind": "text"
+          },
+          {
+            "key": "process",
+            "label": "晤談過程",
+            "kind": "longtext"
+          },
+          {
+            "key": "plan",
+            "label": "處遇方向",
+            "kind": "longtext"
+          },
+          {
+            "key": "nextDate",
+            "label": "下次追蹤日期",
+            "kind": "date"
+          },
+          {
+            "key": "status",
+            "label": "狀態",
+            "kind": "enum",
+            "options": [
+              "追蹤中",
+              "結案"
+            ],
+            "required": true
+          },
+          {
+            "key": "visitId",
+            "label": "相關訪視",
+            "kind": "text"
+          },
+          {
+            "key": "eventId",
+            "label": "相關特殊事件",
+            "kind": "text"
+          }
+        ]
+      },
+      "specialEvents": {
+        "key": "specialEvents",
+        "sheet": "特殊事件",
+        "label": "特殊事件",
+        "idKey": "id",
+        "idPrefix": "",
+        "scope": "global",
+        "group": "social",
+        "note": "特殊事件紀錄（只有社工／督導看得到）",
+        "cols": [
+          {
+            "key": "id",
+            "label": "事件ID",
+            "kind": "text"
+          },
+          {
+            "key": "recorder",
+            "label": "紀錄人員姓名",
+            "kind": "text"
+          },
+          {
+            "key": "date",
+            "label": "發生日期",
+            "kind": "date",
+            "required": true
+          },
+          {
+            "key": "time",
+            "label": "發生時間",
+            "kind": "time"
+          },
+          {
+            "key": "place",
+            "label": "發生地點",
+            "kind": "text"
+          },
+          {
+            "key": "studentIds",
+            "label": "涉及孩子（ID）",
+            "kind": "text"
+          },
+          {
+            "key": "studentNames",
+            "label": "涉及孩子",
+            "kind": "text"
+          },
+          {
+            "key": "others",
+            "label": "其他涉及對象",
+            "kind": "text"
+          },
+          {
+            "key": "types",
+            "label": "事件類型",
+            "kind": "text",
+            "hint": "暴力衝突、言語霸凌、自傷風險、家庭因素、性別議題、急難救助、其他，以「、」分隔"
+          },
+          {
+            "key": "typeOther",
+            "label": "事件類型（其他）",
+            "kind": "text"
+          },
+          {
+            "key": "description",
+            "label": "事件描述（具體客觀）",
+            "kind": "longtext",
+            "required": true
+          },
+          {
+            "key": "response",
+            "label": "初步處理與回應",
+            "kind": "longtext"
+          },
+          {
+            "key": "report",
+            "label": "是否已通報或轉介",
+            "kind": "enum",
+            "options": [
+              "未通報",
+              "已校內通報",
+              "已通報（社會局／113）",
+              "已轉介"
+            ]
+          },
+          {
+            "key": "reportUnit",
+            "label": "轉介／通報單位",
+            "kind": "text"
+          },
+          {
+            "key": "reportDate",
+            "label": "通報日期",
+            "kind": "date"
+          },
+          {
+            "key": "followUp",
+            "label": "後續追蹤建議",
+            "kind": "longtext"
+          },
+          {
+            "key": "note",
+            "label": "備註",
+            "kind": "longtext"
+          },
+          {
+            "key": "nextDate",
+            "label": "下次追蹤日期",
+            "kind": "date"
+          },
+          {
+            "key": "status",
+            "label": "狀態",
+            "kind": "enum",
+            "options": [
+              "處理中",
+              "追蹤中",
+              "結案"
+            ],
+            "required": true
+          },
+          {
+            "key": "incidentId",
+            "label": "來源（課後紀錄事件）",
+            "kind": "text"
+          }
+        ]
       }
     },
     "enums": {
@@ -3413,9 +3921,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   var LIST_TABLES = ["units", "selActivities", "backupOptions", "readingList"];
   var BASE_TABLES = ["semesters", "defaultSlots", "holidays", "subjects", "taskTypes", "teachers", "students", "classes", "classSlots", "enrollments", "resources", ...LIST_TABLES];
   var TX_TABLES = ["sessions", "blocks", "tasks", "records", "incidents", "evaluations", "feedback", "posts", "replies", "submissions"];
-  var ALL_TABLES = [...BASE_TABLES, ...TX_TABLES];
+  var SOCIAL_TABLES = ["visits", "cases", "specialEvents"];
+  var ALL_TABLES = [...BASE_TABLES, ...TX_TABLES, ...SOCIAL_TABLES];
   var BASE_FILE = "基本資料.json";
   var SUP_FILE = "督導.json";
+  var SW_FILE = "社工紀錄.json";
   var TEACHER_DIR = "老師";
   var BACKUP_DIR = "備份";
   var BACKUP_DAYS = 30;
@@ -3587,6 +4097,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   };
   function emptyDoc(path) {
     if (path === BASE_FILE) return { app: "永齡課輔系統", kind: "base", version: 1, updatedAt: "", settings: {}, rules: {}, tables: Object.fromEntries(BASE_TABLES.map((t) => [t, []])) };
+    if (path === SW_FILE) return { app: "永齡課輔系統", kind: "social", updatedAt: "", tables: Object.fromEntries(SOCIAL_TABLES.map((t) => [t, []])) };
     return { app: "永齡課輔系統", kind: path === SUP_FILE ? "supervisor" : "teacher", owner: DB.me ? { role: DB.me.role, name: DB.me.name, teacherId: DB.me.teacherId || "" } : {}, updatedAt: "", tables: Object.fromEntries(TX_TABLES.map((t) => [t, []])) };
   }
   async function connect(backend) {
@@ -3613,7 +4124,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   async function loadAll(force = false) {
     const b = DB.backend;
     const names = (await b.list(TEACHER_DIR)).filter((n) => /\.json$/i.test(n) && !n.startsWith("~"));
-    const paths = [BASE_FILE, SUP_FILE, ...names.map((n) => `${TEACHER_DIR}/${n}`)];
+    const paths = [BASE_FILE, SUP_FILE, SW_FILE, ...names.map((n) => `${TEACHER_DIR}/${n}`)];
     let changed = false;
     const errors = [];
     await Promise.all(paths.map(async (p) => {
@@ -3659,7 +4170,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     const win = Object.fromEntries(TX_TABLES.map((t) => [t, /* @__PURE__ */ new Map()]));
     const origin = /* @__PURE__ */ new Map();
     for (const [p, f] of DB.files) {
-      if (p === BASE_FILE) continue;
+      if (p === BASE_FILE || p === SW_FILE) continue;
       for (const t of TX_TABLES) for (const r of f.doc.tables?.[t] || []) {
         if (!r || r.id == null) continue;
         const cur = win[t].get(r.id);
@@ -3670,6 +4181,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       }
     }
     for (const t of TX_TABLES) for (const [id, r] of win[t]) if (!r.deleted) T[t].set(String(id), r);
+    const sw = DB.files.get(SW_FILE)?.doc;
+    if (sw) {
+      for (const t of SOCIAL_TABLES) for (const r of sw.tables?.[t] || []) if (r && r.id != null && !r.deleted) T[t].set(String(r.id), r);
+    }
     for (const [id, s] of T.sessions) {
       const fb = T.feedback.get(`F-${id}`);
       const submitted = s.submit === "已送出";
@@ -3700,10 +4215,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     return DB.T[t]?.get(String(id)) || null;
   }
   var isSupervisor = () => !DB.me || DB.me.role !== "teacher";
+  var isSocial = () => !!DB.me && DB.me.role !== "teacher" && DB.me.social !== false;
   function myFile() {
     return isSupervisor() ? SUP_FILE : `${TEACHER_DIR}/${safeName(DB.me.name)}.json`;
   }
   function targetPath(table) {
+    if (SOCIAL_TABLES.includes(table)) {
+      if (!isSocial()) throw new DbError("訪視、個案與特殊事件只有社工／督導可以填寫");
+      return SW_FILE;
+    }
     if (BASE_TABLES.includes(table)) {
       if (!isSupervisor()) throw new DbError("基本資料只有社工／督導可以修改（請通知督導）");
       return BASE_FILE;
@@ -3750,7 +4270,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       }
       if (cur) await backupOnce(p, cur.text);
       doc.tables = doc.tables || {};
-      if (p !== BASE_FILE && DB.me) doc.owner = { role: DB.me.role, name: DB.me.name, teacherId: DB.me.teacherId || "" };
+      if (p !== BASE_FILE && p !== SW_FILE && DB.me) doc.owner = { role: DB.me.role, name: DB.me.name, teacherId: DB.me.teacherId || "" };
       for (const op of list) {
         if (op.settings) {
           doc.settings = { ...doc.settings || {}, ...op.settings };
@@ -3840,7 +4360,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     if (id == null || id === "") {
       if (BASE_TABLES.includes(table)) id = nextId(table, taken);
       else if (table === "evaluations") id = `V-${c.semesterId}-${c.studentId}`;
-      else id = rid({ incidents: "IN", posts: "P", replies: "RP", feedback: "F" }[table] || "X");
+      else id = rid({ incidents: "IN", posts: "P", replies: "RP", feedback: "F", visits: "VS", cases: "CS", specialEvents: "SE" }[table] || "X");
     }
     id = String(id);
     const old = DB.T[table].get(id) || {};
@@ -4668,7 +5188,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     const d = /* @__PURE__ */ new Date();
     return `${d.getFullYear()}-${pad4(d.getMonth() + 1)}-${pad4(d.getDate())}`;
   };
-  var GLOBAL_TABLES = ["semesters", "defaultSlots", "holidays", "subjects", "taskTypes", "teachers", "students", "resources", "posts", "replies", ...LIST_TABLES];
+  var GLOBAL_TABLES = ["semesters", "defaultSlots", "holidays", "subjects", "taskTypes", "teachers", "students", "resources", "posts", "replies", ...LIST_TABLES, ...SOCIAL_TABLES];
   function allData() {
     return Object.fromEntries(ALL_TABLES.map((t) => [t, rows(t)]));
   }
@@ -5077,7 +5597,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     "units",
     "selActivities",
     "backupOptions",
-    "readingList"
+    "readingList",
+    "visits",
+    "cases",
+    "specialEvents"
   ];
   var WEEKDAYS = ["週一", "週二", "週三", "週四", "週五", "週六", "週日"];
   var ATTENDED2 = ["出席", "遲到", "早退"];
@@ -5304,6 +5827,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   }
   function isSupervisor2() {
     return !S.who || S.who.role !== "teacher";
+  }
+  function isSocial2() {
+    return !!S.who && S.who.role !== "teacher" && S.who.social !== false;
   }
   function myTeacherId() {
     return S.who?.role === "teacher" ? S.who.teacherId : null;
@@ -5777,6 +6303,797 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     return [...map.values()].filter((t) => t.exp).sort((a, b) => a.sent / a.exp - b.sent / b.exp).map((t) => ({ label: t.name, value: t.sent / t.exp, text: `${t.sent}/${t.exp}`, tip: `${t.name}：應送出 ${t.exp} 堂，已送出 ${t.sent} 堂` }));
   }
 
+  // src/js/pages/social.js
+  var VISIT_ITEMS = [
+    ["s11", "1.1", "進度掌握", "能掌握學生的學習起點行為，擬定教學目標"],
+    ["s12", "1.2", "進度掌握", "能根據教學目標，設計適當教學活動"],
+    ["s13", "1.3", "進度掌握", "能妥善分配教學時間與教學流程"],
+    ["s21", "2.1", "班級經營", "師生之間階層關係(老師的地位)"],
+    ["s22", "2.2", "班級經營", "能建立與執行良好的教室常規，善用物理空間"],
+    ["s23", "2.3", "班級經營", "能善用獎懲增強策略"],
+    ["s31", "3.1", "教學準備", "能配合教學目標規劃合適的教學評量"],
+    ["s32", "3.2", "教學準備", "能因應教學需要尋找妥適的教學資源"],
+    ["s33", "3.3", "教學準備", "完成獨立作業時，能給予學生不同任務"],
+    ["s41", "4.1", "教學效能", "能評量學生表現並提供回饋與指導"],
+    ["s42", "4.2", "教學效能", "會製造各種機會讓學生參與學習，並讓各個學生都有表達的機會"],
+    ["s43", "4.3", "教學效能", "會運用各種評量方式來診斷學生學習成果及缺失，並作為改進教學之依據"]
+  ];
+  var DIMS = ["進度掌握", "班級經營", "教學準備", "教學效能"];
+  var SCORES = ["1", "2", "3", "4", "5", "不適用"];
+  var METHODS = ["校訪", "電訪", "老師面談", "家訪", "其他"];
+  var TARGETS = ["案主", "案父", "案母", "祖父母", "其他家人", "課輔老師", "學校導師", "學校主任", "其他"];
+  var EVENT_TYPES = ["暴力衝突", "言語霸凌", "自傷風險", "家庭因素", "性別議題", "急難救助", "其他"];
+  var REPORTS = ["未通報", "已校內通報", "已通報（社會局／113）", "已轉介"];
+  var PLACES = ["課輔教室", "學校", "家中", "電訪得知", "社區", "其他"];
+  var SEP = "、";
+  var split = (v) => String(v || "").split(/[、,，]/).map((x) => x.trim()).filter(Boolean);
+  var scoreNum = (v) => /^[1-5]$/.test(String(v ?? "")) ? Number(v) : null;
+  var avg2 = (list) => {
+    const n = list.filter((x) => x != null);
+    return n.length ? n.reduce((a, b) => a + b, 0) / n.length : null;
+  };
+  var f12 = (v) => v == null ? "—" : v.toFixed(1);
+  var me = () => S.who?.name || "";
+  var schoolOf = (c) => c?.site ? /(國小|國中|學校)$/.test(c.site) ? c.site : c.site + "國小" : "";
+  var banOf = (c) => {
+    const n = String(c?.name || "");
+    const s = String(c?.site || "");
+    return s && n.startsWith(s) ? n.slice(s.length) : n;
+  };
+  var kidSchool = (k) => String(k?.school || "").replace(/^(縣立|市立|國立|私立)/, "");
+  var kidNames = (ids) => split(ids).map((id) => nameOf("students", id) || id).join(SEP);
+  var visitAvg = (v) => avg2(VISIT_ITEMS.map(([k]) => scoreNum(v[k])));
+  var dimAvg = (v, d) => avg2(VISIT_ITEMS.filter((x) => x[2] === d).map(([k]) => scoreNum(v[k])));
+  function denied(ctx, title) {
+    ctx.title(title);
+    ctx.el.innerHTML = `<div class="card"><div class="empty">${icon("lock")}<div>這一頁只有社工和督導可以使用。</div></div></div>`;
+  }
+  var byDateDesc = (a, b) => (b.date || "").localeCompare(a.date || "") || (b.updatedAt || "").localeCompare(a.updatedAt || "");
+  function pills(name, opts, value, { multi: multi2 = false, tone = null } = {}) {
+    const sel = multi2 ? new Set(split(value)) : null;
+    return `<div class="seg pick" data-pick="${name}" ${multi2 ? 'data-multi="1"' : ""}>${opts.map((o) => {
+      const on2 = multi2 ? sel.has(o) : String(value ?? "") === o;
+      return `<button type="button" data-v="${esc(o)}" class="${tone ? tone(o) : ""}${on2 ? " on" : ""}">${esc(o)}</button>`;
+    }).join("")}</div>`;
+  }
+  function pillValue(root, name) {
+    const el = $(`[data-pick="${name}"]`, root);
+    if (!el) return "";
+    const on2 = $$("button.on", el).map((b) => b.dataset.v);
+    return el.dataset.multi ? on2.join(SEP) : on2[0] || "";
+  }
+  function bindPills(root, onChange) {
+    root.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-pick] button");
+      if (!b) return;
+      const box = b.parentElement;
+      if (box.dataset.multi) b.classList.toggle("on");
+      else {
+        const was = b.classList.contains("on");
+        $$("button", box).forEach((x) => x.classList.remove("on"));
+        if (!was) b.classList.add("on");
+      }
+      onChange?.(box.dataset.pick);
+    });
+  }
+  function kidPicker(ids, quick = []) {
+    const sel = split(ids);
+    return `<div class="kp" data-kp>
+    <div class="kp-sel">${sel.map((id) => kidChip(id)).join("")}</div>
+    <div class="kp-row"><input class="input kp-q" placeholder="輸入姓名搜尋孩子" autocomplete="off"><div class="kp-res" hidden></div></div>
+    ${quick.length ? `<div class="kp-quick small"><span class="muted">班上孩子：</span>${quick.map((k) => `<button type="button" class="chip outline" data-add="${esc(k.id)}">${esc(k.name)}</button>`).join("")}</div>` : ""}
+  </div>`;
+  }
+  var kidChip = (id) => {
+    const k = get("students", id);
+    return `<span class="chip accent kp-chip" data-id="${esc(id)}">${esc(k?.name || id)}${k?.grade ? `<small>${k.grade}年級</small>` : ""}<button type="button" data-rm="${esc(id)}" title="移除">×</button></span>`;
+  };
+  function bindKidPicker(root, onChange) {
+    const box = $("[data-kp]", root);
+    if (!box) return;
+    const q = $(".kp-q", box), res = $(".kp-res", box), sel = $(".kp-sel", box);
+    const chosen = () => $$(".kp-chip", sel).map((x) => x.dataset.id);
+    const add = (id) => {
+      if (!chosen().includes(id)) sel.insertAdjacentHTML("beforeend", kidChip(id));
+      q.value = "";
+      res.hidden = true;
+      onChange?.();
+    };
+    q.addEventListener("input", () => {
+      const t = q.value.trim();
+      if (!t) {
+        res.hidden = true;
+        return;
+      }
+      const list = S.data.students.filter((k) => String(k.name || "").includes(t) && !chosen().includes(k.id)).sort(byName).slice(0, 8);
+      res.innerHTML = list.map((k) => `<button type="button" data-add="${esc(k.id)}"><b>${esc(k.name)}</b><span>${k.grade ? k.grade + "年級" : ""} ${esc(kidSchool(k))}</span></button>`).join("") || '<div class="small muted" style="padding:6px 10px">找不到這位孩子</div>';
+      res.hidden = false;
+    });
+    q.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        const f = $("[data-add]", res);
+        if (f) add(f.dataset.add);
+      }
+    });
+    box.addEventListener("click", (e) => {
+      const a = e.target.closest("[data-add]");
+      if (a) {
+        add(a.dataset.add);
+        return;
+      }
+      const r = e.target.closest("[data-rm]");
+      if (r) {
+        r.closest(".kp-chip").remove();
+        onChange?.();
+      }
+    });
+    return chosen;
+  }
+  var pickedKids = (root) => $$("[data-kp] .kp-chip", root).map((x) => x.dataset.id);
+  async function saveRow(table, row, msg) {
+    const r = await mutate("/api/save", { table, row }, msg);
+    return r?.row;
+  }
+  async function delRow(table, id, what) {
+    if (!await confirmBox(`確定要刪除這筆${what}？刪除後無法復原。`, { okText: "刪除", danger: true })) return false;
+    await mutate("/api/delete", { table, id }, "已刪除");
+    return true;
+  }
+  var dirty = false;
+  var markDirty = () => {
+    dirty = true;
+  };
+  async function leave(go2) {
+    if (dirty && !await confirmBox("表單還沒儲存，確定要離開？（社工紀錄不會在這台電腦留下草稿）", { okText: "離開" })) return;
+    dirty = false;
+    go2();
+  }
+  function xlsx(name, head, rowsArr, widths) {
+    const X = window.XLSX;
+    if (!X) {
+      toast("Excel 元件沒有載入", "err");
+      return;
+    }
+    const ws = X.utils.aoa_to_sheet([head, ...rowsArr]);
+    ws["!cols"] = (widths || head.map(() => 14)).map((w) => ({ wch: w }));
+    const wb = X.utils.book_new();
+    X.utils.book_append_sheet(wb, ws, name.slice(0, 31));
+    X.writeFile(wb, `${name}_${todayISO()}.xlsx`);
+  }
+  var visitTone = (o) => o === "不適用" ? "" : Number(o) >= 4 ? "good" : Number(o) === 3 ? "mid" : "bad";
+  function lastVisitOf(teacherId, beforeId, beforeDate) {
+    return S.data.visits.filter((v) => v.teacherId === teacherId && v.id !== beforeId && (!beforeDate || (v.date || "") <= beforeDate)).sort(byDateDesc)[0] || null;
+  }
+  function visitList(ctx) {
+    const q = ctx.query;
+    const kind = q.get("kind") || "";
+    const tid = q.get("teacher") || "";
+    const sem = q.get("sem") || S.semester;
+    const list = S.data.visits.filter((v) => (!sem || v.semesterId === sem || !v.semesterId && sem === S.semester) && (!kind || v.kind === kind) && (!tid || v.teacherId === tid)).sort(byDateDesc);
+    const teachers = [...new Map(S.data.visits.map((v) => [v.teacherId, v.teacherName || nameOf("teachers", v.teacherId)])).entries()].filter((x) => x[0]).sort((a2, b) => collator.compare(a2[1], b[1]));
+    ctx.title("訪視紀錄", `教學訪視與指導員訪視・只有社工和督導看得到・${esc(sem || "")}`);
+    const a = ctx.actions(`<select class="select" id="v-kind"><option value="">全部類別</option>${["教學訪視", "指導員訪視"].map((k) => `<option ${k === kind ? "selected" : ""}>${k}</option>`).join("")}</select>
+    <select class="select" id="v-teacher"><option value="">全部老師</option>${teachers.map(([id, n]) => `<option value="${esc(id)}" ${id === tid ? "selected" : ""}>${esc(n)}</option>`).join("")}</select>
+    <button class="btn" id="v-xlsx">${icon("download", "sm")}Excel</button><a class="btn primary" href="#/visits/new">${icon("plus", "sm")}新增訪視</a>`);
+    $("#v-kind", a).onchange = (e) => ctx.go(`#/visits?kind=${encodeURIComponent(e.target.value)}&teacher=${encodeURIComponent(tid)}`);
+    $("#v-teacher", a).onchange = (e) => ctx.go(`#/visits?kind=${encodeURIComponent(kind)}&teacher=${encodeURIComponent(e.target.value)}`);
+    $("#v-xlsx", a).onclick = () => xlsx(
+      "訪視紀錄",
+      ["紀錄時間", "填表人", "類別", "國小", "班別", "科別", "課輔老師姓名", ...VISIT_ITEMS.map(([, n, d, t]) => `${n}${d}-${t}`), "課師教學說明", "學童行為說明", "提到的孩子"],
+      list.slice().reverse().map((v) => [v.date, v.recorder, v.kind, v.school, v.className, v.subject, v.teacherName, ...VISIT_ITEMS.map(([k]) => scoreNum(v[k]) ?? (v[k] || "")), v.teachNote, v.kidNote, kidNames(v.kidIds)]),
+      [11, 8, 10, 10, 6, 6, 10, ...VISIT_ITEMS.map(() => 8), 50, 50, 16]
+    );
+    ctx.el.innerHTML = `<div class="callout small mb8">${icon("lock", "sm")} 訪視紀錄用來評估課輔老師是否適任，只有社工和督導看得到，課輔老師的畫面上不會出現。</div>
+    <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>日期</th><th>類別</th><th>班級</th><th>課輔老師</th>${DIMS.map((d) => `<th class="c">${d}</th>`).join("")}<th class="c">平均</th><th>填表人</th></tr></thead><tbody>
+    ${list.map((v) => `<tr class="click" data-href="#/visits/${esc(v.id)}"><td class="nowrap">${mdw(v.date)}</td><td>${esc(v.kind)}</td>
+      <td class="nowrap">${esc(v.school)} ${esc(v.className)}<div class="small muted">${esc(v.subject)}</div></td><td class="nowrap"><a href="#/teachereval/${esc(v.teacherId)}">${esc(v.teacherName)}</a></td>
+      ${DIMS.map((d) => `<td class="c num">${f12(dimAvg(v, d))}</td>`).join("")}<td class="c num"><b>${f12(visitAvg(v))}</b></td><td class="small">${esc(v.recorder)}</td></tr>`).join("") || `<tr><td colspan="9"><div class="empty">${icon("journal")}<div>這學期還沒有訪視紀錄，按右上角「新增訪視」開始。</div></div></td></tr>`}</tbody></table></div></div>`;
+    ctx.el.addEventListener("click", (e) => {
+      const tr = e.target.closest("tr[data-href]");
+      if (tr && !e.target.closest("a")) ctx.go(tr.dataset.href);
+    });
+  }
+  function visitPick(ctx) {
+    const date = ctx.query.get("date") || todayISO();
+    const list = scheduledOn(date);
+    ctx.title("新增訪視", "先選日期和班級，國小、班別、科目、老師會自動帶入");
+    ctx.actions(`<a class="btn ghost" href="#/visits">${icon("left", "sm")}回訪視紀錄</a>`);
+    const all = classes();
+    ctx.el.innerHTML = `<div class="card card-pad"><div class="row wrap" style="gap:10px 16px">
+      <label class="field"><span>訪視日期</span><input class="input" type="date" id="vp-date" value="${esc(date)}"></label>
+      <label class="field grow"><span>或直接選班級</span><select class="select" id="vp-cls"><option value="">（全部班級）</option>${all.map((c) => `<option value="${c.id}">${esc(c.name)}　${esc(subjectOfClass(c))}　${esc(teacherOfClass(c))}</option>`).join("")}</select></label></div>
+    <div class="section-title">${mdw(date)} 有上課的班級</div>
+    <div class="vp-list">${list.map((x) => `<a class="vp-item" href="#/visits/new?class=${x.cls.id}&date=${date}"><b>${esc(x.cls.name)}</b><span>${esc(subjectOfClass(x.cls))}・${esc(teacherOfClass(x.cls))}</span><small>${esc(x.slot?.start || "")}–${esc(x.slot?.end || "")}</small></a>`).join("") || '<div class="small muted">這天沒有排課，可以改日期，或從上方選班級。</div>'}</div></div>`;
+    $("#vp-date").onchange = (e) => ctx.go(`#/visits/new?date=${e.target.value}`);
+    $("#vp-cls").onchange = (e) => {
+      if (e.target.value) ctx.go(`#/visits/new?class=${e.target.value}&date=${$("#vp-date").value}`);
+    };
+  }
+  function sessionPeek(cid, date) {
+    const s = sessionFor(cid, date);
+    if (!s) return '<div class="small muted">這堂課還沒有教學流程或課後紀錄。</div>';
+    const recs = recordMap(s.id);
+    const kids = roster(cid);
+    const incs = incidentsOf(s.id);
+    return `<div class="small muted">${s.submit === "已送出" ? "課後紀錄已送出" : "課後紀錄尚未送出"}</div>
+    <div class="mt8">${kids.map((k) => `<div class="row small" style="gap:6px;padding:2px 0"><span style="min-width:4em">${esc(k.name)}</span>${attChip(recs.get(k.id)?.attendance)}</div>`).join("")}</div>
+    ${s.polished || s.note ? `<div class="section-title">老師的課後紀錄</div><div class="small" style="line-height:1.7">${esc(s.polished || s.note)}</div>` : ""}
+    ${incs.length ? `<div class="section-title">事件 ${incs.length} 件</div>${incs.map((i) => `<div class="small">・${esc(i.type)}：${esc(i.description)}</div>`).join("")}` : ""}
+    <div class="row wrap mt8" style="gap:6px"><a class="btn sm ghost" href="#/flow?class=${cid}&date=${date}">${icon("flow", "sm")}教學流程</a><a class="btn sm ghost" href="#/journal?date=${date}">${icon("journal", "sm")}每日日誌</a></div>`;
+  }
+  function visitForm(ctx, v) {
+    const isNew = !v.id;
+    const prev = v.teacherId ? lastVisitOf(v.teacherId, v.id, v.date) : null;
+    const kids = v.classId && get("classes", v.classId) ? roster(v.classId) : [];
+    ctx.title(isNew ? "新增訪視" : "訪視紀錄", `${esc(v.school)} ${esc(v.className)}・${esc(v.subject)}・課輔老師 ${esc(v.teacherName)}・${mdw(v.date)}`);
+    ctx.actions(`<button class="btn ghost" id="vf-back">${icon("left", "sm")}回訪視紀錄</button>`);
+    $("#vf-back").onclick = () => leave(() => ctx.go("#/visits"));
+    const groups = DIMS.map((d) => `<div class="vf-dim"><div class="vf-dim-h">${d}</div>${VISIT_ITEMS.filter((x) => x[2] === d).map(([k, n, , t]) => `
+    <div class="vf-item"><div class="vf-q"><b>${n}</b> ${esc(t)}${prev && prev[k] ? `<span class="vf-prev" title="上次訪視（${md2(prev.date)}）">上次 ${esc(prev[k])}</span>` : ""}</div>
+      ${pills(k, SCORES, v[k], { tone: visitTone })}</div>`).join("")}</div>`).join("");
+    ctx.el.innerHTML = `<div class="grid g-main">
+    <div class="stack gap16">
+      <div class="card card-pad"><div class="row wrap" style="gap:10px 18px;align-items:flex-end">
+        <div class="field"><span class="small ink2">類別</span>${pills("kind", ["教學訪視", "指導員訪視"], v.kind || "教學訪視")}</div>
+        <label class="field"><span>紀錄時間</span><input class="input" type="date" id="vf-date" value="${esc(v.date)}"></label>
+        <div class="field"><span class="small ink2">填表人</span><div style="padding-top:6px">${esc(v.recorder || me())}</div></div></div></div>
+      <div class="card"><div class="card-head"><h3>教學指標</h3><span class="sub">1～5 分；這次沒觀察到的選「不適用」，不算進平均</span><span class="sp"></span><span class="chip outline" id="vf-avg">平均 ${f12(visitAvg(v))}</span></div>
+        <div class="card-body">${groups}</div></div>
+      <div class="card"><div class="card-head"><h3>課師教學說明</h3></div><div class="card-body">
+        <textarea class="textarea" id="vf-teach" rows="7" placeholder="看到的教學做法、亮點、建議，可以用 1. 2. 3. 分點">${esc(v.teachNote || "")}</textarea></div></div>
+      <div class="card"><div class="card-head"><h3>學童行為說明</h3></div><div class="card-body">
+        <textarea class="textarea" id="vf-kid" rows="5" placeholder="孩子的狀況與互動">${esc(v.kidNote || "")}</textarea>
+        ${kids.length ? `<div class="field mt12"><span class="small ink2">提到的孩子（會出現在孩子的學習檔案，只有社工和督導看得到）</span>${pills("kidIds", kids.map((k) => k.name), split(v.kidIds).map((id) => nameOf("students", id)).join(SEP), { multi: true })}</div>` : ""}</div></div>
+    </div>
+    <div class="stack gap16">
+      <div class="card"><div class="card-head"><h3>這堂課</h3><span class="sub">${mdw(v.date)}</span></div><div class="card-body">${v.classId ? sessionPeek(v.classId, v.date) : '<div class="small muted">—</div>'}</div></div>
+      ${prev ? `<div class="card"><div class="card-head"><h3>上次訪視</h3><span class="sub">${mdw(prev.date)}・${esc(prev.recorder || "")}</span></div><div class="card-body small">
+        ${DIMS.map((d) => `<div class="row"><span>${d}</span><span class="sp"></span><b class="num">${f12(dimAvg(prev, d))}</b></div>`).join("")}
+        <div class="mt8 muted" style="line-height:1.7;max-height:160px;overflow:auto">${esc(prev.teachNote || "")}</div><a class="btn sm ghost mt8" href="#/teachereval/${esc(v.teacherId)}">看這位老師的全部訪視</a></div></div>` : ""}
+    </div></div>
+    <div class="sticky-foot"><span class="small muted">${icon("lock", "sm")} 只有社工和督導看得到</span><span class="sp"></span>
+      ${isNew ? "" : `<button class="btn danger" id="vf-del">${icon("trash", "sm")}刪除</button>`}
+      <button class="btn" id="vf-case">${icon("plus", "sm")}儲存並寫個案工作</button>
+      <button class="btn primary" id="vf-save">${icon("save", "sm")}儲存</button></div>`;
+    dirty = false;
+    const el = ctx.el;
+    bindPills(el, () => {
+      markDirty();
+      $("#vf-avg").textContent = `平均 ${f12(visitAvg(read()))}`;
+    });
+    el.addEventListener("input", markDirty);
+    const read = () => {
+      const row = {
+        ...v,
+        date: $("#vf-date").value,
+        kind: pillValue(el, "kind") || "教學訪視",
+        recorder: v.recorder || me(),
+        teachNote: $("#vf-teach").value,
+        kidNote: $("#vf-kid").value
+      };
+      for (const [k] of VISIT_ITEMS) row[k] = pillValue(el, k);
+      if (kids.length) {
+        const names = split(pillValue(el, "kidIds"));
+        row.kidIds = kids.filter((k) => names.includes(k.name)).map((k) => k.id).join(SEP);
+      }
+      return row;
+    };
+    const save3 = async (next) => {
+      const row = read();
+      if (!row.date) {
+        toast("請填紀錄時間", "err");
+        return;
+      }
+      const missing = VISIT_ITEMS.filter(([k]) => !row[k]).length;
+      if (missing && !await confirmBox(`還有 ${missing} 項指標沒有點選，確定要儲存？`, { okText: "儲存" })) return;
+      try {
+        const saved = await saveRow("visits", row, "訪視紀錄已儲存");
+        dirty = false;
+        ctx.go(next === "case" ? `#/cases/new?visit=${encodeURIComponent(saved.id)}` : `#/visits/${encodeURIComponent(saved.id)}`);
+      } catch {
+      }
+    };
+    $("#vf-save").onclick = () => save3();
+    $("#vf-case").onclick = () => save3("case");
+    $("#vf-del")?.addEventListener("click", async () => {
+      if (await delRow("visits", v.id, "訪視紀錄")) {
+        dirty = false;
+        ctx.go("#/visits");
+      }
+    });
+  }
+  var visits = {
+    isDirty: () => dirty,
+    render(ctx) {
+      if (!isSocial2()) return denied(ctx, "訪視紀錄");
+      dirty = false;
+      const p = ctx.params[0];
+      if (!p) return visitList(ctx);
+      if (p === "new") {
+        const c = get("classes", ctx.query.get("class"));
+        if (!c) return visitPick(ctx);
+        const date = ctx.query.get("date") || todayISO();
+        return visitForm(ctx, {
+          id: null,
+          date,
+          kind: "教學訪視",
+          recorder: me(),
+          semesterId: c.semesterId,
+          classId: c.id,
+          school: schoolOf(c),
+          className: banOf(c),
+          subject: subjectOfClass(c),
+          teacherId: c.teacherId,
+          teacherName: teacherOfClass(c)
+        });
+      }
+      const v = get("visits", p);
+      if (!v) {
+        ctx.title("訪視紀錄");
+        ctx.el.innerHTML = '<div class="empty">找不到這筆訪視紀錄</div>';
+        return;
+      }
+      return visitForm(ctx, { ...v });
+    },
+    destroy() {
+      dirty = false;
+    }
+  };
+  function radarBars(vals) {
+    return DIMS.map((d, i) => {
+      const x = vals[i];
+      return `<div class="ev-bar"><span>${d}</span><div class="ev-track"><i style="width:${x == null ? 0 : x / 5 * 100}%" class="${x == null ? "" : x >= 4 ? "good" : x >= 3 ? "mid" : "bad"}"></i></div><b class="num">${f12(x)}</b></div>`;
+    }).join("");
+  }
+  var teachereval = {
+    render(ctx) {
+      if (!isSocial2()) return denied(ctx, "老師評估");
+      const tid = ctx.params[0];
+      const sem = S.semester;
+      const semVisits = S.data.visits.filter((v) => !v.semesterId || v.semesterId === sem);
+      if (!tid) {
+        ctx.title("老師評估", `依訪視紀錄整理・${esc(sem)}・「不適用」不算進平均`);
+        ctx.actions("");
+        const byT = /* @__PURE__ */ new Map();
+        for (const v of semVisits) {
+          if (!byT.has(v.teacherId)) byT.set(v.teacherId, []);
+          byT.get(v.teacherId).push(v);
+        }
+        const active = S.data.teachers.filter((t) => t.role === "課輔老師" && t.status !== "離職");
+        const ids = [.../* @__PURE__ */ new Set([...active.map((t) => t.id), ...byT.keys()])];
+        const rowsHtml = ids.map((id) => {
+          const vs2 = (byT.get(id) || []).sort(byDateDesc);
+          const name2 = nameOf("teachers", id) || vs2[0]?.teacherName || id;
+          const dims2 = DIMS.map((d) => avg2(vs2.map((v) => dimAvg(v, d))));
+          const all2 = avg2(vs2.map(visitAvg));
+          return { id, name: name2, vs: vs2, dims: dims2, all: all2 };
+        }).sort((a, b) => (a.vs.length ? 0 : 1) - (b.vs.length ? 0 : 1) || (a.all ?? 9) - (b.all ?? 9) || collator.compare(a.name, b.name));
+        ctx.el.innerHTML = `<div class="callout small mb8">${icon("lock", "sm")} 用來評估課輔老師是否適任，只有社工和督導看得到。平均較低的老師排在前面；還沒訪視過的排在最後。</div>
+        <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>課輔老師</th><th class="c">訪視次數</th><th>最近一次</th>${DIMS.map((d) => `<th class="c">${d}</th>`).join("")}<th class="c">整體平均</th></tr></thead><tbody>
+        ${rowsHtml.map((r) => `<tr class="click" data-href="#/teachereval/${esc(r.id)}"><td><b>${esc(r.name)}</b></td><td class="c num">${r.vs.length || '<span class="muted">0</span>'}</td>
+          <td class="small">${r.vs[0] ? `${mdw(r.vs[0].date)}・${esc(r.vs[0].kind)}` : '<span class="muted">尚未訪視</span>'}</td>
+          ${r.dims.map((x) => `<td class="c num">${f12(x)}</td>`).join("")}<td class="c num"><b class="${r.all == null ? "" : r.all >= 4 ? "ok-text" : r.all >= 3 ? "" : "bad-text"}">${f12(r.all)}</b></td></tr>`).join("")}</tbody></table></div></div>`;
+        ctx.el.addEventListener("click", (e) => {
+          const tr = e.target.closest("tr[data-href]");
+          if (tr) ctx.go(tr.dataset.href);
+        });
+        return;
+      }
+      const all = S.data.visits.filter((v) => v.teacherId === tid).sort(byDateDesc);
+      const name = nameOf("teachers", tid) || all[0]?.teacherName || tid;
+      const vs = all.filter((v) => !v.semesterId || v.semesterId === sem);
+      ctx.title(`老師評估：${name}`, `${esc(sem)}・訪視 ${vs.length} 次${all.length > vs.length ? `（全部學期 ${all.length} 次）` : ""}`);
+      ctx.actions(`<a class="btn ghost" href="#/teachereval">${icon("left", "sm")}回老師評估</a><a class="btn primary" href="#/visits/new">${icon("plus", "sm")}新增訪視</a>`);
+      const dims = DIMS.map((d) => avg2(vs.map((v) => dimAvg(v, d))));
+      const chron = vs.slice().reverse();
+      ctx.el.innerHTML = `<div class="grid g-main"><div class="stack gap16">
+      <div class="card"><div class="card-head"><h3>每次訪視的 12 項指標</h3><span class="sub">由舊到新</span></div><div class="tbl-wrap"><table class="tbl"><thead><tr><th>指標</th>${chron.map((v) => `<th class="c nowrap"><a href="#/visits/${esc(v.id)}">${md2(v.date)}</a><div class="small muted">${v.kind === "指導員訪視" ? "指導員" : "教學"}</div></th>`).join("")}</tr></thead><tbody>
+        ${VISIT_ITEMS.map(([k, n, , t]) => `<tr><td class="small"><b>${n}</b> ${esc(t)}</td>${chron.map((v) => {
+        const x = scoreNum(v[k]);
+        return `<td class="c num ${x == null ? "muted" : x >= 4 ? "ok-text" : x >= 3 ? "" : "bad-text"}">${x ?? (v[k] === "不適用" ? "–" : "")}</td>`;
+      }).join("")}</tr>`).join("")}
+        <tr><td><b>平均</b></td>${chron.map((v) => `<td class="c num"><b>${f12(visitAvg(v))}</b></td>`).join("")}</tr></tbody></table></div></div>
+      <div class="card"><div class="card-head"><h3>課師教學說明</h3></div><div class="card-body">${vs.map((v) => `<div class="ev-note"><div class="small muted">${mdw(v.date)}・${esc(v.kind)}・${esc(v.recorder || "")}・${esc(v.school)} ${esc(v.className)} ${esc(v.subject)}</div><div style="white-space:pre-wrap;line-height:1.7">${esc(v.teachNote || "（未填）")}</div></div>`).join("") || '<div class="small muted">還沒有訪視紀錄</div>'}</div></div>
+    </div><div class="stack gap16">
+      <div class="card"><div class="card-head"><h3>四個面向平均</h3><span class="sub">本學期</span></div><div class="card-body">${radarBars(dims)}<div class="row mt12"><span>整體平均</span><span class="sp"></span><b class="num" style="font-size:20px">${f12(avg2(vs.map(visitAvg)))}</b></div></div></div>
+      ${all.length > vs.length ? `<div class="card"><div class="card-head"><h3>其他學期</h3></div><div class="card-body small">${[...new Set(all.map((v) => v.semesterId).filter((x) => x && x !== sem))].map((s2) => {
+        const l = all.filter((v) => v.semesterId === s2);
+        return `<div class="row"><span>${esc(s2)}</span><span class="sp"></span><span>${l.length} 次・平均 ${f12(avg2(l.map(visitAvg)))}</span></div>`;
+      }).join("")}</div></div>` : ""}
+    </div></div>`;
+    }
+  };
+  var caseTone = (o) => o === "結案" ? "good" : "mid";
+  function caseList(ctx) {
+    const q = ctx.query;
+    const st2 = q.get("status") || "";
+    const kw = (q.get("q") || "").trim();
+    const list = S.data.cases.filter((c) => (!st2 || c.status === st2) && (!kw || kidNames(c.studentIds).includes(kw) || (c.goal || "").includes(kw) || (c.school || "").includes(kw))).sort(byDateDesc);
+    ctx.title("個案工作", "只有社工和督導看得到");
+    const a = ctx.actions(`<div class="search"><span>${icon("search", "sm")}</span><input class="input" id="c-q" placeholder="孩子、學校、目標" value="${esc(kw)}" style="width:160px"></div>
+    <select class="select" id="c-st"><option value="">全部狀態</option>${["追蹤中", "結案"].map((s) => `<option ${s === st2 ? "selected" : ""}>${s}</option>`).join("")}</select>
+    <button class="btn" id="c-xlsx">${icon("download", "sm")}Excel</button><a class="btn primary" href="#/cases/new">${icon("plus", "sm")}新增個案工作</a>`);
+    $("#c-st", a).onchange = (e) => ctx.go(`#/cases?status=${encodeURIComponent(e.target.value)}&q=${encodeURIComponent(kw)}`);
+    $("#c-q", a).onchange = (e) => ctx.go(`#/cases?status=${encodeURIComponent(st2)}&q=${encodeURIComponent(e.target.value)}`);
+    $("#c-xlsx", a).onclick = () => xlsx(
+      "個案工作",
+      ["紀錄時間", "填表人", "國小", "班別", "工作內容", "個案姓名", "工作對象", "工作目標", "晤談過程", "處遇方向", "下次追蹤日期", "狀態"],
+      list.slice().reverse().map((c) => [c.date, c.recorder, c.school, c.className, [c.methods, c.methodOther].filter(Boolean).join("："), kidNames(c.studentIds), c.targets, c.goal, c.process, c.plan, c.nextDate, c.status]),
+      [11, 8, 10, 6, 14, 14, 18, 20, 50, 40, 11, 7]
+    );
+    ctx.el.innerHTML = `<div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>日期</th><th>個案</th><th>工作內容</th><th>工作目標</th><th>下次追蹤</th><th>狀態</th><th>填表人</th></tr></thead><tbody>
+    ${list.map((c) => `<tr class="click" data-href="#/cases/${esc(c.id)}"><td class="nowrap">${mdw(c.date)}</td><td><b>${esc(kidNames(c.studentIds))}</b><div class="small muted">${esc(c.school)} ${esc(c.className)}</div></td>
+      <td class="small">${esc(c.methods)}</td><td class="small">${esc(c.goal)}</td><td class="nowrap small">${followChip(c.nextDate, c.status === "結案")}</td>
+      <td><span class="chip ${c.status === "結案" ? "good" : "warn"}">${esc(c.status)}</span></td><td class="small">${esc(c.recorder)}</td></tr>`).join("") || `<tr><td colspan="7"><div class="empty">${icon("users")}<div>還沒有個案工作紀錄</div></div></td></tr>`}</tbody></table></div></div>`;
+    ctx.el.addEventListener("click", (e) => {
+      const tr = e.target.closest("tr[data-href]");
+      if (tr) ctx.go(tr.dataset.href);
+    });
+  }
+  function followChip(date, closed) {
+    if (closed) return '<span class="muted">—</span>';
+    if (!date) return '<span class="chip outline">未排日期</span>';
+    const t = todayISO();
+    if (date < t) return `<span class="chip critical">${md2(date)} 已過期</span>`;
+    if (date <= addDays2(t, 3)) return `<span class="chip warn">${md2(date)}</span>`;
+    return `<span class="chip outline">${md2(date)}</span>`;
+  }
+  function splitKnown(v, known) {
+    const parts = split(v);
+    return { on: parts.filter((p) => known.includes(p)).join(SEP), extra: parts.filter((p) => !known.includes(p)).join(SEP) };
+  }
+  function caseForm(ctx, c) {
+    const isNew = !c.id;
+    const visit = c.visitId ? get("visits", c.visitId) : null;
+    const ev = c.eventId ? get("specialEvents", c.eventId) : null;
+    const quick = visit?.classId && get("classes", visit.classId) ? roster(visit.classId) : [];
+    const tg = splitKnown(c.targets, TARGETS);
+    ctx.title(isNew ? "新增個案工作" : "個案工作紀錄", isNew ? "只有社工和督導看得到" : `${esc(kidNames(c.studentIds))}・${mdw(c.date)}`);
+    ctx.actions(`<button class="btn ghost" id="cf-back">${icon("left", "sm")}回個案工作</button>`);
+    $("#cf-back").onclick = () => leave(() => ctx.go("#/cases"));
+    const history2 = isNew ? [] : S.data.cases.filter((x) => x.id !== c.id && split(x.studentIds).some((id) => split(c.studentIds).includes(id))).sort(byDateDesc).slice(0, 6);
+    ctx.el.innerHTML = `<div class="grid g-main"><div class="stack gap16">
+    <div class="card card-pad stack" style="gap:14px">
+      <div class="row wrap" style="gap:10px 18px;align-items:flex-end"><label class="field"><span>紀錄時間</span><input class="input" type="date" id="cf-date" value="${esc(c.date)}"></label>
+        <div class="field"><span class="small ink2">填表人</span><div style="padding-top:6px">${esc(c.recorder || me())}</div></div>
+        <div class="field"><span class="small ink2">狀態</span>${pills("status", ["追蹤中", "結案"], c.status || "追蹤中", { tone: caseTone })}</div></div>
+      <div class="field"><span class="small ink2">個案（孩子）<b style="color:var(--critical)">*</b></span>${kidPicker(c.studentIds, quick)}</div>
+      <div class="field"><span class="small ink2">工作內容（可複選）</span>${pills("methods", METHODS, c.methods, { multi: true })}
+        <input class="input mt8" id="cf-mo" value="${esc(c.methodOther || "")}" placeholder="選「其他」時寫明" ${split(c.methods).includes("其他") ? "" : "hidden"}></div>
+      <div class="field"><span class="small ink2">工作對象（可複選）</span>${pills("targets", TARGETS, tg.on, { multi: true })}
+        <input class="input mt8" id="cf-tx" value="${esc(tg.extra)}" placeholder="補充，例如：老師姓名、其他家人（以「、」分隔）"></div>
+      <label class="field"><span>工作目標</span><input class="input" id="cf-goal" value="${esc(c.goal || "")}" placeholder="例：了解遲到原因並與家長討論作息"></label>
+      <label class="field"><span>晤談過程</span><textarea class="textarea" id="cf-proc" rows="8" placeholder="時間、對象、談了什麼（具體描述）">${esc(c.process || "")}</textarea></label>
+      <label class="field"><span>處遇方向</span><textarea class="textarea" id="cf-plan" rows="4" placeholder="接下來要做的事、誰負責">${esc(c.plan || "")}</textarea></label>
+      <label class="field" style="max-width:220px"><span>下次追蹤日期</span><input class="input" type="date" id="cf-next" value="${esc(c.nextDate || "")}"></label>
+    </div></div>
+    <div class="stack gap16">
+      ${visit ? `<div class="card"><div class="card-head"><h3>相關訪視</h3></div><div class="card-body small"><a href="#/visits/${esc(visit.id)}">${mdw(visit.date)} ${esc(visit.kind)}・${esc(visit.school)} ${esc(visit.className)}・${esc(visit.teacherName)}</a></div></div>` : ""}
+      ${ev ? `<div class="card"><div class="card-head"><h3>相關特殊事件</h3></div><div class="card-body small"><a href="#/events/${esc(ev.id)}">${mdw(ev.date)} ${esc(ev.types)}</a><div class="muted mt8">${esc((ev.description || "").slice(0, 120))}</div></div></div>` : ""}
+      ${history2.length ? `<div class="card"><div class="card-head"><h3>這幾位孩子之前的紀錄</h3></div><div class="card-body small">${history2.map((x) => `<div class="ev-note"><a href="#/cases/${esc(x.id)}">${mdw(x.date)}・${esc(x.goal || x.methods || "個案工作")}</a><div class="muted">${esc(x.status)}・${esc(x.recorder || "")}</div></div>`).join("")}</div></div>` : ""}
+    </div></div>
+    <div class="sticky-foot"><span class="small muted">${icon("lock", "sm")} 只有社工和督導看得到</span><span class="sp"></span>
+      ${isNew ? "" : `<button class="btn danger" id="cf-del">${icon("trash", "sm")}刪除</button>`}<button class="btn primary" id="cf-save">${icon("save", "sm")}儲存</button></div>`;
+    dirty = false;
+    const el = ctx.el;
+    bindPills(el, (name) => {
+      markDirty();
+      if (name === "methods") $("#cf-mo").hidden = !split(pillValue(el, "methods")).includes("其他");
+    });
+    bindKidPicker(el, markDirty);
+    el.addEventListener("input", markDirty);
+    $("#cf-save").onclick = async () => {
+      const ids = pickedKids(el);
+      if (!ids.length) {
+        toast("請選擇個案（孩子）", "err");
+        return;
+      }
+      const first = get("students", ids[0]);
+      const cls = visit?.classId ? get("classes", visit.classId) : null;
+      const row = {
+        ...c,
+        date: $("#cf-date").value,
+        recorder: c.recorder || me(),
+        status: pillValue(el, "status") || "追蹤中",
+        studentIds: ids.join(SEP),
+        studentNames: ids.map((id) => nameOf("students", id)).join(SEP),
+        school: c.school || (cls ? schoolOf(cls) : kidSchool(first)),
+        className: c.className || (cls ? banOf(cls) : ""),
+        methods: pillValue(el, "methods"),
+        methodOther: $("#cf-mo").hidden ? "" : $("#cf-mo").value,
+        targets: [...split(pillValue(el, "targets")), ...split($("#cf-tx").value)].join(SEP),
+        goal: $("#cf-goal").value,
+        process: $("#cf-proc").value,
+        plan: $("#cf-plan").value,
+        nextDate: $("#cf-next").value
+      };
+      if (!row.date) {
+        toast("請填紀錄時間", "err");
+        return;
+      }
+      try {
+        const s2 = await saveRow("cases", row, "個案工作已儲存");
+        dirty = false;
+        ctx.go(`#/cases/${encodeURIComponent(s2.id)}`);
+      } catch {
+      }
+    };
+    $("#cf-del")?.addEventListener("click", async () => {
+      if (await delRow("cases", c.id, "個案工作紀錄")) {
+        dirty = false;
+        ctx.go("#/cases");
+      }
+    });
+  }
+  var cases = {
+    isDirty: () => dirty,
+    render(ctx) {
+      if (!isSocial2()) return denied(ctx, "個案工作");
+      dirty = false;
+      const p = ctx.params[0];
+      if (!p) return caseList(ctx);
+      if (p === "new") {
+        const q = ctx.query;
+        const visit = get("visits", q.get("visit"));
+        const ev = get("specialEvents", q.get("event"));
+        const kid = q.get("kid");
+        return caseForm(ctx, {
+          id: null,
+          date: visit?.date || todayISO(),
+          recorder: me(),
+          status: "追蹤中",
+          studentIds: ev?.studentIds || (kid && get("students", kid) ? kid : visit?.kidIds || ""),
+          methods: visit ? "校訪" : ev ? "" : "",
+          visitId: visit?.id || "",
+          eventId: ev?.id || "",
+          school: visit?.school || "",
+          className: visit?.className || ""
+        });
+      }
+      const c = get("cases", p);
+      if (!c) {
+        ctx.title("個案工作");
+        ctx.el.innerHTML = '<div class="empty">找不到這筆紀錄</div>';
+        return;
+      }
+      return caseForm(ctx, { ...c });
+    },
+    destroy() {
+      dirty = false;
+    }
+  };
+  var evTone = (o) => o === "結案" ? "good" : o === "處理中" ? "bad" : "mid";
+  var typeTone = (o) => o === "自傷風險" ? "bad" : "";
+  function eventList(ctx) {
+    const q = ctx.query;
+    const st2 = q.get("status") || "";
+    const ty = q.get("type") || "";
+    const list = S.data.specialEvents.filter((e) => (!st2 || e.status === st2) && (!ty || split(e.types).includes(ty))).sort(byDateDesc);
+    ctx.title("特殊事件", "由社工填寫；課輔時間以外的事件也記在這裡・只有社工和督導看得到");
+    const a = ctx.actions(`<select class="select" id="e-ty"><option value="">全部類型</option>${EVENT_TYPES.map((s) => `<option ${s === ty ? "selected" : ""}>${s}</option>`).join("")}</select>
+    <select class="select" id="e-st"><option value="">全部狀態</option>${["處理中", "追蹤中", "結案"].map((s) => `<option ${s === st2 ? "selected" : ""}>${s}</option>`).join("")}</select>
+    <button class="btn" id="e-xlsx">${icon("download", "sm")}Excel</button><a class="btn primary" href="#/events/new">${icon("plus", "sm")}新增特殊事件</a>`);
+    $("#e-ty", a).onchange = (e) => ctx.go(`#/events?type=${encodeURIComponent(e.target.value)}&status=${encodeURIComponent(st2)}`);
+    $("#e-st", a).onchange = (e) => ctx.go(`#/events?type=${encodeURIComponent(ty)}&status=${encodeURIComponent(e.target.value)}`);
+    $("#e-xlsx", a).onclick = () => xlsx(
+      "特殊事件",
+      ["紀錄人員姓名", "發生日期與時間", "發生地點", "涉及對象", "事件類型", "事件描述（具體客觀）", "初步處理與回應", "是否已通報或轉介", "通報日期", "後續追蹤建議", "備註", "狀態"],
+      list.slice().reverse().map((e) => [
+        e.recorder,
+        `${e.date || ""} ${e.time || ""}`.trim(),
+        e.place,
+        [kidNames(e.studentIds), e.others].filter(Boolean).join(SEP),
+        [e.types, e.typeOther].filter(Boolean).join("："),
+        e.description,
+        e.response,
+        [e.report, e.reportUnit].filter(Boolean).join("："),
+        e.reportDate,
+        e.followUp,
+        e.note,
+        e.status
+      ]),
+      [8, 16, 10, 16, 16, 50, 40, 18, 11, 30, 20, 7]
+    );
+    ctx.el.innerHTML = `<div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>發生日期</th><th>涉及對象</th><th>事件類型</th><th>通報／轉介</th><th>下次追蹤</th><th>狀態</th><th>紀錄人員</th></tr></thead><tbody>
+    ${list.map((e) => `<tr class="click" data-href="#/events/${esc(e.id)}"><td class="nowrap">${mdw(e.date)}${e.time ? `<div class="small muted">${esc(e.time)}</div>` : ""}</td>
+      <td><b>${esc(kidNames(e.studentIds))}</b>${e.others ? `<div class="small muted">${esc(e.others)}</div>` : ""}</td>
+      <td>${split(e.types).map((t) => `<span class="chip ${t === "自傷風險" ? "critical" : "outline"}" style="margin:1px">${esc(t)}</span>`).join("")}</td>
+      <td class="small">${esc(e.report || "")}${e.reportUnit ? `<div class="muted">${esc(e.reportUnit)}</div>` : ""}</td><td class="nowrap small">${followChip(e.nextDate, e.status === "結案")}</td>
+      <td><span class="chip ${e.status === "結案" ? "good" : e.status === "處理中" ? "critical" : "warn"}">${esc(e.status)}</span></td><td class="small">${esc(e.recorder)}</td></tr>`).join("") || `<tr><td colspan="7"><div class="empty">${icon("alert")}<div>還沒有特殊事件紀錄</div></div></td></tr>`}</tbody></table></div></div>`;
+    ctx.el.addEventListener("click", (e) => {
+      const tr = e.target.closest("tr[data-href]");
+      if (tr) ctx.go(tr.dataset.href);
+    });
+  }
+  function eventForm(ctx, e) {
+    const isNew = !e.id;
+    const inc2 = e.incidentId ? get("incidents", e.incidentId) : null;
+    const incSes = inc2 ? get("sessions", inc2.sessionId) : null;
+    const quick = incSes ? roster(incSes.classId) : [];
+    const ty = splitKnown(e.types, EVENT_TYPES);
+    const relCases = isNew ? [] : S.data.cases.filter((c) => c.eventId === e.id).sort(byDateDesc);
+    ctx.title(isNew ? "新增特殊事件" : "特殊事件", "只有社工和督導看得到");
+    ctx.actions(`<button class="btn ghost" id="ef-back">${icon("left", "sm")}回特殊事件</button>`);
+    $("#ef-back").onclick = () => leave(() => ctx.go("#/events"));
+    ctx.el.innerHTML = `<div class="grid g-main"><div class="stack gap16">
+    ${inc2 ? `<div class="callout small">${icon("info", "sm")} 由課後紀錄的事件轉入：${incSes ? `${esc(get("classes", incSes.classId)?.name || "")} ${mdw(incSes.date)}・` : ""}${esc(inc2.type)}（老師填寫）</div>` : ""}
+    <div class="card card-pad stack" style="gap:14px">
+      <div class="row wrap" style="gap:10px 18px;align-items:flex-end">
+        <label class="field"><span>發生日期 <b style="color:var(--critical)">*</b></span><input class="input" type="date" id="ef-date" value="${esc(e.date)}"></label>
+        <label class="field"><span>時間</span><input class="input" type="time" id="ef-time" value="${esc(e.time || "")}"></label>
+        <label class="field grow"><span>發生地點</span><input class="input" id="ef-place" list="ef-places" value="${esc(e.place || "")}" placeholder="例：課輔教室、家中、電訪得知"><datalist id="ef-places">${PLACES.map((p) => `<option value="${p}">`).join("")}</datalist></label>
+        <div class="field"><span class="small ink2">紀錄人員</span><div style="padding-top:6px">${esc(e.recorder || me())}</div></div></div>
+      <div class="field"><span class="small ink2">涉及的孩子</span>${kidPicker(e.studentIds, quick)}
+        <input class="input mt8" id="ef-others" value="${esc(e.others || "")}" placeholder="其他涉及對象，例如：家長、同學、校外人士"></div>
+      <div class="field"><span class="small ink2">事件類型（可勾選）<b style="color:var(--critical)">*</b></span>${pills("types", EVENT_TYPES, ty.on, { multi: true, tone: typeTone })}
+        <input class="input mt8" id="ef-to" value="${esc(e.typeOther || ty.extra)}" placeholder="選「其他」時寫明" ${split(ty.on).includes("其他") || e.typeOther || ty.extra ? "" : "hidden"}></div>
+      <label class="field"><span>事件描述（具體客觀）<b style="color:var(--critical)">*</b></span><textarea class="textarea" id="ef-desc" rows="7" placeholder="寫看到、聽到的事實：誰、在哪裡、做了什麼、說了什麼；避免推測與評價">${esc(e.description || "")}</textarea></label>
+      <label class="field"><span>初步處理與回應</span><textarea class="textarea" id="ef-resp" rows="4">${esc(e.response || "")}</textarea></label>
+      <div class="field"><span class="small ink2">是否已通報或轉介</span>${pills("report", REPORTS, e.report || "未通報")}
+        <div class="row wrap mt8" style="gap:10px" id="ef-repx" ${["已轉介", "已通報（社會局／113）", "已校內通報"].includes(e.report) ? "" : "hidden"}>
+          <input class="input grow" id="ef-unit" value="${esc(e.reportUnit || "")}" placeholder="通報／轉介單位，例如：學校輔導室、社會處、家防中心">
+          <label class="row small" style="gap:6px">通報日期<input class="input" type="date" id="ef-rdate" value="${esc(e.reportDate || "")}"></label></div></div>
+      <label class="field"><span>後續追蹤建議</span><textarea class="textarea" id="ef-follow" rows="3">${esc(e.followUp || "")}</textarea></label>
+      <div class="row wrap" style="gap:10px 18px;align-items:flex-end">
+        <label class="field"><span>下次追蹤日期</span><input class="input" type="date" id="ef-next" value="${esc(e.nextDate || "")}"></label>
+        <div class="field"><span class="small ink2">狀態</span>${pills("status", ["處理中", "追蹤中", "結案"], e.status || "處理中", { tone: evTone })}</div></div>
+      <label class="field"><span>備註</span><textarea class="textarea" id="ef-note" rows="2">${esc(e.note || "")}</textarea></label>
+    </div></div>
+    <div class="stack gap16">
+      ${split(ty.on).includes("自傷風險") ? `<div class="callout critical small">${icon("alert", "sm")} 自傷風險：請依機構通報流程立即處理，並確認孩子身邊有大人陪伴。</div>` : ""}
+      <div class="card"><div class="card-head"><h3>後續個案工作</h3></div><div class="card-body small">${relCases.map((c) => `<div class="ev-note"><a href="#/cases/${esc(c.id)}">${mdw(c.date)}・${esc(c.goal || c.methods || "個案工作")}</a><div class="muted">${esc(c.status)}</div></div>`).join("") || '<div class="muted">還沒有</div>'}
+        ${isNew ? "" : `<a class="btn sm mt8" href="#/cases/new?event=${esc(e.id)}">${icon("plus", "sm")}寫一筆個案工作</a>`}</div></div>
+    </div></div>
+    <div class="sticky-foot"><span class="small muted">${icon("lock", "sm")} 只有社工和督導看得到</span><span class="sp"></span>
+      ${isNew ? "" : `<button class="btn danger" id="ef-del">${icon("trash", "sm")}刪除</button>`}<button class="btn primary" id="ef-save">${icon("save", "sm")}儲存</button></div>`;
+    dirty = false;
+    const el = ctx.el;
+    bindPills(el, (name) => {
+      markDirty();
+      if (name === "types") $("#ef-to").hidden = !split(pillValue(el, "types")).includes("其他") && !$("#ef-to").value;
+      if (name === "report") $("#ef-repx").hidden = !["已轉介", "已通報（社會局／113）", "已校內通報"].includes(pillValue(el, "report"));
+    });
+    bindKidPicker(el, markDirty);
+    el.addEventListener("input", markDirty);
+    $("#ef-save").onclick = async () => {
+      const ids = pickedKids(el);
+      const row = {
+        ...e,
+        date: $("#ef-date").value,
+        time: $("#ef-time").value,
+        place: $("#ef-place").value,
+        recorder: e.recorder || me(),
+        studentIds: ids.join(SEP),
+        studentNames: ids.map((id) => nameOf("students", id)).join(SEP),
+        others: $("#ef-others").value,
+        types: pillValue(el, "types"),
+        typeOther: $("#ef-to").hidden ? "" : $("#ef-to").value,
+        description: $("#ef-desc").value,
+        response: $("#ef-resp").value,
+        report: pillValue(el, "report") || "未通報",
+        reportUnit: $("#ef-repx").hidden ? "" : $("#ef-unit").value,
+        reportDate: $("#ef-repx").hidden ? "" : $("#ef-rdate").value,
+        followUp: $("#ef-follow").value,
+        nextDate: $("#ef-next").value,
+        status: pillValue(el, "status") || "處理中",
+        note: $("#ef-note").value
+      };
+      if (!row.date) {
+        toast("請填發生日期", "err");
+        return;
+      }
+      if (!row.types) {
+        toast("請勾選事件類型", "err");
+        return;
+      }
+      if (!row.description.trim()) {
+        toast("請填事件描述", "err");
+        return;
+      }
+      if (!ids.length && !row.others.trim() && !await confirmBox("還沒有選涉及的孩子或對象，確定要儲存？", { okText: "儲存" })) return;
+      try {
+        const s2 = await saveRow("specialEvents", row, "特殊事件已儲存");
+        dirty = false;
+        ctx.go(`#/events/${encodeURIComponent(s2.id)}`);
+      } catch {
+      }
+    };
+    $("#ef-del")?.addEventListener("click", async () => {
+      if (await delRow("specialEvents", e.id, "特殊事件")) {
+        dirty = false;
+        ctx.go("#/events");
+      }
+    });
+  }
+  var events = {
+    isDirty: () => dirty,
+    render(ctx) {
+      if (!isSocial2()) return denied(ctx, "特殊事件");
+      dirty = false;
+      const p = ctx.params[0];
+      if (!p) return eventList(ctx);
+      if (p === "new") {
+        const inc2 = get("incidents", ctx.query.get("incident"));
+        const ses = inc2 ? get("sessions", inc2.sessionId) : null;
+        const already = inc2 ? S.data.specialEvents.find((x) => x.incidentId === inc2.id) : null;
+        if (already) {
+          ctx.go(`#/events/${encodeURIComponent(already.id)}`);
+          return;
+        }
+        const kid = ctx.query.get("kid");
+        return eventForm(ctx, {
+          id: null,
+          date: ses?.date || todayISO(),
+          recorder: me(),
+          status: "處理中",
+          report: "未通報",
+          place: inc2 ? "課輔教室" : "",
+          studentIds: inc2?.studentId || (kid && get("students", kid) ? kid : ""),
+          description: inc2?.description || "",
+          response: inc2?.action || "",
+          incidentId: inc2?.id || ""
+        });
+      }
+      const e = get("specialEvents", p);
+      if (!e) {
+        ctx.title("特殊事件");
+        ctx.el.innerHTML = '<div class="empty">找不到這筆紀錄</div>';
+        return;
+      }
+      return eventForm(ctx, { ...e });
+    },
+    destroy() {
+      dirty = false;
+    }
+  };
+  function followItems() {
+    if (!isSocial2() || !S.data) return [];
+    const out = [];
+    for (const c of S.data.cases) if (c.status !== "結案") out.push({ kind: "個案工作", href: `#/cases/${encodeURIComponent(c.id)}`, date: c.nextDate || "", who: kidNames(c.studentIds), what: c.goal || c.methods || "", by: c.recorder, last: c.date });
+    for (const e of S.data.specialEvents) if (e.status !== "結案") out.push({ kind: "特殊事件", href: `#/events/${encodeURIComponent(e.id)}`, date: e.nextDate || "", who: [kidNames(e.studentIds), e.others].filter(Boolean).join(SEP), what: e.types, by: e.recorder, last: e.date, urgent: split(e.types).includes("自傷風險") });
+    return out.sort((a, b) => (b.urgent ? 1 : 0) - (a.urgent ? 1 : 0) || (a.date || "9999").localeCompare(b.date || "9999"));
+  }
+  function followDue() {
+    const t = addDays2(todayISO(), 3);
+    return followItems().filter((x) => x.urgent || x.date && x.date <= t).length;
+  }
+  var followups = {
+    render(ctx) {
+      if (!isSocial2()) return denied(ctx, "追蹤清單");
+      const items = followItems();
+      const t = todayISO();
+      ctx.title("追蹤清單", "還沒結案的個案工作與特殊事件，依下次追蹤日期排序");
+      ctx.actions(`<a class="btn" href="#/events/new">${icon("plus", "sm")}特殊事件</a><a class="btn primary" href="#/cases/new">${icon("plus", "sm")}個案工作</a>`);
+      const sec = (title, list) => list.length ? `<div class="section-title">${title}（${list.length}）</div><div class="card"><div class="tbl-wrap"><table class="tbl"><tbody>
+      ${list.map((x) => `<tr class="click" data-href="${x.href}"><td class="nowrap" style="width:120px">${followChip(x.date, false)}</td><td><span class="chip ${x.kind === "特殊事件" ? "warn" : "outline"}">${x.kind}</span></td>
+        <td><b>${esc(x.who || "—")}</b><div class="small muted">${esc(x.what)}</div></td><td class="small nowrap">上次 ${md2(x.last)}・${esc(x.by || "")}</td></tr>`).join("")}</tbody></table></div></div>` : "";
+      const over = items.filter((x) => x.date && x.date < t), soon = items.filter((x) => x.date && x.date >= t && x.date <= addDays2(t, 7)), later = items.filter((x) => x.date && x.date > addDays2(t, 7)), none = items.filter((x) => !x.date);
+      ctx.el.innerHTML = items.length ? `${sec("已過追蹤日期", over)}${sec("一週內", soon)}${sec("之後", later)}${sec("還沒排追蹤日期", none)}` : `<div class="card"><div class="empty">${icon("check")}<div>目前沒有需要追蹤的個案或事件</div></div></div>`;
+      ctx.el.addEventListener("click", (e) => {
+        const tr = e.target.closest("tr[data-href]");
+        if (tr) ctx.go(tr.dataset.href);
+      });
+    }
+  };
+  function kidSocialCard(sid2) {
+    if (!isSocial2()) return "";
+    const has = (v) => split(v).includes(sid2);
+    const items = [
+      ...S.data.cases.filter((c) => has(c.studentIds)).map((c) => ({ date: c.date, html: `<a href="#/cases/${esc(c.id)}"><b>個案工作</b>・${esc(c.methods || "")}</a><div>${esc(c.goal || "")}</div><div class="small muted">${esc(c.status)}・${esc(c.recorder || "")}</div>` })),
+      ...S.data.specialEvents.filter((e) => has(e.studentIds)).map((e) => ({ date: e.date, html: `<a href="#/events/${esc(e.id)}"><b>特殊事件</b>・${esc(e.types || "")}</a><div>${esc((e.description || "").slice(0, 80))}${(e.description || "").length > 80 ? "…" : ""}</div><div class="small muted">${esc(e.status)}・${esc(e.recorder || "")}</div>` })),
+      ...S.data.visits.filter((v) => has(v.kidIds)).map((v) => ({ date: v.date, html: `<a href="#/visits/${esc(v.id)}"><b>訪視時提到</b>・${esc(v.school)} ${esc(v.className)} ${esc(v.subject)}</a><div class="small muted">${esc(v.recorder || "")}</div>` }))
+    ].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+    return `<div class="card social-card"><div class="card-head"><h3>${icon("lock", "sm")} 社工紀錄</h3><span class="sub">只有社工和督導看得到</span><span class="sp"></span>
+      <a class="btn sm" href="#/cases/new?kid=${esc(sid2)}">${icon("plus", "sm")}個案工作</a><a class="btn sm" href="#/events/new?kid=${esc(sid2)}">${icon("plus", "sm")}特殊事件</a></div>
+    <div class="card-body">${items.length ? `<div class="timeline">${items.map((x) => `<div class="tl-item"><div class="tl-date">${md2(x.date)}</div><div>${x.html}</div></div>`).join("")}</div>` : '<div class="small muted">還沒有個案工作或特殊事件紀錄</div>'}</div></div>`;
+  }
+  function incidentSocialLink(inc2) {
+    if (!isSocial2() || !inc2?.id) return "";
+    const done = S.data.specialEvents.find((x) => x.incidentId === inc2.id);
+    return done ? `<a class="btn sm ghost" href="#/events/${esc(done.id)}">${icon("lock", "sm")}已轉特殊事件</a>` : `<a class="btn sm" href="#/events/new?incident=${esc(inc2.id)}">${icon("lock", "sm")}轉為特殊事件</a>`;
+  }
+
   // src/js/pages/journal.js
   var FILTERS = [["all", "全部"], ["pending", "待處理"], ["done", "已處理"], ["unsent", "未送出"]];
   var open = /* @__PURE__ */ new Set();
@@ -5819,10 +7136,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     }).join("")}</tbody></table></div>
     ${incs.length ? `<div class="section-title">${icon("alert", "sm")}事件 ${incs.length} 件</div>${incs.map((i) => `<div class="callout ${i.severity === "高" ? "critical" : "warn"}" style="margin-bottom:6px">
       <b>${esc(i.severity)}・${esc(i.type)}</b>${i.studentId ? `・${esc(nameOf("students", i.studentId))}` : ""}　<span class="chip outline">${esc(i.status)}</span>
-      <div class="mt8">${esc(i.description)}</div>${i.action ? `<div class="small muted mt8">處理：${esc(i.action)}</div>` : ""}</div>`).join("")}` : ""}
+      <div class="mt8">${esc(i.description)}</div>${i.action ? `<div class="small muted mt8">處理：${esc(i.action)}</div>` : ""}${incidentSocialLink(i) ? `<div class="mt8">${incidentSocialLink(i)}</div>` : ""}</div>`).join("")}` : ""}
     <div class="section-title">${icon("message", "sm")}督導回饋</div>
     ${sup ? `<textarea class="textarea fb-text" data-sid="${s.id}" placeholder="給老師的回饋（可留空，只標記已看過）">${esc(s.feedback || "")}</textarea>
       <div class="row mt8"><span class="small muted">${s.feedbackBy ? `${esc(s.feedbackStatus)}：${esc(s.feedbackBy)} ${esc(s.feedbackAt || "")}` : ""}</span><span class="sp"></span>
+        ${isSocial2() ? `<a class="btn sm ghost" href="#/visits/new?class=${x.cls.id}&date=${s.date}">${icon("eye", "sm")}寫訪視紀錄</a>` : ""}
         <a class="btn sm ghost" href="#/flow?class=${x.cls.id}&date=${s.date}">${icon("flow", "sm")}教學流程</a>
         <a class="btn sm ghost" href="#/record?class=${x.cls.id}&date=${s.date}">${icon("edit", "sm")}課後紀錄</a>
         <button class="btn sm" data-fb="已看過" data-sid="${s.id}">${icon("eye", "sm")}標記已看過</button>
@@ -6351,10 +7669,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     <button class="btn" id="f-sheets" title="每位孩子一張任務單，A4 一張印兩位">${icon("file", "sm")}孩子任務單</button>
     <button class="btn" id="f-xlsx" title="下載這堂課的 Excel：總表、明細、每位孩子一張">${icon("download", "sm")}Excel</button>
     <button class="btn" id="f-print" title="A4 橫印，可在列印視窗另存成 PDF">${icon("print", "sm")}列印／PDF</button>`);
-    $("#f-class", a).onchange = (e) => leave(() => ctx.go(`#/flow?class=${e.target.value}`));
-    $("#f-date", a).onchange = (e) => leave(() => ctx.go(`#/flow?class=${st.cid}&date=${e.target.value}`));
-    $("#f-prev", a).onclick = () => leave(() => ctx.go(`#/flow?class=${st.cid}&date=${dates[idx - 1]}`));
-    $("#f-next", a).onclick = () => leave(() => ctx.go(`#/flow?class=${st.cid}&date=${dates[idx + 1]}`));
+    $("#f-class", a).onchange = (e) => leave2(() => ctx.go(`#/flow?class=${e.target.value}`));
+    $("#f-date", a).onchange = (e) => leave2(() => ctx.go(`#/flow?class=${st.cid}&date=${e.target.value}`));
+    $("#f-prev", a).onclick = () => leave2(() => ctx.go(`#/flow?class=${st.cid}&date=${dates[idx - 1]}`));
+    $("#f-next", a).onclick = () => leave2(() => ctx.go(`#/flow?class=${st.cid}&date=${dates[idx + 1]}`));
     $("#f-print", a).onclick = () => printFlow(st);
     $("#f-xlsx", a).onclick = () => downloadFlowXlsx(st);
     $("#f-sheets", a).onclick = () => openTaskSheets(st);
@@ -6730,7 +8048,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       btn.disabled = false;
     }
   }
-  async function leave(fn) {
+  async function leave2(fn) {
     if (st?.dirty && !await confirmBox("這堂的教學流程還沒儲存（草稿已保存在這台電腦，回來時會自動還原）。確定要離開？", { okText: "離開" })) return;
     fn();
   }
@@ -6964,10 +8282,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     const a = ctx.actions(`<select class="select" id="r-class">${pool.map((x) => `<option value="${x.id}" ${x.id === rs.cid ? "selected" : ""}>${esc(x.name)}　${esc(subjectOfClass(x))}</option>`).join("")}</select>
     <select class="select" id="r-date">${(dates.includes(rs.date) ? dates : [...dates, rs.date].sort()).map((d) => `<option value="${d}" ${d === rs.date ? "selected" : ""}>${mdw(d)}</option>`).join("")}</select>
     <button class="btn" id="r-prev" ${idx <= 0 ? "disabled" : ""}>‹</button><button class="btn" id="r-next" ${idx < 0 || idx >= dates.length - 1 ? "disabled" : ""}>›</button>`);
-    $("#r-class", a).onchange = (e) => leave2(() => ctx.go(`#/record?class=${e.target.value}`));
-    $("#r-date", a).onchange = (e) => leave2(() => ctx.go(`#/record?class=${rs.cid}&date=${e.target.value}`));
-    $("#r-prev", a).onclick = () => leave2(() => ctx.go(`#/record?class=${rs.cid}&date=${dates[idx - 1]}`));
-    $("#r-next", a).onclick = () => leave2(() => ctx.go(`#/record?class=${rs.cid}&date=${dates[idx + 1]}`));
+    $("#r-class", a).onchange = (e) => leave3(() => ctx.go(`#/record?class=${e.target.value}`));
+    $("#r-date", a).onchange = (e) => leave3(() => ctx.go(`#/record?class=${rs.cid}&date=${e.target.value}`));
+    $("#r-prev", a).onclick = () => leave3(() => ctx.go(`#/record?class=${rs.cid}&date=${dates[idx - 1]}`));
+    $("#r-next", a).onclick = () => leave3(() => ctx.go(`#/record?class=${rs.cid}&date=${dates[idx + 1]}`));
     const wk = weekNo(rs.date);
     ctx.title("課後紀錄", `${esc(c.name)}・${esc(subjectOfClass(c))}・${esc(teacherOfClass(c))}・${mdw(rs.date)}${wk > 0 ? `・第 ${wk} 週` : ""}`);
     const s = rs.session;
@@ -7266,7 +8584,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       });
     }
   }
-  async function leave2(fn) {
+  async function leave3(fn) {
     if (rs?.dirty && !await confirmBox("課後紀錄還沒儲存（草稿已保存在這台電腦，回來時會自動還原）。確定要離開？", { okText: "離開" })) return;
     fn();
   }
@@ -7440,6 +8758,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
               <div><div class="small muted">需要加強／留意</div><div class="mt8">${(ins.weaknesses || []).map((x) => `<span class="chip warn" style="margin:2px">${esc(x)}</span>`).join("") || '<span class="muted small">—</span>'}</div></div></div>` : ""}</div></div>
         <div class="card"><div class="card-head"><h3>學習表現趨勢</h3><span class="sub">老師每堂評分（1–5）</span></div><div class="card-body">${line(pts)}</div></div>
         <div class="card"><div class="card-head"><h3>上課紀錄</h3><span class="sub">出席、進度、任務、老師紀錄與事件</span></div><div class="card-body">${timeline(sid2)}</div></div>
+        ${kidSocialCard(sid2)}
       </div>
       <div class="stack gap16">
         <div class="card"><div class="card-head"><h3>${icon("shield", "sm")} 風險評估</h3><span class="sp"></span>${riskChip(ins?.levelLabel || "資料不足", ins?.score)}</div>
@@ -8691,7 +10010,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   var data_default = {
     render(ctx) {
       const tables = S.schema.tables;
-      const key = ctx.params[0] && tables[ctx.params[0]] ? ctx.params[0] : "students";
+      const key = ctx.params[0] && tables[ctx.params[0]] && tables[ctx.params[0]].group !== "social" ? ctx.params[0] : "students";
       const t = tables[key];
       const q = (ctx.query.get("q") || "").trim();
       const rows2 = (S.data[key] || []).filter((r) => !q || Object.values(r).some((v) => String(v ?? "").includes(q)));
@@ -8901,7 +10220,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   };
 
   // src/js/main.js
-  var MODULES = { dashboard: dashboard_default, journal: journal_default, month: month_default, flow: flow_default, record: record_default, kids: kids_default, forum: forum_default, resources: resources_default, classes: classes_default, teachers: teachers_default, data: data_default, settings: settings_default };
+  var MODULES = { dashboard: dashboard_default, journal: journal_default, month: month_default, flow: flow_default, record: record_default, kids: kids_default, forum: forum_default, resources: resources_default, classes: classes_default, teachers: teachers_default, data: data_default, settings: settings_default, visits, teachereval, cases, events, followups };
   var PAGES = [
     { group: "督導監控", items: [
       { id: "dashboard", title: "總覽", icon: "grid" },
@@ -8914,6 +10233,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     ] },
     { group: "孩子", items: [
       { id: "kids", title: "學習檔案與風險", icon: "shield" }
+    ] },
+    { group: "社工", social: true, items: [
+      { id: "followups", title: "追蹤清單", icon: "clock" },
+      { id: "visits", title: "訪視紀錄", icon: "eye" },
+      { id: "teachereval", title: "老師評估", icon: "activity" },
+      { id: "cases", title: "個案工作", icon: "user" },
+      { id: "events", title: "特殊事件", icon: "alert" }
     ] },
     { group: "交流", items: [
       { id: "forum", title: "課輔論壇", icon: "forum" },
@@ -9023,13 +10349,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     if (high) out.kids = [high, ""];
     const open2 = openPosts();
     if (open2.length) out.forum = [open2.length, open2.some((p) => p.urgent === "急") ? "" : "soft"];
+    if (isSocial2()) {
+      const due = followDue();
+      if (due) out.followups = [due, ""];
+    }
     const broken = S.data.resources.filter((r) => r.status === "需維修" || r.status === "不足").length;
     if (broken) out.resources = [broken, "soft"];
     return out;
   }
   function renderNav() {
     const b = badges();
-    $("#nav").innerHTML = PAGES.map((g) => `<div class="nav-group"><div class="nav-label">${g.group}</div>
+    $("#nav").innerHTML = PAGES.filter((g) => !g.social || isSocial2()).map((g) => `<div class="nav-group"><div class="nav-label">${g.group}</div>
     ${g.items.map((i) => `<a href="#/${i.id}" data-id="${i.id}" title="${i.title}">${icon(i.icon)}<span>${i.title}</span>
       ${b[i.id] ? `<em class="badge ${b[i.id][1]}">${b[i.id][0]}</em>` : ""}</a>`).join("")}</div>`).join("");
     document.querySelectorAll(".nav a").forEach((a) => a.classList.toggle("active", a.dataset.id === current.id));
@@ -9086,7 +10416,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     const body = h(`<div><p class="muted" style="margin:0">選擇身分後，畫面會依身分顯示（老師看到自己的班；社工／督導看全部）。
     你寫的資料會存在資料夾裡<b>自己的檔案</b>（老師：<code>老師/姓名.json</code>；督導：<code>督導.json</code>），多人同時使用也不會互相覆蓋。</p>
     <div class="section-title">社工／督導</div>
-    <div class="who-list">${staff.map((t) => `<button class="who-opt" data-role="supervisor" data-name="${esc(t.name)}"><b>${esc(t.name)}</b><span>${esc(t.role)}</span></button>`).join("")}
+    <div class="who-list">${staff.map((t) => `<button class="who-opt" data-role="supervisor" data-name="${esc(t.name)}" data-title="${esc(t.role)}"><b>${esc(t.name)}</b><span>${esc(t.role)}</span></button>`).join("")}
       <button class="who-opt" data-role="supervisor" data-name="社工／督導"><b>社工／督導</b><span>查看所有班級</span></button></div>
     <div class="section-title">課輔老師</div>
     <div class="who-list">${teachers.map((t) => `<button class="who-opt" data-role="teacher" data-id="${esc(t.id)}" data-name="${esc(t.name)}"><b>${esc(t.name)}</b>
@@ -9097,7 +10427,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     body.addEventListener("click", (e) => {
       const b = e.target.closest(".who-opt");
       if (!b) return;
-      S.who = b.dataset.role === "teacher" ? { role: "teacher", teacherId: b.dataset.id, name: b.dataset.name } : { role: "supervisor", name: b.dataset.name };
+      S.who = b.dataset.role === "teacher" ? { role: "teacher", teacherId: b.dataset.id, name: b.dataset.name } : { role: "supervisor", name: b.dataset.name, title: b.dataset.title || "督導", social: b.dataset.title !== "行政" };
       LS.set(lsKey("who"), S.who);
       DB.me = S.who;
       body.closest(".modal")?._finish?.(true);
@@ -9320,8 +10650,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     $("#app").classList.remove("booting");
     if (!backend.writable) $("#ro-banner").classList.remove("hidden");
     if (backend.kind === "cloud") {
-      const me = backend.me;
-      S.who = me.role === "teacher" ? { role: "teacher", teacherId: me.teacherId, name: me.name } : { role: "supervisor", name: me.name };
+      const me2 = backend.me;
+      S.who = me2.role === "teacher" ? { role: "teacher", teacherId: me2.teacherId, name: me2.name } : { role: "supervisor", name: me2.name, title: me2.title || "", social: me2.social !== false };
       $("#who").title = "我的帳號";
       addEventListener("yl-auth", (e) => {
         toast((e.detail || "登入已失效") + "，請重新登入", "err");
