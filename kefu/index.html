@@ -743,6 +743,31 @@ button.mg-c b { font-size: 12.5px; } button.mg-c small { font-size: 10px; color:
 .mf-pick { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .field .mf-pick { display: flex; } .field .mf-pick .select { flex: 1; min-width: 160px; } .field .mf-pick input { flex: 1; min-width: 160px; }
 
+/* 指導員訪視 */
+.vcal { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.vcal-day { border-right: 1px solid var(--line-2); padding: 8px; min-height: 90px; } .vcal-day:last-child { border-right: 0; }
+.vcal-h { font-size: 12.5px; color: var(--ink-2); margin-bottom: 6px; font-weight: 600; }
+.vcal-item { font-size: 12.5px; border: 1px solid var(--line); border-radius: 8px; padding: 5px 7px; margin-bottom: 5px; cursor: pointer; background: var(--surface); }
+.vcal-item:hover { border-color: var(--accent); }
+@media (max-width: 760px) { .vcal { grid-template-columns: 1fr; } .vcal-day { border-right: 0; border-bottom: 1px solid var(--line-2); min-height: 0; } }
+.vf .vf-f > span { font-weight: 600; }
+.vf-rate th { width: 9.5em; font-weight: 500; color: var(--ink-2); vertical-align: middle; }
+.vf-rate .seg.pick button { height: 30px; padding: 0 11px; font-size: 13px; }
+.vf-goals { display: flex; flex-direction: column; gap: 8px; }
+.vf-goal { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+.vf-locked { opacity: .55; pointer-events: none; }
+/* 列印：訪視表單 A4 直印 */
+.vfp-page { font-size: 11.5pt; color: #000; }
+.vfp-title { text-align: center; margin-bottom: 6mm; } .vfp-title div { font-size: 10pt; } .vfp-title h1 { font-size: 15pt; margin: 2mm 0 0; }
+table.vfp { width: 100%; border-collapse: collapse; margin-bottom: 3mm; }
+table.vfp th, table.vfp td { border: 1px solid #000; padding: 2mm 2.5mm; vertical-align: top; text-align: left; }
+table.vfp th { background: #f1f1f1; width: 26mm; font-weight: 600; white-space: nowrap; }
+table.vfp tr.vfp-sec td { background: #e4e4e4; font-weight: 700; }
+table.vfp.mt8 { margin-top: 3mm; }
+.vf-break { break-after: page; page-break-after: always; }
+.vf-goal .input, .vf-goal .textarea { width: 100%; }
+table.vfp.vfp-head th { width: auto; } table.vfp.vfp-head td { min-width: 18mm; }
+
 </style>
   <script>
     try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
@@ -852,6 +877,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     saveEnglish: () => saveEnglish,
     saveMath: () => saveMath,
     saveSession: () => saveSession,
+    saveVisitForm: () => saveVisitForm,
+    saveVisitPlans: () => saveVisitPlans,
     setRoster: () => setRoster,
     setRules: () => setRules,
     setSetting: () => setSetting,
@@ -3231,6 +3258,179 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             "kind": "text"
           }
         ]
+      },
+      "visitPlans": {
+        "key": "visitPlans",
+        "sheet": "指導員訪視排程",
+        "label": "指導員訪視排程",
+        "idKey": "id",
+        "idPrefix": "",
+        "scope": "semester",
+        "group": "record",
+        "note": "社工安排的指導員訪視（取代訪視時程表）；id：VP-班級~序號",
+        "cols": [
+          {
+            "key": "id",
+            "label": "訪視ID",
+            "kind": "text"
+          },
+          {
+            "key": "semesterId",
+            "label": "學期",
+            "kind": "text"
+          },
+          {
+            "key": "classId",
+            "label": "班級ID",
+            "kind": "text",
+            "required": true
+          },
+          {
+            "key": "teacherId",
+            "label": "課輔老師ID",
+            "kind": "text"
+          },
+          {
+            "key": "teacherName",
+            "label": "課輔老師",
+            "kind": "text"
+          },
+          {
+            "key": "subject",
+            "label": "科目",
+            "kind": "enum",
+            "options": [
+              "國語",
+              "英語",
+              "數學"
+            ],
+            "required": true
+          },
+          {
+            "key": "date",
+            "label": "訪視日期",
+            "kind": "date",
+            "required": true
+          },
+          {
+            "key": "start",
+            "label": "開始",
+            "kind": "text"
+          },
+          {
+            "key": "end",
+            "label": "結束",
+            "kind": "text"
+          },
+          {
+            "key": "mentor",
+            "label": "指導員",
+            "kind": "text"
+          },
+          {
+            "key": "mode",
+            "label": "訪視方式",
+            "kind": "text"
+          },
+          {
+            "key": "room",
+            "label": "上課教室",
+            "kind": "text"
+          },
+          {
+            "key": "book",
+            "label": "使用冊數",
+            "kind": "text"
+          },
+          {
+            "key": "unit",
+            "label": "單元",
+            "kind": "text"
+          },
+          {
+            "key": "focus",
+            "label": "預計觀課的教學成分",
+            "kind": "text"
+          },
+          {
+            "key": "recordBack",
+            "label": "指導員紀錄表已回收",
+            "kind": "text"
+          },
+          {
+            "key": "followed",
+            "label": "二次訪視需求已處理",
+            "kind": "text"
+          },
+          {
+            "key": "note",
+            "label": "備註",
+            "kind": "longtext"
+          },
+          {
+            "key": "source",
+            "label": "來源",
+            "kind": "text"
+          }
+        ]
+      },
+      "visitForms": {
+        "key": "visitForms",
+        "sheet": "訪視提問單與自評",
+        "label": "訪視提問單與自評",
+        "idKey": "id",
+        "idPrefix": "",
+        "scope": "semester",
+        "group": "record",
+        "note": "課輔老師填的訪視提問單（pre）與訪視後自評（post，兩段）；id：VF-班級~訪視序號~pre|post",
+        "cols": [
+          {
+            "key": "id",
+            "label": "表單ID",
+            "kind": "text"
+          },
+          {
+            "key": "planId",
+            "label": "訪視ID",
+            "kind": "text",
+            "required": true
+          },
+          {
+            "key": "classId",
+            "label": "班級ID",
+            "kind": "text"
+          },
+          {
+            "key": "kind",
+            "label": "表單",
+            "kind": "enum",
+            "options": [
+              "pre",
+              "post"
+            ],
+            "required": true
+          },
+          {
+            "key": "data",
+            "label": "內容",
+            "kind": "text"
+          },
+          {
+            "key": "submitted1At",
+            "label": "送出時間（提問單／自評第一段）",
+            "kind": "text"
+          },
+          {
+            "key": "submitted2At",
+            "label": "送出時間（隔週調整）",
+            "kind": "text"
+          },
+          {
+            "key": "by",
+            "label": "填寫者",
+            "kind": "text"
+          }
+        ]
       }
     },
     "enums": {
@@ -3946,8 +4146,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
       }
       if (urgent.length) add("urgent", "紀錄含需立即關注字詞", `${md(urgent[urgent.length - 1][0])} 等紀錄提到「${[...new Set(urgent.map((u) => u[1]))].join("、")}」`, N.pointsUrgent, "紀錄");
-      const fs = n < R.minRecords ? factors.filter((f) => f.category === "事件" || f.code === "urgent") : factors;
-      const score = fs.reduce((s, f) => s + f.points, 0);
+      const fs2 = n < R.minRecords ? factors.filter((f) => f.category === "事件" || f.code === "urgent") : factors;
+      const score = fs2.reduce((s, f) => s + f.points, 0);
       const lv = R.levels;
       let level = urgent.length || score >= lv.high ? "高風險" : score >= lv.medium ? "中風險" : score >= lv.low ? "低風險" : "穩定";
       if (n < R.minRecords && (level === "穩定" || level === "低風險")) level = "資料不足";
@@ -3963,7 +4163,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       const strengths = subjAvgs.filter(([, a, k]) => k >= 2 && a >= 4).slice(0, 2).map(([k, a]) => `${k} ${f1(a)}`).concat(top(positive, 2).map((x) => x[0]));
       const weaknesses = subjAvgs.filter(([, a, k]) => k >= 2 && a <= 3).slice(-2).map(([k, a]) => `${k} ${f1(a)}`).concat(top(concern, 2).filter((x) => x[1] >= N.minMentions).map((x) => x[0]));
       if (hwUndone >= T.homeworkUndone) weaknesses.push(`${T.homeworkType}完成度`);
-      const sorted = [...fs].sort((a, b) => b.points - a.points);
+      const sorted = [...fs2].sort((a, b) => b.points - a.points);
       const sugg = [];
       for (const f of sorted) {
         const tpl = R.suggestions[f.code];
@@ -4219,7 +4419,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   var TDEF = SCHEMA.tables;
   var LIST_TABLES = ["units", "selActivities", "backupOptions", "readingList"];
   var BASE_TABLES = ["semesters", "defaultSlots", "holidays", "subjects", "taskTypes", "teachers", "students", "classes", "classSlots", "enrollments", "resources", ...LIST_TABLES];
-  var TX_TABLES = ["sessions", "blocks", "tasks", "records", "incidents", "evaluations", "feedback", "posts", "replies", "submissions", "mathScores", "enTests"];
+  var TX_TABLES = ["sessions", "blocks", "tasks", "records", "incidents", "evaluations", "feedback", "posts", "replies", "submissions", "mathScores", "enTests", "visitPlans", "visitForms"];
   var SOCIAL_TABLES = ["visits", "cases", "specialEvents"];
   var ALL_TABLES = [...BASE_TABLES, ...TX_TABLES, ...SOCIAL_TABLES];
   var BASE_FILE = "基本資料.json";
@@ -4889,6 +5089,40 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     if (ops.length) await commit(ops);
     return { saved: ops.length, version: DB.version };
   }
+  var VP_ID = /^VP-[^~]+~[\w.-]+$/;
+  var VF_ID = /^VF-[^~]+~[\w.-]+~(pre|post)$/;
+  async function saveVisitPlans(list) {
+    if (!isSupervisor()) throw new DbError("訪視排程由社工安排");
+    const ops = [];
+    for (const it of list || []) {
+      const id = String(it.id || "");
+      if (!VP_ID.test(id)) throw new DbError("訪視資料格式不正確");
+      if (it.delete) {
+        if (getRow("visitPlans", id)) ops.push({ table: "visitPlans", id, delete: true });
+        continue;
+      }
+      if (!it.classId || !it.date || !it.subject) throw new DbError("訪視需要班級、科目和日期");
+      const keys = ["semesterId", "classId", "teacherId", "teacherName", "subject", "date", "start", "end", "mentor", "mode", "room", "book", "unit", "focus", "recordBack", "followed", "note", "source"];
+      const row = { id, ...Object.fromEntries(keys.map((k) => [k, it[k] ?? (k === "recordBack" || k === "followed" ? false : "")])) };
+      const old = getRow("visitPlans", id);
+      if (old && keys.every((k) => JSON.stringify(old[k] ?? "") === JSON.stringify(row[k] ?? ""))) continue;
+      ops.push({ table: "visitPlans", row });
+    }
+    if (ops.length) await commit(ops);
+    return { saved: ops.length, version: DB.version };
+  }
+  async function saveVisitForm(it) {
+    const id = String(it?.id || "");
+    if (!VF_ID.test(id)) throw new DbError("表單資料格式不正確");
+    const plan = getRow("visitPlans", it.planId);
+    if (!plan) throw new DbError("找不到這次訪視");
+    const old = getRow("visitForms", id) || {};
+    const row = { id, planId: it.planId, classId: plan.classId, kind: it.kind, data: it.data || {}, submitted1At: old.submitted1At || "", submitted2At: old.submitted2At || "", by: DB.me?.name || "" };
+    if (it.submit === 1) row.submitted1At = nowStr();
+    if (it.submit === 2) row.submitted2At = nowStr();
+    await commit([{ table: "visitForms", row }]);
+    return { form: getRow("visitForms", id), version: DB.version };
+  }
   async function feedback(sessionId, text, status2, user) {
     const s = getRow("sessions", sessionId);
     if (!s) throw new DbError("課堂不存在");
@@ -5112,13 +5346,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   function recordChips(r, { taskStat = null } = {}) {
     if (!r) return "";
     const learning = r.learning || (r.score === "" || r.score == null ? "" : Number(r.score) >= 4 ? "很好" : Number(r.score) >= 3 ? "普通" : "需要關注");
-    const chip = (label, v, extra = "") => v ? `<span class="chip ${R_TONE[v] || "outline"}" style="margin:1px">${label}${esc(v)}${extra ? "：" + esc(extra) : ""}</span>` : "";
+    const chip2 = (label, v, extra = "") => v ? `<span class="chip ${R_TONE[v] || "outline"}" style="margin:1px">${label}${esc(v)}${extra ? "：" + esc(extra) : ""}</span>` : "";
     const task = r.taskDone || (taskStat ? `${taskStat.done}/${taskStat.n}` : "");
     return [
-      chip("作業 ", r.homework),
+      chip2("作業 ", r.homework),
       task ? `<span class="chip ${R_TONE[task] || "outline"}" style="margin:1px">任務 ${esc(task)}</span>` : "",
-      chip("學習 ", learning, r.learningTags),
-      chip("行為 ", r.behavior, r.behaviorTags)
+      chip2("學習 ", learning, r.learningTags),
+      chip2("行為 ", r.behavior, r.behaviorTags)
     ].join("") + (r.undone ? `<div class="small muted mt8">沒完成：${esc(String(r.undone).split("；").map((x) => x.replace(/^\d+\. /, "")).join("、"))}</div>` : "");
   }
   function attChip(a) {
@@ -5583,7 +5817,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       submissions: rows("submissions").filter((f) => sids.has(f.sessionId)),
       mathScores: rows("mathScores"),
       // 全部學期：看得到孩子以前考過的考卷
-      enTests: rows("enTests")
+      enTests: rows("enTests"),
+      visitPlans: rows("visitPlans"),
+      visitForms: rows("visitForms")
     });
     return { mode: "full", epoch: DB.epoch, version: DB.version, semester: sem, data, settings: { ...DB.settings } };
   }
@@ -5713,6 +5949,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
           return saveMath(b.rows || []);
         case "/api/english/save":
           return saveEnglish(b.rows || []);
+        case "/api/visit/plans":
+          return saveVisitPlans(b.rows || []);
+        case "/api/visit/form":
+          return saveVisitForm(b);
         case "/api/import/base":
           return { counts: await importBase(b.tables || {}, b.deletes || {}), version: DB.version };
       }
@@ -5983,6 +6223,46 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   var BREATH_PARTNERS = [["小青蛙正念呼吸", "https://www.youtube.com/watch?v=Pjmei-VCFkI"], ["蝴蝶呼吸法", "https://www.youtube.com/watch?v=E4tdReVg_EQ"], ["五指山呼吸", "https://www.youtube.com/watch?v=JlCgHnZ8bdk"], ["1比2呼吸法", "https://www.youtube.com/watch?v=Rb7t9M2KqdE"], ["腹式呼吸法", "https://www.youtube.com/watch?v=KzIWhRP0W3c"], ["手指變變變", "https://www.youtube.com/watch?v=kWUhhcgrKZs"], ["風車呼吸法", "https://www.youtube.com/watch?v=RHrxjizUWfQ"], ["單邊呼吸", "https://www.youtube.com/watch?v=bq2GWpphdlU"], ["呼吸想像力", "https://www.youtube.com/watch?v=s8IIW7f7SLU"], ["吹蠟燭", "https://www.youtube.com/watch?v=k2WXVAeXrrc"], ["兒童正念小遊戲", "https://youtu.be/sBXBRmaZYU8?t=131"], ["STOP小咒語（可結合英語課）", "https://youtu.be/m-bwZAAsX7s?t=57"], ["Rose, Thorn, and Bud（可結合英語課）", "https://youtu.be/M6YNw12YLog"]];
   var BODY_PARTNERS = [["抖抖健康操", "https://www.youtube.com/watch?v=0HYj-rH-yn4"], ["抓蚊子", "https://www.youtube.com/watch?v=Z-03cu-RH6k"], ["Kids Yoga 1", "https://www.youtube.com/watch?v=29DQJWGwEnY"], ["Kids Yoga 2", "https://www.youtube.com/watch?v=-RIFKr8GwJQ"], ["坐姿瑜珈", "https://www.youtube.com/watch?v=oYI0TPJOuGk"], ["抖抖舞", "https://www.youtube.com/watch?v=DsUPVERZFlI"], ["動物舞", "https://www.youtube.com/watch?v=XS9LX1CXuJA"], ["長高體操", "https://www.youtube.com/watch?v=Z0VjXmmxKRQ"], ["海星放鬆", "https://open.spotify.com/episode/2Fnu4Pb1u9cJ1mUVTRGpBG"], ["百變小演員", "https://youtu.be/Sngr8gpQlLg"], ["頭部鬆一鬆", "https://youtu.be/jJ2HZxbOBz4"], ["落雨鬆一鬆", "https://youtu.be/19ifcjZmqQ0"], ["加油打氣", "https://youtu.be/EZZsXpeNGlc"], ["打樁機", "https://youtu.be/OoL_lN1Zr3g"], ["不倒翁", "https://youtu.be/-EeslTGxfSM"], ["小木偶", "https://youtu.be/zFt0vh2hgFI"], ["漸進式肌肉鬆弛練習", "https://youtu.be/bDb8pUy-Xts"], ["平衡感遊戲", "https://youtu.be/EzZ4ra9V3-I"]];
   var SEL_ASPECTS = [["selContent", "教案內容"], ["selTime", "教案時間規劃"], ["selResponse", "學童回饋度"]];
+  var VISIT_SUBJECTS = ["國語", "英語", "數學"];
+  var VISIT_DUE = { pre: 7, post1: 3, post2: 14 };
+  var SC = {
+    A: ["適當", "尚佳", "尚可", "待改進", "不良"],
+    P: ["80%以上", "60~80%", "40~60%", "20~40%", "20%以下"],
+    M: ["充足", "良好", "尚可", "待改進", "未準備"],
+    I: ["適當", "尚佳", "尚可", "待改進", "不佳"],
+    Q: ["充足", "良好", "尚可", "偏低", "無互動"],
+    R: ["良好", "尚佳", "尚可", "略差", "不良"],
+    G: ["切實有效", "尚佳", "尚可", "待改進", "不良"],
+    T: ["良好", "尚佳", "尚可", "待改進", "未使用"],
+    D: ["適當", "尚佳", "尚可", "待改進", "未做到"],
+    C: ["清晰明白", "良好", "尚可", "待改進", "不清楚"],
+    F: ["充足", "良好", "尚可", "待改進", "不佳"],
+    B: ["良好", "尚佳", "尚可", "待改進", "不佳"],
+    E: ["適當", "尚佳", "尚可", "偏低", "無引起"],
+    V: ["良好", "尚佳", "尚可", "偏低", "不佳"]
+  };
+  var VISIT_ITEMS = {
+    common: [
+      ["time", "教學時間安排", SC.A],
+      ["goal", "教學目標完成度", SC.P],
+      ["prep", "教材準備", SC.M],
+      ["interp", "教材內容的詮釋", SC.I],
+      ["ask", "提問互動次數", SC.Q],
+      ["resp", "學生上課反應", SC.R],
+      ["guide", "教學指導", SC.G],
+      ["tool", "教具運用", SC.T]
+    ],
+    數學: [["m_term", "數學名詞口語化", SC.D], ["m_concept", "該單元數學概念", SC.C], ["m_rich", "整體課程充實度", SC.F]],
+    英語: [["e_class", "課室用語", SC.D], ["e_phonics", "自然發音教學層次", SC.C], ["e_diff", "差異化教學", SC.D]],
+    國語: [["c_text", "課文理解與提問", SC.A], ["c_word", "生字、生詞教學", SC.C], ["c_ext", "語文與延伸活動", SC.D]],
+    creative: [["cr_when", "使用時機", SC.B], ["cr_motive", "引起動機", SC.E], ["cr_effect", "實質效益", SC.V], ["cr_flow", "使用流暢度", SC.F]]
+  };
+  var VISIT_FOCUS = {
+    國語: ["文章理解", "生字", "生詞", "語文", "延伸"],
+    英語: ["教學紀錄表規劃", "課室用語", "常用指導語", "自然發音教學層次", "課程活動設計", "差異化教學", "教學提問策略", "檢核活動"],
+    數學: ["教具使用", "差異化教學", "教學流程安排", "教學活動設計", "佈題", "教學提問"]
+  };
+  var VISIT_GOAL_AREAS = ["教材內容掌握", "備課充實度（含流程及預備任務）", "評量方式（及時檢核）", "指導語適切性", "教具使用", "多元化教學方式", "情境佈題", "班級經營", "其他"];
 
   // src/js/store.js
   var TABLES = [
@@ -6015,7 +6295,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     "cases",
     "specialEvents",
     "mathScores",
-    "enTests"
+    "enTests",
+    "visitPlans",
+    "visitForms"
   ];
   var WEEKDAYS = ["週一", "週二", "週三", "週四", "週五", "週六", "週日"];
   var ATTENDED2 = ["出席", "遲到", "早退"];
@@ -6348,8 +6630,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     <input class="${inCls}" data-mf="other" value="${other ? escA(v) : ""}" placeholder="輸入其他靜心活動" ${other ? "" : "hidden"}>
     <a class="small no-print" data-mf="link" target="_blank" rel="noopener" href="${escA(PARTNER_URL.get(v) || "#")}" ${PARTNER_URL.has(v) ? "" : "hidden"}>▶ 示範影片</a></span>`;
   }
-  function mindfulRead(box, e) {
-    const sel = box.querySelector("[data-mf=sel]"), inp = box.querySelector("[data-mf=other]"), a = box.querySelector("[data-mf=link]");
+  function mindfulRead(box2, e) {
+    const sel = box2.querySelector("[data-mf=sel]"), inp = box2.querySelector("[data-mf=other]"), a = box2.querySelector("[data-mf=link]");
     const other = sel.value === "__other";
     const wasHidden = inp.hidden;
     inp.hidden = !other;
@@ -6619,6 +6901,919 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     <div class="mt8">${legend(parts.map(([l, n, c]) => [`${l} ${n}`, c]))}</div>`;
   }
 
+  // src/js/pages/flowout.js
+  var isBackup = (b) => b.mode === BACKUP_MODE;
+  var hasTask = (t) => !!t && !!(t.type || t.content || t.unit);
+  var tagOf = (t, subj) => {
+    const cat = taskCat(t.type);
+    return cat === "本科" && (!t.type || t.type === "本科" || ["國語", "英語", "數學"].includes(t.type)) ? subj : t.type || "其他";
+  };
+  var bodyOf = (t, subj, unit) => taskText(t, subj, unit).replace(/^【[^】]*】/, "").replace(/^（未填內容）$/, "");
+  function kidPlan(st4, kid) {
+    const subj = subjectOfClass(st4.cls);
+    const main = st4.blocks.filter((b) => !isBackup(b));
+    const units = resolveUnits(main.map((b) => b.mode === "個別" ? b.tasks[kid] : null), st4.progress[kid] || "");
+    const items = [];
+    let n = 0;
+    main.forEach((b, i) => {
+      if (b.mode === "個別") {
+        const t = b.tasks[kid];
+        if (!hasTask(t)) return;
+        n++;
+        items.push({ kind: "task", no: n, block: b, tag: tagOf(t, subj), cat: taskCat(t.type), unit: units[i]?.unit || "", text: bodyOf(t, subj, units[i]?.unit || ""), detail: t.detail || "", status: t.status || "", t });
+      } else items.push({ kind: b.mode === "休息" ? "rest" : "class", block: b, text: b.title, detail: b.content || "" });
+    });
+    const backups = st4.blocks.filter(isBackup).map((b) => b.tasks[kid]?.content || "").filter(Boolean);
+    return { items, tasks: items.filter((x) => x.kind === "task"), backups };
+  }
+  function printHtml(html, { landscape = false, margin = "0", title = "" } = {}) {
+    $("#yl-print")?.remove();
+    $("#yl-print-page")?.remove();
+    const root = h(`<div id="yl-print">${html}</div>`);
+    const style = h(`<style id="yl-print-page">@page { size: A4 ${landscape ? "landscape" : "portrait"}; margin: ${margin}; }</style>`);
+    document.head.appendChild(style);
+    document.body.appendChild(root);
+    document.body.classList.add("yl-printing");
+    fitSheets(root);
+    const oldTitle = document.title;
+    if (title) document.title = title;
+    const done = () => {
+      root.remove();
+      style.remove();
+      document.body.classList.remove("yl-printing");
+      document.title = oldTitle;
+      removeEventListener("afterprint", done);
+    };
+    addEventListener("afterprint", done);
+    setTimeout(() => window.print(), 60);
+  }
+  function fitSheets(root) {
+    for (const s of $$(".ts-sheet", root)) {
+      let size = 16;
+      s.style.fontSize = size + "px";
+      while (s.scrollHeight > s.clientHeight + 1 && size > 8.5) {
+        size -= 0.5;
+        s.style.fontSize = size + "px";
+      }
+    }
+  }
+  function printFlow(st4) {
+    const c = st4.cls;
+    const subj = subjectOfClass(c);
+    const kids = st4.kids;
+    const wk = weekNo(st4.date);
+    const plans = Object.fromEntries(kids.map((k) => [k.id, kidPlan(st4, k.id)]));
+    const cellOf = (k, b) => {
+      const it = plans[k.id].items.find((x) => x.block === b && x.kind === "task");
+      if (!it) return "";
+      return `<b class="pt-tag">${esc(it.tag)}</b> ${esc(it.text)}${it.detail ? `<div class="pt-detail">${esc(it.detail)}</div>` : ""}`;
+    };
+    const backups = st4.blocks.filter(isBackup);
+    const rows2 = st4.blocks.filter((b) => !isBackup(b)).map((b) => b.mode === "個別" ? `<tr><th>${esc(b.start || "")}–${esc(b.end || "")}<div>${esc(b.title)}</div></th>${kids.map((k) => `<td>${cellOf(k, b)}</td>`).join("")}</tr>` : `<tr class="pt-whole"><th>${esc(b.start || "")}–${esc(b.end || "")}<div>${esc(b.title)}</div></th><td colspan="${kids.length}"><b>${esc(b.title)}</b>${b.content ? `　${esc(b.content)}` : ""}</td></tr>`).join("");
+    const brows = backups.map((b, i) => `<tr class="pt-backup"><th>備用 ${i + 1}<div>${i === 0 ? esc(subj) + "學習任務" : "可選其他類"}</div></th>${kids.map((k) => `<td>${esc(b.tasks[k.id]?.content || "")}</td>`).join("")}</tr>`).join("");
+    const html = `<div class="pt">
+    <div class="pt-head"><h1>${esc(c.name)}　${esc(subj)}　教學流程</h1>
+      <div>${esc(mdw(st4.date))}${wk > 0 ? `・第 ${wk} 週` : ""}・${esc(st4.start)}–${esc(st4.end)}・課輔老師 ${esc(teacherOfClass(c))}${st4.mindful ? `・靜心活動 ${esc(st4.mindful)}` : ""}</div></div>
+    <table class="pt-table"><colgroup><col style="width:24mm">${kids.map(() => "<col>").join("")}</colgroup>
+      <thead><tr><th>時間</th>${kids.map((k) => `<th>${esc(k.name)}${k.grade ? `<span>${esc(k.grade)}年級</span>` : ""}</th>`).join("")}</tr></thead>
+      <tbody><tr class="pt-prog"><th>今日進度</th>${kids.map((k) => `<td>${esc(st4.progress[k.id] || "")}</td>`).join("")}</tr>${rows2}${brows}</tbody></table></div>`;
+    printHtml(html, { landscape: true, margin: "8mm" });
+  }
+  function downloadFlowXlsx(st4) {
+    const X = window.XLSX;
+    if (!X) {
+      toast("Excel 元件沒有載入", "err");
+      return;
+    }
+    const c = st4.cls;
+    const subj = subjectOfClass(c);
+    const kids = st4.kids;
+    const plans = Object.fromEntries(kids.map((k) => [k.id, kidPlan(st4, k.id)]));
+    const main = st4.blocks.filter((b) => !isBackup(b));
+    const backups = st4.blocks.filter(isBackup);
+    const cellText = (it) => it ? `[${it.tag}] ${it.text}${it.detail ? `（${it.detail}）` : ""}` : "";
+    const wb = X.utils.book_new();
+    const info = [["班級", c.name], ["科目", subj], ["日期", mdw(st4.date)], ["時間", `${st4.start}–${st4.end}`], ["課輔老師", teacherOfClass(c)], ["靜心活動", st4.mindful || ""], []];
+    const head = ["時間", "區塊", ...kids.map((k) => k.name)];
+    const body = [["", "今日進度", ...kids.map((k) => st4.progress[k.id] || "")]];
+    const merges = [];
+    for (const b of main) {
+      if (b.mode === "個別") body.push([`${b.start || ""}–${b.end || ""}`, b.title, ...kids.map((k) => cellText(plans[k.id].items.find((x) => x.block === b && x.kind === "task")))]);
+      else {
+        merges.push({ s: { r: info.length + 1 + body.length, c: 2 }, e: { r: info.length + 1 + body.length, c: 1 + kids.length } });
+        body.push([`${b.start || ""}–${b.end || ""}`, b.title, `（${b.mode}）${b.content || ""}`, ...kids.slice(1).map(() => "")]);
+      }
+    }
+    backups.forEach((b, i) => body.push(["", `備用任務 ${i + 1}`, ...kids.map((k) => b.tasks[k.id]?.content || "")]));
+    const ws1 = X.utils.aoa_to_sheet([...info, head, ...body]);
+    ws1["!cols"] = [{ wch: 12 }, { wch: 18 }, ...kids.map(() => ({ wch: 24 }))];
+    if (kids.length > 1) ws1["!merges"] = merges;
+    X.utils.book_append_sheet(wb, ws1, "總表");
+    const dHead = ["孩子", "年級", "順序", "時間", "區塊", "類別", "單元／教材", "內容", "說明", "完成狀況（課後紀錄）"];
+    const dRows = [];
+    for (const k of kids) {
+      const p = plans[k.id];
+      for (const it of p.tasks) dRows.push([k.name, k.grade || "", it.no, `${it.block.start || ""}–${it.block.end || ""}`, it.block.title, it.tag, it.cat === "本科" ? it.unit : "", it.cat === "本科" ? it.t.content || "" : it.text, it.detail, it.status]);
+      p.backups.forEach((v, i) => dRows.push([k.name, k.grade || "", `備用 ${i + 1}`, "", "備用任務", "備用", "", v, "", ""]));
+    }
+    const ws2 = X.utils.aoa_to_sheet([dHead, ...dRows]);
+    ws2["!cols"] = [10, 6, 8, 12, 14, 8, 18, 28, 26, 14].map((w) => ({ wch: w }));
+    X.utils.book_append_sheet(wb, ws2, "明細");
+    const used = /* @__PURE__ */ new Set(["總表", "明細"]);
+    for (const k of kids) {
+      const p = plans[k.id];
+      let name = String(k.name || k.id).replace(/[\\/?*[\]:]/g, "").slice(0, 28) || k.id;
+      while (used.has(name)) name += "_";
+      used.add(name);
+      const aoa = [
+        ["姓名", k.name],
+        ["日期", mdw(st4.date)],
+        ["班級・科目", `${c.name}・${subj}`],
+        ["今日進度", st4.progress[k.id] || ""],
+        [],
+        ["順序", "類別", "單元／教材", "內容", "說明"],
+        ...p.tasks.map((it) => [it.no, it.tag, it.cat === "本科" ? it.unit : "", it.cat === "本科" ? it.t.content || "" : it.text, it.detail]),
+        [],
+        ["提早完成可以做"],
+        ...p.backups.map((v, i) => [`備用 ${i + 1}`, v])
+      ];
+      const ws = X.utils.aoa_to_sheet(aoa);
+      ws["!cols"] = [{ wch: 12 }, { wch: 10 }, { wch: 18 }, { wch: 28 }, { wch: 26 }];
+      X.utils.book_append_sheet(wb, ws, name);
+    }
+    X.writeFile(wb, `教學流程_${c.name}_${subj}_${st4.date}.xlsx`);
+  }
+  var FACES = [["很開心", "M7 13.5 Q12 18.5 17 13.5"], ["開心", "M8 14 Q12 16.5 16 14"], ["普通", "M8 15 L16 15"], ["有點難過", "M8 16 Q12 14 16 16"], ["難過", "M7 17 Q12 12.5 17 17"]];
+  var face = ([label, mouth]) => `<span class="ts-face"><svg viewBox="0 0 24 24" width="1.9em" height="1.9em" aria-hidden="true"><circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <circle cx="8.6" cy="9.5" r="1.2" fill="currentColor"/><circle cx="15.4" cy="9.5" r="1.2" fill="currentColor"/><path d="${mouth}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><small>${label}</small></span>`;
+  function sheetHtml(st4, k) {
+    const c = st4.cls;
+    const subj = subjectOfClass(c);
+    const p = kidPlan(st4, k.id);
+    const box2 = '<span class="ts-box"></span>';
+    const list = p.items.map((it) => it.kind === "task" ? `<li class="ts-task">${box2}<span class="ts-no">${it.no}</span><span class="ts-tag">${esc(it.tag)}</span><span class="ts-text">${esc(it.text || "（老師會再說明）")}${it.detail ? `<small>${esc(it.detail)}</small>` : ""}</span></li>` : `<li class="ts-light">${it.kind === "rest" ? "下課" : "全班"}・${esc(it.text)}${it.kind === "class" && it.detail ? `：${esc(it.detail)}` : ""}</li>`).join("");
+    return `<section class="ts-sheet">
+    <header class="ts-head"><div><div class="ts-title">我的任務單</div><div class="ts-name">${esc(k.name)}</div></div>
+      <div class="ts-meta"><div>${esc(mdw(st4.date))}</div><div>${esc(c.name)}・${esc(subj)}</div>${st4.progress[k.id] ? `<div>今日進度：<b>${esc(st4.progress[k.id])}</b></div>` : ""}</div></header>
+    <ol class="ts-list">${list || '<li class="ts-light">今天的任務老師會再告訴你</li>'}</ol>
+    ${p.backups.length ? `<div class="ts-extra"><b>提早完成可以做</b>${p.backups.map((v, i) => `<span>${box2}${i + 1}. ${esc(v)}</span>`).join("")}</div>` : ""}
+    <footer class="ts-exit"><b>出場券</b><span>今天完成了 <span class="ts-blank"></span> 項</span><span class="ts-mood">今天的心情（圈一個）${FACES.map(face).join("")}</span></footer>
+  </section>`;
+  }
+  function sheetsHtml(st4, kids) {
+    const pages = [];
+    for (let i = 0; i < kids.length; i += 2) pages.push(`<div class="ts-page">${sheetHtml(st4, kids[i])}${kids[i + 1] ? sheetHtml(st4, kids[i + 1]) : '<section class="ts-sheet ts-empty"></section>'}</div>`);
+    return pages.join("");
+  }
+  function openTaskSheets(st4) {
+    const kids = st4.kids;
+    if (!kids.length) {
+      toast("這個班還沒有孩子名單", "err");
+      return;
+    }
+    const noTask = kids.filter((k) => !kidPlan(st4, k.id).tasks.length).map((k) => k.name);
+    const body = h(`<div class="stack" style="gap:12px">
+    <div class="small muted">任務單的內容來自這堂課的教學流程（含還沒儲存的修改）。A4 直印，一張印兩位；按「列印／另存 PDF」後，在列印視窗的「目的地」選「另存為 PDF」就能存檔。</div>
+    ${noTask.length ? `<div class="callout warn small">還沒排個別任務：${esc(noTask.join("、"))}</div>` : ""}
+    <div class="row wrap" style="gap:6px 14px"><label class="row small" style="gap:6px"><input type="checkbox" id="ts-all" checked><b>全選</b></label>
+      ${kids.map((k) => `<label class="row small" style="gap:6px"><input type="checkbox" class="ts-pick" value="${esc(k.id)}" checked>${esc(k.name)}</label>`).join("")}</div>
+    <div class="ts-preview-wrap"><div class="ts-preview" id="ts-preview"></div></div></div>`);
+    const picked = () => $$(".ts-pick", body).filter((x) => x.checked).map((x) => kids.find((k) => k.id === x.value));
+    const draw = () => {
+      const list = picked();
+      $("#ts-preview", body).innerHTML = list.length ? sheetsHtml(st4, list) : '<div class="empty small">請勾選要印的孩子</div>';
+      requestAnimationFrame(() => fitSheets($("#ts-preview", body)));
+    };
+    body.addEventListener("change", (e) => {
+      if (e.target.id === "ts-all") $$(".ts-pick", body).forEach((x) => {
+        x.checked = e.target.checked;
+      });
+      else $("#ts-all", body).checked = $$(".ts-pick", body).every((x) => x.checked);
+      draw();
+    });
+    const done = openModal({ title: "孩子任務單", body, buttons: [{ text: "關閉", value: null }, { text: "列印／另存 PDF", value: () => picked(), primary: true }] });
+    const m = body.closest(".modal");
+    if (m) m.style.width = "min(900px, calc(100vw - 32px))";
+    draw();
+    done.then((list) => {
+      if (!list) return;
+      if (!list.length) {
+        toast("沒有勾選孩子", "err");
+        return;
+      }
+      printHtml(`<div class="ts-print">${sheetsHtml(st4, list)}</div>`);
+    });
+  }
+
+  // src/js/pages/tvisits.js
+  var SHORT = { 國語: "國", 英語: "英", 數學: "數" };
+  var suffix = (p) => String(p.id).slice(String(p.id).indexOf("~") + 1);
+  var formId = (p, kind) => `VF-${p.classId}~${suffix(p)}~${kind}`;
+  var formOf = (p, kind) => get("visitForms", formId(p, kind));
+  var preDays = () => Number(S.settings?.visitPreDays) || VISIT_DUE.pre;
+  var timeText = (p) => [p.start, p.end].filter(Boolean).join("–");
+  var cnum = ["", "一", "二", "三", "四", "五", "六"];
+  var termCode = (sem) => {
+    const m = /^(\d{2,3})(上|下)$/.exec(sem || "");
+    return m ? `${m[1]}-${m[2] === "上" ? 1 : 2}` : String(sem || "");
+  };
+  var clsName = (p) => get("classes", p.classId)?.name || "";
+  var tName = (p) => teacherOfClass(get("classes", p.classId)) || p.teacherName || "";
+  function stages(p, today3 = todayISO()) {
+    const pre = formOf(p, "pre"), post2 = formOf(p, "post");
+    const mk = (key, label, due, done, open2) => ({ key, label, due, done: !!done, open: open2, over: !done && open2 && today3 > due });
+    return [
+      mk("pre", "訪視提問單", addDays2(p.date, -preDays()), pre?.submitted1At, true),
+      mk("post1", "訪視後自評", addDays2(p.date, VISIT_DUE.post1), post2?.submitted1At, today3 >= p.date),
+      mk("post2", "隔週調整", addDays2(p.date, VISIT_DUE.post2), post2?.submitted2At, !!post2?.submitted1At || today3 >= addDays2(p.date, 7))
+    ];
+  }
+  var chip = (s) => s.done ? `<span class="chip good small">已交</span>` : !s.open ? `<span class="chip outline small">訪視後填</span>` : s.over ? `<span class="chip warn small">逾期（${md2(s.due)}）</span>` : `<span class="chip outline small">待填・${md2(s.due)} 前</span>`;
+  function plansInScope() {
+    const cls = new Set((isSupervisor2() ? classes() : myClasses()).map((c) => c.id));
+    return S.data.visitPlans.filter((p) => cls.has(p.classId) || isSupervisor2() && p.semesterId === S.semester).sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start));
+  }
+  function visitTodo() {
+    if (!S.data?.visitPlans) return [];
+    const mine = new Set(myClasses().map((c) => c.id));
+    return S.data.visitPlans.filter((p) => mine.has(p.classId)).flatMap((p) => stages(p).filter((s) => s.open && !s.done).map((s) => ({ p, s }))).sort((a, b) => a.s.due.localeCompare(b.s.due));
+  }
+  function visitOverdue() {
+    if (!S.data?.visitPlans) return [];
+    return S.data.visitPlans.filter((p) => p.semesterId === S.semester || classes().some((c) => c.id === p.classId)).flatMap((p) => stages(p).filter((s) => s.over).map((s) => ({ p, s })));
+  }
+  function secondVisitItems() {
+    return S.data.visitPlans.filter((p) => !p.followed && formOf(p, "post")?.data?.second === "是" && formOf(p, "post")?.submitted2At).map((p) => ({ kind: "二次訪視", href: `#/tvisits/${encodeURIComponent(p.id)}/post`, date: "", who: `${clsName(p)}・${tName(p)}`, what: `${p.subject}：${formOf(p, "post").data.secondDetail || "老師期待再次訪視"}`, by: p.mentor || "", last: p.date }));
+  }
+  function renderList(ctx) {
+    const q = ctx.query;
+    const sup = isSupervisor2();
+    const f = q.get("f") || "all", subj = q.get("subj") || "", view = q.get("view") || "list";
+    const today3 = todayISO();
+    let list = plansInScope();
+    if (subj) list = list.filter((p) => p.subject === subj);
+    const st4 = (p) => stages(p, today3);
+    if (f === "todo") list = list.filter((p) => st4(p).some((s) => s.open && !s.done));
+    if (f === "over") list = list.filter((p) => st4(p).some((s) => s.over));
+    if (f === "done") list = list.filter((p) => st4(p).every((s) => s.done));
+    if (f === "up") list = list.filter((p) => p.date >= today3);
+    const a = ctx.actions(`<select class="select" id="v-subj"><option value="">全部科目</option>${VISIT_SUBJECTS.map((s) => `<option ${s === subj ? "selected" : ""}>${s}</option>`).join("")}</select>
+    <select class="select" id="v-f">${[["all", "全部"], ["up", "還沒訪視"], ["todo", "有表單待填"], ["over", "有逾期"], ["done", "表單都交了"]].map(([v, l]) => `<option value="${v}" ${v === f ? "selected" : ""}>${l}</option>`).join("")}</select>
+    ${sup ? `<button class="btn" id="v-view">${icon(view === "cal" ? "table" : "calendar", "sm")}${view === "cal" ? "清單" : "週曆"}</button>
+      <button class="btn" id="v-imp">${icon("upload", "sm")}匯入時程表</button><button class="btn" id="v-more">${icon("download", "sm")}匯出</button>
+      <button class="btn primary" id="v-add">${icon("plus", "sm")}新增訪視</button>` : ""}`);
+    const go2 = (o) => ctx.go(`#/tvisits?${new URLSearchParams({ f, subj, view, ...o })}`);
+    $("#v-subj", a).onchange = (e) => go2({ subj: e.target.value });
+    $("#v-f", a).onchange = (e) => go2({ f: e.target.value });
+    if (sup) {
+      $("#v-view", a).onclick = () => go2({ view: view === "cal" ? "list" : "cal" });
+      $("#v-add", a).onclick = () => editPlan(ctx, null);
+      $("#v-imp", a).onclick = () => importFlow(ctx);
+      $("#v-more", a).onclick = () => exportMenu(list);
+    }
+    ctx.title("指導員訪視", sup ? `${esc(S.semester)}・${list.length} 場` : "訪視前填提問單，訪視後填自評與隔週調整");
+    const info = sup ? `社工安排訪視後，課輔老師會在總覽看到要填的表單：訪視提問單（訪視前 ${preDays()} 天）、訪視後自評（3 天內）、隔週調整（14 天內）。表單可以列印或存成 PDF 寄給指導員、歸檔。` : `每一場訪視有三份要填：<b>訪視提問單</b>（訪視前 ${preDays()} 天交）、<b>訪視後自評</b>（訪視後 3 天內）、<b>隔週調整</b>（訪視後 14 天內）。都能存成 PDF。`;
+    if (view === "cal" && sup) {
+      ctx.el.innerHTML = `<div class="callout small mb8">${icon("info", "sm")} ${info}</div>${calendar(list)}`;
+      bindList(ctx);
+      return;
+    }
+    ctx.el.innerHTML = `<div class="callout small mb8">${icon("info", "sm")} ${info}${sup ? ` <button class="btn sm ghost" id="v-days">改提問單期限</button>` : ""}</div>
+    <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>訪視日期</th><th>科目</th><th>班級・課輔老師</th><th>指導員</th><th>訪視提問單</th><th>訪視後自評</th><th>隔週調整</th>${sup ? '<th class="c">紀錄表回收</th><th>二次訪視</th><th></th>' : ""}</tr></thead><tbody>
+    ${list.map((p) => {
+      const ss = st4(p);
+      const post2 = formOf(p, "post");
+      return `<tr data-id="${esc(p.id)}"><td class="nowrap"><b>${esc(mdw(p.date))}</b><div class="small muted">${esc(timeText(p))}${p.room ? `・${esc(p.room)}` : ""}</div></td>
+        <td><span class="chip outline">${esc(p.subject)}</span></td><td><b>${esc(clsName(p))}</b><div class="small muted">${esc(tName(p))}</div></td>
+        <td class="small">${esc(p.mentor || "—")}${p.mode ? `<div class="muted">${esc(p.mode)}</div>` : ""}</td>
+        ${ss.map((s) => `<td class="nowrap"><a href="#/tvisits/${encodeURIComponent(p.id)}/${s.key === "pre" ? "pre" : "post"}">${chip(s)}</a></td>`).join("")}
+        ${sup ? `<td class="c"><input type="checkbox" data-back ${p.recordBack ? "checked" : ""} title="指導員紀錄表已回收"></td>
+          <td class="small">${post2?.data?.second === "是" ? `<span class="chip ${p.followed ? "outline" : "warn"} small">需要</span> <label class="small"><input type="checkbox" data-fol ${p.followed ? "checked" : ""}>已處理</label>` : post2?.data?.second === "否" ? '<span class="muted">不需要</span>' : '<span class="muted">—</span>'}</td>
+          <td class="nowrap"><button class="btn sm ghost" data-edit>${icon("edit", "sm")}</button><button class="btn sm ghost" data-del title="刪除">${icon("trash", "sm")}</button></td>` : ""}</tr>`;
+    }).join("") || `<tr><td colspan="${sup ? 10 : 7}"><div class="empty">${icon("eye")}<div>${sup ? "還沒有訪視，按「新增訪視」或「匯入時程表」" : "目前沒有排定的指導員訪視"}</div></div></td></tr>`}
+    </tbody></table></div></div>`;
+    const d = $("#v-days");
+    if (d) d.onclick = async () => {
+      const body = h(`<div><label class="field"><span>訪視提問單要在訪視前幾天交（三科統一）</span><input class="input" type="number" min="0" max="30" id="v-n" value="${preDays()}"></label></div>`);
+      const v = await openModal({ title: "提問單期限", body, buttons: [{ text: "取消", value: false }, { text: "儲存", value: () => $("#v-n", body).value, primary: true }] });
+      if (v === false || v == null) return;
+      const n = Math.max(0, Math.min(30, Number(v) || VISIT_DUE.pre));
+      await mutate("/api/settings", { key: "visitPreDays", value: n }, `提問單期限改為訪視前 ${n} 天`);
+      ctx.go(location.hash);
+    };
+    bindList(ctx);
+  }
+  function bindList(ctx) {
+    ctx.el.addEventListener("click", async (e) => {
+      const tr = e.target.closest("tr[data-id], [data-pid]");
+      if (!tr) return;
+      const p = get("visitPlans", tr.dataset.id || tr.dataset.pid);
+      if (!p) return;
+      if (e.target.closest("[data-edit]") || tr.dataset.pid) return editPlan(ctx, p);
+      if (e.target.closest("[data-del]")) {
+        const has = formOf(p, "pre") || formOf(p, "post");
+        if (!await confirmBox(`刪除 ${md2(p.date)} ${esc(clsName(p))} 的${esc(p.subject)}訪視？${has ? "老師已經填的表單會留著，但不會再顯示。" : ""}`, { okText: "刪除", danger: true })) return;
+        await mutate("/api/visit/plans", { rows: [{ id: p.id, delete: true }] }, "已刪除");
+        return ctx.go(location.hash);
+      }
+    });
+    ctx.el.addEventListener("change", async (e) => {
+      const tr = e.target.closest("tr[data-id]");
+      const k = e.target.matches("[data-back]") ? "recordBack" : e.target.matches("[data-fol]") ? "followed" : null;
+      if (!tr || !k) return;
+      const p = get("visitPlans", tr.dataset.id);
+      try {
+        await mutate("/api/visit/plans", { rows: [{ ...p, [k]: e.target.checked }] }, "已更新");
+      } catch {
+        e.target.checked = !e.target.checked;
+      }
+    });
+  }
+  function calendar(list) {
+    if (!list.length) return `<div class="card"><div class="empty">${icon("calendar")}<div>沒有訪視</div></div></div>`;
+    const mon = (d) => addDays2(d, -weekdayIdx(d));
+    const weeks = [...new Set(list.map((p) => mon(p.date)))].sort();
+    return weeks.map((w) => `<div class="card mb8"><div class="vcal">${[0, 1, 2, 3, 4].map((i) => {
+      const d = addDays2(w, i);
+      const ps = list.filter((p) => p.date === d);
+      return `<div class="vcal-day"><div class="vcal-h">${esc(mdw(d))}</div>${ps.map((p) => `<div class="vcal-item" data-pid="${esc(p.id)}"><b>${esc(timeText(p))}【${SHORT[p.subject]}訪】</b>${esc(clsName(p))}-${esc(tName(p))}<div class="small muted">${esc(p.mentor || "")}</div></div>`).join("")}</div>`;
+    }).join("")}</div></div>`).join("");
+  }
+  function editPlan(ctx, p) {
+    const isNew = !p;
+    p = p || { subject: "", classId: "", date: todayISO(), start: "16:00", end: "17:00", mentor: "", mode: "個別", room: "", book: "", unit: "", focus: "", note: "" };
+    const mentors = [...new Set(S.data.visitPlans.map((x) => x.mentor).filter(Boolean))];
+    const cls = classes();
+    const body = h(`<div class="stack" style="gap:10px">
+    <div class="grid g2" style="gap:10px"><label class="field"><span>科目</span><select class="select" data-k="subject"><option value="">選科目</option>${VISIT_SUBJECTS.map((s) => `<option ${s === p.subject ? "selected" : ""}>${s}</option>`).join("")}</select></label>
+      <label class="field"><span>班級</span><select class="select" data-k="classId"><option value="">選班級</option>${cls.map((c) => `<option value="${c.id}" data-subj="${esc(subjectOfClass(c))}" ${c.id === p.classId ? "selected" : ""}>${esc(c.name)}（${esc(subjectOfClass(c))}・${esc(teacherOfClass(c))}）</option>`).join("")}</select></label></div>
+    <div class="grid g3" style="gap:10px"><label class="field"><span>訪視日期</span><input class="input" type="date" data-k="date" value="${esc(p.date)}"></label>
+      <label class="field"><span>開始</span><input class="input" type="time" data-k="start" value="${esc(p.start)}"></label><label class="field"><span>結束</span><input class="input" type="time" data-k="end" value="${esc(p.end)}"></label></div>
+    <div class="grid g2" style="gap:10px"><label class="field"><span>指導員</span><input class="input" data-k="mentor" list="v-mentors" value="${esc(p.mentor)}" placeholder="例：李昱慶校長"><datalist id="v-mentors">${mentors.map((m) => `<option value="${esc(m)}">`).join("")}</datalist></label>
+      <label class="field"><span>訪視方式</span><select class="select" data-k="mode">${["個別", "團體", "線上"].map((m) => `<option ${m === p.mode ? "selected" : ""}>${m}</option>`).join("")}</select></label></div>
+    <div class="grid g2" style="gap:10px"><label class="field"><span>使用冊數</span><input class="input" data-k="book" value="${esc(p.book)}" placeholder="例：新式第一冊"></label><label class="field"><span>單元</span><input class="input" data-k="unit" value="${esc(p.unit)}" placeholder="例：CH1"></label></div>
+    <label class="field"><span>預計觀課的教學成分</span><input class="input" data-k="focus" value="${esc(p.focus)}" placeholder="例：字母、單字"></label>
+    <label class="field"><span>上課教室</span><input class="input" data-k="room" value="${esc(p.room)}"></label>
+    <label class="field"><span>備註</span><textarea class="textarea" rows="2" data-k="note">${esc(p.note)}</textarea></label>
+    <div class="row"><span class="sp"></span><button class="btn" data-x="cancel">取消</button><button class="btn primary" data-x="save">${icon("save", "sm")}儲存</button></div></div>`);
+    const dr = openDrawer({ title: isNew ? "新增指導員訪視" : "修改訪視", body });
+    $("[data-k=classId]", body).onchange = (e) => {
+      const o = e.target.selectedOptions[0];
+      const s = $("[data-k=subject]", body);
+      if (!s.value && o?.dataset.subj && VISIT_SUBJECTS.includes(o.dataset.subj)) s.value = o.dataset.subj;
+    };
+    body.addEventListener("click", async (e) => {
+      if (e.target.closest("[data-x=cancel]")) return dr.close();
+      if (!e.target.closest("[data-x=save]")) return;
+      const v = Object.fromEntries($$("[data-k]", body).map((el) => [el.dataset.k, el.value.trim()]));
+      if (!v.subject || !v.classId || !v.date) {
+        toast("請選科目、班級和日期", "err");
+        return;
+      }
+      const c = get("classes", v.classId);
+      const row = { ...p, ...v, id: p.id || `VP-${v.classId}~${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`, semesterId: c.semesterId, teacherId: c.teacherId, teacherName: teacherOfClass(c) };
+      if (p.id && p.classId !== v.classId) {
+        toast("已建立的訪視不能換班級，請刪除後重新新增", "err");
+        return;
+      }
+      try {
+        await mutate("/api/visit/plans", { rows: [row] }, isNew ? "已新增訪視" : "已更新");
+        dr.close();
+        ctx.go(location.hash);
+      } catch {
+      }
+    });
+  }
+  async function exportMenu(list) {
+    const v = await openModal({
+      title: "匯出",
+      body: `<p class="small muted" style="margin:0">清單目前篩出 ${list.length} 場訪視。</p>`,
+      buttons: [{ text: "取消", value: false }, { text: "時程表 Excel", value: "x" }, { text: "已交表單 PDF", value: "p", primary: true }]
+    });
+    if (v === "x") return downloadSchedule(list);
+    if (v === "p") {
+      const parts = list.flatMap((p) => ["pre", "post"].filter((k) => formOf(p, k)?.submitted1At).map((k) => formHtml(p, k)));
+      if (!parts.length) {
+        toast("這些訪視還沒有已交的表單", "err");
+        return;
+      }
+      printHtml(parts.join('<div class="vf-break"></div>'), { margin: "12mm", title: `${termCode(S.semester)}_指導員訪視表單_${parts.length}份` });
+    }
+  }
+  function downloadSchedule(list) {
+    const X = window.XLSX;
+    if (!X) {
+      toast("Excel 元件沒有載入", "err");
+      return;
+    }
+    const aoa = [
+      ["序號", "科目", "班級", "課輔老師", "訪視日期", "時間", "指導員", "訪視方式", "使用冊數", "單元", "預計觀課的教學成分", "訪視提問單", "訪視後自評", "隔週調整", "指導員紀錄表已回收", "二次訪視需求", "上課教室", "備註"],
+      ...list.map((p, i) => {
+        const ss = stages(p);
+        const post2 = formOf(p, "post");
+        return [
+          i + 1,
+          p.subject,
+          clsName(p),
+          tName(p),
+          p.date,
+          timeText(p),
+          p.mentor,
+          p.mode,
+          p.book,
+          p.unit,
+          p.focus,
+          ...ss.map((s) => s.done ? "已交" : s.over ? "逾期" : s.open ? "待填" : ""),
+          p.recordBack ? "已回收" : "",
+          post2?.data?.second || "",
+          p.room,
+          p.note
+        ];
+      })
+    ];
+    const ws = X.utils.aoa_to_sheet(aoa);
+    ws["!cols"] = [4, 5, 10, 8, 11, 11, 12, 7, 10, 8, 16, 8, 8, 8, 8, 8, 14, 20].map((w) => ({ wch: w }));
+    const wb = X.utils.book_new();
+    X.utils.book_append_sheet(wb, ws, "訪視時程表");
+    X.writeFile(wb, `${termCode(S.semester)}_指導員訪視時程表.xlsx`);
+  }
+  var fs = null;
+  function teachTerms(p) {
+    const c = get("classes", p.classId);
+    return new Set(S.data.classes.filter((x) => x.teacherId && x.teacherId === c?.teacherId && x.semesterId !== c.semesterId).map((x) => x.semesterId)).size;
+  }
+  function flowText(p) {
+    let s = sessionFor(p.classId, p.date);
+    if (!s || !blocksOf(s.id).length) s = (S.idx.sessionsByClass.get(p.classId) || []).filter((x) => x.date <= p.date && blocksOf(x.id).length).slice(-1)[0];
+    if (!s) return "";
+    const subj = subjectOfClass(get("classes", p.classId));
+    const kids = roster(p.classId);
+    const lines = blocksOf(s.id).filter((b) => b.mode !== "備用").map((b) => {
+      if (b.mode !== "個別") return `${b.start}–${b.end} ${b.title}${b.content ? "：" + b.content : ""}`;
+      const ts = kids.map((k) => tasksOf(b.id).find((t) => t.studentId === k.id)).filter(Boolean).map((t) => taskText(t, subj));
+      const uniq = [...new Set(ts)];
+      return `${b.start}–${b.end} ${b.title}：${uniq.length === 1 ? uniq[0] : uniq.slice(0, 4).join("；") + (uniq.length > 4 ? "…" : "")}`;
+    });
+    return `（${md2(s.date)} 教學流程）
+${lines.join("\n")}`;
+  }
+  function kidsText(p) {
+    return roster(p.classId).map((k) => `${k.name}（${k.grade ? cnum[k.grade] + "年級" : ""}）：`).join("\n");
+  }
+  function defaults(p, kind) {
+    if (kind === "pre") {
+      const n = teachTerms(p);
+      return {
+        exp: n ? "續任" : "新進",
+        expTerms: n || "",
+        modes: [],
+        book: p.book || "",
+        lesson: p.unit || "",
+        unit: p.unit || "",
+        focus: (p.focus || "").split(/[、,，]/).map((x) => x.trim()).filter(Boolean),
+        progress: "",
+        focusDesc: "",
+        classMgmt: "",
+        kidsNote: kidsText(p),
+        teachQ: "",
+        mgmtQ: "",
+        flow: flowText(p)
+      };
+    }
+    return {
+      unit: [p.book, p.unit].filter(Boolean).join(" "),
+      r: {},
+      toolName: "",
+      creative: false,
+      suggest: "",
+      mentorFb: "",
+      other: "",
+      goals: [0, 1, 2].map(() => ({ area: "", goal: "", method: "", review: "" })),
+      exec: "",
+      improve: "",
+      resource: "",
+      future: "",
+      second: "",
+      secondDetail: ""
+    };
+  }
+  var itemsOf = (subj) => [...VISIT_ITEMS.common, ...VISIT_ITEMS[subj] || []];
+  function renderForm(ctx, planId, kind) {
+    const p = get("visitPlans", planId);
+    if (!p) {
+      ctx.title("指導員訪視");
+      ctx.el.innerHTML = `<div class="card"><div class="empty">${icon("eye")}<div>找不到這次訪視</div></div></div>`;
+      return;
+    }
+    const form = formOf(p, kind);
+    if (!fs || fs.plan.id !== p.id || fs.kind !== kind || !fs.dirty) fs = { plan: p, kind, form, data: { ...defaults(p, kind), ...structuredClone(form?.data || {}) }, dirty: false };
+    const ss = stages(p);
+    const canEdit2 = !isSupervisor2() || isSocial2();
+    ctx.title(kind === "pre" ? `${p.subject}訪視提問單` : `${p.subject}訪視自評與調整`, `${esc(clsName(p))}・${esc(tName(p))}・${esc(mdw(p.date))} ${esc(timeText(p))}・指導員 ${esc(p.mentor || "—")}`);
+    ctx.actions(`<a class="btn ghost" href="#/tvisits">${icon("left", "sm")}訪視清單</a>
+    <a class="btn ${kind === "pre" ? "primary" : ""}" href="#/tvisits/${encodeURIComponent(p.id)}/pre">提問單</a><a class="btn ${kind === "post" ? "primary" : ""}" href="#/tvisits/${encodeURIComponent(p.id)}/post">自評與調整</a>
+    <button class="btn" id="vf-print">${icon("print", "sm")}列印／PDF</button>`);
+    $("#vf-print").onclick = () => printHtml(formHtml(p, kind, fs.data, fs.form), { margin: "12mm", title: fileName(p, kind) });
+    const body = kind === "pre" ? preBody(p, fs.data) : postBody(p, fs.data, form);
+    const s1 = kind === "pre" ? ss[0] : ss[1], s2 = ss[2];
+    ctx.el.innerHTML = `<div class="row wrap mb8" style="gap:6px">${kind === "pre" ? `${chip(ss[0])}<span class="small muted">訪視前 ${preDays()} 天交（${md2(ss[0].due)} 前）${form?.submitted1At ? `・送出於 ${esc(form.submitted1At.slice(0, 16))}` : ""}</span>` : `<span class="small">第一段</span>${chip(ss[1])}<span class="small">隔週調整</span>${chip(ss[2])}`}</div>
+    <div class="vf" id="vf">${body}</div>
+    ${canEdit2 ? `<div class="sticky-foot"><span id="vf-foot" class="small muted">${fs.dirty ? '<span class="chip warn">尚未儲存</span>' : ""}</span><span class="sp"></span>
+      <button class="btn" id="vf-save">${icon("save", "sm")}儲存草稿</button>
+      ${kind === "pre" ? `<button class="btn primary" id="vf-sub1">${icon("send", "sm")}${form?.submitted1At ? "更新並重新送出" : "送出提問單"}</button>` : `<button class="btn ${form?.submitted1At ? "" : "primary"}" id="vf-sub1" ${s1.open ? "" : 'disabled title="訪視當天之後才能填"'}>${icon("send", "sm")}${form?.submitted1At ? "更新第一段" : "送出第一段"}</button>
+           <button class="btn ${form?.submitted1At ? "primary" : ""}" id="vf-sub2" ${form?.submitted1At ? "" : 'disabled title="先送出第一段"'}>${icon("send", "sm")}${form?.submitted2At ? "更新隔週調整" : "送出隔週調整"}</button>`}</div>` : ""}`;
+    bindForm(ctx, p, kind);
+  }
+  var ta = (k, v, rows2 = 3, ph = "") => `<textarea class="textarea" data-f="${k}" rows="${rows2}" placeholder="${esc(ph)}">${esc(v || "")}</textarea>`;
+  var pills = (k, opts, sel, multi2 = false) => `<div class="seg pick" data-pk="${k}" data-multi="${multi2 ? 1 : ""}">${opts.map((o) => `<button type="button" data-v="${esc(o)}" class="${(multi2 ? (sel || []).includes(o) : sel === o) ? "on" : ""}">${esc(o)}</button>`).join("")}</div>`;
+  var fld = (label, inner, hint = "") => `<div class="field vf-f"><span>${label}${hint ? ` <small class="muted">${hint}</small>` : ""}</span>${inner}</div>`;
+  function preBody(p, d) {
+    const s = p.subject;
+    return `<div class="card"><div class="card-body stack" style="gap:14px">
+    ${fld("教學資歷", `<div class="row wrap" style="gap:8px">${pills("exp", ["新進", "續任"], d.exp)}<span class="small">續任：教學 <input class="input" style="width:60px" data-f="expTerms" value="${esc(d.expTerms)}"> 學期（不含本學期）</span></div>`, "系統依老師以前帶過的班自動帶入")}
+    ${fld("教學狀況", pills("modes", ["一對一教學", "分組教學", "板書教學"], d.modes, true), "可複選")}
+    ${s === "國語" ? `<div class="grid g3" style="gap:10px">${fld("使用冊數", `<input class="input" data-f="book" value="${esc(d.book)}">`)}${fld("課次", `<input class="input" data-f="lesson" value="${esc(d.lesson)}" placeholder="第＿課">`)}
+      ${fld("上課進度", pills("progress", ["與期初規劃一致", "落後期初規劃", "超前期初規劃"], d.progress))}</div>` : ""}
+    ${s === "數學" ? fld("教學單元", `<input class="input" data-f="unit" value="${esc(d.unit)}" placeholder="例：玩魔數5-2 分數（一）">`) : ""}
+    ${s === "英語" ? `<div class="grid g2" style="gap:10px">${fld("使用冊數", `<input class="input" data-f="book" value="${esc(d.book)}">`)}${fld("單元", `<input class="input" data-f="unit" value="${esc(d.unit)}">`)}</div>` : ""}
+    ${fld(s === "國語" ? "預計觀課成分" : "觀課之教學成分", pills("focus", VISIT_FOCUS[s] || [], d.focus, true), "可複選")}
+    ${s === "國語" ? fld("觀課教學成分的教學內容扼要說明", ta("focusDesc", d.focusDesc, 4, "例：1.動腦思考引起動機：依照孩子經驗，設計和課文相關提問 2.掛圖開放回答… 3.標段落、朗讀課文 4.課文問答")) : ""}
+    ${fld("班級經營說明", ta("classMgmt", d.classMgmt, 3, "課室用語、獎勵制度、師生互動狀況、座位安排"))}
+    ${fld("學童學習狀況", ta("kidsNote", d.kidsNote, 5, "簡述學童學習行為、習慣、程度；學習較強／較弱的地方與觀察到的原因"), "已帶入班上孩子名單")}
+    ${fld("教學提問", ta("teachQ", d.teachQ, 4, s === "國語" ? "1.觀課之教學成分（教具使用、差異化教學、教學流程安排、教學活動設計、如何佈題、教學中如何提問…） 2.其他教學成分" : s === "英語" ? "1.觀課之教學成分（教學紀錄表規劃、課室用語、常用指導語、自然發音教學層次、課程活動設計、差異化教學、教學提問策略、檢核活動等） 2.其他問題" : "具體描述自己教學上的問題，以及期待指導員協助的面向"), "具體描述自己教學上的問題，以及期待指導員協助的面向")}
+    ${fld("班級經營提問", ta("mgmtQ", d.mgmtQ, 3, "具體描述自己帶班的問題，以及期待指導員協助的面向"))}
+    ${fld("上課流程", ta("flow", d.flow, 6, "當天上課流程及學童學習進度"), `<button type="button" class="btn sm ghost" data-reflow>重新帶入教學流程</button>`)}
+  </div></div>`;
+  }
+  function postBody(p, d, form) {
+    const items = itemsOf(p.subject);
+    const rateRow = ([code, label, opts]) => `<tr><th>${esc(label)}</th><td>${pills("r." + code, opts, d.r?.[code])}${code === "tool" ? `<input class="input mt4" data-f="toolName" value="${esc(d.toolName)}" placeholder="教具名稱">` : ""}</td></tr>`;
+    const goals = d.goals?.length ? d.goals : defaults(p, "post").goals;
+    const locked2 = !form?.submitted1At;
+    return `<div class="card"><div class="card-head"><h3>第一段・訪視後自評</h3><span class="sub">訪視後 3 天內</span></div><div class="card-body stack" style="gap:14px">
+    ${fld("教學單元", `<input class="input" data-f="unit" value="${esc(d.unit)}">`)}
+    <div class="tbl-wrap"><table class="tbl vf-rate"><tbody>${items.map(rateRow).join("")}</tbody></table></div>
+    <label class="small"><input type="checkbox" data-f="creative" ${d.creative ? "checked" : ""}> 這次有用創意教學（平板、遊戲等），填寫下面四題（非必填）</label>
+    ${d.creative ? `<div class="tbl-wrap"><table class="tbl vf-rate"><tbody>${VISIT_ITEMS.creative.map(rateRow).join("")}</tbody></table></div>` : ""}
+    ${fld("教材內容修正及教具研發建議", ta("suggest", d.suggest, 3, "針對教材內容需修正的部分，或這個單元建議搭配使用的教具"))}
+    ${fld("指導員教學建議與回饋紀錄", ta("mentorFb", d.mentorFb, 4, "就當次訪視依實際狀況記錄與反思"))}
+    ${fld("其他回饋（物理環境、班級經營等）", ta("other", d.other, 2))}
+    ${fld("改善目標", `<div class="vf-goals">${goals.map((g, i) => `<div class="vf-goal" data-g="${i}"><div class="row wrap" style="gap:6px"><b>目標 ${i + 1}</b>
+        <select class="select" data-gk="area" style="width:auto"><option value="">調整面向</option>${VISIT_GOAL_AREAS.map((a) => `<option ${a === g.area ? "selected" : ""}>${esc(a)}</option>`).join("")}</select>
+        ${goals.length > 3 ? `<button type="button" class="mk-x" data-gdel="${i}" title="刪除">×</button>` : ""}</div>
+        <input class="input mt4" data-gk="goal" value="${esc(g.goal)}" placeholder="調整目標，例：提問後給孩子思考時間">
+        <textarea class="textarea mt4" rows="2" data-gk="method" placeholder="具體實行方法，例：每次問完等 10 秒再指導">${esc(g.method)}</textarea></div>`).join("")}
+      ${goals.length < 5 ? '<button type="button" class="btn sm" data-gadd>＋ 再加一個目標</button>' : ""}</div>`, "列舉 3–5 個")}
+  </div></div>
+  <div class="card mt16 ${locked2 ? "vf-locked" : ""}"><div class="card-head"><h3>第二段・隔週調整自我評估</h3><span class="sub">${locked2 ? "先送出第一段，再回來填" : "訪視後 14 天內"}</span></div><div class="card-body stack" style="gap:14px">
+    ${fld("每個目標的調整情況", goals.map((g, i) => `<div class="vf-goal"><b>目標 ${i + 1}</b>${g.area ? `・${esc(g.area)}` : ""} <span class="small muted">${esc(g.goal || "")}</span>
+      <textarea class="textarea mt4" rows="2" data-g2="${i}" placeholder="具體說明調整的情況，或無法執行的原因">${esc(g.review || "")}</textarea></div>`).join(""))}
+    ${fld("目標執行度", pills("exec", ["無具體執行目標調整", "執行部分的目標調整", "確實執行所有的調整目標"], d.exec))}
+    ${fld("教學改善程度", pills("improve", ["切實有效", "尚佳", "尚可", "待改進", "不良"], d.improve))}
+    ${fld("期待社工團隊提供的資源或協助", ta("resource", d.resource, 2))}
+    ${fld("未來上課期待進行的方向或策略", ta("future", d.future, 2))}
+    ${fld("二次訪視需求", pills("second", ["是", "否"], d.second), "是：期待指導員／社工再入班訪視")}
+    ${d.second === "是" ? fld("期待指導的面向", ta("secondDetail", d.secondDetail, 2)) : ""}
+  </div></div>`;
+  }
+  function bindForm(ctx, p, kind) {
+    const root = $("#vf");
+    const dirty2 = () => {
+      fs.dirty = true;
+      const f = $("#vf-foot");
+      if (f) f.innerHTML = '<span class="chip warn">尚未儲存</span>';
+    };
+    const rerender = () => {
+      const y = scrollY;
+      renderForm(ctx, p.id, kind);
+      scrollTo(0, y);
+    };
+    root.addEventListener("input", (e) => {
+      const t = e.target, d = fs.data;
+      if (t.dataset.f) {
+        d[t.dataset.f] = t.type === "checkbox" ? t.checked : t.value;
+        dirty2();
+        if (t.type === "checkbox") rerender();
+        return;
+      }
+      const g = t.closest("[data-g]");
+      if (g && t.dataset.gk) {
+        d.goals[+g.dataset.g][t.dataset.gk] = t.value;
+        return dirty2();
+      }
+      if (t.dataset.g2 != null) {
+        d.goals[+t.dataset.g2].review = t.value;
+        return dirty2();
+      }
+    });
+    root.addEventListener("click", (e) => {
+      const d = fs.data;
+      const b = e.target.closest("[data-pk] button");
+      if (b) {
+        const box2 = b.parentElement, k = box2.dataset.pk, v = b.dataset.v;
+        if (box2.dataset.multi) {
+          const cur = new Set(d[k] || []);
+          if (cur.has(v)) cur.delete(v);
+          else cur.add(v);
+          d[k] = [...cur];
+          b.classList.toggle("on");
+        } else if (k.startsWith("r.")) {
+          d.r = d.r || {};
+          const c = k.slice(2);
+          d.r[c] = d.r[c] === v ? "" : v;
+          $$("button", box2).forEach((x) => x.classList.toggle("on", x.dataset.v === d.r[c]));
+        } else {
+          d[k] = d[k] === v ? "" : v;
+          $$("button", box2).forEach((x) => x.classList.toggle("on", x.dataset.v === d[k]));
+          if (k === "second") {
+            dirty2();
+            return rerender();
+          }
+        }
+        return dirty2();
+      }
+      if (e.target.closest("[data-gadd]")) {
+        d.goals.push({ area: "", goal: "", method: "", review: "" });
+        dirty2();
+        return rerender();
+      }
+      const del = e.target.closest("[data-gdel]");
+      if (del) {
+        d.goals.splice(+del.dataset.gdel, 1);
+        dirty2();
+        return rerender();
+      }
+      if (e.target.closest("[data-reflow]")) {
+        d.flow = flowText(p);
+        $("[data-f=flow]", root).value = d.flow;
+        dirty2();
+      }
+    });
+    const save3 = async (submit) => {
+      const d = fs.data;
+      if (submit === 1 && kind === "pre" && !(d.teachQ || "").trim()) {
+        toast("請寫「教學提問」，指導員會依此準備", "err");
+        return;
+      }
+      if (submit === 1 && kind === "post") {
+        const miss = itemsOf(p.subject).filter(([c]) => !d.r?.[c]).length;
+        if (miss && !await confirmBox(`還有 ${miss} 題勾選沒選，確定要送出？`, { okText: "送出" })) return;
+        if (d.goals.filter((g) => (g.goal || "").trim()).length < 3 && !await confirmBox("改善目標建議寫 3–5 個，確定要送出？", { okText: "送出" })) return;
+      }
+      if (submit === 2 && !d.second) {
+        toast("請選「二次訪視需求」", "err");
+        return;
+      }
+      try {
+        await mutate("/api/visit/form", { id: formId(p, kind), planId: p.id, kind, data: d, submit }, submit ? "已送出" : "已儲存");
+        fs = null;
+        renderForm(ctx, p.id, kind);
+      } catch {
+      }
+    };
+    $("#vf-save")?.addEventListener("click", () => save3(0));
+    $("#vf-sub1")?.addEventListener("click", () => save3(1));
+    $("#vf-sub2")?.addEventListener("click", () => save3(2));
+  }
+  var fileName = (p, kind) => `${termCode(p.semesterId)}_${p.subject}_${clsName(p)}_${tName(p)}_${kind === "pre" ? "訪視提問單" : "訪視自評與調整"}`;
+  var nl = (v) => esc(v || "").replace(/\n/g, "<br>");
+  var box = (opts, sel) => opts.map((o) => `${(Array.isArray(sel) ? sel.includes(o) : sel === o) ? "■" : "□"}${esc(o)}`).join("　");
+  function formHtml(p, kind, data = null, form = null) {
+    form = form || formOf(p, kind);
+    const d = { ...defaults(p, kind), ...data || form?.data || {} };
+    const head = `<div class="vfp-title"><div>永齡希望小學雲科大分校</div><h1>${termCode(p.semesterId)} ${esc(p.subject)}指導員教學訪視－${kind === "pre" ? "訪視提問單" : "課輔老師自評與調整"}</h1></div>
+    <table class="vfp vfp-head"><tr><th>課輔老師</th><td>${esc(tName(p))}</td><th>班級</th><td>${esc(clsName(p))}</td><th>訪視日期時間</th><td>${esc(p.date)} ${esc(timeText(p))}</td></tr>
+      <tr><th>指導員</th><td>${esc(p.mentor || "")}</td><th>訪視方式</th><td>${esc(p.mode || "")}</td><th>${kind === "pre" ? "送出時間" : "第一段／隔週送出"}</th><td>${esc((form?.submitted1At || "").slice(0, 16))}${kind === "post" && form?.submitted2At ? "／" + esc(form.submitted2At.slice(0, 16)) : ""}</td></tr></table>`;
+    if (kind === "pre") {
+      const s = p.subject;
+      return `<div class="vfp-page">${head}<table class="vfp">
+      <tr><th>教學資歷</th><td>${box(["新進"], d.exp)}課輔老師　${box(["續任"], d.exp)}課輔老師，教學 ${esc(d.expTerms || "＿")} 學期（不含本學期）</td></tr>
+      <tr><th>教學狀況</th><td>${box(["一對一教學", "分組教學", "板書教學"], d.modes)}</td></tr>
+      ${s === "國語" ? `<tr><th>使用冊數／課次</th><td>${esc(d.book)}　第 ${esc(d.lesson || "＿")} 課　上課進度：${box(["與期初規劃一致", "落後期初規劃", "超前期初規劃"], d.progress)}</td></tr>` : ""}
+      ${s === "英語" ? `<tr><th>使用冊數／單元</th><td>${esc(d.book)}　${esc(d.unit)}</td></tr>` : ""}${s === "數學" ? `<tr><th>教學單元</th><td>${esc(d.unit)}</td></tr>` : ""}
+      <tr><th>${s === "國語" ? "預計觀課成分" : "觀課之教學成分"}</th><td>${box(VISIT_FOCUS[s] || [], d.focus)}</td></tr>
+      ${s === "國語" ? `<tr><th>觀課教學成分之教學內容扼要說明</th><td>${nl(d.focusDesc)}</td></tr>` : ""}
+      <tr><th>班級經營說明</th><td>${nl(d.classMgmt)}</td></tr><tr><th>學童學習狀況</th><td>${nl(d.kidsNote)}</td></tr>
+      <tr><th>教學提問</th><td>${nl(d.teachQ)}</td></tr><tr><th>班級經營提問</th><td>${nl(d.mgmtQ)}</td></tr><tr><th>上課流程</th><td>${nl(d.flow)}</td></tr></table></div>`;
+    }
+    const rate = (list) => list.map(([c, l, o]) => `<tr><th>${esc(l)}</th><td>${box(o, d.r?.[c])}${c === "tool" && d.toolName ? `　教具名稱：${esc(d.toolName)}` : ""}</td></tr>`).join("");
+    const goals = (d.goals || []).filter((g) => g.goal || g.method || g.area);
+    return `<div class="vfp-page">${head}<table class="vfp"><tr><th>教學單元</th><td>${esc(d.unit)}</td></tr>
+    <tr class="vfp-sec"><td colspan="2">評鑑項目（通用題＋${esc(p.subject)}）</td></tr>${rate(itemsOf(p.subject))}
+    ${d.creative ? `<tr class="vfp-sec"><td colspan="2">創意教學（非必填）</td></tr>${rate(VISIT_ITEMS.creative)}` : ""}
+    <tr><th>教材內容修正及教具研發建議</th><td>${nl(d.suggest)}</td></tr><tr><th>指導員教學建議與回饋紀錄</th><td>${nl(d.mentorFb)}</td></tr>
+    <tr><th>其他回饋</th><td>${nl(d.other)}</td></tr></table>
+    <table class="vfp mt8"><tr class="vfp-sec"><td colspan="3">改善目標</td></tr><tr><th style="width:22%">調整面向／目標</th><th>具體實行方法</th><th style="width:34%">隔週：調整情況或無法執行的原因</th></tr>
+      ${goals.map((g) => `<tr><td>${esc(g.area)}${g.area && g.goal ? "：" : ""}${esc(g.goal)}</td><td>${nl(g.method)}</td><td>${nl(g.review)}</td></tr>`).join("") || '<tr><td colspan="3">&nbsp;</td></tr>'}</table>
+    <table class="vfp mt8"><tr class="vfp-sec"><td colspan="2">訪視後隔週・調整自我評估</td></tr>
+      <tr><th>目標執行度</th><td>${box(["無具體執行目標調整", "執行部分的目標調整", "確實執行所有的調整目標"], d.exec)}</td></tr>
+      <tr><th>教學改善程度</th><td>${box(["切實有效", "尚佳", "尚可", "待改進", "不良"], d.improve)}</td></tr>
+      <tr><th>期待社工團隊提供的資源或協助</th><td>${nl(d.resource)}</td></tr><tr><th>未來上課期待進行的方向或策略</th><td>${nl(d.future)}</td></tr>
+      <tr><th>二次訪視需求</th><td>${box(["是", "否"], d.second)}${d.secondDetail ? `<div>期待指導的面向：${nl(d.secondDetail)}</div>` : ""}</td></tr></table></div>`;
+  }
+  var N2C = (s) => String(s).replace(/\d/g, (d) => cnum[+d] || d);
+  var normC = (s) => N2C(String(s || "")).replace(/國小|班|\s/g, "");
+  function hm2(t) {
+    const s = String(t || "").replace(/\D/g, "");
+    if (!s) return "";
+    if (s.length <= 2) return `${s.padStart(2, "0")}:00`;
+    if (s.length === 3) return `0${s[0]}:${s.slice(1)}`;
+    return `${s.slice(0, 2)}:${s.slice(2, 4)}`;
+  }
+  function times(t) {
+    const [a, b] = String(t || "").split(/[-~–]/);
+    return { start: hm2(a), end: hm2(b) };
+  }
+  var pad22 = (n) => String(n).padStart(2, "0");
+  function semYear(month) {
+    const m = /^(\d{2,3})(上|下)$/.exec(S.semester || "");
+    const y = m ? Number(m[1]) + 1911 : (/* @__PURE__ */ new Date()).getFullYear();
+    return m && (m[2] === "下" || month < 8) ? y + 1 : y;
+  }
+  function isoOf(v) {
+    if (v instanceof Date && !isNaN(v)) return `${v.getFullYear()}-${pad22(v.getMonth() + 1)}-${pad22(v.getDate())}`;
+    const m = /(\d{1,2})\/(\d{1,2})/.exec(String(v || ""));
+    return m ? `${semYear(+m[1])}-${pad22(m[1])}-${pad22(m[2])}` : "";
+  }
+  function findClass(subject, clsText, teacher) {
+    const pool = classes().filter((c) => subjectOfClass(c) === subject);
+    const byT = pool.filter((c) => teacher && teacherOfClass(c) === teacher);
+    if (byT.length === 1) return byT[0].id;
+    const n = normC(clsText);
+    const byN = (byT.length ? byT : pool).filter((c) => n && (normC(c.name).includes(n) || n.includes(normC(c.name))));
+    return byN.length === 1 ? byN[0].id : "";
+  }
+  function parseScheduleSheets(sheets) {
+    const out = [];
+    for (const aoa of sheets) {
+      const hi = aoa.findIndex((r) => r.some((v) => String(v).includes("個督日期")));
+      if (hi >= 0) {
+        const head = aoa[hi].map((v) => String(v || "").replace(/\s/g, ""));
+        const col = (k) => head.findIndex((x) => x.includes(k));
+        const C = { cls: col("合作國小"), date: col("個督日期"), mentor: col("指導員"), mode: col("訪視方式"), book: col("使用冊數"), unit: col("單元"), focus: col("觀課"), back: col("紀錄表"), room: col("教室") };
+        const subj = head.some((x) => x.includes("英文")) ? "英語" : head.some((x) => x.includes("數學")) ? "數學" : "國語";
+        for (const r of aoa.slice(hi + 1)) {
+          if (/範例/.test(String(r[0])) || !r[C.cls] || !r[C.date]) continue;
+          const teacher = String(r[C.cls + 1] || "").trim();
+          const dt = String(r[C.date]);
+          const tm = /(\d{3,4})\s*[-~]\s*(\d{3,4})/.exec(dt);
+          out.push({
+            subject: subj,
+            clsText: String(r[C.cls]).trim(),
+            teacher,
+            date: isoOf(r[C.date]),
+            ...tm ? times(`${tm[1]}-${tm[2]}`) : { start: "", end: "" },
+            mentor: String(r[C.mentor] || "").trim(),
+            mode: String(r[C.mode] || "").trim(),
+            book: String(r[C.book] || "").trim(),
+            unit: String(r[C.unit] || "").trim(),
+            focus: String(r[C.focus] || "").trim(),
+            room: String(r[C.room] || "").trim(),
+            recordBack: /已回收/.test(String(r[C.back] || ""))
+          });
+        }
+        continue;
+      }
+      let dates = [];
+      for (let i = 0; i < aoa.length; i++) {
+        const r = aoa[i], k = String(r[0] || "").trim();
+        if (k === "訪視日期") dates = r.map(isoOf);
+        if (k !== "課輔老師") continue;
+        const mentorsRow = String(aoa[i + 1]?.[0] || "").trim() === "指導委員" ? aoa[i + 1] : [];
+        for (let c = 1; c <= 5; c++) {
+          const lines = String(r[c] || "").split(/\n/).map((x) => x.trim()).filter(Boolean);
+          const ents = lines.map((x) => /^(\d{1,4}(?:\s*-\s*\d{1,4})?)\s*【(國|英|數)訪】\s*(.+?)\s*-\s*(.+)$/.exec(x)).filter(Boolean);
+          const ms = String(mentorsRow[c] || "").split(/\n/).map((x) => x.trim()).filter(Boolean);
+          ents.forEach((m2, j) => {
+            const subject = { 國: "國語", 英: "英語", 數: "數學" }[m2[2]];
+            let mentor = "";
+            const tagged = ms.map((x) => ({ x, t: /[（(]([國英數])(?:-([^)）]+))?[)）]/.exec(x) }));
+            const hit = tagged.filter((o) => o.t && o.t[1] === m2[2]);
+            if (hit.length > 1) mentor = (hit.find((o) => o.t[2] && m2[3].includes(o.t[2])) || hit[0]).x;
+            else if (hit.length === 1) mentor = hit[0].x;
+            else if (ms.length === ents.length) mentor = ms[j];
+            else if (ms.length === 1) mentor = ms[0];
+            out.push({ subject, clsText: m2[3], teacher: m2[4], date: dates[c] || "", ...times(m2[1]), mentor: mentor.replace(/[（(][國英數][^)）]*[)）]/, "").trim(), mode: "", book: "", unit: "", focus: "", room: "", recordBack: false });
+          });
+        }
+      }
+    }
+    const m = /* @__PURE__ */ new Map();
+    for (const x of out.filter((x2) => x2.date)) {
+      const key = `${x.subject}|${x.teacher}|${x.date}`;
+      const o = m.get(key);
+      m.set(key, o ? { ...x, ...Object.fromEntries(Object.entries(o).filter(([, v]) => v !== "" && v !== false)) } : x);
+    }
+    return [...m.values()].sort((a, b) => a.date.localeCompare(b.date));
+  }
+  async function importFlow(ctx) {
+    const inp = document.createElement("input");
+    inp.type = "file";
+    inp.accept = ".xlsx,.xls";
+    inp.multiple = true;
+    inp.style.display = "none";
+    document.body.appendChild(inp);
+    const files = await new Promise((res) => {
+      const done = () => res([...inp.files]);
+      inp.addEventListener("change", done, { once: true });
+      inp.click();
+    });
+    inp.remove();
+    if (!files.length) return;
+    const sheets = [];
+    for (const f of files) {
+      const wb = window.XLSX.read(await f.arrayBuffer(), { type: "array", cellDates: true });
+      for (const n of wb.SheetNames) sheets.push(window.XLSX.utils.sheet_to_json(wb.Sheets[n], { header: 1, defval: "", raw: true }));
+    }
+    const rows2 = parseScheduleSheets(sheets).map((x) => {
+      const cid = findClass(x.subject, x.clsText, x.teacher);
+      const dup = cid && S.data.visitPlans.some((p) => p.classId === cid && p.subject === x.subject && p.date === x.date);
+      return { ...x, cid, dup, on: !!cid && !dup };
+    });
+    if (!rows2.length) {
+      toast("檔案裡沒有找到訪視（支援英文訪視時程表、國英數訪視時間表）", "err");
+      return;
+    }
+    const cls = classes();
+    const body = h("<div></div>");
+    const draw = () => {
+      body.innerHTML = `<p class="small muted" style="margin:0 0 8px">找到 ${rows2.length} 場訪視。勾選要匯入的；對不到班級的請選班級，已經在系統裡的預設不勾。</p>
+      <div class="tbl-wrap" style="max-height:60vh"><table class="tbl"><thead><tr><th></th><th>日期</th><th>科目</th><th>表上的班級・老師</th><th>對應班級</th><th>指導員</th></tr></thead><tbody>
+      ${rows2.map((x, i) => `<tr><td><input type="checkbox" data-on="${i}" ${x.on ? "checked" : ""}></td><td class="nowrap">${esc(md2(x.date))} <span class="small muted">${esc([x.start, x.end].filter(Boolean).join("–"))}</span></td>
+        <td>${esc(x.subject)}</td><td class="small">${esc(x.clsText)}・${esc(x.teacher)}${x.dup ? ' <span class="chip outline small">已在系統</span>' : ""}</td>
+        <td><select class="select" data-cid="${i}" style="min-width:120px"><option value="">選班級</option>${cls.map((c) => `<option value="${c.id}" ${c.id === x.cid ? "selected" : ""}>${esc(c.name)}（${esc(subjectOfClass(c))}・${esc(teacherOfClass(c))}）</option>`).join("")}</select></td>
+        <td class="small">${esc(x.mentor)}</td></tr>`).join("")}</tbody></table></div>`;
+    };
+    body.addEventListener("change", (e) => {
+      const t = e.target;
+      if (t.dataset.on) rows2[+t.dataset.on].on = t.checked;
+      if (t.dataset.cid) {
+        rows2[+t.dataset.cid].cid = t.value;
+        if (t.value) rows2[+t.dataset.cid].on = true;
+        draw();
+      }
+    });
+    draw();
+    const ok = await openModal({ title: "匯入訪視時程表", body, buttons: [{ text: "取消", value: false }, { text: "匯入勾選的", value: true, primary: true }] });
+    if (!ok) return;
+    const pick2 = rows2.filter((x) => x.on && x.cid);
+    if (!pick2.length) {
+      toast("沒有勾選可匯入的訪視", "err");
+      return;
+    }
+    const out = pick2.map((x, i) => {
+      const c = get("classes", x.cid);
+      return {
+        id: `VP-${x.cid}~${Date.now().toString(36)}${i.toString(36)}`,
+        semesterId: c.semesterId,
+        classId: x.cid,
+        teacherId: c.teacherId,
+        teacherName: teacherOfClass(c),
+        subject: x.subject,
+        date: x.date,
+        start: x.start,
+        end: x.end,
+        mentor: x.mentor,
+        mode: x.mode || "個別",
+        room: x.room,
+        book: x.book,
+        unit: x.unit,
+        focus: x.focus,
+        recordBack: x.recordBack,
+        followed: false,
+        note: "",
+        source: "匯入"
+      };
+    });
+    try {
+      await mutate("/api/visit/plans", { rows: out }, `已匯入 ${out.length} 場訪視`);
+      ctx.go(location.hash);
+    } catch {
+    }
+  }
+  var tvisits_default = {
+    isDirty() {
+      return !!fs?.dirty;
+    },
+    render(ctx) {
+      const [planId, kind] = ctx.params;
+      if (planId && ["pre", "post"].includes(kind)) return renderForm(ctx, planId, kind);
+      fs = null;
+      renderList(ctx);
+    },
+    destroy() {
+      if (fs && !fs.dirty) fs = null;
+    }
+  };
+  function visitReminder() {
+    const sup = isSupervisor2();
+    const vt = sup ? visitOverdue() : visitTodo();
+    if (!vt.length) return "";
+    return `<div class="callout ${vt.some((x) => x.s.over) ? "warn" : "accent"} mb8 vrem">${icon("eye", "sm")} <b>${sup ? `指導員訪視表單逾期 ${vt.length} 份` : "指導員訪視表單要填"}</b>
+    ${vt.slice(0, 6).map((x) => `<a class="chip ${x.s.over ? "warn" : "outline"}" style="margin:2px" href="#/tvisits/${encodeURIComponent(x.p.id)}/${x.s.key === "pre" ? "pre" : "post"}">${esc(x.p.subject)}・${esc(md2(x.p.date))} ${esc(x.s.label)}${x.s.over ? "（逾期）" : `・${esc(md2(x.s.due))} 前`}${sup ? `・${esc(clsName(x.p))}` : ""}</a>`).join("")}
+    ${vt.length > 6 ? `<a href="#/tvisits?f=${sup ? "over" : "todo"}">…看全部</a>` : ""}</div>`;
+  }
+
   // src/js/pages/dashboard.js
   function todayCard(x, today3) {
     const st4 = sessionState(x.session);
@@ -6684,7 +7879,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
         return { label: w.label.replace("週", ""), parts };
       }).slice(-10);
-      ctx.el.innerHTML = `
+      const visitBox = visitReminder();
+      ctx.el.innerHTML = `${visitBox}
       <div class="grid g4">
         <div class="card stat"><div class="label">${icon("calendar", "sm")}今日排課</div><div class="value">${list.length}<small>班</small></div>
           <div class="foot">已送出 ${sent}・未送出 ${list.length - sent}</div></div>
@@ -6759,7 +7955,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   }
 
   // src/js/pages/social.js
-  var VISIT_ITEMS = [
+  var VISIT_ITEMS2 = [
     ["s11", "1.1", "進度掌握", "能掌握學生的學習起點行為，擬定教學目標"],
     ["s12", "1.2", "進度掌握", "能根據教學目標，設計適當教學活動"],
     ["s13", "1.3", "進度掌握", "能妥善分配教學時間與教學流程"],
@@ -6797,14 +7993,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   };
   var kidSchool = (k) => String(k?.school || "").replace(/^(縣立|市立|國立|私立)/, "");
   var kidNames = (ids) => split(ids).map((id) => nameOf("students", id) || id).join(SEP);
-  var visitAvg = (v) => avg2(VISIT_ITEMS.map(([k]) => scoreNum(v[k])));
-  var dimAvg = (v, d) => avg2(VISIT_ITEMS.filter((x) => x[2] === d).map(([k]) => scoreNum(v[k])));
+  var visitAvg = (v) => avg2(VISIT_ITEMS2.map(([k]) => scoreNum(v[k])));
+  var dimAvg = (v, d) => avg2(VISIT_ITEMS2.filter((x) => x[2] === d).map(([k]) => scoreNum(v[k])));
   function denied(ctx, title) {
     ctx.title(title);
     ctx.el.innerHTML = `<div class="card"><div class="empty">${icon("lock")}<div>這一頁只有社工和督導可以使用。</div></div></div>`;
   }
   var byDateDesc = (a, b) => (b.date || "").localeCompare(a.date || "") || (b.updatedAt || "").localeCompare(a.updatedAt || "");
-  function pills(name, opts, value, { multi: multi2 = false, tone = null } = {}) {
+  function pills2(name, opts, value, { multi: multi2 = false, tone = null } = {}) {
     const sel = multi2 ? new Set(split(value)) : null;
     return `<div class="seg pick" data-pick="${name}" ${multi2 ? 'data-multi="1"' : ""}>${opts.map((o) => {
       const on2 = multi2 ? sel.has(o) : String(value ?? "") === o;
@@ -6821,14 +8017,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     root.addEventListener("click", (e) => {
       const b = e.target.closest("[data-pick] button");
       if (!b) return;
-      const box = b.parentElement;
-      if (box.dataset.multi) b.classList.toggle("on");
+      const box2 = b.parentElement;
+      if (box2.dataset.multi) b.classList.toggle("on");
       else {
         const was = b.classList.contains("on");
-        $$("button", box).forEach((x) => x.classList.remove("on"));
+        $$("button", box2).forEach((x) => x.classList.remove("on"));
         if (!was) b.classList.add("on");
       }
-      onChange?.(box.dataset.pick);
+      onChange?.(box2.dataset.pick);
     });
   }
   function kidPicker(ids, quick = []) {
@@ -6844,9 +8040,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     return `<span class="chip accent kp-chip" data-id="${esc(id)}">${esc(k?.name || id)}${k?.grade ? `<small>${k.grade}年級</small>` : ""}<button type="button" data-rm="${esc(id)}" title="移除">×</button></span>`;
   };
   function bindKidPicker(root, onChange) {
-    const box = $("[data-kp]", root);
-    if (!box) return;
-    const q = $(".kp-q", box), res = $(".kp-res", box), sel = $(".kp-sel", box);
+    const box2 = $("[data-kp]", root);
+    if (!box2) return;
+    const q = $(".kp-q", box2), res = $(".kp-res", box2), sel = $(".kp-sel", box2);
     const chosen = () => $$(".kp-chip", sel).map((x) => x.dataset.id);
     const add = (id) => {
       if (!chosen().includes(id)) sel.insertAdjacentHTML("beforeend", kidChip(id));
@@ -6871,7 +8067,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         if (f) add(f.dataset.add);
       }
     });
-    box.addEventListener("click", (e) => {
+    box2.addEventListener("click", (e) => {
       const a = e.target.closest("[data-add]");
       if (a) {
         add(a.dataset.add);
@@ -6935,9 +8131,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     $("#v-teacher", a).onchange = (e) => ctx.go(`#/visits?kind=${encodeURIComponent(kind)}&teacher=${encodeURIComponent(e.target.value)}`);
     $("#v-xlsx", a).onclick = () => xlsx(
       "訪視紀錄",
-      ["紀錄時間", "填表人", "類別", "國小", "班別", "科別", "課輔老師姓名", ...VISIT_ITEMS.map(([, n, d, t]) => `${n}${d}-${t}`), "課師教學說明", "學童行為說明", "提到的孩子"],
-      list.slice().reverse().map((v) => [v.date, v.recorder, v.kind, v.school, v.className, v.subject, v.teacherName, ...VISIT_ITEMS.map(([k]) => scoreNum(v[k]) ?? (v[k] || "")), v.teachNote, v.kidNote, kidNames(v.kidIds)]),
-      [11, 8, 10, 10, 6, 6, 10, ...VISIT_ITEMS.map(() => 8), 50, 50, 16]
+      ["紀錄時間", "填表人", "類別", "國小", "班別", "科別", "課輔老師姓名", ...VISIT_ITEMS2.map(([, n, d, t]) => `${n}${d}-${t}`), "課師教學說明", "學童行為說明", "提到的孩子"],
+      list.slice().reverse().map((v) => [v.date, v.recorder, v.kind, v.school, v.className, v.subject, v.teacherName, ...VISIT_ITEMS2.map(([k]) => scoreNum(v[k]) ?? (v[k] || "")), v.teachNote, v.kidNote, kidNames(v.kidIds)]),
+      [11, 8, 10, 10, 6, 6, 10, ...VISIT_ITEMS2.map(() => 8), 50, 50, 16]
     );
     ctx.el.innerHTML = `<div class="callout small mb8">${icon("lock", "sm")} 訪視紀錄用來評估課輔老師是否適任，只有社工和督導看得到，課輔老師的畫面上不會出現。</div>
     <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>日期</th><th>類別</th><th>班級</th><th>課輔老師</th>${DIMS.map((d) => `<th class="c">${d}</th>`).join("")}<th class="c">平均</th><th>填表人</th></tr></thead><tbody>
@@ -6984,13 +8180,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     ctx.title(isNew ? "新增訪視" : "訪視紀錄", `${esc(v.school)} ${esc(v.className)}・${esc(v.subject)}・課輔老師 ${esc(v.teacherName)}・${mdw(v.date)}`);
     ctx.actions(`<button class="btn ghost" id="vf-back">${icon("left", "sm")}回訪視紀錄</button>`);
     $("#vf-back").onclick = () => leave(() => ctx.go("#/visits"));
-    const groups = DIMS.map((d) => `<div class="vf-dim"><div class="vf-dim-h">${d}</div>${VISIT_ITEMS.filter((x) => x[2] === d).map(([k, n, , t]) => `
+    const groups = DIMS.map((d) => `<div class="vf-dim"><div class="vf-dim-h">${d}</div>${VISIT_ITEMS2.filter((x) => x[2] === d).map(([k, n, , t]) => `
     <div class="vf-item"><div class="vf-q"><b>${n}</b> ${esc(t)}${prev && prev[k] ? `<span class="vf-prev" title="上次訪視（${md2(prev.date)}）">上次 ${esc(prev[k])}</span>` : ""}</div>
-      ${pills(k, SCORES, v[k], { tone: visitTone })}</div>`).join("")}</div>`).join("");
+      ${pills2(k, SCORES, v[k], { tone: visitTone })}</div>`).join("")}</div>`).join("");
     ctx.el.innerHTML = `<div class="grid g-main">
     <div class="stack gap16">
       <div class="card card-pad"><div class="row wrap" style="gap:10px 18px;align-items:flex-end">
-        <div class="field"><span class="small ink2">類別</span>${pills("kind", ["教學訪視", "指導員訪視"], v.kind || "教學訪視")}</div>
+        <div class="field"><span class="small ink2">類別</span>${pills2("kind", ["教學訪視", "指導員訪視"], v.kind || "教學訪視")}</div>
         <label class="field"><span>紀錄時間</span><input class="input" type="date" id="vf-date" value="${esc(v.date)}"></label>
         <div class="field"><span class="small ink2">填表人</span><div style="padding-top:6px">${esc(v.recorder || me())}</div></div></div></div>
       <div class="card"><div class="card-head"><h3>教學指標</h3><span class="sub">1～5 分；這次沒觀察到的選「不適用」，不算進平均</span><span class="sp"></span><span class="chip outline" id="vf-avg">平均 ${f12(visitAvg(v))}</span></div>
@@ -6999,7 +8195,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         <textarea class="textarea" id="vf-teach" rows="7" placeholder="看到的教學做法、亮點、建議，可以用 1. 2. 3. 分點">${esc(v.teachNote || "")}</textarea></div></div>
       <div class="card"><div class="card-head"><h3>學童行為說明</h3></div><div class="card-body">
         <textarea class="textarea" id="vf-kid" rows="5" placeholder="孩子的狀況與互動">${esc(v.kidNote || "")}</textarea>
-        ${kids.length ? `<div class="field mt12"><span class="small ink2">提到的孩子（會出現在孩子的學習檔案，只有社工和督導看得到）</span>${pills("kidIds", kids.map((k) => k.name), split(v.kidIds).map((id) => nameOf("students", id)).join(SEP), { multi: true })}</div>` : ""}</div></div>
+        ${kids.length ? `<div class="field mt12"><span class="small ink2">提到的孩子（會出現在孩子的學習檔案，只有社工和督導看得到）</span>${pills2("kidIds", kids.map((k) => k.name), split(v.kidIds).map((id) => nameOf("students", id)).join(SEP), { multi: true })}</div>` : ""}</div></div>
     </div>
     <div class="stack gap16">
       <div class="card"><div class="card-head"><h3>這堂課</h3><span class="sub">${mdw(v.date)}</span></div><div class="card-body">${v.classId ? sessionPeek(v.classId, v.date) : '<div class="small muted">—</div>'}</div></div>
@@ -7027,7 +8223,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         teachNote: $("#vf-teach").value,
         kidNote: $("#vf-kid").value
       };
-      for (const [k] of VISIT_ITEMS) row[k] = pillValue(el, k);
+      for (const [k] of VISIT_ITEMS2) row[k] = pillValue(el, k);
       if (kids.length) {
         const names = split(pillValue(el, "kidIds"));
         row.kidIds = kids.filter((k) => names.includes(k.name)).map((k) => k.id).join(SEP);
@@ -7040,7 +8236,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         toast("請填紀錄時間", "err");
         return;
       }
-      const missing = VISIT_ITEMS.filter(([k]) => !row[k]).length;
+      const missing = VISIT_ITEMS2.filter(([k]) => !row[k]).length;
       if (missing && !await confirmBox(`還有 ${missing} 項指標沒有點選，確定要儲存？`, { okText: "儲存" })) return;
       try {
         const saved = await saveRow("visits", row, "訪視紀錄已儲存");
@@ -7144,7 +8340,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       const chron = vs.slice().reverse();
       ctx.el.innerHTML = `<div class="grid g-main"><div class="stack gap16">
       <div class="card"><div class="card-head"><h3>每次訪視的 12 項指標</h3><span class="sub">由舊到新</span></div><div class="tbl-wrap"><table class="tbl"><thead><tr><th>指標</th>${chron.map((v) => `<th class="c nowrap"><a href="#/visits/${esc(v.id)}">${md2(v.date)}</a><div class="small muted">${v.kind === "指導員訪視" ? "指導員" : "教學"}</div></th>`).join("")}</tr></thead><tbody>
-        ${VISIT_ITEMS.map(([k, n, , t]) => `<tr><td class="small"><b>${n}</b> ${esc(t)}</td>${chron.map((v) => {
+        ${VISIT_ITEMS2.map(([k, n, , t]) => `<tr><td class="small"><b>${n}</b> ${esc(t)}</td>${chron.map((v) => {
         const x = scoreNum(v[k]);
         return `<td class="c num ${x == null ? "muted" : x >= 4 ? "ok-text" : x >= 3 ? "" : "bad-text"}">${x ?? (v[k] === "不適用" ? "–" : "")}</td>`;
       }).join("")}</tr>`).join("")}
@@ -7212,11 +8408,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     <div class="card card-pad stack" style="gap:14px">
       <div class="row wrap" style="gap:10px 18px;align-items:flex-end"><label class="field"><span>紀錄時間</span><input class="input" type="date" id="cf-date" value="${esc(c.date)}"></label>
         <div class="field"><span class="small ink2">填表人</span><div style="padding-top:6px">${esc(c.recorder || me())}</div></div>
-        <div class="field"><span class="small ink2">狀態</span>${pills("status", ["追蹤中", "結案"], c.status || "追蹤中", { tone: caseTone })}</div></div>
+        <div class="field"><span class="small ink2">狀態</span>${pills2("status", ["追蹤中", "結案"], c.status || "追蹤中", { tone: caseTone })}</div></div>
       <div class="field"><span class="small ink2">個案（孩子）<b style="color:var(--critical)">*</b></span>${kidPicker(c.studentIds, quick)}</div>
-      <div class="field"><span class="small ink2">工作內容（可複選）</span>${pills("methods", METHODS, c.methods, { multi: true })}
+      <div class="field"><span class="small ink2">工作內容（可複選）</span>${pills2("methods", METHODS, c.methods, { multi: true })}
         <input class="input mt8" id="cf-mo" value="${esc(c.methodOther || "")}" placeholder="選「其他」時寫明" ${split(c.methods).includes("其他") ? "" : "hidden"}></div>
-      <div class="field"><span class="small ink2">工作對象（可複選）</span>${pills("targets", TARGETS, tg.on, { multi: true })}
+      <div class="field"><span class="small ink2">工作對象（可複選）</span>${pills2("targets", TARGETS, tg.on, { multi: true })}
         <input class="input mt8" id="cf-tx" value="${esc(tg.extra)}" placeholder="補充，例如：老師姓名、其他家人（以「、」分隔）"></div>
       <label class="field"><span>工作目標</span><input class="input" id="cf-goal" value="${esc(c.goal || "")}" placeholder="例：了解遲到原因並與家長討論作息"></label>
       <label class="field"><span>晤談過程</span><textarea class="textarea" id="cf-proc" rows="8" placeholder="時間、對象、談了什麼（具體描述）">${esc(c.process || "")}</textarea></label>
@@ -7381,18 +8577,18 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         <div class="field"><span class="small ink2">紀錄人員</span><div style="padding-top:6px">${esc(e.recorder || me())}</div></div></div>
       <div class="field"><span class="small ink2">涉及的孩子</span>${kidPicker(e.studentIds, quick)}
         <input class="input mt8" id="ef-others" value="${esc(e.others || "")}" placeholder="其他涉及對象，例如：家長、同學、校外人士"></div>
-      <div class="field"><span class="small ink2">事件類型（可勾選）<b style="color:var(--critical)">*</b></span>${pills("types", EVENT_TYPES, ty.on, { multi: true, tone: typeTone })}
+      <div class="field"><span class="small ink2">事件類型（可勾選）<b style="color:var(--critical)">*</b></span>${pills2("types", EVENT_TYPES, ty.on, { multi: true, tone: typeTone })}
         <input class="input mt8" id="ef-to" value="${esc(e.typeOther || ty.extra)}" placeholder="選「其他」時寫明" ${split(ty.on).includes("其他") || e.typeOther || ty.extra ? "" : "hidden"}></div>
       <label class="field"><span>事件描述（具體客觀）<b style="color:var(--critical)">*</b></span><textarea class="textarea" id="ef-desc" rows="7" placeholder="寫看到、聽到的事實：誰、在哪裡、做了什麼、說了什麼；避免推測與評價">${esc(e.description || "")}</textarea></label>
       <label class="field"><span>初步處理與回應</span><textarea class="textarea" id="ef-resp" rows="4">${esc(e.response || "")}</textarea></label>
-      <div class="field"><span class="small ink2">是否已通報或轉介</span>${pills("report", REPORTS, e.report || "未通報")}
+      <div class="field"><span class="small ink2">是否已通報或轉介</span>${pills2("report", REPORTS, e.report || "未通報")}
         <div class="row wrap mt8" style="gap:10px" id="ef-repx" ${["已轉介", "已通報（社會局／113）", "已校內通報"].includes(e.report) ? "" : "hidden"}>
           <input class="input grow" id="ef-unit" value="${esc(e.reportUnit || "")}" placeholder="通報／轉介單位，例如：學校輔導室、社會處、家防中心">
           <label class="row small" style="gap:6px">通報日期<input class="input" type="date" id="ef-rdate" value="${esc(e.reportDate || "")}"></label></div></div>
       <label class="field"><span>後續追蹤建議</span><textarea class="textarea" id="ef-follow" rows="3">${esc(e.followUp || "")}</textarea></label>
       <div class="row wrap" style="gap:10px 18px;align-items:flex-end">
         <label class="field"><span>下次追蹤日期</span><input class="input" type="date" id="ef-next" value="${esc(e.nextDate || "")}"></label>
-        <div class="field"><span class="small ink2">狀態</span>${pills("status", ["處理中", "追蹤中", "結案"], e.status || "處理中", { tone: evTone })}</div></div>
+        <div class="field"><span class="small ink2">狀態</span>${pills2("status", ["處理中", "追蹤中", "結案"], e.status || "處理中", { tone: evTone })}</div></div>
       <label class="field"><span>備註</span><textarea class="textarea" id="ef-note" rows="2">${esc(e.note || "")}</textarea></label>
     </div></div>
     <div class="stack gap16">
@@ -7506,6 +8702,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     if (!isSocial2() || !S.data) return [];
     const out = [];
     for (const c of S.data.cases) if (c.status !== "結案") out.push({ kind: "個案工作", href: `#/cases/${encodeURIComponent(c.id)}`, date: c.nextDate || "", who: kidNames(c.studentIds), what: c.goal || c.methods || "", by: c.recorder, last: c.date });
+    out.push(...secondVisitItems());
     for (const e of S.data.specialEvents) if (e.status !== "結案") out.push({ kind: "特殊事件", href: `#/events/${encodeURIComponent(e.id)}`, date: e.nextDate || "", who: [kidNames(e.studentIds), e.others].filter(Boolean).join(SEP), what: e.types, by: e.recorder, last: e.date, urgent: split(e.types).includes("自傷風險") });
     return out.sort((a, b) => (b.urgent ? 1 : 0) - (a.urgent ? 1 : 0) || (a.date || "9999").localeCompare(b.date || "9999"));
   }
@@ -7518,7 +8715,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       if (!isSocial2()) return denied(ctx, "追蹤清單");
       const items = followItems();
       const t = todayISO();
-      ctx.title("追蹤清單", "還沒結案的個案工作與特殊事件，依下次追蹤日期排序");
+      ctx.title("追蹤清單", "還沒結案的個案工作、特殊事件，以及老師提出的二次訪視需求");
       ctx.actions(`<a class="btn" href="#/events/new">${icon("plus", "sm")}特殊事件</a><a class="btn primary" href="#/cases/new">${icon("plus", "sm")}個案工作</a>`);
       const sec = (title, list) => list.length ? `<div class="section-title">${title}（${list.length}）</div><div class="card"><div class="tbl-wrap"><table class="tbl"><tbody>
       ${list.map((x) => `<tr class="click" data-href="${x.href}"><td class="nowrap" style="width:120px">${followChip(x.date, false)}</td><td><span class="chip ${x.kind === "特殊事件" ? "warn" : "outline"}">${x.kind}</span></td>
@@ -7757,207 +8954,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             <td>${meter(s.rate)}</td><td class="num">${s.late}</td><td class="num">${s.early}</td><td class="num">${s.leave}</td><td class="num">${s.absent}</td></tr>`).join("") || `<tr><td colspan="${7 + c.dates.length}"><div class="empty small">尚未建立孩子名單</div></td></tr>`}</tbody></table></div></div></div>`).join("")}`;
     }
   };
-
-  // src/js/pages/flowout.js
-  var isBackup = (b) => b.mode === BACKUP_MODE;
-  var hasTask = (t) => !!t && !!(t.type || t.content || t.unit);
-  var tagOf = (t, subj) => {
-    const cat = taskCat(t.type);
-    return cat === "本科" && (!t.type || t.type === "本科" || ["國語", "英語", "數學"].includes(t.type)) ? subj : t.type || "其他";
-  };
-  var bodyOf = (t, subj, unit) => taskText(t, subj, unit).replace(/^【[^】]*】/, "").replace(/^（未填內容）$/, "");
-  function kidPlan(st4, kid) {
-    const subj = subjectOfClass(st4.cls);
-    const main = st4.blocks.filter((b) => !isBackup(b));
-    const units = resolveUnits(main.map((b) => b.mode === "個別" ? b.tasks[kid] : null), st4.progress[kid] || "");
-    const items = [];
-    let n = 0;
-    main.forEach((b, i) => {
-      if (b.mode === "個別") {
-        const t = b.tasks[kid];
-        if (!hasTask(t)) return;
-        n++;
-        items.push({ kind: "task", no: n, block: b, tag: tagOf(t, subj), cat: taskCat(t.type), unit: units[i]?.unit || "", text: bodyOf(t, subj, units[i]?.unit || ""), detail: t.detail || "", status: t.status || "", t });
-      } else items.push({ kind: b.mode === "休息" ? "rest" : "class", block: b, text: b.title, detail: b.content || "" });
-    });
-    const backups = st4.blocks.filter(isBackup).map((b) => b.tasks[kid]?.content || "").filter(Boolean);
-    return { items, tasks: items.filter((x) => x.kind === "task"), backups };
-  }
-  function printHtml(html, { landscape = false, margin = "0" } = {}) {
-    $("#yl-print")?.remove();
-    $("#yl-print-page")?.remove();
-    const root = h(`<div id="yl-print">${html}</div>`);
-    const style = h(`<style id="yl-print-page">@page { size: A4 ${landscape ? "landscape" : "portrait"}; margin: ${margin}; }</style>`);
-    document.head.appendChild(style);
-    document.body.appendChild(root);
-    document.body.classList.add("yl-printing");
-    fitSheets(root);
-    const done = () => {
-      root.remove();
-      style.remove();
-      document.body.classList.remove("yl-printing");
-      removeEventListener("afterprint", done);
-    };
-    addEventListener("afterprint", done);
-    setTimeout(() => window.print(), 60);
-  }
-  function fitSheets(root) {
-    for (const s of $$(".ts-sheet", root)) {
-      let size = 16;
-      s.style.fontSize = size + "px";
-      while (s.scrollHeight > s.clientHeight + 1 && size > 8.5) {
-        size -= 0.5;
-        s.style.fontSize = size + "px";
-      }
-    }
-  }
-  function printFlow(st4) {
-    const c = st4.cls;
-    const subj = subjectOfClass(c);
-    const kids = st4.kids;
-    const wk = weekNo(st4.date);
-    const plans = Object.fromEntries(kids.map((k) => [k.id, kidPlan(st4, k.id)]));
-    const cellOf = (k, b) => {
-      const it = plans[k.id].items.find((x) => x.block === b && x.kind === "task");
-      if (!it) return "";
-      return `<b class="pt-tag">${esc(it.tag)}</b> ${esc(it.text)}${it.detail ? `<div class="pt-detail">${esc(it.detail)}</div>` : ""}`;
-    };
-    const backups = st4.blocks.filter(isBackup);
-    const rows2 = st4.blocks.filter((b) => !isBackup(b)).map((b) => b.mode === "個別" ? `<tr><th>${esc(b.start || "")}–${esc(b.end || "")}<div>${esc(b.title)}</div></th>${kids.map((k) => `<td>${cellOf(k, b)}</td>`).join("")}</tr>` : `<tr class="pt-whole"><th>${esc(b.start || "")}–${esc(b.end || "")}<div>${esc(b.title)}</div></th><td colspan="${kids.length}"><b>${esc(b.title)}</b>${b.content ? `　${esc(b.content)}` : ""}</td></tr>`).join("");
-    const brows = backups.map((b, i) => `<tr class="pt-backup"><th>備用 ${i + 1}<div>${i === 0 ? esc(subj) + "學習任務" : "可選其他類"}</div></th>${kids.map((k) => `<td>${esc(b.tasks[k.id]?.content || "")}</td>`).join("")}</tr>`).join("");
-    const html = `<div class="pt">
-    <div class="pt-head"><h1>${esc(c.name)}　${esc(subj)}　教學流程</h1>
-      <div>${esc(mdw(st4.date))}${wk > 0 ? `・第 ${wk} 週` : ""}・${esc(st4.start)}–${esc(st4.end)}・課輔老師 ${esc(teacherOfClass(c))}${st4.mindful ? `・靜心活動 ${esc(st4.mindful)}` : ""}</div></div>
-    <table class="pt-table"><colgroup><col style="width:24mm">${kids.map(() => "<col>").join("")}</colgroup>
-      <thead><tr><th>時間</th>${kids.map((k) => `<th>${esc(k.name)}${k.grade ? `<span>${esc(k.grade)}年級</span>` : ""}</th>`).join("")}</tr></thead>
-      <tbody><tr class="pt-prog"><th>今日進度</th>${kids.map((k) => `<td>${esc(st4.progress[k.id] || "")}</td>`).join("")}</tr>${rows2}${brows}</tbody></table></div>`;
-    printHtml(html, { landscape: true, margin: "8mm" });
-  }
-  function downloadFlowXlsx(st4) {
-    const X = window.XLSX;
-    if (!X) {
-      toast("Excel 元件沒有載入", "err");
-      return;
-    }
-    const c = st4.cls;
-    const subj = subjectOfClass(c);
-    const kids = st4.kids;
-    const plans = Object.fromEntries(kids.map((k) => [k.id, kidPlan(st4, k.id)]));
-    const main = st4.blocks.filter((b) => !isBackup(b));
-    const backups = st4.blocks.filter(isBackup);
-    const cellText = (it) => it ? `[${it.tag}] ${it.text}${it.detail ? `（${it.detail}）` : ""}` : "";
-    const wb = X.utils.book_new();
-    const info = [["班級", c.name], ["科目", subj], ["日期", mdw(st4.date)], ["時間", `${st4.start}–${st4.end}`], ["課輔老師", teacherOfClass(c)], ["靜心活動", st4.mindful || ""], []];
-    const head = ["時間", "區塊", ...kids.map((k) => k.name)];
-    const body = [["", "今日進度", ...kids.map((k) => st4.progress[k.id] || "")]];
-    const merges = [];
-    for (const b of main) {
-      if (b.mode === "個別") body.push([`${b.start || ""}–${b.end || ""}`, b.title, ...kids.map((k) => cellText(plans[k.id].items.find((x) => x.block === b && x.kind === "task")))]);
-      else {
-        merges.push({ s: { r: info.length + 1 + body.length, c: 2 }, e: { r: info.length + 1 + body.length, c: 1 + kids.length } });
-        body.push([`${b.start || ""}–${b.end || ""}`, b.title, `（${b.mode}）${b.content || ""}`, ...kids.slice(1).map(() => "")]);
-      }
-    }
-    backups.forEach((b, i) => body.push(["", `備用任務 ${i + 1}`, ...kids.map((k) => b.tasks[k.id]?.content || "")]));
-    const ws1 = X.utils.aoa_to_sheet([...info, head, ...body]);
-    ws1["!cols"] = [{ wch: 12 }, { wch: 18 }, ...kids.map(() => ({ wch: 24 }))];
-    if (kids.length > 1) ws1["!merges"] = merges;
-    X.utils.book_append_sheet(wb, ws1, "總表");
-    const dHead = ["孩子", "年級", "順序", "時間", "區塊", "類別", "單元／教材", "內容", "說明", "完成狀況（課後紀錄）"];
-    const dRows = [];
-    for (const k of kids) {
-      const p = plans[k.id];
-      for (const it of p.tasks) dRows.push([k.name, k.grade || "", it.no, `${it.block.start || ""}–${it.block.end || ""}`, it.block.title, it.tag, it.cat === "本科" ? it.unit : "", it.cat === "本科" ? it.t.content || "" : it.text, it.detail, it.status]);
-      p.backups.forEach((v, i) => dRows.push([k.name, k.grade || "", `備用 ${i + 1}`, "", "備用任務", "備用", "", v, "", ""]));
-    }
-    const ws2 = X.utils.aoa_to_sheet([dHead, ...dRows]);
-    ws2["!cols"] = [10, 6, 8, 12, 14, 8, 18, 28, 26, 14].map((w) => ({ wch: w }));
-    X.utils.book_append_sheet(wb, ws2, "明細");
-    const used = /* @__PURE__ */ new Set(["總表", "明細"]);
-    for (const k of kids) {
-      const p = plans[k.id];
-      let name = String(k.name || k.id).replace(/[\\/?*[\]:]/g, "").slice(0, 28) || k.id;
-      while (used.has(name)) name += "_";
-      used.add(name);
-      const aoa = [
-        ["姓名", k.name],
-        ["日期", mdw(st4.date)],
-        ["班級・科目", `${c.name}・${subj}`],
-        ["今日進度", st4.progress[k.id] || ""],
-        [],
-        ["順序", "類別", "單元／教材", "內容", "說明"],
-        ...p.tasks.map((it) => [it.no, it.tag, it.cat === "本科" ? it.unit : "", it.cat === "本科" ? it.t.content || "" : it.text, it.detail]),
-        [],
-        ["提早完成可以做"],
-        ...p.backups.map((v, i) => [`備用 ${i + 1}`, v])
-      ];
-      const ws = X.utils.aoa_to_sheet(aoa);
-      ws["!cols"] = [{ wch: 12 }, { wch: 10 }, { wch: 18 }, { wch: 28 }, { wch: 26 }];
-      X.utils.book_append_sheet(wb, ws, name);
-    }
-    X.writeFile(wb, `教學流程_${c.name}_${subj}_${st4.date}.xlsx`);
-  }
-  var FACES = [["很開心", "M7 13.5 Q12 18.5 17 13.5"], ["開心", "M8 14 Q12 16.5 16 14"], ["普通", "M8 15 L16 15"], ["有點難過", "M8 16 Q12 14 16 16"], ["難過", "M7 17 Q12 12.5 17 17"]];
-  var face = ([label, mouth]) => `<span class="ts-face"><svg viewBox="0 0 24 24" width="1.9em" height="1.9em" aria-hidden="true"><circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="1.4"/>
-  <circle cx="8.6" cy="9.5" r="1.2" fill="currentColor"/><circle cx="15.4" cy="9.5" r="1.2" fill="currentColor"/><path d="${mouth}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><small>${label}</small></span>`;
-  function sheetHtml(st4, k) {
-    const c = st4.cls;
-    const subj = subjectOfClass(c);
-    const p = kidPlan(st4, k.id);
-    const box = '<span class="ts-box"></span>';
-    const list = p.items.map((it) => it.kind === "task" ? `<li class="ts-task">${box}<span class="ts-no">${it.no}</span><span class="ts-tag">${esc(it.tag)}</span><span class="ts-text">${esc(it.text || "（老師會再說明）")}${it.detail ? `<small>${esc(it.detail)}</small>` : ""}</span></li>` : `<li class="ts-light">${it.kind === "rest" ? "下課" : "全班"}・${esc(it.text)}${it.kind === "class" && it.detail ? `：${esc(it.detail)}` : ""}</li>`).join("");
-    return `<section class="ts-sheet">
-    <header class="ts-head"><div><div class="ts-title">我的任務單</div><div class="ts-name">${esc(k.name)}</div></div>
-      <div class="ts-meta"><div>${esc(mdw(st4.date))}</div><div>${esc(c.name)}・${esc(subj)}</div>${st4.progress[k.id] ? `<div>今日進度：<b>${esc(st4.progress[k.id])}</b></div>` : ""}</div></header>
-    <ol class="ts-list">${list || '<li class="ts-light">今天的任務老師會再告訴你</li>'}</ol>
-    ${p.backups.length ? `<div class="ts-extra"><b>提早完成可以做</b>${p.backups.map((v, i) => `<span>${box}${i + 1}. ${esc(v)}</span>`).join("")}</div>` : ""}
-    <footer class="ts-exit"><b>出場券</b><span>今天完成了 <span class="ts-blank"></span> 項</span><span class="ts-mood">今天的心情（圈一個）${FACES.map(face).join("")}</span></footer>
-  </section>`;
-  }
-  function sheetsHtml(st4, kids) {
-    const pages = [];
-    for (let i = 0; i < kids.length; i += 2) pages.push(`<div class="ts-page">${sheetHtml(st4, kids[i])}${kids[i + 1] ? sheetHtml(st4, kids[i + 1]) : '<section class="ts-sheet ts-empty"></section>'}</div>`);
-    return pages.join("");
-  }
-  function openTaskSheets(st4) {
-    const kids = st4.kids;
-    if (!kids.length) {
-      toast("這個班還沒有孩子名單", "err");
-      return;
-    }
-    const noTask = kids.filter((k) => !kidPlan(st4, k.id).tasks.length).map((k) => k.name);
-    const body = h(`<div class="stack" style="gap:12px">
-    <div class="small muted">任務單的內容來自這堂課的教學流程（含還沒儲存的修改）。A4 直印，一張印兩位；按「列印／另存 PDF」後，在列印視窗的「目的地」選「另存為 PDF」就能存檔。</div>
-    ${noTask.length ? `<div class="callout warn small">還沒排個別任務：${esc(noTask.join("、"))}</div>` : ""}
-    <div class="row wrap" style="gap:6px 14px"><label class="row small" style="gap:6px"><input type="checkbox" id="ts-all" checked><b>全選</b></label>
-      ${kids.map((k) => `<label class="row small" style="gap:6px"><input type="checkbox" class="ts-pick" value="${esc(k.id)}" checked>${esc(k.name)}</label>`).join("")}</div>
-    <div class="ts-preview-wrap"><div class="ts-preview" id="ts-preview"></div></div></div>`);
-    const picked = () => $$(".ts-pick", body).filter((x) => x.checked).map((x) => kids.find((k) => k.id === x.value));
-    const draw = () => {
-      const list = picked();
-      $("#ts-preview", body).innerHTML = list.length ? sheetsHtml(st4, list) : '<div class="empty small">請勾選要印的孩子</div>';
-      requestAnimationFrame(() => fitSheets($("#ts-preview", body)));
-    };
-    body.addEventListener("change", (e) => {
-      if (e.target.id === "ts-all") $$(".ts-pick", body).forEach((x) => {
-        x.checked = e.target.checked;
-      });
-      else $("#ts-all", body).checked = $$(".ts-pick", body).every((x) => x.checked);
-      draw();
-    });
-    const done = openModal({ title: "孩子任務單", body, buttons: [{ text: "關閉", value: null }, { text: "列印／另存 PDF", value: () => picked(), primary: true }] });
-    const m = body.closest(".modal");
-    if (m) m.style.width = "min(900px, calc(100vw - 32px))";
-    draw();
-    done.then((list) => {
-      if (!list) return;
-      if (!list.length) {
-        toast("沒有勾選孩子", "err");
-        return;
-      }
-      printHtml(`<div class="ts-print">${sheetsHtml(st4, list)}</div>`);
-    });
-  }
 
   // src/js/pages/flow.js
   var st = null;
@@ -8799,7 +9795,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     ctx.title("課後紀錄", `${esc(c.name)}・${esc(subjectOfClass(c))}・${esc(teacherOfClass(c))}・${mdw(rs.date)}${wk > 0 ? `・第 ${wk} 週` : ""}`);
     const s = rs.session;
     const holiday = S.idx.holidays.get(rs.date);
-    ctx.el.innerHTML = `
+    ctx.el.innerHTML = `${isSupervisor2() ? "" : visitReminder()}
     ${rs.restored ? `<div class="callout accent mb8">${icon("info", "sm")} 已還原 ${esc(rs.restored)} 未儲存的草稿。<button class="btn sm ghost" id="r-discard">捨棄草稿</button></div>` : ""}
     ${holiday ? `<div class="callout warn mb8">${icon("info", "sm")} 這天是停課日（${esc(holiday.name)}），若是補課可以照常填寫。</div>` : ""}
     ${s?.pendingEdit === "是" ? `<div class="callout warn mb8">${icon("info", "sm")} 你在送出後修改了內容，社工目前看到的是第 ${esc(s.submitVersion || 1)} 版。改好後請按「更新並重新送出」。</div>` : ""}
@@ -9517,10 +10513,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         const kid = inp.closest(".mk-row").dataset.kid;
         const v = st2.plan[kid].get(inp.dataset.score);
         if (v) v.score = inp.value.replace(/[^\d]/g, "");
-        const box = inp.closest(".mk-paper");
+        const box2 = inp.closest(".mk-paper");
         const sc = v.score === "" ? null : Number(v.score);
-        box.classList.toggle("pass", sc != null && pass(sc));
-        box.classList.toggle("fail", sc != null && !pass(sc));
+        box2.classList.toggle("pass", sc != null && pass(sc));
+        box2.classList.toggle("fail", sc != null && !pass(sc));
         const lab = inp.nextElementSibling;
         lab.className = `small ${sc == null ? "muted" : pass(sc) ? "ok-text" : "bad-text"}`;
         lab.textContent = sc == null ? "考完再填" : pass(sc) ? "通過" : "待複測";
@@ -9557,7 +10553,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     const m = /^(\d{2,3})(上|下|暑)$/.exec(String(t || ""));
     return m ? `${m[1]} ${m[2] === "暑" ? "暑假" : m[2] + "學期"}` : String(t || "");
   }
-  var termCode = (t) => {
+  var termCode2 = (t) => {
     const m = /^(\d{2,3})(上|下|暑)$/.exec(String(t || ""));
     return m ? `${m[1]}-${T_ORD[m[2]]}` : String(t || "");
   };
@@ -9659,12 +10655,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     }
     return String(raw).trim();
   }
-  var pad22 = (n) => String(n).padStart(2, "0");
+  var pad23 = (n) => String(n).padStart(2, "0");
   function parseDate(v) {
-    if (v instanceof Date && !isNaN(v)) return `${v.getFullYear()}-${pad22(v.getMonth() + 1)}-${pad22(v.getDate())}`;
+    if (v instanceof Date && !isNaN(v)) return `${v.getFullYear()}-${pad23(v.getMonth() + 1)}-${pad23(v.getDate())}`;
     if (typeof v === "number" && v > 3e4 && v < 8e4) {
       const d = new Date(Math.round((v - 25569) * 864e5));
-      return `${d.getUTCFullYear()}-${pad22(d.getUTCMonth() + 1)}-${pad22(d.getUTCDate())}`;
+      return `${d.getUTCFullYear()}-${pad23(d.getUTCMonth() + 1)}-${pad23(d.getUTCDate())}`;
     }
     const s = String(v ?? "").trim();
     let m = /^(\d{2,4})[./-](\d{1,2})[./-](\d{1,2})/.exec(s);
@@ -9672,7 +10668,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       let y = Number(m[1]);
       if (y < 1e3) y += 1911;
       const mo = Number(m[2]), d = Number(m[3]);
-      if (mo >= 1 && mo <= 12 && d >= 1 && d <= 31) return `${y}-${pad22(mo)}-${pad22(d)}`;
+      if (mo >= 1 && mo <= 12 && d >= 1 && d <= 31) return `${y}-${pad23(mo)}-${pad23(d)}`;
     }
     return "";
   }
@@ -10040,10 +11036,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     $$(".en-part", rowEl).forEach((p, i) => {
       p.className = `en-part ${ev?.parts?.[i]?.state ? "st-" + ev.parts[i].state : ""}`;
     });
-    const box = $(".en-ev", rowEl);
-    const x = $("[data-rm]", box);
-    box.innerHTML = `${verdictChip(ev)}<span class="small">${esc(ev?.detail || "")}</span>`;
-    if (x) box.appendChild(x);
+    const box2 = $(".en-ev", rowEl);
+    const x = $("[data-rm]", box2);
+    box2.innerHTML = `${verdictChip(ev)}<span class="small">${esc(ev?.detail || "")}</span>`;
+    if (x) box2.appendChild(x);
   }
   function needData(list, term, from, to) {
     const ids = /* @__PURE__ */ new Map();
@@ -10107,7 +11103,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     const ws2 = X.utils.aoa_to_sheet(det);
     ws2["!cols"] = [{ wch: 12 }, { wch: 9 }, { wch: 9 }, { wch: 11 }, { wch: 20 }, { wch: 8 }, { wch: 6 }];
     X.utils.book_append_sheet(wb, ws2, "明細");
-    X.writeFile(wb, `${termCode(term)}_英語考卷需求表${list.length === 1 ? "_" + list[0].name : ""}.xlsx`);
+    X.writeFile(wb, `${termCode2(term)}_英語考卷需求表${list.length === 1 ? "_" + list[0].name : ""}.xlsx`);
   }
   function downloadFile(list) {
     const X = window.XLSX;
@@ -10145,7 +11141,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             i ? "" : ki + 1,
             i ? "" : CN3[k.grade] || k.grade || "",
             i ? "" : k.name,
-            termCode(r.term),
+            termCode2(r.term),
             r.paper,
             r.level ? `Level ${r.level}` : "",
             r.version || "",
@@ -10184,7 +11180,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     $("#e-need", a).onclick = () => needModal(list, term);
     $("#e-xall", a).onclick = () => downloadFile(list);
     const imp = $("#e-imp", a);
-    if (imp) imp.onclick = () => importFlow(ctx);
+    if (imp) imp.onclick = () => importFlow2(ctx);
     ctx.title("英語檢測", `全部班級・${esc(termLabel(term))}`);
     const today3 = todayISO();
     const per = list.map((c) => {
@@ -10269,7 +11265,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     }
     return { rows: rows2, skipped: [...skipped], matched: new Set(rows2.map((r) => r.studentId)).size };
   }
-  async function importFlow(ctx) {
+  async function importFlow2(ctx) {
     const list = classes().filter(isEnClass);
     if (!list.length) {
       toast("這學期還沒有英語班，請先建立班級與名單", "err");
@@ -10371,7 +11367,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         ctx.actions(isSocial2() ? `<button class="btn" id="e-imp">${icon("upload", "sm")}匯入舊學習檔案</button>` : "");
         ctx.el.innerHTML = `<div class="card"><div class="empty">${icon("book")}<div>${isSupervisor2() ? "這學期還沒有英語班。" : "你目前沒有負責的英語班。"}</div></div></div>`;
         const b = $("#e-imp");
-        if (b) b.onclick = () => importFlow(ctx);
+        if (b) b.onclick = () => importFlow2(ctx);
         return;
       }
       if (isSupervisor2() && !q.get("class")) {
@@ -10571,13 +11567,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     </div>`;
     let source = ev?.source || "";
     let filled2 = "";
-    const ta = document.getElementById("ev-text");
-    ta.oninput = () => {
+    const ta2 = document.getElementById("ev-text");
+    ta2.oninput = () => {
       evalDirty = true;
     };
     document.getElementById("ev-fill").onclick = () => {
       const text = `${ins?.summary || ""}${ins?.suggestions?.length ? "\n\n建議：\n" + ins.suggestions.map((x) => "・" + x).join("\n") : ""}`;
-      ta.value = text;
+      ta2.value = text;
       filled2 = text;
       source = "系統規則";
       evalDirty = true;
@@ -10586,7 +11582,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       e.target.disabled = true;
       try {
         const r = await post("/api/ai/summary", { studentId: sid2, semesterId: S.semester });
-        ta.value = r.text;
+        ta2.value = r.text;
         filled2 = r.text;
         source = "AI";
         evalDirty = true;
@@ -10598,7 +11594,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     });
     document.getElementById("ev-save").onclick = async () => {
       let src = source || "老師撰寫";
-      if (filled2 && ta.value !== filled2) src = source === "AI" ? "AI+老師修訂" : "系統+老師修訂";
+      if (filled2 && ta2.value !== filled2) src = source === "AI" ? "AI+老師修訂" : "系統+老師修訂";
       evalDirty = false;
       const now = /* @__PURE__ */ new Date();
       try {
@@ -10606,7 +11602,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
           id: ev?.id || null,
           semesterId: S.semester,
           studentId: sid2,
-          text: ta.value,
+          text: ta2.value,
           source: src,
           author: S.who?.name || "",
           updatedAt: `${todayISO()} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`
@@ -10630,7 +11626,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
   // src/js/pages/forum.js
   var CATEGORIES = ["學生問題", "教學方法", "教材資源", "硬體設備", "行政庶務", "公告", "其他"];
-  var SHORT = { 學生問題: "學生", 教學方法: "教學", 教材資源: "教材", 硬體設備: "硬體", 行政庶務: "行政", 公告: "公告", 其他: "其他" };
+  var SHORT2 = { 學生問題: "學生", 教學方法: "教學", 教材資源: "教材", 硬體設備: "硬體", 行政庶務: "行政", 公告: "公告", 其他: "其他" };
   var STATES = [["", "全部"], ["open", "待回覆"], ["replied", "已回覆"], ["answered", "已有解答"], ["solved", "已解決"]];
   var HINT = {
     學生問題: "孩子的學習卡關、行為或情緒狀況。寫下觀察到的情形、試過的方法，請大家提供建議。",
@@ -10657,10 +11653,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     document.getElementById("who")?.click();
     return true;
   }
-  function openPostEditor(p = null, defaults = {}, onSaved) {
+  function openPostEditor(p = null, defaults2 = {}, onSaved) {
     if (needWho()) return;
     const isNew = !p;
-    const row = { category: "學生問題", urgent: "一般", ...defaults, ...p || {} };
+    const row = { category: "學生問題", urgent: "一般", ...defaults2, ...p || {} };
     const kids = [...S.data.students].filter((k) => k.status !== "離班" || k.id === row.kid).sort(byName);
     const sites = siteOptions();
     const d = openDrawer({
@@ -10761,7 +11757,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     const rs2 = repliesOf(p.id);
     const last = rs2[rs2.length - 1];
     return `<div class="topic ${p.category === "公告" && st4.key !== "solved" ? "pinned" : ""}" data-id="${esc(p.id)}">
-    <div class="cat-dot c-${esc(p.category)}">${esc(SHORT[p.category] || "其他")}</div>
+    <div class="cat-dot c-${esc(p.category)}">${esc(SHORT2[p.category] || "其他")}</div>
     <div style="min-width:0"><div class="t-title">${p.urgent === "急" && st4.key !== "solved" ? '<span class="chip critical" style="margin-right:6px">急</span>' : ""}${esc(p.title)}</div>
       ${p.body ? `<div class="t-body">${esc(p.body)}</div>` : ""}
       <div class="t-meta"><span>${esc(p.author || "")}</span><span>${md2(p.date)}</span>${p.site ? `<span>${icon("pin", "sm")}${esc(p.site)}</span>` : ""}
@@ -10769,7 +11765,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     <div class="t-side"><span class="chip ${st4.chip}">${st4.label}</span><span>${icon("message", "sm")} ${rs2.length}</span>
       ${last ? `<span class="small">${esc(last.author || "")} ${md2(last.date)}</span>` : ""}</div></div>`;
   }
-  function renderList(ctx) {
+  function renderList2(ctx) {
     const q = ctx.query;
     const cat = q.get("cat") || "", stf = q.get("st") || "", text = (q.get("q") || "").trim(), mine = q.get("mine") === "1";
     const all = S.data.posts;
@@ -10801,7 +11797,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         <dt>已回覆</dt><dd>${count("replied")}</dd><dt>已有解答</dt><dd>${count("answered")}</dd><dt>已解決</dt><dd>${count("solved")}</dd>
         <dt>全部主題</dt><dd>${all.length}</dd></dl></div></div>
       <div class="card"><div class="card-head"><h3>類別</h3></div><div class="card-body" style="padding-top:4px">
-        ${CATEGORIES.map((c) => `<a class="row" style="padding:6px 0;color:var(--ink)" href="#/forum?cat=${encodeURIComponent(c)}"><span class="cat-dot c-${c}" style="width:26px;height:26px;font-size:10.5px;border-radius:7px">${SHORT[c]}</span>
+        ${CATEGORIES.map((c) => `<a class="row" style="padding:6px 0;color:var(--ink)" href="#/forum?cat=${encodeURIComponent(c)}"><span class="cat-dot c-${c}" style="width:26px;height:26px;font-size:10.5px;border-radius:7px">${SHORT2[c]}</span>
           <span class="grow" ${c === cat ? 'style="font-weight:700;color:var(--accent)"' : ""}>${c}</span><span class="small muted num">${byCat[c]}</span></a>`).join("")}</div></div>
       <div class="card"><div class="card-head"><h3>據點設備待處理</h3><a class="btn sm ghost" href="#/resources">全部 ${icon("right", "sm")}</a></div><div class="card-body small">
         ${repairs.length ? repairs.slice(0, 6).map((r) => `<div class="row" style="padding:4px 0"><span class="grow">${esc(r.site)}・${esc(r.item)}</span><span class="chip ${r.status === "需維修" ? "serious" : "warn"}">${esc(r.status)}</span></div>`).join("") : '<span class="muted">目前沒有需要維修或不足的項目</span>'}</div></div>
@@ -10898,12 +11894,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   var draft = "";
   function render(ctx) {
     if (ctx.params[0]) renderThread(ctx, ctx.params[0]);
-    else renderList(ctx);
-    const ta = $("#r-body", ctx.el);
-    if (ta) {
-      ta.value = draft;
-      ta.addEventListener("input", () => {
-        draft = ta.value;
+    else renderList2(ctx);
+    const ta2 = $("#r-body", ctx.el);
+    if (ta2) {
+      ta2.value = draft;
+      ta2.addEventListener("input", () => {
+        draft = ta2.value;
       });
     }
   }
@@ -10967,7 +11963,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     }
     return `<label class="field" ${col.kind === "longtext" ? 'style="grid-column:1/-1"' : ""}><span>${esc(col.label)}${req}</span>${input}${hint}</label>`;
   }
-  function formHtml(key, row = {}, { hide = [], idEditable = null } = {}) {
+  function formHtml2(key, row = {}, { hide = [], idEditable = null } = {}) {
     const t = tableDef(key);
     const cols = t.cols.filter((c) => c.kind !== "auto" && !hide.includes(c.key));
     return `<div class="grid g2" style="gap:12px 14px">${cols.map((c) => {
@@ -10991,17 +11987,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     }
     return out;
   }
-  function openRecordDrawer(key, row = null, { title, extra = "", hide = [], defaults = {}, onSaved, wide = false } = {}) {
+  function openRecordDrawer(key, row = null, { title, extra = "", hide = [], defaults: defaults2 = {}, onSaved, wide = false } = {}) {
     const t = tableDef(key);
     const isNew = !row;
-    const data = { ...defaults, ...row || {} };
+    const data = { ...defaults2, ...row || {} };
     const locked = BASE_TABLES.includes(key) && !isSupervisor2();
     const d = openDrawer({
       title: title || `${isNew ? "新增" : "編輯"}${t.label}`,
       wide,
       body: `<div class="small muted mb8">${icon("database", "sm")} 資料表「${esc(t.sheet)}」・${BASE_TABLES.includes(key) ? "存在 基本資料.json（督導維護）" : "存在你自己的檔案"}${t.note ? "・" + esc(t.note) : ""}</div>
       ${locked ? `<div class="callout warn small mb8">${icon("lock", "sm")} 基本資料由社工／督導維護，老師只能查看。需要修改請在論壇或直接通知督導。</div>` : ""}
-      <form class="rec-form">${formHtml(key, data, { hide })}</form>${extra}`,
+      <form class="rec-form">${formHtml2(key, data, { hide })}</form>${extra}`,
       foot: locked ? `<span class="sp"></span><button class="btn" data-cancel>關閉</button>` : `${isNew ? "" : `<button class="btn danger" data-del>${icon("trash", "sm")}刪除</button>`}<span class="sp"></span>
       <button class="btn" data-cancel>取消</button><button class="btn primary" data-save>${icon("save", "sm")}儲存</button>`
     });
@@ -11576,7 +12572,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       title: c ? `班級：${esc(c.name)}` : "新增班級",
       wide: true,
       body: `<div class="small muted mb8">${icon("database", "sm")} 存在「基本資料.json」：班級、班級時段、分班（督導維護）</div>
-      <form class="rec-form">${formHtml("classes", c || { semesterId: S.semester }, { hide: ["semesterId"] })}</form>
+      <form class="rec-form">${formHtml2("classes", c || { semesterId: S.semester }, { hide: ["semesterId"] })}</form>
       <div class="section-title">${icon("clock", "sm")}上課日與時間 <span class="sp"></span><button class="btn sm" data-addslot>${icon("plus", "sm")}新增上課日</button></div>
       <div id="slots">${slotRows()}</div>
       <div class="section-title">${icon("users", "sm")}孩子名單 <span class="small muted" id="kid-n">（${selected.size} 位）</span><span class="sp"></span>
@@ -11806,8 +12802,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       a.querySelector("#d-import")?.addEventListener("click", () => importListFlow(key));
       a.querySelector("#d-export")?.addEventListener("click", () => exportList(key));
       a.querySelector("#d-q").onchange = (e) => ctx.go(`#/data/${key}${e.target.value.trim() ? "?q=" + encodeURIComponent(e.target.value.trim()) : ""}`);
-      const defaults = key === "classes" || key === "evaluations" ? { semesterId: S.semester } : key === "teachers" ? { role: "課輔老師", status: "在職" } : key === "students" ? { status: "在班" } : {};
-      a.querySelector("#d-new")?.addEventListener("click", () => openRecordDrawer(key, null, { defaults }));
+      const defaults2 = key === "classes" || key === "evaluations" ? { semesterId: S.semester } : key === "teachers" ? { role: "課輔老師", status: "在職" } : key === "students" ? { status: "在班" } : {};
+      a.querySelector("#d-new")?.addEventListener("click", () => openRecordDrawer(key, null, { defaults: defaults2 }));
       const groups = [["master", "基本資料（督導維護）"], ["record", "教學紀錄"], ["forum", "論壇"]];
       ctx.el.innerHTML = `<div style="display:grid;grid-template-columns:200px minmax(0,1fr);gap:16px" class="data-layout">
       <div class="card" style="align-self:start;padding:8px">${groups.map(([g, label]) => `<div class="nav-label" style="color:var(--muted);padding:8px 8px 4px">${label}</div>
@@ -12084,7 +13080,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   };
 
   // src/js/main.js
-  var MODULES = { dashboard: dashboard_default, journal: journal_default, month: month_default, flow: flow_default, record: record_default, kids: kids_default, forum: forum_default, resources: resources_default, classes: classes_default, teachers: teachers_default, data: data_default, settings: settings_default, math: math_default, english: english_default, selfb: selfb_default, visits, teachereval, cases, events, followups };
+  var MODULES = { dashboard: dashboard_default, journal: journal_default, month: month_default, flow: flow_default, record: record_default, kids: kids_default, forum: forum_default, resources: resources_default, classes: classes_default, teachers: teachers_default, data: data_default, settings: settings_default, math: math_default, english: english_default, selfb: selfb_default, tvisits: tvisits_default, visits, teachereval, cases, events, followups };
   var PAGES = [
     { group: "督導監控", items: [
       { id: "dashboard", title: "總覽", icon: "grid" },
@@ -12096,7 +13092,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       { id: "record", title: "課後紀錄", icon: "edit" },
       { id: "math", title: "數學月檢測", icon: "check" },
       { id: "english", title: "英語檢測", icon: "book" },
-      { id: "selfb", title: "SEL 活動回饋", icon: "sparkle" }
+      { id: "selfb", title: "SEL 活動回饋", icon: "sparkle" },
+      { id: "tvisits", title: "指導員訪視", icon: "eye" }
     ] },
     { group: "孩子", items: [
       { id: "kids", title: "學習檔案與風險", icon: "shield" }
@@ -12209,10 +13206,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       if (pending) out.journal = [pending, ""];
       const asks = S.data.sessions.filter(selAsk).length;
       if (asks) out.selfb = [asks, ""];
+      const over = visitOverdue().length;
+      if (over) out.tvisits = [over, ""];
     } else {
       const mine = new Set(myClasses().map((c) => c.id));
       const unsent = list.filter((x) => mine.has(x.cls.id) && ["unsent", "draft"].includes(sessionState(x.session).key)).length;
       if (unsent) out.record = [unsent, ""];
+      const todo = visitTodo();
+      if (todo.length) out.tvisits = [todo.length, todo.some((x) => x.s.over) ? "" : "soft"];
     }
     const high = Object.values(S.insights?.students || {}).filter((s) => s.levelLabel === "高風險").length;
     if (high) out.kids = [high, ""];
