@@ -726,6 +726,21 @@ button.mg-c b { font-size: 12.5px; } button.mg-c small { font-size: 10px; color:
 @media (max-width: 1100px) { .en-row { grid-template-columns: 1fr 1fr; } .en-errs, .en-ev { grid-column: span 2; } }
 @media (max-width: 560px) { .en-row { grid-template-columns: 1fr; } .en-errs, .en-ev { grid-column: auto; } }
 
+/* SEL 活動紀錄 */
+.sel-asp { display: flex; flex-direction: column; gap: 6px; }
+.sel-asp-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.sel-asp-row > span { width: 7.5em; color: var(--ink-2); }
+.sel-box { border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 8px; padding: 10px 12px; background: var(--surface); }
+.sel-box .mt4 { margin-top: 4px; }
+.sel-q { background: var(--warn-soft); border-radius: 6px; padding: 4px 8px; }
+.sf-act { border-bottom: 1px solid var(--line-2); padding: 12px 0; }
+.sf-act:last-child { border-bottom: 0; }
+.sf-bar { display: inline-flex; height: 8px; width: 90px; border-radius: 4px; overflow: hidden; background: var(--line-2); vertical-align: middle; }
+.sf-bar i { background: var(--good); } .sf-bar b { background: var(--serious); }
+.sf-rec { margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: var(--surface-2, var(--surface)); border: 1px solid var(--line-2); }
+.sf-asp { display: flex; flex-wrap: wrap; gap: 4px 22px; margin: 6px 0 2px; }
+.sf-asp > span { white-space: nowrap; }
+
 </style>
   <script>
     try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
@@ -1496,6 +1511,53 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
           {
             "key": "polished",
             "label": "課後紀錄(整理後)",
+            "kind": "longtext"
+          },
+          {
+            "key": "selActivity",
+            "label": "SEL 活動",
+            "kind": "text"
+          },
+          {
+            "key": "selContent",
+            "label": "SEL 教案內容",
+            "kind": "enum",
+            "options": [
+              "良好",
+              "不佳"
+            ]
+          },
+          {
+            "key": "selTime",
+            "label": "SEL 教案時間規劃",
+            "kind": "enum",
+            "options": [
+              "良好",
+              "不佳"
+            ]
+          },
+          {
+            "key": "selResponse",
+            "label": "SEL 學童回饋度",
+            "kind": "enum",
+            "options": [
+              "良好",
+              "不佳"
+            ]
+          },
+          {
+            "key": "selWhy",
+            "label": "SEL 不佳的原因",
+            "kind": "longtext"
+          },
+          {
+            "key": "selRecord",
+            "label": "SEL 施行記錄",
+            "kind": "longtext"
+          },
+          {
+            "key": "selQuestion",
+            "label": "SEL 提問與建議",
             "kind": "longtext"
           },
           {
@@ -4749,7 +4811,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
           return o;
         });
       };
-      const keys = ["date", "classId", "start", "end", "mindful", "focus", "mood", "note", "polished", "teacherId", "submittedAt", "submitVersion"];
+      const keys = ["date", "classId", "start", "end", "mindful", "focus", "mood", "note", "polished", "teacherId", "submittedAt", "submitVersion", "selActivity", "selContent", "selTime", "selResponse", "selWhy", "selRecord", "selQuestion"];
       const snap = { session: Object.fromEntries(keys.map((k) => [k, s[k] ?? ""])), records: after("records"), incidents: after("incidents") };
       ops.push({ table: "submissions", row: { id: `SB-${id}-${s.submitVersion}`, sessionId: id, version: s.submitVersion, submittedAt: stamp, by: DB.me?.name || "", snapshot: JSON.stringify(snap) } });
     }
@@ -5916,6 +5978,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   var EN_STARTER = { parts: 4, q: 8, ok: 2 };
   var EN_FINAL = { parts: 7, total: 36, ok: 7 };
   var EN_VERSIONS = ["A", "B", "C"];
+  var BREATH_PARTNERS = [["小青蛙正念呼吸", "https://www.youtube.com/watch?v=Pjmei-VCFkI"], ["蝴蝶呼吸法", "https://www.youtube.com/watch?v=E4tdReVg_EQ"], ["五指山呼吸", "https://www.youtube.com/watch?v=JlCgHnZ8bdk"], ["1比2呼吸法", "https://www.youtube.com/watch?v=Rb7t9M2KqdE"], ["腹式呼吸法", "https://www.youtube.com/watch?v=KzIWhRP0W3c"], ["手指變變變", "https://www.youtube.com/watch?v=kWUhhcgrKZs"], ["風車呼吸法", "https://www.youtube.com/watch?v=RHrxjizUWfQ"], ["單邊呼吸", "https://www.youtube.com/watch?v=bq2GWpphdlU"], ["呼吸想像力", "https://www.youtube.com/watch?v=s8IIW7f7SLU"], ["吹蠟燭", "https://www.youtube.com/watch?v=k2WXVAeXrrc"], ["兒童正念小遊戲", "https://youtu.be/sBXBRmaZYU8?t=131"], ["STOP小咒語（可結合英語課）", "https://youtu.be/m-bwZAAsX7s?t=57"], ["Rose, Thorn, and Bud（可結合英語課）", "https://youtu.be/M6YNw12YLog"]];
+  var BODY_PARTNERS = [["抖抖健康操", "https://www.youtube.com/watch?v=0HYj-rH-yn4"], ["抓蚊子", "https://www.youtube.com/watch?v=Z-03cu-RH6k"], ["Kids Yoga 1", "https://www.youtube.com/watch?v=29DQJWGwEnY"], ["Kids Yoga 2", "https://www.youtube.com/watch?v=-RIFKr8GwJQ"], ["坐姿瑜珈", "https://www.youtube.com/watch?v=oYI0TPJOuGk"], ["抖抖舞", "https://www.youtube.com/watch?v=DsUPVERZFlI"], ["動物舞", "https://www.youtube.com/watch?v=XS9LX1CXuJA"], ["長高體操", "https://www.youtube.com/watch?v=Z0VjXmmxKRQ"], ["海星放鬆", "https://open.spotify.com/episode/2Fnu4Pb1u9cJ1mUVTRGpBG"], ["百變小演員", "https://youtu.be/Sngr8gpQlLg"], ["頭部鬆一鬆", "https://youtu.be/jJ2HZxbOBz4"], ["落雨鬆一鬆", "https://youtu.be/19ifcjZmqQ0"], ["加油打氣", "https://youtu.be/EZZsXpeNGlc"], ["打樁機", "https://youtu.be/OoL_lN1Zr3g"], ["不倒翁", "https://youtu.be/-EeslTGxfSM"], ["小木偶", "https://youtu.be/zFt0vh2hgFI"], ["漸進式肌肉鬆弛練習", "https://youtu.be/bDb8pUy-Xts"], ["平衡感遊戲", "https://youtu.be/EzZ4ra9V3-I"]];
+  var SEL_ASPECTS = [["selContent", "教案內容"], ["selTime", "教案時間規劃"], ["selResponse", "學童回饋度"]];
 
   // src/js/store.js
   var TABLES = [
@@ -7461,6 +7526,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     if (key === "seen" || key === "replied") return "done";
     return "unsent";
   }
+  var selAsk = (s) => !!(s && (s.selQuestion || "").trim() && s.submit === "已送出" && s.feedbackStatus !== "已回饋");
+  function selBlock(s) {
+    if (!s || !["selActivity", "selContent", "selTime", "selResponse", "selRecord", "selQuestion"].some((k) => s[k])) return "";
+    const asp = [["selContent", "教案內容"], ["selTime", "時間規劃"], ["selResponse", "學童回饋"]].filter(([k]) => s[k]);
+    return `<div class="sel-box mt12"><div class="row wrap" style="gap:6px"><b>${icon("sparkle", "sm")} SEL 活動</b><span>${esc(s.selActivity || "（未填活動）")}</span><span class="sp"></span>
+      ${asp.map(([k, l]) => `<span class="chip ${s[k] === "良好" ? "good" : "warn"}">${l}${esc(s[k])}</span>`).join("")}</div>
+    ${s.selWhy ? `<div class="small mt4"><b>不佳：</b>${esc(s.selWhy)}</div>` : ""}
+    ${s.selRecord ? `<div class="small mt4"><b>施行記錄：</b>${esc(s.selRecord)}</div>` : ""}
+    ${s.selQuestion ? `<div class="small mt4 sel-q"><b>提問與建議：</b>${esc(s.selQuestion)}${selAsk(s) ? ' <span class="chip warn">待回覆</span>' : ""}</div>` : ""}</div>`;
+  }
   function detail(x) {
     const sup = isSupervisor2();
     const view = sup ? submittedView(x.session) : null;
@@ -7483,6 +7558,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         <dt>靜心活動</dt><dd>${esc(s.mindful || "—")}</dd><dt>教學重點</dt><dd>${esc(s.focus || "—")}</dd></dl>
       <dl class="kv"><dt>課堂氣氛</dt><dd>${moodText(s.mood)}</dd><dt>送出</dt><dd>${esc(s.submittedAt || "—")}${s.submitVersion > 1 ? `（第 ${esc(s.submitVersion)} 版）` : ""}　${esc(nameOf("teachers", s.teacherId) || teacherOfClass(x.cls))}</dd>
         <dt>課後紀錄</dt><dd>${esc(s.polished || s.note || "—")}</dd></dl></div>
+    ${selBlock(s)}
     <div class="tbl-wrap mt12"><table class="tbl"><thead><tr><th>孩子</th><th>出席</th><th>作業・任務・表現</th><th>今日觀察</th></tr></thead><tbody>
       ${[...kids, ...extra].map((k) => {
       const r = recs.get(k.id);
@@ -7518,7 +7594,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       ${st4.key === "draft" ? `<span class="chip warn">草稿 ${esc((x.session.updatedAt || "").slice(11))}</span>` : ""}
       <a href="#/record?class=${x.cls.id}&date=${x.date}" onclick="event.stopPropagation()">${isSupervisor2() ? "查看" : "前往填寫"} ›</a></div>`;
     } else {
-      meta = `<div class="jcard-meta">${x.session.pendingEdit === "是" ? '<span class="chip warn">送出後有修改</span>' : ""}<span>出席 ${att.attended}/${att.total || att.marked}</span><span>・事件 ${incs}</span>
+      meta = `<div class="jcard-meta">${x.session.pendingEdit === "是" ? '<span class="chip warn">送出後有修改</span>' : ""}${selAsk(x.session) ? '<span class="chip warn">SEL 提問待回覆</span>' : x.session.selActivity ? '<span class="chip outline">SEL</span>' : ""}<span>出席 ${att.attended}/${att.total || att.marked}</span><span>・事件 ${incs}</span>
       <span>・老師：${moodText(x.session.mood)}</span><span class="muted">${open.has(x.cls.id) ? "▾ 收合" : "▸ 展開"}</span></div>`;
     }
     const cls = { pending: "pending", done: "done", unsent: st4.key === "draft" ? "unsent draft" : "unsent" }[b];
@@ -8465,6 +8541,20 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   var isHere = (a) => ["出席", "遲到", "早退"].includes(a);
   var splitList = (v) => String(v || "").split(/[；、]/).map((x) => x.trim()).filter(Boolean);
   var UNDONE_SEP = "；";
+  var SEL_NAMES = SEL_ACTS.flatMap(([, list]) => list.map(([c, n]) => `${c} ${n}`));
+  var SEL_KEYS = ["selActivity", "selContent", "selTime", "selResponse", "selWhy", "selRecord", "selQuestion"];
+  var PARTNER_URL = new Map([...BREATH_PARTNERS, ...BODY_PARTNERS]);
+  function flowSel(sessionId) {
+    if (!sessionId) return "";
+    const out = [];
+    for (const b of blocksOf(sessionId)) {
+      if (b.mode === "備用") continue;
+      for (const t of tasksOf(b.id)) if (taskCat(t.type) === "SEL" && (t.content || "").trim()) out.push(t.content.trim());
+      const hit = SEL_NAMES.find((n) => (b.content || "").includes(n) || (b.title || "").includes(n));
+      if (hit) out.push(hit);
+    }
+    return [...new Set(out)].join("、");
+  }
   function kidTasks(sessionId, kid, subj, progress) {
     if (!sessionId) return [];
     const ts = blocksOf(sessionId).filter((b) => b.mode === "個別").map((b) => tasksOf(b.id).find((x) => x.studentId === kid)).filter((t) => t && (t.type || t.content || t.unit));
@@ -8495,7 +8585,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       sessionId: s?.id || null,
       session: s,
       tasks,
-      info: { mindful: s?.mindful || "", focus: s?.focus || "", mood: s?.mood || "", note: s?.note || "", polished: s?.polished || "" },
+      info: {
+        mindful: s?.mindful || "",
+        focus: s?.focus || "",
+        mood: s?.mood || "",
+        note: s?.note || "",
+        polished: s?.polished || "",
+        ...Object.fromEntries(SEL_KEYS.map((k) => [k, s?.[k] || ""]))
+      },
+      flowSel: flowSel(s?.id),
       kids: all,
       recs: Object.fromEntries(all.map((k) => {
         const r = recs.get(k.id) || {};
@@ -8536,6 +8634,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       state.dirty = true;
       state.restored = d.savedAt;
     }
+    if (!state.info.selActivity && state.flowSel) state.info.selActivity = state.flowSel;
+    state.selOpen = SEL_KEYS.some((k) => state.info[k]);
     return state;
   }
   function touch2() {
@@ -8630,6 +8730,22 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       <label class="field"><span>處理方式</span><textarea class="textarea" data-i="action" rows="2">${esc(inc2.action || "")}</textarea></label></div>
     <div class="row mt8"><span class="sp"></span><button class="btn sm danger" data-delinc="${i}">${icon("trash", "sm")}移除</button></div></div>`;
   }
+  function selCard() {
+    const i = rs.info;
+    if (!rs.selOpen) return `<div class="card-body row" style="gap:8px"><b>SEL 活動紀錄</b><span class="small muted">這堂教學流程沒有排 SEL 活動</span><span class="sp"></span>
+    <button class="btn sm" data-selopen>${icon("plus", "sm")}補記 SEL 活動</button></div>`;
+    const bad = SEL_ASPECTS.some(([k]) => i[k] === "不佳");
+    return `<div class="card-head"><h3>SEL 活動紀錄</h3><span class="sub">${rs.flowSel ? "已從教學流程帶入活動" : "簡要記錄就好"}</span></div>
+    <div class="card-body stack" style="gap:12px">
+      <label class="field"><span>活動內容</span><input class="input" data-info="selActivity" list="r-selacts" value="${esc(i.selActivity)}" placeholder="例：T-2 情緒動物代言人">
+        <datalist id="r-selacts">${SEL_NAMES.map((n) => `<option value="${esc(n)}">`).join("")}</datalist></label>
+      <div class="field"><span>施行狀況</span><div class="sel-asp">${SEL_ASPECTS.map(([k, label]) => `<div class="sel-asp-row"><span class="small">${label}</span>
+        <div class="seg pick" data-selpick="${k}">${["良好", "不佳"].map((v) => `<button type="button" data-v="${v}" class="${i[k] === v ? "on " + (v === "良好" ? "good" : "bad") : ""}">${v}</button>`).join("")}</div></div>`).join("")}</div></div>
+      ${bad || i.selWhy ? `<label class="field"><span>哪裡不佳？</span><input class="input" data-info="selWhy" value="${esc(i.selWhy)}" placeholder="例：說明用詞對低年級太難、時間不夠做完學習單"></label>` : ""}
+      <label class="field"><span>施行記錄</span><textarea class="textarea" data-info="selRecord" rows="3" placeholder="孩子的反應和感受；哪個環節卡住或特別投入">${esc(i.selRecord)}</textarea></label>
+      <label class="field"><span>提問與建議 <span class="small muted">（選填，社工會在「社工回饋」回覆）</span></span><textarea class="textarea" data-info="selQuestion" rows="2" placeholder="例：老師無法同時兼顧時，可否請能力較佳的孩子當小幫手？">${esc(i.selQuestion)}</textarea></label>
+    </div>`;
+  }
   function renderAll2() {
     const ctx = ctxRef2;
     const c = get("classes", rs.cid);
@@ -8657,7 +8773,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     ${feedbackHistoryHtml(s, esc) ? `<div class="mb8">${feedbackHistoryHtml(s, esc)}</div>` : ""}
     <div class="card"><div class="card-head"><h3>課堂資訊</h3><span class="sp"></span><a class="btn sm ghost" href="#/flow?class=${rs.cid}&date=${rs.date}">${icon("flow", "sm")}看教學流程</a></div>
       <div class="card-body"><div class="grid g2" style="gap:10px 16px">
-        <label class="field"><span>靜心活動</span><input class="input" data-info="mindful" value="${esc(rs.info.mindful)}" placeholder="例：五指山呼吸"></label>
+        <label class="field"><span>靜心活動 ${PARTNER_URL.get(rs.info.mindful) ? `<a class="small" href="${esc(PARTNER_URL.get(rs.info.mindful))}" target="_blank" rel="noopener" id="r-mf-link">▶ 示範影片</a>` : ""}</span>
+          <input class="input" data-info="mindful" list="r-partners" value="${esc(rs.info.mindful)}" placeholder="點一下從呼吸夥伴、身體夥伴選，或自己輸入">
+          <datalist id="r-partners">${BREATH_PARTNERS.map(([n]) => `<option value="${esc(n)}">呼吸夥伴</option>`).join("")}${BODY_PARTNERS.map(([n]) => `<option value="${esc(n)}">身體夥伴</option>`).join("")}</datalist></label>
         <label class="field"><span>教學重點</span><input class="input" data-info="focus" value="${esc(rs.info.focus)}" placeholder="例：Unit 3 單字與句型"></label></div>
         <div class="field mt12"><span class="small ink2">今天的課堂氣氛（老師心情）</span><div class="mood-pick" id="r-mood">
           ${Object.entries(MOOD).map(([k, e]) => `<button type="button" data-mood="${k}" class="${rs.info.mood === k ? "on" : ""}"><span class="e">${e}</span>${k}</button>`).join("")}</div></div></div></div>
@@ -8673,6 +8791,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
           ${S.meta?.ai?.enabled ? `<button class="btn sm" data-ai="__session">${icon("sparkle", "sm")}AI 潤稿</button>` : ""}</div>
         ${suggestBox("__session", rs.suggest.__session)}
         ${rs.info.polished ? `<label class="field mt8"><span>整理後</span><textarea class="textarea" data-info="polished" rows="2">${esc(rs.info.polished)}</textarea></label>` : ""}</div></div>
+    <div class="card mt16" id="r-sel">${selCard()}</div>
     <div class="sticky-foot"><span id="r-foot-msg">${rs.dirty ? '<span class="chip warn">尚未儲存</span> <span class="small muted">草稿已自動保存在這台電腦</span>' : `<span class="chip ${st4.chip}">${st4.label}</span> ${s?.submittedAt ? `<span class="small muted">送出於 ${esc(s.submittedAt)}</span>` : ""}`}</span><span class="sp"></span>
       <button class="btn" id="r-save">${icon("save", "sm")}儲存草稿</button>
       <button class="btn primary" id="r-submit">${icon("send", "sm")}${s?.submit === "已送出" ? "更新並重新送出" : "送出課後紀錄"}</button></div>`;
@@ -8713,6 +8832,20 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   }
   async function onClick(e) {
     const t = e.target;
+    if (t.closest("[data-selopen]")) {
+      rs.selOpen = true;
+      $("#r-sel").innerHTML = selCard();
+      $('#r-sel [data-info="selActivity"]')?.focus();
+      return;
+    }
+    const sp = t.closest("[data-selpick] button");
+    if (sp) {
+      const k = sp.parentElement.dataset.selpick;
+      rs.info[k] = rs.info[k] === sp.dataset.v ? "" : sp.dataset.v;
+      touch2();
+      $("#r-sel").innerHTML = selCard();
+      return;
+    }
     const segBtn = t.closest(".seg button");
     if (segBtn) {
       const row = segBtn.closest(".kid-row");
@@ -11830,8 +11963,90 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     }
   };
 
+  // src/js/pages/selfb.js
+  var ORDER2 = new Map(SEL_ACTS.flatMap(([, list]) => list.map(([c, n]) => `${c} ${n}`)).map((n, i) => [n, i]));
+  var SEL_KEYS2 = ["selActivity", "selContent", "selTime", "selResponse", "selWhy", "selRecord", "selQuestion"];
+  var hasSel = (s) => SEL_KEYS2.some((k) => s[k]);
+  var acts = (s) => String(s.selActivity || "（未填活動）").split(/[、,，]/).map((x) => x.trim()).filter(Boolean);
+  function sessionsInScope() {
+    const cls = new Set((isSupervisor2() ? classes() : myClasses()).map((c) => c.id));
+    return S.data.sessions.filter((s) => cls.has(s.classId) && s.submit === "已送出" && hasSel(s)).sort((a, b) => b.date.localeCompare(a.date));
+  }
+  function group2(list) {
+    const m = /* @__PURE__ */ new Map();
+    for (const s of list) for (const a of acts(s)) {
+      if (!m.has(a)) m.set(a, []);
+      m.get(a).push(s);
+    }
+    return [...m].map(([name, ss]) => {
+      const asp = Object.fromEntries(SEL_ASPECTS.map(([k]) => [k, { good: ss.filter((s) => s[k] === "良好").length, bad: ss.filter((s) => s[k] === "不佳").length }]));
+      return { name, ss, asp, bad: SEL_ASPECTS.reduce((n, [k]) => n + asp[k].bad, 0), ask: ss.filter(selAsk).length, classes: new Set(ss.map((s) => s.classId)).size, last: ss[0]?.date || "" };
+    });
+  }
+  var bar = ({ good, bad }) => `<span class="sf-bar" title="良好 ${good}・不佳 ${bad}"><i style="width:${good + bad ? good / (good + bad) * 100 : 0}%"></i><b style="width:${good + bad ? bad / (good + bad) * 100 : 0}%"></b></span> <span class="small">${good}／<span class="${bad ? "bad-text" : ""}">${bad}</span></span>`;
+  function recHtml(s) {
+    const c = get("classes", s.classId);
+    return `<div class="sf-rec"><div class="row wrap" style="gap:6px"><b>${esc(md2(s.date))}</b><span>${esc(c?.name || "")}・${esc(teacherOfClass(c))}</span><span class="sp"></span>
+      ${SEL_ASPECTS.filter(([k]) => s[k]).map(([k, l]) => `<span class="chip small ${s[k] === "良好" ? "good" : "warn"}">${l.replace("教案", "")}${esc(s[k])}</span>`).join("")}
+      <a class="small" href="#/journal?date=${s.date}&open=${s.classId}">${isSupervisor2() ? "到每日日誌回覆" : "看日誌"} ›</a></div>
+    ${s.selWhy ? `<div class="small mt4"><b>不佳：</b>${esc(s.selWhy)}</div>` : ""}
+    ${s.selRecord ? `<div class="small mt4"><b>施行記錄：</b>${esc(s.selRecord)}</div>` : ""}
+    ${s.selQuestion ? `<div class="small mt4 sel-q"><b>提問與建議：</b>${esc(s.selQuestion)}${selAsk(s) ? ' <span class="chip warn small">待回覆</span>' : ""}</div>` : ""}
+    ${s.feedback ? `<div class="small mt4"><b>社工回饋：</b>${esc(s.feedback)}</div>` : ""}</div>`;
+  }
+  function download(list) {
+    const X = window.XLSX;
+    if (!X) {
+      toast("Excel 元件沒有載入", "err");
+      return;
+    }
+    const aoa = [
+      ["施行日期", "班級", "課師姓名", "活動內容", "教案內容", "教案時間規劃", "學童回饋度", "不佳的原因", "施行記錄", "提問與建議", "社工回饋", "回饋狀態"],
+      ...list.map((s) => {
+        const c = get("classes", s.classId);
+        return [s.date, c?.name || "", teacherOfClass(c), s.selActivity || "", s.selContent || "", s.selTime || "", s.selResponse || "", s.selWhy || "", s.selRecord || "", s.selQuestion || "", s.feedback || "", s.feedbackStatus || ""];
+      })
+    ];
+    const ws = X.utils.aoa_to_sheet(aoa);
+    ws["!cols"] = [{ wch: 11 }, { wch: 10 }, { wch: 8 }, { wch: 24 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 24 }, { wch: 40 }, { wch: 30 }, { wch: 30 }, { wch: 8 }];
+    const wb = X.utils.book_new();
+    X.utils.book_append_sheet(wb, ws, "SEL 活動紀錄");
+    const g = group2(list).sort((a, b) => (ORDER2.get(a.name) ?? 999) - (ORDER2.get(b.name) ?? 999));
+    const ws2 = X.utils.aoa_to_sheet([
+      ["活動", "班數", "次數", ...SEL_ASPECTS.flatMap(([, l]) => [`${l}良好`, `${l}不佳`]), "提問待回覆"],
+      ...g.map((x) => [x.name, x.classes, x.ss.length, ...SEL_ASPECTS.flatMap(([k]) => [x.asp[k].good, x.asp[k].bad]), x.ask])
+    ]);
+    ws2["!cols"] = [{ wch: 26 }, ...Array(10).fill({ wch: 9 })];
+    X.utils.book_append_sheet(wb, ws2, "依活動彙整");
+    X.writeFile(wb, `${S.semester}_SEL活動紀錄.xlsx`);
+  }
+  var selfb_default = {
+    render(ctx) {
+      const q = ctx.query;
+      const f = q.get("f") || "all";
+      const sort = q.get("sort") || "order";
+      const all = sessionsInScope();
+      const list = f === "ask" ? all.filter(selAsk) : f === "bad" ? all.filter((s) => SEL_ASPECTS.some(([k]) => s[k] === "不佳")) : all;
+      let g = group2(list);
+      g = sort === "bad" ? g.sort((a2, b) => b.bad - a2.bad || b.ss.length - a2.ss.length) : sort === "recent" ? g.sort((a2, b) => b.last.localeCompare(a2.last)) : g.sort((a2, b) => (ORDER2.get(a2.name) ?? 999) - (ORDER2.get(b.name) ?? 999));
+      const a = ctx.actions(`<select class="select" id="sf-f"><option value="all">全部紀錄</option><option value="ask" ${f === "ask" ? "selected" : ""}>提問待回覆（${all.filter(selAsk).length}）</option><option value="bad" ${f === "bad" ? "selected" : ""}>有「不佳」的</option></select>
+      <select class="select" id="sf-sort"><option value="order">依活動順序</option><option value="bad" ${sort === "bad" ? "selected" : ""}>不佳較多的在前</option><option value="recent" ${sort === "recent" ? "selected" : ""}>最近上過的在前</option></select>
+      <button class="btn" id="sf-x">${icon("download", "sm")}Excel</button>`);
+      const go2 = () => ctx.go(`#/selfb?f=${$("#sf-f", a).value}&sort=${$("#sf-sort", a).value}`);
+      $("#sf-f", a).onchange = go2;
+      $("#sf-sort", a).onchange = go2;
+      $("#sf-x", a).onclick = () => download(list);
+      ctx.title("SEL 活動回饋", `${esc(S.semester)}・${all.length} 堂有 SEL 紀錄・${new Set(all.flatMap(acts)).size} 個活動`);
+      ctx.el.innerHTML = `<div class="callout small mb8">${icon("info", "sm")} 老師在課後紀錄最下方填的「SEL 活動紀錄」會彙整在這裡。綠色是良好、紅色是不佳；看哪個教案的時間或說明需要調整，提問請到每日日誌用「社工回饋」回覆。</div>
+      <div class="card"><div class="card-body">${g.map((x) => `<div class="sf-act"><div class="row wrap" style="gap:6px 14px"><b>${esc(x.name)}</b>
+          <span class="small muted">${x.classes} 班・${x.ss.length} 次・最近 ${esc(md2(x.last))}</span>${x.ask ? `<span class="chip warn small">提問待回覆 ${x.ask}</span>` : ""}</div>
+        <div class="sf-asp">${SEL_ASPECTS.map(([k, l]) => `<span><span class="small muted">${l}</span> ${bar(x.asp[k])}</span>`).join("")}</div>
+        <details ${f !== "all" ? "open" : ""}><summary class="small muted">看 ${x.ss.length} 筆紀錄</summary>${x.ss.map(recHtml).join("")}</details></div>`).join("") || `<div class="empty">${icon("sparkle")}<div>${f === "ask" ? "沒有待回覆的提問" : "這學期還沒有 SEL 活動紀錄"}</div></div>`}</div></div>`;
+    }
+  };
+
   // src/js/main.js
-  var MODULES = { dashboard: dashboard_default, journal: journal_default, month: month_default, flow: flow_default, record: record_default, kids: kids_default, forum: forum_default, resources: resources_default, classes: classes_default, teachers: teachers_default, data: data_default, settings: settings_default, math: math_default, english: english_default, visits, teachereval, cases, events, followups };
+  var MODULES = { dashboard: dashboard_default, journal: journal_default, month: month_default, flow: flow_default, record: record_default, kids: kids_default, forum: forum_default, resources: resources_default, classes: classes_default, teachers: teachers_default, data: data_default, settings: settings_default, math: math_default, english: english_default, selfb: selfb_default, visits, teachereval, cases, events, followups };
   var PAGES = [
     { group: "督導監控", items: [
       { id: "dashboard", title: "總覽", icon: "grid" },
@@ -11842,7 +12057,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       { id: "flow", title: "教學流程", icon: "flow" },
       { id: "record", title: "課後紀錄", icon: "edit" },
       { id: "math", title: "數學月檢測", icon: "check" },
-      { id: "english", title: "英語檢測", icon: "book" }
+      { id: "english", title: "英語檢測", icon: "book" },
+      { id: "selfb", title: "SEL 活動回饋", icon: "sparkle" }
     ] },
     { group: "孩子", items: [
       { id: "kids", title: "學習檔案與風險", icon: "shield" }
@@ -11953,6 +12169,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     if (isSupervisor2()) {
       const pending = S.data.sessions.filter((s) => sessionState(s).key === "pending").length;
       if (pending) out.journal = [pending, ""];
+      const asks = S.data.sessions.filter(selAsk).length;
+      if (asks) out.selfb = [asks, ""];
     } else {
       const mine = new Set(myClasses().map((c) => c.id));
       const unsent = list.filter((x) => mine.has(x.cls.id) && ["unsent", "draft"].includes(sessionState(x.session).key)).length;
