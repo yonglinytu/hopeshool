@@ -6327,6 +6327,18 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     if (cat === "閱讀") return `【閱讀】${c || "（未選）"}`;
     return `【${t.type || "其他"}】${c || "（未填內容）"}`;
   }
+  var PARTNER_URL = new Map([...BREATH_PARTNERS, ...BODY_PARTNERS]);
+  function mindfulNext(cid, date) {
+    const prev = (S.idx.sessionsByClass.get(cid) || []).filter((s) => s.date < date && s.mindful).slice(-1)[0];
+    for (const list of [BREATH_PARTNERS, BODY_PARTNERS]) {
+      const i = list.findIndex(([n]) => n === prev?.mindful);
+      if (i >= 0) return list[(i + 1) % list.length][0];
+    }
+    return BREATH_PARTNERS[0][0];
+  }
+  function partnerOptions(id) {
+    return `<datalist id="${id}">${BREATH_PARTNERS.map(([n]) => `<option value="${n}">呼吸夥伴</option>`).join("")}${BODY_PARTNERS.map(([n]) => `<option value="${n}">身體夥伴</option>`).join("")}</datalist>`;
+  }
 
   // src/js/api.js
   var ApiError = class extends Error {
@@ -8015,6 +8027,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       restored: null,
       updatedAt: session?.updatedAt || ""
     };
+    if (!session && !s.mindful) s.mindful = mindfulNext(cid, date);
     const draft2 = LS.get(`draft:flow:${cid}:${date}`);
     if (draft2 && (!session || (draft2.savedAt || "") > (session.updatedAt || ""))) {
       Object.assign(s, { mindful: draft2.mindful, start: draft2.start, end: draft2.end, blocks: withBackups(draft2.blocks || []), progress: { ...s.progress, ...draft2.progress } });
@@ -8117,7 +8130,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     <div class="flow-head"><h2>${esc(c.name)}</h2><span class="meta">${esc(subjectOfClass(c))}</span><span class="meta">${mdw(st.date)}</span>
       ${wk > 0 ? `<span class="meta">第 ${wk} 週</span>` : ""}<span class="meta">${hoursText(st.start, st.end)}（${esc(st.start)}–${esc(st.end)}）</span></div>
     <div class="flow-sub"><span>課輔老師 <b>${esc(teacherOfClass(c))}</b></span>
-      <span>靜心活動 <input class="edit-inline" id="f-mindful" value="${esc(st.mindful)}" placeholder="例：五指山呼吸"></span>
+      <span>靜心活動 <input class="edit-inline" id="f-mindful" list="f-partners" value="${esc(st.mindful)}" placeholder="點一下選呼吸／身體夥伴" style="min-width:150px">${partnerOptions("f-partners")}
+        <a class="small no-print" id="f-mf-link" target="_blank" rel="noopener" href="${esc(PARTNER_URL.get(st.mindful) || "#")}" ${PARTNER_URL.get(st.mindful) ? "" : "hidden"}>▶ 示範影片</a></span>
       <span class="no-print">時間 <input class="edit-inline" id="f-start" value="${esc(st.start)}" style="min-width:56px;width:56px">–<input class="edit-inline" id="f-end" value="${esc(st.end)}" style="min-width:56px;width:56px"></span>
       <span class="no-print">每個任務 <select class="edit-inline" id="f-taskmin" style="min-width:72px">${[10, 15, 20].map((m) => `<option value="${m}" ${m === taskMin() ? "selected" : ""}>${m} 分鐘</option>`).join("")}</select></span>
       <span class="sp"></span>
@@ -8139,6 +8153,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     $("#f-mindful", el).oninput = (e) => {
       st.mindful = e.target.value;
       touch();
+      const a = $("#f-mf-link", el), u = PARTNER_URL.get(st.mindful.trim());
+      if (a) {
+        a.hidden = !u;
+        if (u) a.href = u;
+      }
     };
     for (const id of ["f-start", "f-end"]) $(`#${id}`, el).onchange = (e) => {
       const v = e.target.value.trim().replace("：", ":");
@@ -8205,7 +8224,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         content: b.content || "",
         tasks: Object.fromEntries(tasksOf(b.id).map((t) => [t.studentId, { ...taskOf(t), status: "" }]))
       })));
-      st.mindful = st.mindful || prev.mindful || "";
+      st.mindful = st.mindful || mindfulNext(st.cid, st.date);
       st.fromTemplate = false;
       touch();
       renderAll();
@@ -8543,7 +8562,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   var UNDONE_SEP = "；";
   var SEL_NAMES = SEL_ACTS.flatMap(([, list]) => list.map(([c, n]) => `${c} ${n}`));
   var SEL_KEYS = ["selActivity", "selContent", "selTime", "selResponse", "selWhy", "selRecord", "selQuestion"];
-  var PARTNER_URL = new Map([...BREATH_PARTNERS, ...BODY_PARTNERS]);
   function flowSel(sessionId) {
     if (!sessionId) return "";
     const out = [];
@@ -8775,7 +8793,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       <div class="card-body"><div class="grid g2" style="gap:10px 16px">
         <label class="field"><span>靜心活動 ${PARTNER_URL.get(rs.info.mindful) ? `<a class="small" href="${esc(PARTNER_URL.get(rs.info.mindful))}" target="_blank" rel="noopener" id="r-mf-link">▶ 示範影片</a>` : ""}</span>
           <input class="input" data-info="mindful" list="r-partners" value="${esc(rs.info.mindful)}" placeholder="點一下從呼吸夥伴、身體夥伴選，或自己輸入">
-          <datalist id="r-partners">${BREATH_PARTNERS.map(([n]) => `<option value="${esc(n)}">呼吸夥伴</option>`).join("")}${BODY_PARTNERS.map(([n]) => `<option value="${esc(n)}">身體夥伴</option>`).join("")}</datalist></label>
+          ${partnerOptions("r-partners")}</label>
         <label class="field"><span>教學重點</span><input class="input" data-info="focus" value="${esc(rs.info.focus)}" placeholder="例：Unit 3 單字與句型"></label></div>
         <div class="field mt12"><span class="small ink2">今天的課堂氣氛（老師心情）</span><div class="mood-pick" id="r-mood">
           ${Object.entries(MOOD).map(([k, e]) => `<button type="button" data-mood="${k}" class="${rs.info.mood === k ? "on" : ""}"><span class="e">${e}</span>${k}</button>`).join("")}</div></div></div></div>
