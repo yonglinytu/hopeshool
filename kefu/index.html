@@ -877,6 +877,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     feedback: () => feedback,
     getRow: () => getRow,
     importBase: () => importBase,
+    importSocial: () => importSocial,
     isSocial: () => isSocial,
     isSupervisor: () => isSupervisor,
     loadAll: () => loadAll,
@@ -5253,6 +5254,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   }
   var VP_ID = /^VP-[^~]+~[\w.-]+$/;
   var VF_ID = /^VF-[^~]+~[\w.-]+~(pre|post)$/;
+  async function importSocial(tables) {
+    if (!isSocial()) throw new DbError("只有社工／督導可以匯入社工紀錄");
+    const ops = [];
+    for (const [t, list] of Object.entries(tables || {})) {
+      if (!SOCIAL_TABLES.includes(t)) throw new DbError("只能匯入訪視、個案工作、特殊事件");
+      for (const r of list || []) ops.push({ table: t, row: prepare(t, r) });
+    }
+    if (ops.length) await commit(ops);
+    return { saved: ops.length, version: DB.version };
+  }
   async function saveVisitPlans(list) {
     if (!isSupervisor()) throw new DbError("訪視排程由社工安排");
     const ops = [];
@@ -6112,6 +6123,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
           return saveMath(b.rows || []);
         case "/api/english/save":
           return saveEnglish(b.rows || []);
+        case "/api/social/import":
+          return importSocial(b.tables || {});
         case "/api/chinese/save":
           return saveChinese(b.rows || []);
         case "/api/visit/plans":
@@ -8618,7 +8631,8 @@ ${lines.join("\n")}`;
     ctx.title("訪視紀錄", `教學訪視與指導員訪視・只有社工和督導看得到・${esc(sem || "")}`);
     const a = ctx.actions(`<select class="select" id="v-kind"><option value="">全部類別</option>${["教學訪視", "指導員訪視"].map((k) => `<option ${k === kind ? "selected" : ""}>${k}</option>`).join("")}</select>
     <select class="select" id="v-teacher"><option value="">全部老師</option>${teachers.map(([id, n]) => `<option value="${esc(id)}" ${id === tid ? "selected" : ""}>${esc(n)}</option>`).join("")}</select>
-    <button class="btn" id="v-xlsx">${icon("download", "sm")}Excel</button><a class="btn primary" href="#/visits/new">${icon("plus", "sm")}新增訪視</a>`);
+    <button class="btn" id="v-xlsx">${icon("download", "sm")}Excel</button><button class="btn" id="v-imp">${icon("upload", "sm")}匯入表單回覆</button><a class="btn primary" href="#/visits/new">${icon("plus", "sm")}新增訪視</a>`);
+    $("#v-imp", a).onclick = () => importResponses(ctx);
     $("#v-kind", a).onchange = (e) => ctx.go(`#/visits?kind=${encodeURIComponent(e.target.value)}&teacher=${encodeURIComponent(tid)}`);
     $("#v-teacher", a).onchange = (e) => ctx.go(`#/visits?kind=${encodeURIComponent(kind)}&teacher=${encodeURIComponent(e.target.value)}`);
     $("#v-xlsx", a).onclick = () => xlsx(
@@ -8745,6 +8759,173 @@ ${lines.join("\n")}`;
         ctx.go("#/visits");
       }
     });
+  }
+  var SUBJ = { 英: "英語", 數: "數學", 國: "國語" };
+  var pad23 = (n) => String(n).padStart(2, "0");
+  var isoOf2 = (v) => v instanceof Date && !isNaN(v) ? `${v.getFullYear()}-${pad23(v.getMonth() + 1)}-${pad23(v.getDate())}` : /^\d{4}[-/]\d{1,2}[-/]\d{1,2}/.test(String(v || "")) ? String(v).slice(0, 10).replace(/\//g, "-").replace(/-(\d)(?=-|$)/g, "-0$1") : "";
+  var stampOf = (v) => v instanceof Date && !isNaN(v) ? `${v.getFullYear()}${pad23(v.getMonth() + 1)}${pad23(v.getDate())}${pad23(v.getHours())}${pad23(v.getMinutes())}${pad23(v.getSeconds())}` : String(v || "").replace(/\D/g, "");
+  var semOf = (d) => S.data.semesters.find((s) => s.start && s.end && d >= s.start && d <= s.end)?.id || S.semester;
+  function parseResponses(aoa) {
+    const head = (aoa[0] || []).map((v) => String(v ?? "").trim());
+    const C = {
+      stamp: head.indexOf("時間戳記"),
+      date: head.indexOf("紀錄時間"),
+      rec: head.indexOf("填表人"),
+      kind: head.indexOf("類別"),
+      school: head.indexOf("國小"),
+      ban: head.indexOf("班別"),
+      subj: head.indexOf("科別"),
+      teacher: head.indexOf("課輔老師姓名"),
+      teach: head.indexOf("課師教學說明"),
+      kid: head.indexOf("學童行為說明"),
+      school2: head.indexOf("國小 2"),
+      ban2: head.indexOf("班別 2"),
+      methods: head.indexOf("工作內容"),
+      kidName: head.indexOf("個案姓名"),
+      targets: head.indexOf("工作對象"),
+      goal: head.indexOf("工作目標"),
+      desc: head.indexOf("追蹤描述")
+    };
+    if (C.date < 0 || C.kind < 0) throw new Error("這不是訪視紀錄的表單回覆（找不到「紀錄時間」「類別」欄）");
+    const scoreCol = VISIT_ITEMS2.map(([, n]) => head.findIndex((h2) => h2.startsWith(n)));
+    const out = [];
+    for (const r of aoa.slice(1)) {
+      const g = (i) => i >= 0 ? r[i] : "";
+      const t = (s) => String(g(s) ?? "").trim();
+      const date = isoOf2(g(C.date)) || isoOf2(g(C.stamp));
+      if (!date) continue;
+      const stamp = stampOf(g(C.stamp)) || stampOf(g(C.date));
+      const kind = t(C.kind);
+      const item = { stamp, date, recorder: t(C.rec), kind };
+      if (kind === "教學訪視" || kind === "指導員訪視") {
+        item.visit = {
+          school: t(C.school),
+          className: t(C.ban),
+          subject: SUBJ[t(C.subj)] || t(C.subj),
+          teacherName: t(C.teacher),
+          teachNote: t(C.teach),
+          kidNote: t(C.kid),
+          scores: Object.fromEntries(VISIT_ITEMS2.map(([k], i) => {
+            const v = g(scoreCol[i]);
+            const n = Number(v);
+            return [k, v === "" || v == null ? "" : n >= 1 && n <= 5 ? String(Math.round(n)) : "不適用"];
+          }))
+        };
+      }
+      if (t(C.kidName) || t(C.desc)) {
+        item.case = {
+          school: t(C.school2) || t(C.school),
+          className: t(C.ban2) || t(C.ban),
+          methods: t(C.methods).split(/[,，、]\s*/).filter(Boolean).join(SEP),
+          kidName: t(C.kidName),
+          targets: t(C.targets).replace(/[,，]\s*/g, SEP),
+          goal: t(C.goal),
+          process: t(C.desc)
+        };
+      }
+      if (item.visit || item.case) out.push(item);
+    }
+    return out;
+  }
+  async function importResponses(ctx) {
+    const inp = document.createElement("input");
+    inp.type = "file";
+    inp.accept = ".xlsx,.xls,.csv";
+    inp.style.display = "none";
+    document.body.appendChild(inp);
+    const file = await new Promise((res) => {
+      const done = () => res(inp.files[0] || null);
+      inp.addEventListener("change", done, { once: true });
+      inp.click();
+    });
+    inp.remove();
+    if (!file) return;
+    let items;
+    try {
+      const wb = window.XLSX.read(await file.arrayBuffer(), { type: "array", cellDates: true });
+      items = parseResponses(window.XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, defval: "", raw: true }));
+    } catch (e) {
+      toast(e.message, "err");
+      return;
+    }
+    const teachers = S.data.teachers.filter((t) => t.role === "課輔老師");
+    const students = S.data.students;
+    const visitsOut = [], casesOut = [], noKid = [], noTeacher = /* @__PURE__ */ new Set();
+    for (const it of items) {
+      let visitId = "";
+      if (it.visit) {
+        const v = it.visit;
+        const tch = teachers.find((t) => t.name === v.teacherName);
+        if (!tch) noTeacher.add(v.teacherName);
+        const cls = tch ? S.data.classes.filter((c2) => c2.teacherId === tch.id && (!v.subject || subjectOfClass(c2) === v.subject)) : [];
+        const c = cls.length === 1 ? cls[0] : null;
+        visitId = `VS-imp${it.stamp}`;
+        visitsOut.push({
+          id: visitId,
+          date: it.date,
+          kind: it.kind,
+          recorder: it.recorder,
+          semesterId: c?.semesterId || semOf(it.date),
+          classId: c?.id || "",
+          school: v.school,
+          className: v.className,
+          subject: v.subject,
+          teacherId: tch?.id || "",
+          teacherName: v.teacherName,
+          ...v.scores,
+          teachNote: v.teachNote,
+          kidNote: v.kidNote,
+          kidIds: ""
+        });
+      }
+      if (it.case) {
+        const x = it.case;
+        const names = x.kidName.split(/[、,，\s]+/).filter(Boolean);
+        const ids = names.map((n) => students.filter((s) => s.name === n)).map((m) => m.length === 1 ? m[0].id : "");
+        if (!ids.length || ids.some((id) => !id)) {
+          noKid.push(x.kidName || "（沒填姓名）");
+          continue;
+        }
+        casesOut.push({
+          id: `CS-imp${it.stamp}`,
+          date: it.date,
+          recorder: it.recorder,
+          studentIds: ids.join(SEP),
+          studentNames: names.join(SEP),
+          school: x.school,
+          className: x.className,
+          methods: x.methods,
+          methodOther: "",
+          targets: x.targets,
+          goal: x.goal,
+          process: x.process,
+          plan: "",
+          nextDate: "",
+          status: "追蹤中",
+          visitId,
+          eventId: ""
+        });
+      }
+    }
+    const already = [...visitsOut.filter((v) => get("visits", v.id)), ...casesOut.filter((c) => get("cases", c.id))].length;
+    const body = `<p style="margin:0 0 8px">讀到 <b>${items.length}</b> 筆回覆：</p><ul style="margin:0;padding-left:20px;line-height:1.9">
+      <li>訪視紀錄 <b>${visitsOut.length}</b> 筆（教學訪視 ${visitsOut.filter((v) => v.kind === "教學訪視").length}、指導員訪視 ${visitsOut.filter((v) => v.kind === "指導員訪視").length}）</li>
+      <li>個案工作 <b>${casesOut.length}</b> 筆（狀態先設為「追蹤中」，處理完再改成結案）</li></ul>
+    ${already ? `<div class="small muted mt8">其中 ${already} 筆之前匯入過，會用檔案的內容更新。</div>` : ""}
+    ${noTeacher.size ? `<div class="callout warn small mt8">${icon("alert", "sm")} 老師名冊找不到：${[...noTeacher].map(esc).join("、")}。這些訪視仍會匯入（保留老師姓名），但不會出現在「老師評估」，請確認名冊姓名。</div>` : ""}
+    ${noKid.length ? `<div class="callout warn small mt8">${icon("alert", "sm")} 有 ${noKid.length} 筆個案工作對不到孩子名單，先略過：${noKid.map(esc).join("、")}。可以補建孩子資料後再匯入一次。</div>` : ""}`;
+    if (!visitsOut.length && !casesOut.length) {
+      await openModal({ title: "匯入表單回覆", body, buttons: [{ text: "關閉", value: false }] });
+      return;
+    }
+    const ok = await openModal({ title: "匯入表單回覆", body, buttons: [{ text: "取消", value: false }, { text: "確認匯入", value: true, primary: true }] });
+    if (!ok) return;
+    try {
+      const res = await mutate("/api/social/import", { tables: { visits: visitsOut, cases: casesOut } }, "");
+      toast(`已匯入 ${res.saved} 筆（訪視 ${visitsOut.length}、個案工作 ${casesOut.length}）`);
+      ctx.go(location.hash);
+    } catch {
+    }
   }
   var visits = {
     isDirty: () => dirty,
@@ -11145,12 +11326,12 @@ ${lines.join("\n")}`;
     }
     return String(raw).trim();
   }
-  var pad23 = (n) => String(n).padStart(2, "0");
+  var pad24 = (n) => String(n).padStart(2, "0");
   function parseDate(v) {
-    if (v instanceof Date && !isNaN(v)) return `${v.getFullYear()}-${pad23(v.getMonth() + 1)}-${pad23(v.getDate())}`;
+    if (v instanceof Date && !isNaN(v)) return `${v.getFullYear()}-${pad24(v.getMonth() + 1)}-${pad24(v.getDate())}`;
     if (typeof v === "number" && v > 3e4 && v < 8e4) {
       const d = new Date(Math.round((v - 25569) * 864e5));
-      return `${d.getUTCFullYear()}-${pad23(d.getUTCMonth() + 1)}-${pad23(d.getUTCDate())}`;
+      return `${d.getUTCFullYear()}-${pad24(d.getUTCMonth() + 1)}-${pad24(d.getUTCDate())}`;
     }
     const s = String(v ?? "").trim();
     let m = /^(\d{2,4})[./-](\d{1,2})[./-](\d{1,2})/.exec(s);
@@ -11158,7 +11339,7 @@ ${lines.join("\n")}`;
       let y = Number(m[1]);
       if (y < 1e3) y += 1911;
       const mo = Number(m[2]), d = Number(m[3]);
-      if (mo >= 1 && mo <= 12 && d >= 1 && d <= 31) return `${y}-${pad23(mo)}-${pad23(d)}`;
+      if (mo >= 1 && mo <= 12 && d >= 1 && d <= 31) return `${y}-${pad24(mo)}-${pad24(d)}`;
     }
     return "";
   }
