@@ -6233,8 +6233,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       <div class="grid g4">
         <div class="card stat"><div class="label">${icon("calendar", "sm")}今日排課</div><div class="value">${list.length}<small>班</small></div>
           <div class="foot">已送出 ${sent}・未送出 ${list.length - sent}</div></div>
-        <div class="card stat"><div class="label">${icon("message", "sm")}${sup ? "待回饋課堂" : "督導待回饋"}</div><div class="value">${pendingFb.length}<small>堂</small></div>
-          <div class="foot">${sup ? "老師已送出、等你回饋" : "已送出、督導尚未回覆"}</div></div>
+        <div class="card stat"><div class="label">${icon("message", "sm")}${sup ? "待回饋課堂" : "社工待回饋"}</div><div class="value">${pendingFb.length}<small>堂</small></div>
+          <div class="foot">${sup ? "老師已送出、等你回饋" : "已送出、社工尚未回覆"}</div></div>
         <div class="card stat"><div class="label">${icon("shield", "sm")}需要關注的孩子</div><div class="value">${high.length}<small>高風險</small></div>
           <div class="foot">中風險 ${mid.length}・共 ${students.length} 位</div></div>
         <div class="card stat"><div class="label">${icon("alert", "sm")}未結案事件</div><div class="value">${openInc.length}<small>件</small></div>
@@ -7119,7 +7119,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     }
     const incs = view ? view.incidents : incidentsOf(s.id);
     const pend = x.session.pendingEdit === "是";
-    return `${pend ? `<div class="callout warn mb8">${icon("info", "sm")} ${sup ? `老師送出後又修改了內容、還沒重新送出；下面是第 ${esc(view?.version || s.submitVersion || "")} 版（${esc((view?.at || s.submittedAt || "").slice(0, 16))} 送出）的內容。` : "你在送出後修改了內容，督導看到的仍是上一次送出的版本；改好後請到課後紀錄按「更新並重新送出」。"}</div>` : ""}
+    return `${pend ? `<div class="callout warn mb8">${icon("info", "sm")} ${sup ? `老師送出後又修改了內容、還沒重新送出；下面是第 ${esc(view?.version || s.submitVersion || "")} 版（${esc((view?.at || s.submittedAt || "").slice(0, 16))} 送出）的內容。` : "你在送出後修改了內容，社工看到的仍是上一次送出的版本；改好後請到課後紀錄按「更新並重新送出」。"}</div>` : ""}
     <div class="grid g2" style="gap:10px 24px">
       <dl class="kv"><dt>時間</dt><dd>${esc(s.start || x.slot.start || "")}–${esc(s.end || x.slot.end || "")}　${hoursText(s.start || x.slot.start, s.end || x.slot.end)}</dd>
         <dt>靜心活動</dt><dd>${esc(s.mindful || "—")}</dd><dt>教學重點</dt><dd>${esc(s.focus || "—")}</dd></dl>
@@ -7137,14 +7137,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     ${incs.length ? `<div class="section-title">${icon("alert", "sm")}事件 ${incs.length} 件</div>${incs.map((i) => `<div class="callout ${i.severity === "高" ? "critical" : "warn"}" style="margin-bottom:6px">
       <b>${esc(i.severity)}・${esc(i.type)}</b>${i.studentId ? `・${esc(nameOf("students", i.studentId))}` : ""}　<span class="chip outline">${esc(i.status)}</span>
       <div class="mt8">${esc(i.description)}</div>${i.action ? `<div class="small muted mt8">處理：${esc(i.action)}</div>` : ""}${incidentSocialLink(i) ? `<div class="mt8">${incidentSocialLink(i)}</div>` : ""}</div>`).join("")}` : ""}
-    <div class="section-title">${icon("message", "sm")}督導回饋</div>
+    <div class="section-title">${icon("message", "sm")}社工回饋</div>
     ${sup ? `<textarea class="textarea fb-text" data-sid="${s.id}" placeholder="給老師的回饋（可留空，只標記已看過）">${esc(s.feedback || "")}</textarea>
       <div class="row mt8"><span class="small muted">${s.feedbackBy ? `${esc(s.feedbackStatus)}：${esc(s.feedbackBy)} ${esc(s.feedbackAt || "")}` : ""}</span><span class="sp"></span>
         ${isSocial2() ? `<a class="btn sm ghost" href="#/visits/new?class=${x.cls.id}&date=${s.date}">${icon("eye", "sm")}寫訪視紀錄</a>` : ""}
         <a class="btn sm ghost" href="#/flow?class=${x.cls.id}&date=${s.date}">${icon("flow", "sm")}教學流程</a>
         <a class="btn sm ghost" href="#/record?class=${x.cls.id}&date=${s.date}">${icon("edit", "sm")}課後紀錄</a>
         <button class="btn sm" data-fb="已看過" data-sid="${s.id}">${icon("eye", "sm")}標記已看過</button>
-        <button class="btn sm primary" data-fb="已回饋" data-sid="${s.id}">${icon("send", "sm")}送出回饋</button></div>` : s.feedback ? `<div class="feedback-box">${esc(s.feedback)}<div class="small muted mt8">${esc(s.feedbackBy || "")} ${esc(s.feedbackAt || "")}</div></div>` : `<div class="small muted">${s.feedbackStatus === "已看過" ? "督導已看過" : "尚未回饋"}</div>`}
+        <button class="btn sm primary" data-fb="已回饋" data-sid="${s.id}">${icon("send", "sm")}送出回饋</button></div>` : s.feedback ? `<div class="feedback-box">${esc(s.feedback)}<div class="small muted mt8">${esc(s.feedbackBy || "")} ${esc(s.feedbackAt || "")}</div></div>` : `<div class="small muted">${s.feedbackStatus === "已看過" ? "社工已看過" : "尚未回饋"}</div>`}
     ${feedbackHistoryHtml(x.session, esc)}`;
   }
   function card(x) {
@@ -8256,7 +8256,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
           ${S.meta?.ai?.enabled ? `<button class="btn sm" data-ai="${k.id}">${icon("sparkle", "sm")}AI 潤稿</button>` : ""}
           ${r.tags ? r.tags.split(/[、,]/).filter(Boolean).map((t) => `<span class="chip outline">${esc(t)}</span>`).join("") : ""}</div>` : ""}
         ${suggestBox(k.id, rs.suggest[k.id])}
-        ${r.polished ? `<label class="field mt8"><span>整理後紀錄（督導與家長看到的版本，可再修改）</span><textarea class="textarea" data-f="polished" rows="2">${esc(r.polished)}</textarea></label>` : ""}`)}
+        ${r.polished ? `<label class="field mt8"><span>整理後紀錄（社工與家長看到的版本，可再修改）</span><textarea class="textarea" data-f="polished" rows="2">${esc(r.polished)}</textarea></label>` : ""}`)}
       <div><button type="button" class="btn sm dashed" data-help="${k.id}">${icon("plus", "sm")}需要協助／事件</button></div>
     </div></div>`;
   }
@@ -8293,8 +8293,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     ctx.el.innerHTML = `
     ${rs.restored ? `<div class="callout accent mb8">${icon("info", "sm")} 已還原 ${esc(rs.restored)} 未儲存的草稿。<button class="btn sm ghost" id="r-discard">捨棄草稿</button></div>` : ""}
     ${holiday ? `<div class="callout warn mb8">${icon("info", "sm")} 這天是停課日（${esc(holiday.name)}），若是補課可以照常填寫。</div>` : ""}
-    ${s?.pendingEdit === "是" ? `<div class="callout warn mb8">${icon("info", "sm")} 你在送出後修改了內容，督導目前看到的是第 ${esc(s.submitVersion || 1)} 版。改好後請按「更新並重新送出」。</div>` : ""}
-    ${s?.feedback || s?.feedbackStatus === "已看過" ? `<div class="feedback-box mb8"><b>${icon("message", "sm")} 督導${s.feedback ? "回饋" : "已看過"}</b>
+    ${s?.pendingEdit === "是" ? `<div class="callout warn mb8">${icon("info", "sm")} 你在送出後修改了內容，社工目前看到的是第 ${esc(s.submitVersion || 1)} 版。改好後請按「更新並重新送出」。</div>` : ""}
+    ${s?.feedback || s?.feedbackStatus === "已看過" ? `<div class="feedback-box mb8"><b>${icon("message", "sm")} 社工${s.feedback ? "回饋" : "已看過"}</b>
       ${s.feedback ? `<div class="mt8">${esc(s.feedback)}</div>` : ""}<div class="small muted mt8">${esc(s.feedbackBy || "")} ${esc(s.feedbackAt || "")}</div></div>` : ""}
     ${feedbackHistoryHtml(s, esc) ? `<div class="mb8">${feedbackHistoryHtml(s, esc)}</div>` : ""}
     <div class="card"><div class="card-head"><h3>課堂資訊</h3><span class="sp"></span><a class="btn sm ghost" href="#/flow?class=${rs.cid}&date=${rs.date}">${icon("flow", "sm")}看教學流程</a></div>
@@ -8306,10 +8306,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     <div class="card mt16"><div class="card-head"><h3>點名與學習紀錄</h3><span class="sub" id="r-count"></span><span class="sp"></span>
       <button class="btn sm" id="r-allin">${icon("check", "sm")}全部出席</button><button class="btn sm" id="r-tidyall">${icon("sparkle", "sm")}全部整理文字</button></div>
       <div class="card-body" id="r-kids">${rs.kids.map(kidRow).join("") || `<div class="empty">${icon("users")}<div>這個班還沒有孩子名單，請到「班級與課表」設定。</div></div>`}</div></div>
-    <div class="card mt16"><div class="card-head"><h3>事件</h3><span class="sub">衝突、受傷、身體不適、情緒等需要督導知道的事</span><span class="sp"></span>
+    <div class="card mt16"><div class="card-head"><h3>事件</h3><span class="sub">衝突、受傷、身體不適、情緒等需要社工知道的事</span><span class="sp"></span>
       <button class="btn sm" id="r-addinc">${icon("plus", "sm")}新增事件</button></div>
       <div class="card-body" id="r-incs">${rs.incidents.map(incidentRow).join("") || '<div class="small muted">沒有事件</div>'}</div></div>
-    <div class="card mt16"><div class="card-head"><h3>課後紀錄（整體）</h3><span class="sub">今天全班的狀況、需要督導協助的事</span></div>
+    <div class="card mt16"><div class="card-head"><h3>課後紀錄（整體）</h3><span class="sub">今天全班的狀況、需要社工協助的事</span></div>
       <div class="card-body"><textarea class="textarea" data-info="note" rows="3" placeholder="例：全班大致穩定，有兩位孩子進度落後，下次個別加強">${esc(rs.info.note)}</textarea>
         <div class="row mt8"><button class="btn sm" data-tidy="__session">${icon("sparkle", "sm")}整理文字</button>
           ${S.meta?.ai?.enabled ? `<button class="btn sm" data-ai="__session">${icon("sparkle", "sm")}AI 潤稿</button>` : ""}</div>
@@ -8573,7 +8573,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       b.disabled = true;
     });
     try {
-      await mutate("/api/session/save", payload, submit ? "課後紀錄已送出，督導會在每日日誌看到" : "草稿已儲存");
+      await mutate("/api/session/save", payload, submit ? "課後紀錄已送出，社工會在每日日誌看到" : "草稿已儲存");
       LS.del(draftKey2());
       rs = loadState2(rs.cid, rs.date);
       renderAll2();
