@@ -689,6 +689,43 @@ button.mg-c b { font-size: 12.5px; } button.mg-c small { font-size: 10px; color:
 .mg-dot.pass { background: #2e6b3f; border-color: #2e6b3f; } .mg-dot.fail { background: #f6d3bd; border-color: #d9722c; } .mg-dot.now { outline: 2px solid var(--accent); outline-offset: -1px; }
 @media (max-width: 860px) { .mk-row { grid-template-columns: 1fr; } }
 
+/* 英語檢測 */
+.en-kid { padding: 14px 0; border-bottom: 1px solid var(--line-2); }
+.en-kid:last-child { border-bottom: 0; }
+.en-kid-h { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-bottom: 8px; }
+.en-kid-h b { font-size: 15px; }
+.en-rows { display: flex; flex-direction: column; gap: 8px; }
+.en-empty { padding: 4px 0; }
+.en-row { display: grid; grid-template-columns: minmax(150px, 1.3fr) 128px 118px minmax(220px, 2.2fr) minmax(130px, 1.2fr); gap: 10px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--surface); }
+.en-row.good { border-color: var(--good); } .en-row.bad { border-color: var(--serious); } .en-row.absent { opacity: .7; }
+.en-c { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.en-c .select, .en-c .input { width: 100%; }
+.en-c .mt4 { margin-top: 4px; }
+.en-parts { display: flex; flex-wrap: wrap; gap: 4px; align-items: flex-end; }
+.en-part { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.en-part small { font-size: 10.5px; color: var(--muted); }
+.en-part .input { width: 36px; padding: 4px 2px; text-align: center; font-variant-numeric: tabular-nums; }
+.en-part.st-精熟 .input, .en-part.st-過關 .input { background: var(--good-soft); border-color: var(--good); }
+.en-part.st-一般 .input { background: var(--warn-soft); border-color: var(--warn); }
+.en-part.st-待加強 .input { background: var(--serious-soft); border-color: var(--serious); }
+.en-abs { display: flex; align-items: center; gap: 3px; margin-left: 6px; white-space: nowrap; }
+.en-ev { position: relative; padding-right: 18px; }
+.en-ev .chip { align-self: flex-start; }
+.en-ev .mk-x { position: absolute; top: -4px; right: -6px; }
+.en-dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin: 0 2px 0 8px; vertical-align: -1px; border: 1px solid var(--line); }
+.en-dot.st-精熟 { background: var(--good-soft); border-color: var(--good); } .en-dot.st-一般 { background: var(--warn-soft); border-color: var(--warn); } .en-dot.st-待加強 { background: var(--serious-soft); border-color: var(--serious); }
+.en-imp { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.en-hist + .en-hist { margin-top: 12px; }
+.en-hist .mb4 { margin-bottom: 4px; }
+.en-h-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; padding: 4px 0; border-bottom: 1px dashed var(--line-2); }
+.en-h-row:last-child { border-bottom: 0; }
+.en-h-errs { display: inline-flex; gap: 2px; }
+.en-h-errs i { font-style: normal; font-size: 11.5px; min-width: 18px; text-align: center; border: 1px solid var(--line); border-radius: 4px; padding: 0 2px; font-variant-numeric: tabular-nums; }
+.en-h-errs i.st-精熟, .en-h-errs i.st-過關 { background: var(--good-soft); border-color: var(--good); } .en-h-errs i.st-一般 { background: var(--warn-soft); border-color: var(--warn); } .en-h-errs i.st-待加強 { background: var(--serious-soft); border-color: var(--serious); }
+.en-h-note { flex-basis: 100%; }
+@media (max-width: 1100px) { .en-row { grid-template-columns: 1fr 1fr; } .en-errs, .en-ev { grid-column: span 2; } }
+@media (max-width: 560px) { .en-row { grid-template-columns: 1fr; } .en-errs, .en-ev { grid-column: auto; } }
+
 </style>
   <script>
     try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
@@ -795,6 +832,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     remove: () => remove,
     rollover: () => rollover,
     rows: () => rows,
+    saveEnglish: () => saveEnglish,
     saveMath: () => saveMath,
     saveSession: () => saveSession,
     setRoster: () => setRoster,
@@ -3034,6 +3072,101 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             "max": 100
           }
         ]
+      },
+      "enTests": {
+        "key": "enTests",
+        "sheet": "英語檢測",
+        "label": "英語檢測",
+        "idKey": "id",
+        "idPrefix": "",
+        "scope": "semester",
+        "group": "record",
+        "note": "社工排的英語檢測（卷名、日期）與老師登錄的階數、版本、各大題錯誤題數；id：EN-班級~孩子~序號",
+        "cols": [
+          {
+            "key": "id",
+            "label": "檢測ID",
+            "kind": "text"
+          },
+          {
+            "key": "term",
+            "label": "學期（含暑假）",
+            "kind": "text",
+            "required": true
+          },
+          {
+            "key": "semesterId",
+            "label": "系統學期",
+            "kind": "text"
+          },
+          {
+            "key": "classId",
+            "label": "班級ID",
+            "kind": "text"
+          },
+          {
+            "key": "studentId",
+            "label": "孩子ID",
+            "kind": "text",
+            "required": true
+          },
+          {
+            "key": "paper",
+            "label": "考卷",
+            "kind": "text",
+            "required": true
+          },
+          {
+            "key": "planDate",
+            "label": "排定日期",
+            "kind": "date"
+          },
+          {
+            "key": "date",
+            "label": "測驗日期",
+            "kind": "date"
+          },
+          {
+            "key": "level",
+            "label": "階數",
+            "kind": "enum",
+            "options": [
+              "1",
+              "2",
+              "3"
+            ]
+          },
+          {
+            "key": "version",
+            "label": "版本",
+            "kind": "enum",
+            "options": [
+              "A",
+              "B",
+              "C"
+            ]
+          },
+          {
+            "key": "errs",
+            "label": "各大題錯誤題數",
+            "kind": "text"
+          },
+          {
+            "key": "note",
+            "label": "答題狀況描述",
+            "kind": "longtext"
+          },
+          {
+            "key": "absent",
+            "label": "缺考",
+            "kind": "text"
+          },
+          {
+            "key": "by",
+            "label": "排定者",
+            "kind": "text"
+          }
+        ]
       }
     },
     "enums": {
@@ -3644,20 +3777,20 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       }
       const out = {}, levels = {};
       for (const sid2 of [...sids].sort()) {
-        const st3 = this.students.get(sid2);
-        if (!st3) continue;
+        const st4 = this.students.get(sid2);
+        if (!st4) continue;
         const cls = enrolled.get(sid2) || [];
         const sessDates = cls.flatMap((c) => sessByClass.get(c) || []).sort();
-        const res = this.assess(st3, recs.get(sid2) || [], tasks.get(sid2) || [], incs.get(sid2) || [], sessDates, asOf, semStart, false);
+        const res = this.assess(st4, recs.get(sid2) || [], tasks.get(sid2) || [], incs.get(sid2) || [], sessDates, asOf, semStart, false);
         res.classes = cls.map((c) => this.classes.get(c)?.name).filter(Boolean);
         out[sid2] = res;
-        levels[sid2] = weeks.map((wk) => this.assess(st3, recs.get(sid2) || [], tasks.get(sid2) || [], incs.get(sid2) || [], sessDates, wk.end, semStart, true).levelLabel);
+        levels[sid2] = weeks.map((wk) => this.assess(st4, recs.get(sid2) || [], tasks.get(sid2) || [], incs.get(sid2) || [], sessDates, wk.end, semStart, true).levelLabel);
       }
       const distribution = { "高風險": 0, "中風險": 0, "低風險": 0, "穩定": 0, "資料不足": 0 };
       for (const v of Object.values(out)) distribution[v.levelLabel]++;
       return { semesterId: semId, asOf, generatedAt: (/* @__PURE__ */ new Date()).toLocaleString(), students: out, weekly: { weeks, levels }, distribution, rulesText: rulesText(this.R) };
     }
-    assess(st3, recsAll, tasksAll, incsAll, sessDates, asOf, semStart, light) {
+    assess(st4, recsAll, tasksAll, incsAll, sessDates, asOf, semStart, light) {
       const R = this.R, A = R.attendance, S2 = R.score, T = R.tasks, P = R.progress, I = R.incidents, N = R.notes;
       const recentFrom = addDays(asOf, -R.recentDays), prevFrom = addDays(recentFrom, -R.recentDays);
       const recs = recsAll.filter((r) => r.date <= asOf);
@@ -3802,11 +3935,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         positive: Object.fromEntries(top(positive, 5)),
         concern: Object.fromEntries(top(concern, 5))
       };
-      const summary = this.summary(st3, metrics, level, score, sorted, status2, semStart, asOf);
+      const summary = this.summary(st4, metrics, level, score, sorted, status2, semStart, asOf);
       return {
-        studentId: st3.id,
-        name: st3.name,
-        grade: st3.grade,
+        studentId: st4.id,
+        name: st4.name,
+        grade: st4.grade,
         level: LEVEL_CODE[level],
         levelLabel: level,
         score,
@@ -3817,10 +3950,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         suggestions: sugg.slice(0, 4),
         summary,
         metrics,
-        needs: st3.needs || ""
+        needs: st4.needs || ""
       };
     }
-    summary(st3, m, level, score, factors, status2, semStart, asOf) {
+    summary(st4, m, level, score, factors, status2, semStart, asOf) {
       const p = [];
       const period = `本學期（${md(semStart)}–${md(asOf)}）`;
       if (!m.marked) p.push(`${period}尚無點名紀錄。`);
@@ -3852,7 +3985,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       if (level === "資料不足") p.push("紀錄還不多，持續累積後判斷會更準確。");
       else if (factors.length) p.push(`風險評估：${level}（${score} 分），主要因素：` + factors.slice(0, 3).map((f) => f.label).join("、") + "。");
       else p.push("風險評估：穩定，目前沒有明顯風險。");
-      if (st3.needs) p.push(`注意事項：${st3.needs}。`);
+      if (st4.needs) p.push(`注意事項：${st4.needs}。`);
       return p.join("");
     }
   };
@@ -3895,7 +4028,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       const kidIds = /* @__PURE__ */ new Set([...roster2.get(c.id) || [], ...[...mk.keys()].map((k) => k.split("|")[0])]);
       const tot = counter();
       const kids = [...kidIds].map((sid2) => {
-        const st3 = students.get(sid2) || { id: sid2, name: sid2 };
+        const st4 = students.get(sid2) || { id: sid2, name: sid2 };
         const km = {};
         for (const d of dates) {
           const v = mk.get(`${sid2}|${d}`);
@@ -3909,9 +4042,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         const n2 = Object.keys(km).length, att2 = ATTENDED.reduce((s, k) => s + (cnt.get(k) || 0), 0);
         return {
           studentId: sid2,
-          name: st3.name,
-          grade: st3.grade,
-          gradeLabel: GRADE_LABEL[st3.grade] || "",
+          name: st4.name,
+          grade: st4.grade,
+          gradeLabel: GRADE_LABEL[st4.grade] || "",
           marks: km,
           rate: n2 ? att2 / n2 : null,
           present: cnt.get("出席") || 0,
@@ -4022,7 +4155,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   var TDEF = SCHEMA.tables;
   var LIST_TABLES = ["units", "selActivities", "backupOptions", "readingList"];
   var BASE_TABLES = ["semesters", "defaultSlots", "holidays", "subjects", "taskTypes", "teachers", "students", "classes", "classSlots", "enrollments", "resources", ...LIST_TABLES];
-  var TX_TABLES = ["sessions", "blocks", "tasks", "records", "incidents", "evaluations", "feedback", "posts", "replies", "submissions", "mathScores"];
+  var TX_TABLES = ["sessions", "blocks", "tasks", "records", "incidents", "evaluations", "feedback", "posts", "replies", "submissions", "mathScores", "enTests"];
   var SOCIAL_TABLES = ["visits", "cases", "specialEvents"];
   var ALL_TABLES = [...BASE_TABLES, ...TX_TABLES, ...SOCIAL_TABLES];
   var BASE_FILE = "基本資料.json";
@@ -4232,13 +4365,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     await Promise.all(paths.map(async (p) => {
       const cur = DB.files.get(p);
       if (cur && !force) {
-        const st3 = await b.stat(p);
-        if (st3 == null) {
+        const st4 = await b.stat(p);
+        if (st4 == null) {
           DB.files.delete(p);
           changed = true;
           return;
         }
-        if (cur.mtime === st3) return;
+        if (cur.mtime === st4) return;
       }
       const r = await b.read(p);
       if (!r) {
@@ -4294,7 +4427,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       let status2 = "";
       if (fb && (!submitted || current2)) status2 = fb.status || "已看過";
       else if (submitted) status2 = "待回饋";
-      const history3 = [...fb && submitted && !current2 ? [{ text: fb.text, status: fb.status, by: fb.by, at: fb.at, version: fb.version }] : [], ...fb?.history || []];
+      const history4 = [...fb && submitted && !current2 ? [{ text: fb.text, status: fb.status, by: fb.by, at: fb.at, version: fb.version }] : [], ...fb?.history || []];
       T.sessions.set(id, {
         ...s,
         feedback: current2 || !submitted ? fb?.text || "" : "",
@@ -4302,7 +4435,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         feedbackBy: current2 || !submitted ? fb?.by || "" : "",
         feedbackAt: current2 || !submitted ? (fb?.at || "").slice(0, 16) : "",
         feedbackVersion: fb?.version ?? null,
-        feedbackHistory: history3
+        feedbackHistory: history4
       });
     }
     DB.T = T;
@@ -4643,16 +4776,65 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     if (ops.length) await commit(ops);
     return { saved: ops.length, version: DB.version };
   }
+  var EN_ID = /^EN-[^~]+~[^~]+~[\w.-]+$/;
+  async function saveEnglish(list) {
+    const ops = [];
+    const teacher = !isSupervisor();
+    for (const it of list || []) {
+      const id = String(it.id || "");
+      if (!EN_ID.test(id)) throw new DbError("英語檢測資料格式不正確");
+      const old = getRow("enTests", id);
+      if (it.delete) {
+        if (!old) continue;
+        if (teacher && old.by !== "老師") throw new DbError("社工排好的檢測，請社工刪除");
+        ops.push({ table: "enTests", id, delete: true });
+        continue;
+      }
+      const errs = Array.from({ length: 7 }, (_, i) => {
+        const v = (it.errs || [])[i];
+        if (v === "" || v == null) return null;
+        const n = Math.round(Number(v));
+        if (isNaN(n) || n < 0 || n > 40) throw new DbError("錯誤題數要是 0～40 的數字");
+        return n;
+      });
+      const row = {
+        id,
+        term: String(it.term || ""),
+        semesterId: it.semesterId || "",
+        classId: it.classId || "",
+        studentId: it.studentId || "",
+        paper: String(it.paper || "").trim(),
+        planDate: it.planDate || "",
+        date: it.date || "",
+        level: ["1", "2", "3"].includes(String(it.level)) ? String(it.level) : "",
+        version: ["A", "B", "C"].includes(it.version) ? it.version : "",
+        errs,
+        note: String(it.note || "").slice(0, 300),
+        absent: !!it.absent,
+        by: old?.by || it.by || (teacher ? "老師" : "社工")
+      };
+      if (!row.term || !row.studentId || !row.paper) throw new DbError("英語檢測資料不完整（學期、孩子、考卷）");
+      if (teacher && old && old.by !== "老師") {
+        row.paper = old.paper;
+        row.planDate = old.planDate;
+        row.term = old.term;
+      }
+      if (old && JSON.stringify({ ...old, updatedAt: 0 }) === JSON.stringify({ ...old, ...row, updatedAt: 0 })) continue;
+      ops.push({ table: "enTests", row });
+    }
+    if (ops.length) await commit(ops);
+    return { saved: ops.length, version: DB.version };
+  }
   async function feedback(sessionId, text, status2, user) {
     const s = getRow("sessions", sessionId);
     if (!s) throw new DbError("課堂不存在");
     const prev = getRow("feedback", `F-${sessionId}`);
     const version = Number(s.submitVersion) || null;
-    let history3 = prev?.history || [];
+    let history4 = prev?.history || [];
     if (prev && (prev.text || prev.status) && String(prev.version ?? "") !== String(version ?? "")) {
-      history3 = [{ text: prev.text || "", status: prev.status || "", by: prev.by || "", at: prev.at || "", version: prev.version ?? null }, ...history3].slice(0, 30);
+      history4 = [{ text: prev.text || "", status: prev.status || "", by: prev.by || "", at: prev.at || "", version: prev.version ?? null }, ...history4].slice(0, 30);
     }
-    await commit([{ table: "feedback", row: { id: `F-${sessionId}`, sessionId, text: text || "", status: status2 || "已看過", by: user || "", at: nowStr(), version, history: history3 } }]);
+    await commit([{ table: "feedback", row: { id: `F-${sessionId}`, sessionId, text: text || "", status: status2 || "已看過", by: user || "", at: nowStr(), version, history: history4 } }]);
     return getRow("sessions", sessionId);
   }
   async function setRoster(classId, studentIds) {
@@ -4920,14 +5102,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     s.addEventListener("click", onClick2);
     return s;
   }
-  function openDrawer({ title, body, foot: foot2 = "", wide = false, onClose }) {
+  function openDrawer({ title, body, foot: foot3 = "", wide = false, onClose }) {
     const d = h(`<aside class="drawer ${wide ? "wide" : ""}" role="dialog"><div class="drawer-head"><h3>${title}</h3><span class="sp"></span>
     <button class="btn ghost icon" data-close title="關閉">${icon("x")}</button></div><div class="drawer-body"></div>
-    <div class="drawer-foot">${foot2}</div></aside>`);
+    <div class="drawer-foot">${foot3}</div></aside>`);
     const b = $(".drawer-body", d);
     if (typeof body === "string") b.innerHTML = body;
     else if (body) b.appendChild(body);
-    if (!foot2) $(".drawer-foot", d).remove();
+    if (!foot3) $(".drawer-foot", d).remove();
     let closed = false;
     const close = () => {
       if (closed) return;
@@ -5335,8 +5517,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       evaluations: rows("evaluations").filter((v) => v.semesterId === sem),
       feedback: rows("feedback").filter((f) => sids.has(f.sessionId)),
       submissions: rows("submissions").filter((f) => sids.has(f.sessionId)),
-      mathScores: rows("mathScores")
+      mathScores: rows("mathScores"),
       // 全部學期：看得到孩子以前考過的考卷
+      enTests: rows("enTests")
     });
     return { mode: "full", epoch: DB.epoch, version: DB.version, semester: sem, data, settings: { ...DB.settings } };
   }
@@ -5444,9 +5627,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         case "/api/session/save":
           return saveSession(b);
         case "/api/session/feedback": {
-          const st3 = b.status || "已看過";
-          if (!["已看過", "已回饋"].includes(st3)) throw new DbError("回饋狀態不正確");
-          return { session: await feedback(b.sessionId || "", b.feedback, st3, who?.name || ""), version: DB.version };
+          const st4 = b.status || "已看過";
+          if (!["已看過", "已回饋"].includes(st4)) throw new DbError("回饋狀態不正確");
+          return { session: await feedback(b.sessionId || "", b.feedback, st4, who?.name || ""), version: DB.version };
         }
         case "/api/class/roster":
           return setRoster(b.classId || "", b.studentIds || []);
@@ -5464,6 +5647,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
           return { result: "clean", ...status() };
         case "/api/math/save":
           return saveMath(b.rows || []);
+        case "/api/english/save":
+          return saveEnglish(b.rows || []);
         case "/api/import/base":
           return { counts: await importBase(b.tables || {}, b.deletes || {}), version: DB.version };
       }
@@ -5699,6 +5884,38 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   var OTHER_ACTS_EXTRA = ["班級活動", "戶外活動", "節慶活動"];
   var MATH_TESTS = [["1-1", "一年級", "第1回", "整數（一）"], ["1-2", "一年級", "第1回", "長度（一）"], ["1-3", "一年級", "第1回", "用錢（一）"], ["1-4", "一年級", "第1回", "時間（一）"], ["1-5", "一年級", "第1回", "綜合練習"], ["2-1", "一年級", "第2回", "整數（二）秘技一、二"], ["2-2", "一年級", "第2回", "整數（二）秘技三"], ["2-3", "一年級", "第2回", "整數（二）秘技四"], ["2-4", "一年級", "第2回", "圖形（一）、統計圖表（一）"], ["2-5", "一年級", "第2回", "綜合練習"], ["3-1", "二年級", "第3回", "整數（三）"], ["3-2", "二年級", "第3回", "圖形（二）"], ["3-3", "二年級", "第3回", "用錢（二）"], ["3-4", "二年級", "第3回", "時間（二）"], ["3-5", "二年級", "第3回", "綜合練習"], ["4-1", "二年級", "第4回", "整數（四）祕技一、二"], ["4-2", "二年級", "第4回", "整數（四）祕技三、四、五"], ["4-3", "二年級", "第4回", "長度（二）"], ["4-4", "二年級", "第4回", "容量（一）、重量（一）"], ["4-5", "二年級", "第4回", "綜合練習"], ["5-1", "三年級", "第5回", "整數（五）、圖形（三）"], ["5-2", "三年級", "第5回", "分數（一）"], ["5-3", "三年級", "第5回", "容量（二）、長度（三）"], ["5-4", "三年級", "第5回", "時間（三）"], ["5-5", "三年級", "第5回", "綜合練習"], ["6-1", "三年級", "第6回", "整數（六）"], ["6-2", "三年級", "第6回", "統計圖表（二）、重量（二）"], ["6-3", "三年級", "第6回", "周長與面積（一）"], ["6-4", "三年級", "第6回", "小數（一）"], ["6-5", "三年級", "第6回", "綜合練習"], ["7-1", "四年級", "第7回", "整數（七）"], ["7-2", "四年級", "第7回", "概數、分數（二）"], ["7-3", "四年級", "第7回", "長度（四）、體積（一）"], ["7-4", "四年級", "第7回", "統計圖表（三）、角與角度（一）"], ["7-5", "四年級", "第7回", "四上綜合練習"], ["8-1", "四年級", "第8回", "整數（八）、圖形（四）"], ["8-2", "四年級", "第8回", "分數（三）"], ["8-3", "四年級", "第8回", "小數（二）"], ["8-4", "四年級", "第8回", "周長與面積（二）"], ["8-5", "四年級", "第8回", "時間（四）"], ["9-1", "五年級", "第9回A", "整數（九）"], ["9-2", "五年級", "第9回A", "因數與倍數（一）"], ["9-3", "五年級", "第9回A", "圖形（五）、分數（四）"], ["9-4", "五年級", "第9回B", "小數（三）"], ["9-5", "五年級", "第9回B", "周長與面積（三）、小數（四）"], ["10-1", "五年級", "第10回A", "整數（十）"], ["10-2", "五年級", "第10回A", "因數與倍數（二）、分數（五）"], ["10-3", "五年級", "第10回B", "角與角度（二）、比率"], ["10-4", "五年級", "第10回B", "重量（三）、時間（五）"], ["10-5", "五年級", "第10回B", "體積（二）"], ["11-1", "六年級", "第11回A", "因數與倍數（三）"], ["11-2", "六年級", "第11回A", "分數（六）、統計圖表（四）"], ["11-3", "六年級", "第11回A", "小數（五）"], ["11-4", "六年級", "第11回B", "比與比值、速度"], ["11-5", "六年級", "第11回B", "圖形（六）"], ["12-1", "六年級", "第12回A", "基準量與比較量、等量公理、解題"], ["12-2", "六年級", "第12回A", "圖形（七）"], ["12-3", "六年級", "第12回B", "周長與面積（四）"], ["12-4", "六年級", "第12回B", "體積（三）、比例尺"], ["12-5", "六年級", "第12回B", "綜合練習"]];
   var MATH_PASS = 80;
+  var BOOKS = ["第一冊", "第二冊", "第三冊", "第四冊"];
+  var ABC_IN = {
+    "第一冊": [["CH4-6", "ABC字母音檢測一"], ["CH7-9", "ABC字母音檢測二"]],
+    "第二冊": [["CH1-3", "ABC短母音檢測"], ["CH7-9", "ABC長母音檢測"]],
+    "第三冊": [["CH1-3", "ABC易混淆音檢測一"], ["CH7-9", "ABC易混淆音檢測二"]],
+    "第四冊": [["CH1-3", "ABC雙元音檢測"]]
+  };
+  var ABC_RANGE = {
+    "ABC字母音檢測一": "L1~R1、L26、L27",
+    "ABC字母音檢測二": "L6~R2、L28~L30",
+    "ABC短母音檢測": "L10~R4（短母音）",
+    "ABC長母音檢測": "L10~R4（長母音）、L31、L33(-y)",
+    "ABC易混淆音檢測一": "L16~L20",
+    "ABC易混淆音檢測二": "L21~L25",
+    "ABC雙元音檢測": "L32~R8"
+  };
+  var EN_PAPERS = [
+    ["Starter", "starter", "", "英文字母 Aa~Zz（Review1~Review4）"],
+    ...BOOKS.flatMap((b) => ["CH1-3", "CH4-6", "CH7-9"].flatMap((r) => [
+      [`新式${b} ${r}`, "stage", b, `${b} ${r.replace("-", "～")}`],
+      ...ABC_IN[b].filter(([after]) => after === r).map(([, n]) => [n, "abc", b, ABC_RANGE[n]])
+    ]).concat([[`新式${b} 總複習`, "final", b, `${b} CH1～CH9（總測驗卷）`]]))
+  ];
+  var EN_ABC_PARTS = { "ABC字母音檢測一": 4, "ABC字母音檢測二": 4, "ABC短母音檢測": 6, "ABC長母音檢測": 6, "ABC易混淆音檢測一": 4, "ABC易混淆音檢測二": 5, "ABC雙元音檢測": 6 };
+  var EN_LEVELS = {
+    1: { q: [4, 5, 3, 4, 4, 3], ok: [1, 2, 1, 1, 1, 1] },
+    2: { q: [4, 5, 4, 6, 3, 4, 3], ok: [1, 2, 1, 2, 1, 1, 1] },
+    3: { q: [6, 6, 4, 6, 3, 5, 4], ok: [2, 2, 1, 2, 1, 2, 1] }
+  };
+  var EN_STARTER = { parts: 4, q: 8, ok: 2 };
+  var EN_FINAL = { parts: 7, total: 36, ok: 7 };
+  var EN_VERSIONS = ["A", "B", "C"];
 
   // src/js/store.js
   var TABLES = [
@@ -5730,7 +5947,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     "visits",
     "cases",
     "specialEvents",
-    "mathScores"
+    "mathScores",
+    "enTests"
   ];
   var WEEKDAYS = ["週一", "週二", "週三", "週四", "週五", "週六", "週日"];
   var ATTENDED2 = ["出席", "遲到", "早退"];
@@ -6306,7 +6524,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
   // src/js/pages/dashboard.js
   function todayCard(x, today3) {
-    const st3 = sessionState(x.session);
+    const st4 = sessionState(x.session);
     const att = attendanceOf(x.session, x.cls.id);
     const inc2 = x.session ? incidentsOf(x.session.id).length : 0;
     const link = isSupervisor2() ? `#/journal?date=${today3}&open=${x.cls.id}` : `#/record?class=${x.cls.id}&date=${today3}`;
@@ -6316,7 +6534,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     <td class="num">${x.session ? `${att.attended}/${att.total || att.marked}` : `<span class="muted">0/${att.total}</span>`}</td>
     <td>${inc2 ? `<span class="chip critical">${inc2} 件</span>` : '<span class="muted">—</span>'}</td>
     <td>${x.session?.mood ? moodText(x.session.mood) : '<span class="muted">—</span>'}</td>
-    <td><span class="chip ${st3.chip}">${st3.label}</span></td></tr>`;
+    <td><span class="chip ${st4.chip}">${st4.label}</span></td></tr>`;
   }
   var dashboard_default = {
     async render(ctx) {
@@ -6424,10 +6642,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     return `<div class="card"><div class="card-head"><h3>論壇未解決</h3><span class="sub">孩子問題、設備回報</span><span class="sp"></span>
     <a class="btn sm ghost" href="#/forum">論壇 ${icon("right", "sm")}</a></div>
     <div class="card-body">${open2.length ? open2.slice(0, 6).map((p) => {
-      const st3 = postState(p);
+      const st4 = postState(p);
       return `<a class="row" style="padding:6px 0;border-bottom:1px solid var(--line-2);color:var(--ink)" href="#/forum/${encodeURIComponent(p.id)}">
         ${p.urgent === "急" ? '<span class="chip critical">急</span>' : ""}<span class="grow"><b>${esc(p.title)}</b><span class="small muted">　${esc(p.category)}・${esc(p.author || "")} ${md2(p.date)}・回覆 ${repliesOf(p.id).length}</span></span>
-        <span class="chip ${st3.chip}">${st3.label}</span></a>`;
+        <span class="chip ${st4.chip}">${st4.label}</span></a>`;
     }).join("") : `<div class="empty">${icon("check")}<div>沒有未解決的主題</div></div>`}</div></div>`;
   }
   function teacherRates(today3) {
@@ -6847,15 +7065,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   var caseTone = (o) => o === "結案" ? "good" : "mid";
   function caseList(ctx) {
     const q = ctx.query;
-    const st3 = q.get("status") || "";
+    const st4 = q.get("status") || "";
     const kw = (q.get("q") || "").trim();
-    const list = S.data.cases.filter((c) => (!st3 || c.status === st3) && (!kw || kidNames(c.studentIds).includes(kw) || (c.goal || "").includes(kw) || (c.school || "").includes(kw))).sort(byDateDesc);
+    const list = S.data.cases.filter((c) => (!st4 || c.status === st4) && (!kw || kidNames(c.studentIds).includes(kw) || (c.goal || "").includes(kw) || (c.school || "").includes(kw))).sort(byDateDesc);
     ctx.title("個案工作", "只有社工和督導看得到");
     const a = ctx.actions(`<div class="search"><span>${icon("search", "sm")}</span><input class="input" id="c-q" placeholder="孩子、學校、目標" value="${esc(kw)}" style="width:160px"></div>
-    <select class="select" id="c-st"><option value="">全部狀態</option>${["追蹤中", "結案"].map((s) => `<option ${s === st3 ? "selected" : ""}>${s}</option>`).join("")}</select>
+    <select class="select" id="c-st"><option value="">全部狀態</option>${["追蹤中", "結案"].map((s) => `<option ${s === st4 ? "selected" : ""}>${s}</option>`).join("")}</select>
     <button class="btn" id="c-xlsx">${icon("download", "sm")}Excel</button><a class="btn primary" href="#/cases/new">${icon("plus", "sm")}新增個案工作</a>`);
     $("#c-st", a).onchange = (e) => ctx.go(`#/cases?status=${encodeURIComponent(e.target.value)}&q=${encodeURIComponent(kw)}`);
-    $("#c-q", a).onchange = (e) => ctx.go(`#/cases?status=${encodeURIComponent(st3)}&q=${encodeURIComponent(e.target.value)}`);
+    $("#c-q", a).onchange = (e) => ctx.go(`#/cases?status=${encodeURIComponent(st4)}&q=${encodeURIComponent(e.target.value)}`);
     $("#c-xlsx", a).onclick = () => xlsx(
       "個案工作",
       ["紀錄時間", "填表人", "國小", "班別", "工作內容", "個案姓名", "工作對象", "工作目標", "晤談過程", "處遇方向", "下次追蹤日期", "狀態"],
@@ -6892,7 +7110,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     ctx.title(isNew ? "新增個案工作" : "個案工作紀錄", isNew ? "只有社工和督導看得到" : `${esc(kidNames(c.studentIds))}・${mdw(c.date)}`);
     ctx.actions(`<button class="btn ghost" id="cf-back">${icon("left", "sm")}回個案工作</button>`);
     $("#cf-back").onclick = () => leave(() => ctx.go("#/cases"));
-    const history3 = isNew ? [] : S.data.cases.filter((x) => x.id !== c.id && split(x.studentIds).some((id) => split(c.studentIds).includes(id))).sort(byDateDesc).slice(0, 6);
+    const history4 = isNew ? [] : S.data.cases.filter((x) => x.id !== c.id && split(x.studentIds).some((id) => split(c.studentIds).includes(id))).sort(byDateDesc).slice(0, 6);
     ctx.el.innerHTML = `<div class="grid g-main"><div class="stack gap16">
     <div class="card card-pad stack" style="gap:14px">
       <div class="row wrap" style="gap:10px 18px;align-items:flex-end"><label class="field"><span>紀錄時間</span><input class="input" type="date" id="cf-date" value="${esc(c.date)}"></label>
@@ -6911,7 +7129,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     <div class="stack gap16">
       ${visit ? `<div class="card"><div class="card-head"><h3>相關訪視</h3></div><div class="card-body small"><a href="#/visits/${esc(visit.id)}">${mdw(visit.date)} ${esc(visit.kind)}・${esc(visit.school)} ${esc(visit.className)}・${esc(visit.teacherName)}</a></div></div>` : ""}
       ${ev ? `<div class="card"><div class="card-head"><h3>相關特殊事件</h3></div><div class="card-body small"><a href="#/events/${esc(ev.id)}">${mdw(ev.date)} ${esc(ev.types)}</a><div class="muted mt8">${esc((ev.description || "").slice(0, 120))}</div></div></div>` : ""}
-      ${history3.length ? `<div class="card"><div class="card-head"><h3>這幾位孩子之前的紀錄</h3></div><div class="card-body small">${history3.map((x) => `<div class="ev-note"><a href="#/cases/${esc(x.id)}">${mdw(x.date)}・${esc(x.goal || x.methods || "個案工作")}</a><div class="muted">${esc(x.status)}・${esc(x.recorder || "")}</div></div>`).join("")}</div></div>` : ""}
+      ${history4.length ? `<div class="card"><div class="card-head"><h3>這幾位孩子之前的紀錄</h3></div><div class="card-body small">${history4.map((x) => `<div class="ev-note"><a href="#/cases/${esc(x.id)}">${mdw(x.date)}・${esc(x.goal || x.methods || "個案工作")}</a><div class="muted">${esc(x.status)}・${esc(x.recorder || "")}</div></div>`).join("")}</div></div>` : ""}
     </div></div>
     <div class="sticky-foot"><span class="small muted">${icon("lock", "sm")} 只有社工和督導看得到</span><span class="sp"></span>
       ${isNew ? "" : `<button class="btn danger" id="cf-del">${icon("trash", "sm")}刪除</button>`}<button class="btn primary" id="cf-save">${icon("save", "sm")}儲存</button></div>`;
@@ -7007,14 +7225,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   var typeTone = (o) => o === "自傷風險" ? "bad" : "";
   function eventList(ctx) {
     const q = ctx.query;
-    const st3 = q.get("status") || "";
+    const st4 = q.get("status") || "";
     const ty = q.get("type") || "";
-    const list = S.data.specialEvents.filter((e) => (!st3 || e.status === st3) && (!ty || split(e.types).includes(ty))).sort(byDateDesc);
+    const list = S.data.specialEvents.filter((e) => (!st4 || e.status === st4) && (!ty || split(e.types).includes(ty))).sort(byDateDesc);
     ctx.title("特殊事件", "由社工填寫；課輔時間以外的事件也記在這裡・只有社工和督導看得到");
     const a = ctx.actions(`<select class="select" id="e-ty"><option value="">全部類型</option>${EVENT_TYPES.map((s) => `<option ${s === ty ? "selected" : ""}>${s}</option>`).join("")}</select>
-    <select class="select" id="e-st"><option value="">全部狀態</option>${["處理中", "追蹤中", "結案"].map((s) => `<option ${s === st3 ? "selected" : ""}>${s}</option>`).join("")}</select>
+    <select class="select" id="e-st"><option value="">全部狀態</option>${["處理中", "追蹤中", "結案"].map((s) => `<option ${s === st4 ? "selected" : ""}>${s}</option>`).join("")}</select>
     <button class="btn" id="e-xlsx">${icon("download", "sm")}Excel</button><a class="btn primary" href="#/events/new">${icon("plus", "sm")}新增特殊事件</a>`);
-    $("#e-ty", a).onchange = (e) => ctx.go(`#/events?type=${encodeURIComponent(e.target.value)}&status=${encodeURIComponent(st3)}`);
+    $("#e-ty", a).onchange = (e) => ctx.go(`#/events?type=${encodeURIComponent(e.target.value)}&status=${encodeURIComponent(st4)}`);
     $("#e-st", a).onchange = (e) => ctx.go(`#/events?type=${encodeURIComponent(ty)}&status=${encodeURIComponent(e.target.value)}`);
     $("#e-xlsx", a).onclick = () => xlsx(
       "特殊事件",
@@ -7288,24 +7506,24 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     ${feedbackHistoryHtml(x.session, esc)}`;
   }
   function card(x) {
-    const st3 = sessionState(x.session);
-    const b = bucket(st3.key);
+    const st4 = sessionState(x.session);
+    const b = bucket(st4.key);
     const kids = roster(x.cls.id).length;
     const att = attendanceOf(x.session, x.cls.id);
     const incs = x.session ? incidentsOf(x.session.id).length : 0;
     const head = `<h4>${esc(x.cls.name)}<small>${esc(subjectOfClass(x.cls))}・${esc(teacherOfClass(x.cls))}${x.planned ? "" : "・補課"}</small></h4>`;
     let meta;
-    if (st3.key === "unsent" || st3.key === "draft") {
+    if (st4.key === "unsent" || st4.key === "draft") {
       meta = `<div class="jcard-meta">有排課（${kids ? `${kids} 位孩子` : "尚未建立孩子名單"}），還沒送出課後紀錄。
-      ${st3.key === "draft" ? `<span class="chip warn">草稿 ${esc((x.session.updatedAt || "").slice(11))}</span>` : ""}
+      ${st4.key === "draft" ? `<span class="chip warn">草稿 ${esc((x.session.updatedAt || "").slice(11))}</span>` : ""}
       <a href="#/record?class=${x.cls.id}&date=${x.date}" onclick="event.stopPropagation()">${isSupervisor2() ? "查看" : "前往填寫"} ›</a></div>`;
     } else {
       meta = `<div class="jcard-meta">${x.session.pendingEdit === "是" ? '<span class="chip warn">送出後有修改</span>' : ""}<span>出席 ${att.attended}/${att.total || att.marked}</span><span>・事件 ${incs}</span>
       <span>・老師：${moodText(x.session.mood)}</span><span class="muted">${open.has(x.cls.id) ? "▾ 收合" : "▸ 展開"}</span></div>`;
     }
-    const cls = { pending: "pending", done: "done", unsent: st3.key === "draft" ? "unsent draft" : "unsent" }[b];
+    const cls = { pending: "pending", done: "done", unsent: st4.key === "draft" ? "unsent draft" : "unsent" }[b];
     return `<div class="jcard ${cls}" data-cid="${x.cls.id}"><div class="jcard-head" data-toggle="${x.session && x.session.submit === "已送出" ? 1 : ""}">
-      <div class="grow">${head}${meta}</div><span class="chip ${st3.chip}">${st3.label}</span></div>
+      <div class="grow">${head}${meta}</div><span class="chip ${st4.chip}">${st4.label}</span></div>
     ${open.has(x.cls.id) && x.session && x.session.submit === "已送出" ? `<div class="jcard-body">${detail(x)}</div>` : ""}</div>`;
   }
   var journal_default = {
@@ -7440,10 +7658,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     return cat === "本科" && (!t.type || t.type === "本科" || ["國語", "英語", "數學"].includes(t.type)) ? subj : t.type || "其他";
   };
   var bodyOf = (t, subj, unit) => taskText(t, subj, unit).replace(/^【[^】]*】/, "").replace(/^（未填內容）$/, "");
-  function kidPlan(st3, kid) {
-    const subj = subjectOfClass(st3.cls);
-    const main = st3.blocks.filter((b) => !isBackup(b));
-    const units = resolveUnits(main.map((b) => b.mode === "個別" ? b.tasks[kid] : null), st3.progress[kid] || "");
+  function kidPlan(st4, kid) {
+    const subj = subjectOfClass(st4.cls);
+    const main = st4.blocks.filter((b) => !isBackup(b));
+    const units = resolveUnits(main.map((b) => b.mode === "個別" ? b.tasks[kid] : null), st4.progress[kid] || "");
     const items = [];
     let n = 0;
     main.forEach((b, i) => {
@@ -7454,7 +7672,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         items.push({ kind: "task", no: n, block: b, tag: tagOf(t, subj), cat: taskCat(t.type), unit: units[i]?.unit || "", text: bodyOf(t, subj, units[i]?.unit || ""), detail: t.detail || "", status: t.status || "", t });
       } else items.push({ kind: b.mode === "休息" ? "rest" : "class", block: b, text: b.title, detail: b.content || "" });
     });
-    const backups = st3.blocks.filter(isBackup).map((b) => b.tasks[kid]?.content || "").filter(Boolean);
+    const backups = st4.blocks.filter(isBackup).map((b) => b.tasks[kid]?.content || "").filter(Boolean);
     return { items, tasks: items.filter((x) => x.kind === "task"), backups };
   }
   function printHtml(html, { landscape = false, margin = "0" } = {}) {
@@ -7485,45 +7703,45 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       }
     }
   }
-  function printFlow(st3) {
-    const c = st3.cls;
+  function printFlow(st4) {
+    const c = st4.cls;
     const subj = subjectOfClass(c);
-    const kids = st3.kids;
-    const wk = weekNo(st3.date);
-    const plans = Object.fromEntries(kids.map((k) => [k.id, kidPlan(st3, k.id)]));
+    const kids = st4.kids;
+    const wk = weekNo(st4.date);
+    const plans = Object.fromEntries(kids.map((k) => [k.id, kidPlan(st4, k.id)]));
     const cellOf = (k, b) => {
       const it = plans[k.id].items.find((x) => x.block === b && x.kind === "task");
       if (!it) return "";
       return `<b class="pt-tag">${esc(it.tag)}</b> ${esc(it.text)}${it.detail ? `<div class="pt-detail">${esc(it.detail)}</div>` : ""}`;
     };
-    const backups = st3.blocks.filter(isBackup);
-    const rows2 = st3.blocks.filter((b) => !isBackup(b)).map((b) => b.mode === "個別" ? `<tr><th>${esc(b.start || "")}–${esc(b.end || "")}<div>${esc(b.title)}</div></th>${kids.map((k) => `<td>${cellOf(k, b)}</td>`).join("")}</tr>` : `<tr class="pt-whole"><th>${esc(b.start || "")}–${esc(b.end || "")}<div>${esc(b.title)}</div></th><td colspan="${kids.length}"><b>${esc(b.title)}</b>${b.content ? `　${esc(b.content)}` : ""}</td></tr>`).join("");
+    const backups = st4.blocks.filter(isBackup);
+    const rows2 = st4.blocks.filter((b) => !isBackup(b)).map((b) => b.mode === "個別" ? `<tr><th>${esc(b.start || "")}–${esc(b.end || "")}<div>${esc(b.title)}</div></th>${kids.map((k) => `<td>${cellOf(k, b)}</td>`).join("")}</tr>` : `<tr class="pt-whole"><th>${esc(b.start || "")}–${esc(b.end || "")}<div>${esc(b.title)}</div></th><td colspan="${kids.length}"><b>${esc(b.title)}</b>${b.content ? `　${esc(b.content)}` : ""}</td></tr>`).join("");
     const brows = backups.map((b, i) => `<tr class="pt-backup"><th>備用 ${i + 1}<div>${i === 0 ? esc(subj) + "學習任務" : "可選其他類"}</div></th>${kids.map((k) => `<td>${esc(b.tasks[k.id]?.content || "")}</td>`).join("")}</tr>`).join("");
     const html = `<div class="pt">
     <div class="pt-head"><h1>${esc(c.name)}　${esc(subj)}　教學流程</h1>
-      <div>${esc(mdw(st3.date))}${wk > 0 ? `・第 ${wk} 週` : ""}・${esc(st3.start)}–${esc(st3.end)}・課輔老師 ${esc(teacherOfClass(c))}${st3.mindful ? `・靜心活動 ${esc(st3.mindful)}` : ""}</div></div>
+      <div>${esc(mdw(st4.date))}${wk > 0 ? `・第 ${wk} 週` : ""}・${esc(st4.start)}–${esc(st4.end)}・課輔老師 ${esc(teacherOfClass(c))}${st4.mindful ? `・靜心活動 ${esc(st4.mindful)}` : ""}</div></div>
     <table class="pt-table"><colgroup><col style="width:24mm">${kids.map(() => "<col>").join("")}</colgroup>
       <thead><tr><th>時間</th>${kids.map((k) => `<th>${esc(k.name)}${k.grade ? `<span>${esc(k.grade)}年級</span>` : ""}</th>`).join("")}</tr></thead>
-      <tbody><tr class="pt-prog"><th>今日進度</th>${kids.map((k) => `<td>${esc(st3.progress[k.id] || "")}</td>`).join("")}</tr>${rows2}${brows}</tbody></table></div>`;
+      <tbody><tr class="pt-prog"><th>今日進度</th>${kids.map((k) => `<td>${esc(st4.progress[k.id] || "")}</td>`).join("")}</tr>${rows2}${brows}</tbody></table></div>`;
     printHtml(html, { landscape: true, margin: "8mm" });
   }
-  function downloadFlowXlsx(st3) {
+  function downloadFlowXlsx(st4) {
     const X = window.XLSX;
     if (!X) {
       toast("Excel 元件沒有載入", "err");
       return;
     }
-    const c = st3.cls;
+    const c = st4.cls;
     const subj = subjectOfClass(c);
-    const kids = st3.kids;
-    const plans = Object.fromEntries(kids.map((k) => [k.id, kidPlan(st3, k.id)]));
-    const main = st3.blocks.filter((b) => !isBackup(b));
-    const backups = st3.blocks.filter(isBackup);
+    const kids = st4.kids;
+    const plans = Object.fromEntries(kids.map((k) => [k.id, kidPlan(st4, k.id)]));
+    const main = st4.blocks.filter((b) => !isBackup(b));
+    const backups = st4.blocks.filter(isBackup);
     const cellText = (it) => it ? `[${it.tag}] ${it.text}${it.detail ? `（${it.detail}）` : ""}` : "";
     const wb = X.utils.book_new();
-    const info = [["班級", c.name], ["科目", subj], ["日期", mdw(st3.date)], ["時間", `${st3.start}–${st3.end}`], ["課輔老師", teacherOfClass(c)], ["靜心活動", st3.mindful || ""], []];
+    const info = [["班級", c.name], ["科目", subj], ["日期", mdw(st4.date)], ["時間", `${st4.start}–${st4.end}`], ["課輔老師", teacherOfClass(c)], ["靜心活動", st4.mindful || ""], []];
     const head = ["時間", "區塊", ...kids.map((k) => k.name)];
-    const body = [["", "今日進度", ...kids.map((k) => st3.progress[k.id] || "")]];
+    const body = [["", "今日進度", ...kids.map((k) => st4.progress[k.id] || "")]];
     const merges = [];
     for (const b of main) {
       if (b.mode === "個別") body.push([`${b.start || ""}–${b.end || ""}`, b.title, ...kids.map((k) => cellText(plans[k.id].items.find((x) => x.block === b && x.kind === "task")))]);
@@ -7555,9 +7773,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       used.add(name);
       const aoa = [
         ["姓名", k.name],
-        ["日期", mdw(st3.date)],
+        ["日期", mdw(st4.date)],
         ["班級・科目", `${c.name}・${subj}`],
-        ["今日進度", st3.progress[k.id] || ""],
+        ["今日進度", st4.progress[k.id] || ""],
         [],
         ["順序", "類別", "單元／教材", "內容", "說明"],
         ...p.tasks.map((it) => [it.no, it.tag, it.cat === "本科" ? it.unit : "", it.cat === "本科" ? it.t.content || "" : it.text, it.detail]),
@@ -7569,37 +7787,37 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       ws["!cols"] = [{ wch: 12 }, { wch: 10 }, { wch: 18 }, { wch: 28 }, { wch: 26 }];
       X.utils.book_append_sheet(wb, ws, name);
     }
-    X.writeFile(wb, `教學流程_${c.name}_${subj}_${st3.date}.xlsx`);
+    X.writeFile(wb, `教學流程_${c.name}_${subj}_${st4.date}.xlsx`);
   }
   var FACES = [["很開心", "M7 13.5 Q12 18.5 17 13.5"], ["開心", "M8 14 Q12 16.5 16 14"], ["普通", "M8 15 L16 15"], ["有點難過", "M8 16 Q12 14 16 16"], ["難過", "M7 17 Q12 12.5 17 17"]];
   var face = ([label, mouth]) => `<span class="ts-face"><svg viewBox="0 0 24 24" width="1.9em" height="1.9em" aria-hidden="true"><circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="1.4"/>
   <circle cx="8.6" cy="9.5" r="1.2" fill="currentColor"/><circle cx="15.4" cy="9.5" r="1.2" fill="currentColor"/><path d="${mouth}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><small>${label}</small></span>`;
-  function sheetHtml(st3, k) {
-    const c = st3.cls;
+  function sheetHtml(st4, k) {
+    const c = st4.cls;
     const subj = subjectOfClass(c);
-    const p = kidPlan(st3, k.id);
+    const p = kidPlan(st4, k.id);
     const box = '<span class="ts-box"></span>';
     const list = p.items.map((it) => it.kind === "task" ? `<li class="ts-task">${box}<span class="ts-no">${it.no}</span><span class="ts-tag">${esc(it.tag)}</span><span class="ts-text">${esc(it.text || "（老師會再說明）")}${it.detail ? `<small>${esc(it.detail)}</small>` : ""}</span></li>` : `<li class="ts-light">${it.kind === "rest" ? "下課" : "全班"}・${esc(it.text)}${it.kind === "class" && it.detail ? `：${esc(it.detail)}` : ""}</li>`).join("");
     return `<section class="ts-sheet">
     <header class="ts-head"><div><div class="ts-title">我的任務單</div><div class="ts-name">${esc(k.name)}</div></div>
-      <div class="ts-meta"><div>${esc(mdw(st3.date))}</div><div>${esc(c.name)}・${esc(subj)}</div>${st3.progress[k.id] ? `<div>今日進度：<b>${esc(st3.progress[k.id])}</b></div>` : ""}</div></header>
+      <div class="ts-meta"><div>${esc(mdw(st4.date))}</div><div>${esc(c.name)}・${esc(subj)}</div>${st4.progress[k.id] ? `<div>今日進度：<b>${esc(st4.progress[k.id])}</b></div>` : ""}</div></header>
     <ol class="ts-list">${list || '<li class="ts-light">今天的任務老師會再告訴你</li>'}</ol>
     ${p.backups.length ? `<div class="ts-extra"><b>提早完成可以做</b>${p.backups.map((v, i) => `<span>${box}${i + 1}. ${esc(v)}</span>`).join("")}</div>` : ""}
     <footer class="ts-exit"><b>出場券</b><span>今天完成了 <span class="ts-blank"></span> 項</span><span class="ts-mood">今天的心情（圈一個）${FACES.map(face).join("")}</span></footer>
   </section>`;
   }
-  function sheetsHtml(st3, kids) {
+  function sheetsHtml(st4, kids) {
     const pages = [];
-    for (let i = 0; i < kids.length; i += 2) pages.push(`<div class="ts-page">${sheetHtml(st3, kids[i])}${kids[i + 1] ? sheetHtml(st3, kids[i + 1]) : '<section class="ts-sheet ts-empty"></section>'}</div>`);
+    for (let i = 0; i < kids.length; i += 2) pages.push(`<div class="ts-page">${sheetHtml(st4, kids[i])}${kids[i + 1] ? sheetHtml(st4, kids[i + 1]) : '<section class="ts-sheet ts-empty"></section>'}</div>`);
     return pages.join("");
   }
-  function openTaskSheets(st3) {
-    const kids = st3.kids;
+  function openTaskSheets(st4) {
+    const kids = st4.kids;
     if (!kids.length) {
       toast("這個班還沒有孩子名單", "err");
       return;
     }
-    const noTask = kids.filter((k) => !kidPlan(st3, k.id).tasks.length).map((k) => k.name);
+    const noTask = kids.filter((k) => !kidPlan(st4, k.id).tasks.length).map((k) => k.name);
     const body = h(`<div class="stack" style="gap:12px">
     <div class="small muted">任務單的內容來自這堂課的教學流程（含還沒儲存的修改）。A4 直印，一張印兩位；按「列印／另存 PDF」後，在列印視窗的「目的地」選「另存為 PDF」就能存檔。</div>
     ${noTask.length ? `<div class="callout warn small">還沒排個別任務：${esc(noTask.join("、"))}</div>` : ""}
@@ -7609,7 +7827,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     const picked = () => $$(".ts-pick", body).filter((x) => x.checked).map((x) => kids.find((k) => k.id === x.value));
     const draw = () => {
       const list = picked();
-      $("#ts-preview", body).innerHTML = list.length ? sheetsHtml(st3, list) : '<div class="empty small">請勾選要印的孩子</div>';
+      $("#ts-preview", body).innerHTML = list.length ? sheetsHtml(st4, list) : '<div class="empty small">請勾選要印的孩子</div>';
       requestAnimationFrame(() => fitSheets($("#ts-preview", body)));
     };
     body.addEventListener("change", (e) => {
@@ -7629,7 +7847,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         toast("沒有勾選孩子", "err");
         return;
       }
-      printHtml(`<div class="ts-print">${sheetsHtml(st3, list)}</div>`);
+      printHtml(`<div class="ts-print">${sheetsHtml(st4, list)}</div>`);
     });
   }
 
@@ -8418,7 +8636,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     const pool = isSupervisor2() ? classes() : myClasses();
     const dates = classDates(rs.cid);
     const idx2 = dates.indexOf(rs.date);
-    const st3 = sessionState(rs.session);
+    const st4 = sessionState(rs.session);
     const a = ctx.actions(`<select class="select" id="r-class">${pool.map((x) => `<option value="${x.id}" ${x.id === rs.cid ? "selected" : ""}>${esc(x.name)}　${esc(subjectOfClass(x))}</option>`).join("")}</select>
     <select class="select" id="r-date">${(dates.includes(rs.date) ? dates : [...dates, rs.date].sort()).map((d) => `<option value="${d}" ${d === rs.date ? "selected" : ""}>${mdw(d)}</option>`).join("")}</select>
     <button class="btn" id="r-prev" ${idx2 <= 0 ? "disabled" : ""}>‹</button><button class="btn" id="r-next" ${idx2 < 0 || idx2 >= dates.length - 1 ? "disabled" : ""}>›</button>`);
@@ -8455,7 +8673,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
           ${S.meta?.ai?.enabled ? `<button class="btn sm" data-ai="__session">${icon("sparkle", "sm")}AI 潤稿</button>` : ""}</div>
         ${suggestBox("__session", rs.suggest.__session)}
         ${rs.info.polished ? `<label class="field mt8"><span>整理後</span><textarea class="textarea" data-info="polished" rows="2">${esc(rs.info.polished)}</textarea></label>` : ""}</div></div>
-    <div class="sticky-foot"><span id="r-foot-msg">${rs.dirty ? '<span class="chip warn">尚未儲存</span> <span class="small muted">草稿已自動保存在這台電腦</span>' : `<span class="chip ${st3.chip}">${st3.label}</span> ${s?.submittedAt ? `<span class="small muted">送出於 ${esc(s.submittedAt)}</span>` : ""}`}</span><span class="sp"></span>
+    <div class="sticky-foot"><span id="r-foot-msg">${rs.dirty ? '<span class="chip warn">尚未儲存</span> <span class="small muted">草稿已自動保存在這台電腦</span>' : `<span class="chip ${st4.chip}">${st4.label}</span> ${s?.submittedAt ? `<span class="small muted">送出於 ${esc(s.submittedAt)}</span>` : ""}`}</span><span class="sp"></span>
       <button class="btn" id="r-save">${icon("save", "sm")}儲存草稿</button>
       <button class="btn primary" id="r-submit">${icon("send", "sm")}${s?.submit === "已送出" ? "更新並重新送出" : "送出課後紀錄"}</button></div>`;
     updateCounts();
@@ -8809,10 +9027,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     return `<div class="mg ${mini ? "mini" : ""}">${ROUNDS.map((rd) => `<div class="mg-row"><span class="mg-r" title="${esc(INFO.get(rd + "-1")?.grade || "")}">${mini ? rd : `第${CN[rd]}回<small>${esc((INFO.get(rd + "-1")?.grade || "").replace("年級", "年"))}</small>`}</span>
     ${[1, 2, 3, 4, 5].map((n) => {
       const c = `${rd}-${n}`;
-      const st3 = status2.get(c);
-      const cls = [st3?.state || "", plan.has(c) ? "now" : ""].join(" ");
-      const tip = `${c} ${INFO.get(c)?.unit || ""}${st3?.best != null ? `・最高 ${st3.best} 分` : ""}${st3?.tries > 1 ? `・考了 ${st3.tries} 次` : ""}`;
-      return clickable ? `<button type="button" class="mg-c ${cls}" data-code="${c}" title="${esc(tip)}"><b>${c}</b><small>${esc(INFO.get(c)?.unit || "")}</small>${st3?.best != null ? `<i>${st3.best}</i>` : ""}</button>` : `<span class="mg-c ${cls}" title="${esc(tip)}">${mini ? "" : st3?.best ?? ""}</span>`;
+      const st4 = status2.get(c);
+      const cls = [st4?.state || "", plan.has(c) ? "now" : ""].join(" ");
+      const tip = `${c} ${INFO.get(c)?.unit || ""}${st4?.best != null ? `・最高 ${st4.best} 分` : ""}${st4?.tries > 1 ? `・考了 ${st4.tries} 次` : ""}`;
+      return clickable ? `<button type="button" class="mg-c ${cls}" data-code="${c}" title="${esc(tip)}"><b>${c}</b><small>${esc(INFO.get(c)?.unit || "")}</small>${st4?.best != null ? `<i>${st4.best}</i>` : ""}</button>` : `<span class="mg-c ${cls}" title="${esc(tip)}">${mini ? "" : st4?.best ?? ""}</span>`;
     }).join("")}</div>`).join("")}</div>`;
   }
   var legend2 = () => `<div class="row wrap small muted mt8" style="gap:4px 12px"><span><i class="mg-dot pass"></i>已通過（${MATH_PASS} 分以上）</span><span><i class="mg-dot fail"></i>考過、待複測</span><span><i class="mg-dot now"></i>這次要考</span></div>`;
@@ -9143,6 +9361,864 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     }
   };
 
+  // src/js/english.js
+  var PAPERS = EN_PAPERS.map(([name, kind, book, range]) => ({ name, kind, book, range }));
+  var BY_NAME = new Map(PAPERS.map((p, i) => [p.name, { ...p, i }]));
+  var paperInfo = (name) => BY_NAME.get(name) || { name, kind: "other", book: "", range: "", i: 999 };
+  var paperOrder = (name) => paperInfo(name).i;
+  var kindOf = (name) => paperInfo(name).kind;
+  var VERSIONS = EN_VERSIONS;
+  function partsOf(paper, level) {
+    const k = kindOf(paper);
+    if (k === "starter") return EN_STARTER.parts;
+    if (k === "abc") return EN_ABC_PARTS[paper] || 4;
+    if (k === "final") return EN_FINAL.parts;
+    if (k === "stage") return EN_LEVELS[level]?.q.length || 7;
+    return 7;
+  }
+  var needsLevel = (paper) => kindOf(paper) === "stage";
+  var T_ORD = { 上: 1, 下: 2, 暑: 3 };
+  function termKey(t) {
+    const m = /^(\d{2,3})(上|下|暑)$/.exec(String(t || ""));
+    return m ? Number(m[1]) * 10 + T_ORD[m[2]] : 0;
+  }
+  function termLabel(t) {
+    const m = /^(\d{2,3})(上|下|暑)$/.exec(String(t || ""));
+    return m ? `${m[1]} ${m[2] === "暑" ? "暑假" : m[2] + "學期"}` : String(t || "");
+  }
+  var termCode = (t) => {
+    const m = /^(\d{2,3})(上|下|暑)$/.exec(String(t || ""));
+    return m ? `${m[1]}-${T_ORD[m[2]]}` : String(t || "");
+  };
+  function termFromCode(s) {
+    const m = /(\d{2,3})\s*-\s*([123])/.exec(String(s || ""));
+    return m ? m[1] + ["", "上", "下", "暑"][Number(m[2])] : "";
+  }
+  function termList(semesterIds, extra = []) {
+    const set = new Set(extra.filter(Boolean));
+    for (const id of semesterIds) {
+      const m = /^(\d{2,3})(上|下)$/.exec(String(id || ""));
+      if (m) {
+        set.add(`${m[1]}上`);
+        set.add(`${m[1]}下`);
+        set.add(`${m[1]}暑`);
+      } else if (id) set.add(id);
+    }
+    return [...set].sort((a, b) => termKey(a) - termKey(b));
+  }
+  var filled = (errs) => (errs || []).some((v) => v != null && v !== "");
+  function evaluate(r) {
+    if (!r) return null;
+    if (r.absent) return { parts: [], verdict: "缺考", tone: "", detail: "" };
+    const k = kindOf(r.paper);
+    const n = partsOf(r.paper, r.level);
+    const errs = Array.from({ length: n }, (_, i) => {
+      const v = (r.errs || [])[i];
+      return v == null || v === "" ? null : Number(v);
+    });
+    if (!filled(errs)) return { parts: errs.map((err) => ({ err, state: "" })), verdict: "", tone: "", detail: "" };
+    if (k === "starter") {
+      const parts = errs.map((err) => ({ err, q: EN_STARTER.q, state: err == null ? "" : err <= EN_STARTER.ok ? "過關" : "待加強" }));
+      const bad = parts.map((p, i) => p.state === "待加強" ? i + 1 : 0).filter(Boolean);
+      return { parts, verdict: bad.length ? "未通過" : "通過", tone: bad.length ? "bad" : "good", detail: bad.length ? `第 ${bad.join("、")} 大題錯超過 ${EN_STARTER.ok} 題` : `每個大題錯 ${EN_STARTER.ok} 題以內` };
+    }
+    if (k === "final") {
+      const tot = errs.reduce((s, v) => s + (v || 0), 0);
+      const ok = tot <= EN_FINAL.ok;
+      return { parts: errs.map((err) => ({ err, state: "" })), verdict: ok ? "通過" : "未通過", tone: ok ? "good" : "bad", detail: `共錯 ${tot} 題（${EN_FINAL.total} 題中錯 ${EN_FINAL.ok} 題以內通過）` };
+    }
+    if (k === "stage") {
+      const L = EN_LEVELS[r.level];
+      if (!L) return { parts: errs.map((err) => ({ err, state: "" })), verdict: "", tone: "", detail: "沒有階數，無法評估" };
+      const parts = errs.map((err, i) => ({ err, q: L.q[i], state: err == null ? "" : err === 0 ? "精熟" : err <= L.ok[i] ? "一般" : "待加強" }));
+      const c = (s) => parts.filter((p) => p.state === s).length;
+      const lv = Number(r.level);
+      const cnt = `精熟 ${c("精熟")}・一般 ${c("一般")}・待加強 ${c("待加強")}`;
+      if (c("精熟") >= 5) return { parts, verdict: lv < 3 ? "升階" : "精熟", tone: "good", detail: `${cnt}，${lv < 3 ? `下次可考 Lv${lv + 1}` : "已是 Lv3"}` };
+      if (c("待加強") >= 5) return { parts, verdict: lv > 1 ? "降階" : "加強輔導", tone: "bad", detail: `${cnt}，${lv > 1 ? `下次可考 Lv${lv - 1}` : "已是 Lv1，請針對這個範圍加強輔導"}` };
+      if (c("一般") >= 5) return { parts, verdict: "維持", tone: "keep", detail: `${cnt}，維持 Lv${lv}` };
+      return { parts, verdict: "維持", tone: "keep", detail: `${cnt}，沒有超過四個大題的同一類，留意錯誤集中的大題（聽、讀或寫）` };
+    }
+    return { parts: errs.map((err) => ({ err, state: "" })), verdict: "", tone: "", detail: "" };
+  }
+  function suggestLevel(history4) {
+    const last = [...history4].reverse().find((r) => !r.absent && kindOf(r.paper) === "stage" && r.level && filled(r.errs));
+    if (!last) return { level: "2", why: "第一次考，建議從 Lv2 開始" };
+    const v = evaluate(last).verdict, lv = Number(last.level);
+    const level = String(v === "升階" ? lv + 1 : v === "降階" ? lv - 1 : lv);
+    return { level, why: `上次 ${last.paper} Lv${lv}：${v || "未評估"}` };
+  }
+  function suggestVersion(history4, paper, level) {
+    const used = history4.filter((r) => r.paper === paper && (!needsLevel(paper) || !level || r.level === String(level)) && r.version).map((r) => r.version);
+    const v = VERSIONS.find((x) => !used.includes(x)) || VERSIONS[used.length % 3];
+    return { version: v, why: used.length ? `之前考過 ${used.join("、")} 版` : "" };
+  }
+  function suggestPaper(history4) {
+    const done = history4.filter((r) => !r.absent && filled(r.errs) && BY_NAME.has(r.paper));
+    if (!done.length) return { paper: "", why: "" };
+    const last = done[done.length - 1];
+    const v = evaluate(last).verdict;
+    if (["未通過", "加強輔導", "降階"].includes(v)) return { paper: last.paper, why: `上次 ${v}，再考一次` };
+    const top2 = Math.max(...done.map((r) => paperOrder(r.paper)));
+    const next = PAPERS[top2 + 1];
+    return next ? { paper: next.name, why: `接續 ${PAPERS[top2].name}` } : { paper: "", why: "" };
+  }
+  var normH = (v) => String(v ?? "").replace(/\s+/g, "");
+  var CN2 = { 一: 1, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6 };
+  function normPaper(raw) {
+    const s = String(raw ?? "").replace(/\s+/g, "").replace(/[－—–~～]/g, "-");
+    if (!s) return "";
+    if (/^sta/i.test(s) || /字母教學/.test(s)) return "Starter";
+    const abc = [
+      [/字母音.*一|字母音.*1/, "ABC字母音檢測一"],
+      [/字母音.*二|字母音.*2/, "ABC字母音檢測二"],
+      [/短母音/, "ABC短母音檢測"],
+      [/長母音/, "ABC長母音檢測"],
+      [/混淆音.*一|混淆音.*1/, "ABC易混淆音檢測一"],
+      [/混淆音.*二|混淆音.*2/, "ABC易混淆音檢測二"],
+      [/雙元音/, "ABC雙元音檢測"]
+    ];
+    for (const [re, n] of abc) if (re.test(s)) return n;
+    const b = /第([一二三四1-4])冊/.exec(s);
+    if (b) {
+      const book = `第${"一二三四"[(CN2[b[1]] || Number(b[1])) - 1]}冊`;
+      if (/總(複習|測驗)|CH1-9/i.test(s)) return `新式${book} 總複習`;
+      const r = /CH(\d)-(\d)/i.exec(s);
+      if (r && ["1-3", "4-6", "7-9"].includes(`${r[1]}-${r[2]}`)) return `新式${book} CH${r[1]}-${r[2]}`;
+    }
+    return String(raw).trim();
+  }
+  var pad22 = (n) => String(n).padStart(2, "0");
+  function parseDate(v) {
+    if (v instanceof Date && !isNaN(v)) return `${v.getFullYear()}-${pad22(v.getMonth() + 1)}-${pad22(v.getDate())}`;
+    if (typeof v === "number" && v > 3e4 && v < 8e4) {
+      const d = new Date(Math.round((v - 25569) * 864e5));
+      return `${d.getUTCFullYear()}-${pad22(d.getUTCMonth() + 1)}-${pad22(d.getUTCDate())}`;
+    }
+    const s = String(v ?? "").trim();
+    let m = /^(\d{2,4})[./-](\d{1,2})[./-](\d{1,2})/.exec(s);
+    if (m) {
+      let y = Number(m[1]);
+      if (y < 1e3) y += 1911;
+      const mo = Number(m[2]), d = Number(m[3]);
+      if (mo >= 1 && mo <= 12 && d >= 1 && d <= 31) return `${y}-${pad22(mo)}-${pad22(d)}`;
+    }
+    return "";
+  }
+  var isName = (v) => /^[一-鿿]{2,4}$/.test(String(v ?? "").trim()) && !/OO|範例|填寫/.test(String(v));
+  function parseLearningFile(aoa) {
+    const hi = aoa.slice(0, 6).findIndex((r) => r.some((v) => normH(v) === "姓名") && r.some((v) => /大題/.test(normH(v))));
+    if (hi < 0) return { rows: [], kids: [], problems: ["找不到標題列（姓名、第一大題…）"] };
+    const head = aoa[hi].map(normH);
+    const col = (...keys) => {
+      for (const k of keys) {
+        const i = head.findIndex((h2) => h2.startsWith(k));
+        if (i >= 0) return i;
+      }
+      return -1;
+    };
+    const C = {
+      name: col("姓名"),
+      grade: col("年級"),
+      sem: col("學期", "課輔學期"),
+      test: col("測驗卷別") >= 0 ? col("測驗卷別") : col("本學期進度"),
+      level: col("測驗階數"),
+      ver: col("測驗版本"),
+      date: col("測驗時間"),
+      note: col("答題狀況", "測驗後備註")
+    };
+    const E = ["一", "二", "三", "四", "五", "六", "七"].map((n) => col(`第${n}大題`));
+    const out = [], kids = [], problems = [];
+    let cur = null, grade = "", term = "";
+    for (let r = hi + 1; r < aoa.length; r++) {
+      const row = aoa[r] || [];
+      const g = (i) => i >= 0 ? row[i] : "";
+      const nm = String(g(C.name) ?? "").trim();
+      if (/範例|OO/.test(nm) || /填寫說明/.test(String(g(C.sem)))) {
+        cur = null;
+        continue;
+      }
+      if (isName(nm) && nm !== cur) {
+        cur = nm;
+        grade = "";
+        term = "";
+        if (!kids.includes(nm)) kids.push(nm);
+      }
+      const gr = String(g(C.grade) ?? "").trim();
+      if (gr) grade = CN2[gr] || (Number(gr) >= 1 && Number(gr) <= 6 ? Number(gr) : grade);
+      const raw = String(g(C.test) ?? "").trim();
+      if (!raw || /^\(/.test(raw)) continue;
+      if (!cur) continue;
+      const semRaw = String(g(C.sem) ?? "");
+      term = termFromCode(semRaw) || term;
+      const notes = [];
+      const errs = E.map((i) => {
+        const v = g(i);
+        if (v === "" || v == null) return null;
+        if (typeof v === "number") return Math.round(v);
+        const s = String(v).trim();
+        if (/^\d{1,2}$/.test(s)) return Number(s);
+        if (s) notes.push(s);
+        return null;
+      });
+      const dRaw = g(C.date);
+      const date = parseDate(dRaw);
+      const dText = dRaw instanceof Date ? "" : String(dRaw ?? "").trim();
+      const note0 = String(g(C.note) ?? "").trim();
+      const absent = /缺考/.test(`${semRaw} ${dText} ${note0}`);
+      if (dText && !date && !/缺考/.test(dText)) notes.push(`測驗時間：${dText}`);
+      if (/實際/.test(semRaw)) notes.push(semRaw.replace(/^\s*\d{2,3}\s*-\s*[123]\s*/, "").trim());
+      const lv = /([123])/.exec(String(g(C.level) ?? ""));
+      const ver = String(g(C.ver) ?? "").trim().toUpperCase().replace("Ａ", "A").replace("Ｂ", "B").replace("Ｃ", "C");
+      const paper = normPaper(raw);
+      if (!BY_NAME.has(paper)) problems.push(`無法辨識的考卷名稱：${raw}`);
+      out.push({
+        name: cur,
+        grade,
+        term,
+        paper,
+        level: kindOf(paper) === "stage" && lv ? lv[1] : "",
+        version: VERSIONS.includes(ver) ? ver : "",
+        date,
+        errs,
+        note: [note0, ...notes].filter(Boolean).join("；"),
+        absent
+      });
+    }
+    for (let i = out.length - 1; i >= 0; i--) {
+      if (!out[i].term && out[i + 1]?.name === out[i].name) out[i].term = out[i + 1].term;
+    }
+    if (out.some((r) => !r.term)) problems.push(`${out.filter((r) => !r.term).length} 筆沒有學期`);
+    return { rows: out, kids, problems };
+  }
+  function importKey(r) {
+    const s = [r.term, r.paper, r.level, r.version, r.date, (r.errs || []).join(","), r.absent ? 1 : 0, r.note].join("|");
+    let h1 = 2166136261, h2 = 19088743;
+    for (let i = 0; i < s.length; i++) {
+      const c = s.charCodeAt(i);
+      h1 = Math.imul(h1 ^ c, 16777619) >>> 0;
+      h2 = Math.imul(h2 ^ c, 2246822519) >>> 0;
+    }
+    return "i" + h1.toString(36) + h2.toString(36);
+  }
+
+  // src/js/pages/english.js
+  var CN3 = ["", "一", "二", "三", "四", "五", "六", "七"];
+  var isEnClass = (c) => subjectOfClass(c) === "英語";
+  var enClasses = () => (isSupervisor2() ? classes() : myClasses()).filter(isEnClass);
+  var canPlan = () => isSupervisor2();
+  var newId = (cid, sid2) => `EN-${cid || "X"}~${sid2}~${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+  var defaultTerm = () => {
+    const m = /^(\d{2,3})(上|下)$/.exec(S.semester || "");
+    if (!m) return S.semester;
+    const mo = (/* @__PURE__ */ new Date()).getMonth() + 1;
+    return m[2] === "下" && (mo === 7 || mo === 8) ? `${m[1]}暑` : S.semester;
+  };
+  var terms = () => termList(S.data.semesters.map((s) => s.id), [S.semester, ...S.data.enTests.map((r) => r.term)]);
+  var hasErr = (r) => (r.errs || []).some((v) => v != null && v !== "");
+  var dateOf = (r) => r.date || r.planDate || "";
+  var roc = (d) => {
+    const m = /^(\d{4})-(\d\d)-(\d\d)$/.exec(d || "");
+    return m ? `${Number(m[1]) - 1911}.${m[2]}.${m[3]}` : "";
+  };
+  var md3 = (d) => {
+    const m = /^\d{4}-(\d\d)-(\d\d)$/.exec(d || "");
+    return m ? `${Number(m[1])}/${Number(m[2])}` : "";
+  };
+  var lvText = (r) => needsLevel(r.paper) ? r.level ? `Lv${r.level}` : "未選階" : "";
+  var short = (p) => String(p || "").replace(/^新式/, "").replace(/^ABC/, "ABC ");
+  function history3(sid2, exceptIds = null) {
+    return S.data.enTests.filter((r) => r.studentId === sid2 && !(exceptIds && exceptIds.has(r.id))).sort((a, b) => termKey(a.term) - termKey(b.term) || dateOf(a).localeCompare(dateOf(b)) || paperOrder(a.paper) - paperOrder(b.paper));
+  }
+  var verdictChip = (v) => v?.verdict ? `<span class="chip ${v.tone === "good" ? "good" : v.tone === "bad" ? "warn" : "outline"}">${esc(v.verdict)}</span>` : "";
+  var paperOptions = (sel, { blank: blank2 = "" } = {}) => {
+    const groups = [["Starter", (p) => p.kind === "starter"], ...["第一冊", "第二冊", "第三冊", "第四冊"].map((b) => [b, (p) => p.book === b])];
+    const known = PAPERS.some((p) => p.name === sel);
+    return `${blank2 ? `<option value="">${esc(blank2)}</option>` : ""}${!known && sel ? `<option selected>${esc(sel)}</option>` : ""}${groups.map(([g, f]) => `<optgroup label="${esc(g)}">${PAPERS.filter(f).map((p) => `<option value="${esc(p.name)}" ${p.name === sel ? "selected" : ""}>${esc(p.name)}</option>`).join("")}</optgroup>`).join("")}`;
+  };
+  var st3 = null;
+  function loadState4(cid, term) {
+    const kids = roster(cid);
+    const ids = new Set(kids.map((k) => k.id));
+    const rows2 = new Map(S.data.enTests.filter((r) => ids.has(r.studentId) && r.term === term).map((r) => [r.id, structuredClone(r)]));
+    return { cid, term, kids, rows: rows2, orig: new Map([...rows2].map(([id, r]) => [id, JSON.stringify(r)])), removed: /* @__PURE__ */ new Set() };
+  }
+  var isDirty2 = () => !!st3 && (st3.removed.size > 0 || [...st3.rows].some(([id, r]) => st3.orig.get(id) !== JSON.stringify(r)));
+  var kidRows = (sid2) => [...st3.rows.values()].filter((r) => r.studentId === sid2).sort((a, b) => dateOf(a).localeCompare(dateOf(b)) || paperOrder(a.paper) - paperOrder(b.paper));
+  function rowHtml(r, hist) {
+    const plan = canPlan() || r.by === "老師";
+    const ev = evaluate(r);
+    const n = partsOf(r.paper, r.level);
+    const lvl = needsLevel(r.paper) ? suggestLevel(hist) : null;
+    const ver = suggestVersion(hist, r.paper, r.level);
+    const info = paperInfo(r.paper);
+    const delOk = canPlan() || r.by === "老師";
+    return `<div class="en-row ${ev?.tone || ""} ${r.absent ? "absent" : ""}" data-id="${esc(r.id)}">
+    <div class="en-c en-paper"><label class="small muted">考卷</label>
+      ${plan ? `<select class="select" data-f="paper">${paperOptions(r.paper)}</select>` : `<b>${esc(r.paper)}</b>`}
+      <span class="small muted">${esc(info.range || "")}</span></div>
+    <div class="en-c en-date"><label class="small muted">${plan ? "排定日期" : "排定"}</label>
+      ${canPlan() ? `<input type="date" class="input" data-f="planDate" value="${esc(r.planDate || "")}">` : `<span>${esc(md3(r.planDate) || "—")}</span>`}
+      <label class="small muted mt4">實際測驗日</label><input type="date" class="input" data-f="date" value="${esc(r.date || "")}"></div>
+    <div class="en-c en-lv"><label class="small muted">階數</label>
+      ${needsLevel(r.paper) ? `<select class="select" data-f="level"><option value="">選階數</option>${["1", "2", "3"].map((l) => `<option value="${l}" ${r.level === l ? "selected" : ""}>Lv${l}</option>`).join("")}</select>
+        <span class="small muted" title="${esc(lvl.why)}">建議 Lv${lvl.level}</span>` : '<span class="small muted">不分階數</span>'}
+      <label class="small muted mt4">版本</label><select class="select" data-f="version"><option value="">選版本</option>${VERSIONS.map((v) => `<option ${r.version === v ? "selected" : ""}>${v}</option>`).join("")}</select>
+      <span class="small muted" title="${esc(ver.why)}">建議 ${ver.version}${ver.why ? "（重考）" : ""}</span></div>
+    <div class="en-c en-errs"><label class="small muted">各大題錯誤題數 ${needsLevel(r.paper) && !r.level ? "（先選階數）" : ""}</label>
+      <div class="en-parts">${Array.from({ length: n }, (_, i) => {
+      const p = ev?.parts?.[i];
+      return `<label class="en-part ${p?.state ? "st-" + p.state : ""}" title="${esc(p?.state || "")}${p?.q ? `（${p.q} 題）` : ""}"><small>${CN3[i + 1]}</small>
+          <input class="input" inputmode="numeric" maxlength="2" data-e="${i}" value="${esc(r.errs?.[i] ?? "")}" ${r.absent ? "disabled" : ""}></label>`;
+    }).join("")}
+        <label class="en-abs small"><input type="checkbox" data-f="absent" ${r.absent ? "checked" : ""}> 缺考</label></div>
+      <input class="input mt4" data-f="note" maxlength="300" placeholder="答題狀況描述（例如：能辨識雙母音、不理解語意）" value="${esc(r.note || "")}"></div>
+    <div class="en-c en-ev">${verdictChip(ev)}<span class="small">${esc(ev?.detail || (hasErr(r) || r.absent ? "" : "考完填錯誤題數，全對填 0"))}</span>
+      ${delOk ? `<button type="button" class="mk-x" data-rm title="刪除這張">×</button>` : ""}</div>
+  </div>`;
+  }
+  function kidHtml(k) {
+    const mine = kidRows(k.id);
+    const hist = history3(k.id, new Set(mine.map((r) => r.id)));
+    const past = hist.filter((r) => hasErr(r) || r.absent).slice(-4);
+    const prog = lastProgress(k.id, st3.cid, "9999-12-31")?.progress;
+    let sug = suggestPaper([...hist, ...mine]);
+    if (mine.some((r) => r.paper === sug.paper && !hasErr(r) && !r.absent)) sug = { paper: "" };
+    return `<div class="en-kid" data-kid="${k.id}">
+    <div class="en-kid-h"><a href="#/kids/${k.id}"><b>${esc(k.name)}</b></a><span class="small muted">${k.grade ? k.grade + " 年級" : ""}</span>
+      ${prog ? `<span class="chip outline small">目前進度：${esc(prog)}</span>` : ""}
+      <span class="sp"></span>${past.map((r) => {
+      const v = evaluate(r);
+      return `<span class="chip small ${v.tone === "good" ? "good" : v.tone === "bad" ? "warn" : ""}" title="${esc(termLabel(r.term))} ${esc(md3(dateOf(r)))}">${esc(short(r.paper))}${r.level ? " Lv" + r.level : ""}・${esc(v.verdict || "已考")}</span>`;
+    }).join("")}</div>
+    <div class="en-rows">${mine.map((r) => rowHtml(r, [...hist, ...mine.filter((x) => x !== r && dateOf(x) < dateOf(r))])).join("") || `<div class="small muted en-empty">${esc(termLabel(st3.term))}還沒有排檢測</div>`}</div>
+    <div class="row wrap mt8" style="gap:6px"><button type="button" class="btn sm" data-add="">${icon("plus", "sm")}加一張</button>
+      ${sug.paper ? `<button type="button" class="chip outline mk-sug" data-add="${esc(sug.paper)}">＋ ${esc(sug.paper)}・${esc(sug.why)}</button>` : ""}</div>
+  </div>`;
+  }
+  function renderClass2(ctx) {
+    const c = get("classes", st3.cid);
+    const pool = enClasses();
+    const a = ctx.actions(`<select class="select" id="e-class">${pool.map((x) => `<option value="${x.id}" ${x.id === st3.cid ? "selected" : ""}>${esc(x.name)}　${esc(teacherOfClass(x))}</option>`).join("")}</select>
+    <select class="select" id="e-term">${terms().map((t) => `<option value="${t}" ${t === st3.term ? "selected" : ""}>${esc(termLabel(t))}</option>`).join("")}</select>
+    <button class="btn" id="e-need">${icon("print", "sm")}需求表</button>
+    <button class="btn" id="e-xlsx">${icon("download", "sm")}學習檔案</button>
+    ${isSupervisor2() ? `<a class="btn ghost" href="#/english?view=all&term=${encodeURIComponent(st3.term)}">${icon("grid", "sm")}全部班級</a>` : ""}`);
+    $("#e-class", a).onchange = (e) => leave5(() => ctx.go(`#/english?class=${e.target.value}&term=${encodeURIComponent(st3.term)}`));
+    $("#e-term", a).onchange = (e) => leave5(() => ctx.go(`#/english?class=${st3.cid}&term=${encodeURIComponent(e.target.value)}`));
+    $("#e-need", a).onclick = () => needModal([c], st3.term);
+    $("#e-xlsx", a).onclick = () => downloadFile([c]);
+    ctx.title("英語檢測", `${esc(c.name)}・${esc(teacherOfClass(c))}・${esc(termLabel(st3.term))}`);
+    ctx.el.innerHTML = `<div class="callout small mb8">${icon("info", "sm")} ${canPlan() ? "學期初替每位孩子排好檢測卷與日期（可用「整班排一場」一次排）；老師會依孩子上課的反應選階數與版本，考完填各大題錯誤題數。" : "社工已排好檢測卷與日期。考前依孩子上課的反應選<b>階數</b>與<b>版本</b>（系統會給建議），考完填各大題錯誤題數（全對填 0）和答題狀況，系統會依準則評估。"}</div>
+    ${canPlan() ? `<div class="card mb8"><div class="card-body row wrap" style="gap:8px"><b>整班排一場</b><input type="date" class="input" id="e-bdate" value="${todayISO()}" style="width:auto">
+      <button class="btn sm" id="e-batch">${icon("plus", "sm")}替每位孩子排一張</button><span class="small muted">會依孩子的紀錄建議下一張，排好可以再改</span></div></div>` : ""}
+    <div class="card"><div class="card-head"><h3>孩子</h3><span class="sub" id="e-count"></span><span class="sp"></span>
+      <span class="small muted"><i class="en-dot st-精熟"></i>精熟 <i class="en-dot st-一般"></i>一般 <i class="en-dot st-待加強"></i>待加強</span></div>
+      <div class="card-body" id="e-kids">${st3.kids.map(kidHtml).join("") || `<div class="empty">${icon("users")}<div>這個班還沒有孩子名單</div></div>`}</div></div>
+    <div class="sticky-foot"><span id="e-foot" class="small muted"></span><span class="sp"></span><button class="btn primary" id="e-save">${icon("save", "sm")}儲存</button></div>`;
+    $("#e-save").onclick = () => saveClass2(ctx);
+    const b = $("#e-batch");
+    if (b) b.onclick = () => batchPlan($("#e-bdate").value);
+    foot2();
+  }
+  function foot2() {
+    const all = [...st3.rows.values()];
+    const cnt = $("#e-count");
+    if (cnt) cnt.textContent = `已排 ${all.length} 張・已選階數版本 ${all.filter((r) => r.version && (!needsLevel(r.paper) || r.level)).length} 張・已登錄 ${all.filter((r) => hasErr(r) || r.absent).length} 張`;
+    const f = $("#e-foot");
+    if (f) f.innerHTML = isDirty2() ? '<span class="chip warn">尚未儲存</span>' : '<span class="small muted">已儲存</span>';
+  }
+  function rerenderKid3(sid2) {
+    const k = st3.kids.find((x) => x.id === sid2);
+    const old = $(`.en-kid[data-kid="${sid2}"]`);
+    if (k && old) old.replaceWith(h(kidHtml(k)));
+    foot2();
+  }
+  function addRow(sid2, paper) {
+    const hist = history3(sid2, /* @__PURE__ */ new Set([...st3.rows.keys()])).concat(kidRows(sid2));
+    const p = paper || suggestPaper(hist).paper || "Starter";
+    const c = get("classes", st3.cid);
+    const r = {
+      id: newId(st3.cid, sid2),
+      term: st3.term,
+      semesterId: c?.semesterId || S.semester,
+      classId: st3.cid,
+      studentId: sid2,
+      paper: p,
+      planDate: canPlan() ? $("#e-bdate")?.value || todayISO() : "",
+      date: canPlan() ? "" : todayISO(),
+      level: "",
+      version: "",
+      errs: Array(7).fill(null),
+      note: "",
+      absent: false,
+      by: canPlan() ? "社工" : "老師"
+    };
+    st3.rows.set(r.id, r);
+    return r;
+  }
+  async function batchPlan(date) {
+    if (!date) {
+      toast("請先選日期", "err");
+      return;
+    }
+    const list = st3.kids.map((k) => {
+      const hist = history3(k.id, new Set(st3.rows.keys())).concat(kidRows(k.id));
+      return [k, suggestPaper(hist)];
+    });
+    const body = h(`<div class="stack" style="gap:6px"><p class="small muted" style="margin:0">${esc(date)}：每位孩子要考的卷（選「不排」就略過）</p>
+    ${list.map(([k, s]) => `<div class="row" style="gap:8px"><b style="width:5em">${esc(k.name)}</b><select class="select" data-k="${k.id}" style="flex:1">${paperOptions(s.paper, { blank: "不排" })}</select></div>`).join("")}</div>`);
+    const ok = await openModal({ title: "整班排一場", body, buttons: [{ text: "取消", value: false }, { text: "排入", value: true, primary: true }] });
+    if (!ok) return;
+    let n = 0;
+    for (const sel of $$("select[data-k]", body)) {
+      if (!sel.value) continue;
+      const r = addRow(sel.dataset.k, sel.value);
+      r.planDate = date;
+      n++;
+    }
+    st3.kids.forEach((k) => rerenderKid3(k.id));
+    toast(`已排 ${n} 張，記得按儲存`);
+  }
+  async function saveClass2(ctx) {
+    const out = [];
+    for (const [id, r] of st3.rows) {
+      if (st3.orig.get(id) === JSON.stringify(r)) continue;
+      if ((r.errs || []).some((v) => v != null && v !== "" && !/^\d{1,2}$/.test(String(v)))) {
+        toast(`${get("students", r.studentId)?.name || ""} ${r.paper} 的錯誤題數要是數字`, "err");
+        return;
+      }
+      if ((hasErr(r) || r.absent) && !r.date) r.date = r.planDate && r.planDate <= todayISO() ? r.planDate : todayISO();
+      out.push(r);
+    }
+    for (const id of st3.removed) if (S.data.enTests.some((r) => r.id === id)) out.push({ id, delete: true });
+    if (!out.length) {
+      toast("沒有需要儲存的變更");
+      return;
+    }
+    const btn = $("#e-save");
+    btn.disabled = true;
+    try {
+      await mutate("/api/english/save", { rows: out }, "英語檢測已儲存");
+      st3 = loadState4(st3.cid, st3.term);
+      renderClass2(ctx);
+    } catch {
+    } finally {
+      if (btn.isConnected) btn.disabled = false;
+    }
+  }
+  async function leave5(fn) {
+    if (isDirty2() && !await confirmBox("英語檢測還沒儲存，確定要離開？", { okText: "離開" })) return;
+    fn();
+  }
+  function bind3(ctx) {
+    const el = ctx.el;
+    el.addEventListener("click", (e) => {
+      const kidEl = e.target.closest(".en-kid");
+      if (!kidEl) return;
+      const sid2 = kidEl.dataset.kid;
+      const add = e.target.closest("[data-add]");
+      if (add) {
+        addRow(sid2, add.dataset.add);
+        rerenderKid3(sid2);
+        return;
+      }
+      const rm = e.target.closest("[data-rm]");
+      if (rm) {
+        const id = rm.closest(".en-row").dataset.id;
+        const r = st3.rows.get(id);
+        const go2 = () => {
+          st3.rows.delete(id);
+          if (st3.orig.has(id)) st3.removed.add(id);
+          rerenderKid3(sid2);
+        };
+        if (r && (hasErr(r) || r.absent)) confirmBox(`這張（${esc(r.paper)}）已經填了結果，確定刪除？`, { okText: "刪除", danger: true }).then((ok) => ok && go2());
+        else go2();
+      }
+    });
+    const upd = (e, structural) => {
+      const rowEl = e.target.closest(".en-row");
+      if (!rowEl) return;
+      const r = st3.rows.get(rowEl.dataset.id);
+      if (!r) return;
+      const t = e.target;
+      if (t.dataset.e != null) {
+        t.value = t.value.replace(/[^\d]/g, "").slice(0, 2);
+        r.errs = Array.from({ length: 7 }, (_, i) => (r.errs || [])[i] ?? null);
+        r.errs[Number(t.dataset.e)] = t.value === "" ? null : Number(t.value);
+        liveEval(rowEl, r);
+        foot2();
+        return;
+      }
+      const f = t.dataset.f;
+      if (!f) return;
+      r[f] = t.type === "checkbox" ? t.checked : t.value;
+      if (f === "paper" || f === "level") {
+        const n = partsOf(r.paper, r.level);
+        r.errs = (r.errs || []).map((v, i) => i < n ? v : null);
+      }
+      if (["paper", "level", "absent"].includes(f) && structural) rerenderKid3(r.studentId);
+      else foot2();
+    };
+    el.addEventListener("input", (e) => upd(e, false));
+    el.addEventListener("change", (e) => upd(e, true));
+  }
+  function liveEval(rowEl, r) {
+    const ev = evaluate(r);
+    rowEl.className = `en-row ${ev?.tone || ""} ${r.absent ? "absent" : ""}`;
+    $$(".en-part", rowEl).forEach((p, i) => {
+      p.className = `en-part ${ev?.parts?.[i]?.state ? "st-" + ev.parts[i].state : ""}`;
+    });
+    const box = $(".en-ev", rowEl);
+    const x = $("[data-rm]", box);
+    box.innerHTML = `${verdictChip(ev)}<span class="small">${esc(ev?.detail || "")}</span>`;
+    if (x) box.appendChild(x);
+  }
+  function needData(list, term, from, to) {
+    const ids = /* @__PURE__ */ new Map();
+    for (const c of list) for (const k of roster(c.id)) ids.set(k.id, c);
+    const rs2 = S.data.enTests.filter((r) => r.term === term && ids.has(r.studentId) && !r.absent && !hasErr(r) && (!from || (r.planDate || r.date || "") >= from) && (!to || (r.planDate || r.date || "9999") <= to));
+    const map = /* @__PURE__ */ new Map();
+    for (const r of rs2) {
+      const key = `${r.paper}|${needsLevel(r.paper) ? r.level || "?" : ""}|${r.version || "?"}`;
+      if (!map.has(key)) map.set(key, { paper: r.paper, level: needsLevel(r.paper) ? r.level || "?" : "", version: r.version || "?", n: 0, by: /* @__PURE__ */ new Map() });
+      const x = map.get(key);
+      x.n++;
+      const cn = ids.get(r.studentId).name;
+      x.by.set(cn, (x.by.get(cn) || 0) + 1);
+    }
+    const lines = [...map.values()].sort((a, b) => paperOrder(a.paper) - paperOrder(b.paper) || a.level.localeCompare(b.level) || a.version.localeCompare(b.version));
+    return { rs: rs2, lines, ids };
+  }
+  function needTable(d) {
+    const miss = d.rs.filter((r) => !r.version || needsLevel(r.paper) && !r.level).length;
+    return `${miss ? `<div class="callout small mb8">${icon("alert", "sm")} 有 ${miss} 張老師還沒選${"階數或版本"}（表中以「?」表示）</div>` : ""}
+    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>考卷</th><th class="c">階數</th><th class="c">版本</th><th class="c">張數</th><th>各班</th></tr></thead><tbody>
+    ${d.lines.map((x) => `<tr><td><b>${esc(x.paper)}</b></td><td class="c">${x.level ? x.level === "?" ? '<span class="chip warn">?</span>' : "Lv" + x.level : "—"}</td>
+      <td class="c">${x.version === "?" ? '<span class="chip warn">?</span>' : x.version}</td><td class="c num"><b>${x.n}</b></td>
+      <td class="small">${[...x.by].map(([n, v]) => `${esc(n)} ${v}`).join("、")}</td></tr>`).join("") || '<tr><td colspan="5" class="small muted">這段期間沒有要考、還沒登錄結果的考卷</td></tr>'}
+    </tbody></table></div><p class="small muted mt8">共 ${d.rs.length} 張（已登錄結果或缺考的不列入）</p>`;
+  }
+  async function needModal(list, term) {
+    const body = h(`<div><div class="row wrap mb8" style="gap:8px"><span class="small">排定日期</span><input type="date" class="input" id="n-from" style="width:auto"><span>～</span><input type="date" class="input" id="n-to" style="width:auto">
+    <span class="small muted">（空白＝整個學期）</span></div><div id="n-tbl"></div></div>`);
+    const draw = () => {
+      $("#n-tbl", body).innerHTML = needTable(needData(list, term, $("#n-from", body).value, $("#n-to", body).value));
+    };
+    body.addEventListener("change", draw);
+    draw();
+    const v = await openModal({
+      title: `英語考卷需求表・${esc(termLabel(term))}${list.length === 1 ? "・" + esc(list[0].name) : ""}`,
+      body,
+      buttons: [{ text: "關閉", value: false }, { text: "下載 Excel", value: () => [$("#n-from", body).value, $("#n-to", body).value], primary: true }]
+    });
+    if (v) downloadNeed(list, term, v[0], v[1]);
+  }
+  function downloadNeed(list, term, from, to) {
+    const X = window.XLSX;
+    if (!X) {
+      toast("Excel 元件沒有載入", "err");
+      return;
+    }
+    const d = needData(list, term, from, to);
+    const wb = X.utils.book_new();
+    const head = [["永齡希望小學雲科大分校"], [`${termLabel(term)} 英語考卷需求表${from || to ? `（${from || ""}～${to || ""}）` : ""}`], [], ["考卷", "階數", "版本", "張數", "各班"]];
+    const ws = X.utils.aoa_to_sheet([...head, ...d.lines.map((x) => [x.paper, x.level ? x.level === "?" ? "未選" : `Level ${x.level}` : "", x.version === "?" ? "未選" : x.version, x.n, [...x.by].map(([n, v]) => `${n} ${v}`).join("、")]), [], ["合計", "", "", d.rs.length]]);
+    ws["!cols"] = [{ wch: 20 }, { wch: 9 }, { wch: 6 }, { wch: 6 }, { wch: 40 }];
+    X.utils.book_append_sheet(wb, ws, "需求表");
+    const det = [
+      ["班級", "課輔老師", "孩子", "排定日期", "考卷", "階數", "版本"],
+      ...d.rs.map((r) => {
+        const c = d.ids.get(r.studentId);
+        return [c.name, teacherOfClass(c), get("students", r.studentId)?.name || "", r.planDate || "", r.paper, needsLevel(r.paper) ? r.level ? `Level ${r.level}` : "未選" : "", r.version || "未選"];
+      }).sort((a, b) => a[0].localeCompare(b[0]) || a[3].localeCompare(b[3]))
+    ];
+    const ws2 = X.utils.aoa_to_sheet(det);
+    ws2["!cols"] = [{ wch: 12 }, { wch: 9 }, { wch: 9 }, { wch: 11 }, { wch: 20 }, { wch: 8 }, { wch: 6 }];
+    X.utils.book_append_sheet(wb, ws2, "明細");
+    X.writeFile(wb, `${termCode(term)}_英語考卷需求表${list.length === 1 ? "_" + list[0].name : ""}.xlsx`);
+  }
+  function downloadFile(list) {
+    const X = window.XLSX;
+    if (!X) {
+      toast("Excel 元件沒有載入", "err");
+      return;
+    }
+    const wb = X.utils.book_new();
+    const used = /* @__PURE__ */ new Set();
+    for (const c of list) {
+      const aoa = [[
+        "序號",
+        "年級",
+        "姓名",
+        "學期",
+        "本學期進度",
+        "測驗階數\n(level1-3)",
+        "測驗版本\n(A/B/C)",
+        "測驗時間",
+        "測驗後備註",
+        ...["一", "二", "三", "四", "五", "六", "七"].map((n) => `第${n}大題
+錯誤題數`),
+        "系統評估"
+      ]];
+      roster(c.id).forEach((k, ki) => {
+        const hs = history3(k.id);
+        if (!hs.length) {
+          aoa.push([ki + 1, CN3[k.grade] || k.grade || "", k.name]);
+          return;
+        }
+        hs.forEach((r, i) => {
+          const ev = evaluate(r);
+          const n = partsOf(r.paper, r.level);
+          aoa.push([
+            i ? "" : ki + 1,
+            i ? "" : CN3[k.grade] || k.grade || "",
+            i ? "" : k.name,
+            termCode(r.term),
+            r.paper,
+            r.level ? `Level ${r.level}` : "",
+            r.version || "",
+            r.absent ? "缺考" : roc(r.date || r.planDate),
+            r.note || "",
+            ...Array.from({ length: 7 }, (_, j) => j < n && r.errs?.[j] != null ? r.errs[j] : ""),
+            [ev?.verdict, ev?.detail].filter(Boolean).join("：")
+          ]);
+        });
+      });
+      const ws = X.utils.aoa_to_sheet(aoa);
+      ws["!cols"] = [{ wch: 5 }, { wch: 5 }, { wch: 8 }, { wch: 7 }, { wch: 20 }, { wch: 9 }, { wch: 8 }, { wch: 10 }, { wch: 30 }, ...Array(7).fill({ wch: 7 }), { wch: 36 }];
+      ws["!freeze"] = { xSplit: 3, ySplit: 1 };
+      let name = `${c.name}英文學習檔案`.replace(/[\\/?*[\]:]/g, "").slice(0, 28);
+      while (used.has(name)) name += "_";
+      used.add(name);
+      X.utils.book_append_sheet(wb, ws, name);
+    }
+    const map = [["卷別", "類別", "教學範圍", "大題數"], ...PAPERS.map((p) => [
+      p.name,
+      { starter: "Starter", abc: "ABC（不分階數）", stage: "階段性測驗卷 Lv1–3", final: "總測驗卷（不分階數）" }[p.kind],
+      p.range,
+      p.kind === "stage" ? "Lv1：6／Lv2、Lv3：7" : partsOf(p.name)
+    ])];
+    const ws2 = X.utils.aoa_to_sheet(map);
+    ws2["!cols"] = [{ wch: 20 }, { wch: 20 }, { wch: 32 }, { wch: 18 }];
+    X.utils.book_append_sheet(wb, ws2, "英文階數對照表");
+    X.writeFile(wb, list.length === 1 ? `${list[0].name}_英文學習檔案.xlsx` : `${S.semester}_英文學習檔案_全部班級.xlsx`);
+  }
+  function renderAll4(ctx, term) {
+    const list = classes().filter(isEnClass);
+    const a = ctx.actions(`<select class="select" id="e-term">${terms().map((t) => `<option value="${t}" ${t === term ? "selected" : ""}>${esc(termLabel(t))}</option>`).join("")}</select>
+    <button class="btn" id="e-need">${icon("print", "sm")}需求表</button><button class="btn" id="e-xall">${icon("download", "sm")}全部學習檔案</button>
+    ${isSocial2() ? `<button class="btn" id="e-imp">${icon("upload", "sm")}匯入舊學習檔案</button>` : ""}`);
+    $("#e-term", a).onchange = (e) => ctx.go(`#/english?view=all&term=${encodeURIComponent(e.target.value)}`);
+    $("#e-need", a).onclick = () => needModal(list, term);
+    $("#e-xall", a).onclick = () => downloadFile(list);
+    const imp = $("#e-imp", a);
+    if (imp) imp.onclick = () => importFlow(ctx);
+    ctx.title("英語檢測", `全部班級・${esc(termLabel(term))}`);
+    const today3 = todayISO();
+    const per = list.map((c) => {
+      const kids = roster(c.id);
+      const ids = new Set(kids.map((k) => k.id));
+      const rs2 = S.data.enTests.filter((r) => r.term === term && ids.has(r.studentId));
+      const done = rs2.filter((r) => hasErr(r) || r.absent);
+      const next = rs2.filter((r) => !hasErr(r) && !r.absent && r.planDate >= today3).map((r) => r.planDate).sort()[0];
+      const overdue = rs2.filter((r) => !hasErr(r) && !r.absent && r.planDate && r.planDate < today3).length;
+      const pick2 = rs2.filter((r) => !hasErr(r) && !r.absent && (!r.version || needsLevel(r.paper) && !r.level)).length;
+      const care = kids.filter((k) => {
+        const l = history3(k.id).filter((r) => hasErr(r)).slice(-1)[0];
+        return l && ["加強輔導", "未通過", "降階"].includes(evaluate(l).verdict);
+      });
+      return { c, kids, rs: rs2, done, next, overdue, pick: pick2, care, noPlan: kids.filter((k) => !rs2.some((r) => r.studentId === k.id)) };
+    });
+    ctx.el.innerHTML = `<div class="callout small mb8">${icon("info", "sm")} 學期初點班級進去，替每位孩子排檢測卷與日期；老師選階數、版本並登錄結果。需求表會統計還沒考的考卷（考卷 × 階數 × 版本）。</div>
+    <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>班級</th><th>課輔老師</th><th class="c">孩子</th><th class="c">已排</th><th>還沒排</th><th class="c">待選階數版本</th><th class="c">已登錄</th><th>下一場</th><th>上次需要加強</th></tr></thead><tbody>
+    ${per.map((x) => `<tr class="click" data-href="#/english?class=${x.c.id}&term=${encodeURIComponent(term)}"><td><b>${esc(x.c.name)}</b></td><td>${esc(teacherOfClass(x.c))}</td>
+      <td class="c num">${x.kids.length}</td><td class="c num">${x.rs.length || '<span class="chip warn">還沒排</span>'}</td>
+      <td class="small">${x.noPlan.length && x.rs.length ? x.noPlan.map((k) => esc(k.name)).join("、") : '<span class="muted">—</span>'}</td>
+      <td class="c num">${x.pick || "—"}</td><td class="c num">${x.done.length}／${x.rs.length}${x.overdue ? ` <span class="chip warn small" title="排定日期已過還沒登錄">逾期 ${x.overdue}</span>` : ""}</td>
+      <td class="small">${esc(md3(x.next) || "—")}</td><td class="small">${x.care.map((k) => esc(k.name)).join("、") || '<span class="muted">—</span>'}</td></tr>`).join("") || '<tr><td colspan="9"><div class="empty">這學期沒有英語班</div></td></tr>'}
+    </tbody></table></div></div>`;
+    ctx.el.addEventListener("click", (e) => {
+      const tr = e.target.closest("tr[data-href]");
+      if (tr) ctx.go(tr.dataset.href);
+    });
+  }
+  var normCls = (s) => String(s || "").replace(/\d/g, (d) => CN3[Number(d)] || d).replace(/國小|英語|英文|班|學習檔案|G表|課師表單|進度表|[\s_\-－()（）.]/gi, "");
+  function guessClass(file, list) {
+    const f = file.replace(/\.xlsx?$/i, "");
+    const byTeacher = list.filter((c) => {
+      const t = teacherOfClass(c);
+      return t && f.includes(t);
+    });
+    if (byTeacher.length === 1) return byTeacher[0].id;
+    const nf = normCls(f.replace(/^\d{3}-\d\s*/, ""));
+    const hit = list.filter((c) => {
+      const n = normCls(c.name);
+      return n && (nf.includes(n) || n.includes(nf.slice(0, n.length)));
+    });
+    return hit.length === 1 ? hit[0].id : "";
+  }
+  async function readAoa(file) {
+    const wb = window.XLSX.read(await file.arrayBuffer(), { type: "array", cellDates: true });
+    const name = wb.SheetNames.find((n) => n.includes("學習檔案")) || wb.SheetNames[0];
+    return window.XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1, defval: "", raw: true });
+  }
+  function importPlan(parsed, cid) {
+    const c = get("classes", cid);
+    const kids = roster(cid);
+    const byName2 = new Map(kids.map((k) => [k.name, k]));
+    const seen = /* @__PURE__ */ new Map();
+    const rows2 = [], skipped = /* @__PURE__ */ new Set();
+    for (const r of parsed.rows) {
+      const k = byName2.get(r.name);
+      if (!k) {
+        skipped.add(r.name);
+        continue;
+      }
+      if (!r.term) continue;
+      const base = importKey(r);
+      const n = (seen.get(k.id + base) || 0) + 1;
+      seen.set(k.id + base, n);
+      rows2.push({
+        id: `EN-${cid}~${k.id}~${base}${n > 1 ? "." + n : ""}`,
+        term: r.term,
+        semesterId: c.semesterId,
+        classId: cid,
+        studentId: k.id,
+        paper: r.paper,
+        planDate: "",
+        date: r.date,
+        level: r.level,
+        version: r.version,
+        errs: r.errs,
+        note: r.note,
+        absent: r.absent,
+        by: "匯入"
+      });
+    }
+    return { rows: rows2, skipped: [...skipped], matched: new Set(rows2.map((r) => r.studentId)).size };
+  }
+  async function importFlow(ctx) {
+    const list = classes().filter(isEnClass);
+    if (!list.length) {
+      toast("這學期還沒有英語班，請先建立班級與名單", "err");
+      return;
+    }
+    const inp = document.createElement("input");
+    inp.type = "file";
+    inp.accept = ".xlsx,.xls";
+    inp.multiple = true;
+    inp.style.display = "none";
+    document.body.appendChild(inp);
+    const files = await new Promise((res) => {
+      const done = () => res([...inp.files]);
+      inp.addEventListener("change", done, { once: true });
+      inp.addEventListener("input", done, { once: true });
+      inp.click();
+    });
+    inp.remove();
+    if (!files.length) return;
+    const items = [];
+    for (const f of files) {
+      try {
+        items.push({ name: f.name, parsed: parseLearningFile(await readAoa(f)), cid: guessClass(f.name, list) });
+      } catch (e) {
+        items.push({ name: f.name, parsed: { rows: [], kids: [], problems: [`讀取失敗：${e.message}`] }, cid: "" });
+      }
+    }
+    const body = h('<div class="stack" style="gap:10px"></div>');
+    const draw = () => {
+      body.innerHTML = `<p class="small muted" style="margin:0">每個檔案選對應的班級，系統依姓名對到班上的孩子；對不到的（已離開課輔）會略過。重複匯入同一個檔案不會重複建立。</p>
+      ${items.map((it, i) => {
+        const p = it.cid ? importPlan(it.parsed, it.cid) : null;
+        return `<div class="en-imp"><div class="row wrap" style="gap:8px"><b>${esc(it.name)}</b><span class="sp"></span>
+          <select class="select" data-i="${i}" style="width:auto"><option value="">選班級（不匯入）</option>${list.map((c) => `<option value="${c.id}" ${c.id === it.cid ? "selected" : ""}>${esc(c.name)}　${esc(teacherOfClass(c))}</option>`).join("")}</select></div>
+          <div class="small mt4">檔案裡 ${it.parsed.kids.length} 位孩子、${it.parsed.rows.length} 筆檢測${p ? `；<b>對到 ${p.matched} 位、匯入 ${p.rows.length} 筆</b>` : ""}</div>
+          ${p?.skipped.length ? `<div class="small muted">略過（不在班級名單）：${p.skipped.map(esc).join("、")}</div>` : ""}
+          ${it.parsed.problems.length ? `<div class="small bad-text">${[...new Set(it.parsed.problems)].slice(0, 5).map(esc).join("；")}</div>` : ""}</div>`;
+      }).join("")}`;
+    };
+    body.addEventListener("change", (e) => {
+      const s = e.target.closest("select[data-i]");
+      if (s) {
+        items[Number(s.dataset.i)].cid = s.value;
+        draw();
+      }
+    });
+    draw();
+    const ok = await openModal({ title: "匯入舊的英文學習檔案", body, buttons: [{ text: "取消", value: false }, { text: "匯入", value: true, primary: true }] });
+    if (!ok) return;
+    const rows2 = items.filter((it) => it.cid).flatMap((it) => importPlan(it.parsed, it.cid).rows);
+    if (!rows2.length) {
+      toast("沒有可以匯入的資料", "err");
+      return;
+    }
+    try {
+      const res = await mutate("/api/english/save", { rows: rows2 }, "");
+      toast(`已匯入 ${res.saved} 筆英語檢測紀錄${rows2.length - res.saved ? `（${rows2.length - res.saved} 筆之前已匯入）` : ""}`);
+      ctx.go(location.hash);
+    } catch {
+    }
+  }
+  function kidEnglishCard(sid2) {
+    const rs2 = history3(sid2);
+    const inEn = (S.idx.classesByStudent.get(sid2) || []).some((e) => isEnClass(get("classes", e.classId)));
+    if (!rs2.length && !inEn) return "";
+    const byTerm = /* @__PURE__ */ new Map();
+    for (const r of rs2) {
+      if (!byTerm.has(r.term)) byTerm.set(r.term, []);
+      byTerm.get(r.term).push(r);
+    }
+    const lv = suggestLevel(rs2);
+    const nx = suggestPaper(rs2);
+    return `<div class="card"><div class="card-head"><h3>英語檢測</h3><span class="sub">${rs2.filter((r) => hasErr(r)).length} 次紀錄${nx.paper ? `・建議下一張 ${esc(nx.paper)}` : ""}・階段卷建議 Lv${lv.level}</span></div>
+    <div class="card-body">${[...byTerm].reverse().map(([t, list]) => `<div class="en-hist"><div class="small muted mb4"><b>${esc(termLabel(t))}</b></div>
+      ${list.map((r) => {
+      const ev = evaluate(r);
+      const n = partsOf(r.paper, r.level);
+      return `<div class="en-h-row"><span class="small muted">${esc(md3(dateOf(r)) || "—")}</span><b>${esc(short(r.paper))}</b>
+        <span class="small">${esc([lvText(r), r.version].filter(Boolean).join("・"))}</span>
+        <span class="en-h-errs">${r.absent ? '<span class="small muted">缺考</span>' : Array.from({ length: n }, (_, i) => {
+        const p = ev?.parts?.[i];
+        return `<i class="${p?.state ? "st-" + p.state : ""}" title="第${CN3[i + 1]}大題">${r.errs?.[i] ?? "·"}</i>`;
+      }).join("")}</span>
+        ${verdictChip(ev)}${r.note ? `<span class="small muted en-h-note">${esc(r.note)}</span>` : ""}</div>`;
+    }).join("")}</div>`).join("") || '<div class="small muted">還沒有英語檢測紀錄</div>'}</div></div>`;
+  }
+  var english_default = {
+    isDirty: isDirty2,
+    render(ctx) {
+      const q = ctx.query;
+      const term = terms().includes(q.get("term")) ? q.get("term") : defaultTerm();
+      if (q.get("view") === "all" && isSupervisor2()) {
+        st3 = null;
+        return renderAll4(ctx, term);
+      }
+      const pool = enClasses();
+      if (!pool.length) {
+        ctx.title("英語檢測");
+        ctx.actions(isSocial2() ? `<button class="btn" id="e-imp">${icon("upload", "sm")}匯入舊學習檔案</button>` : "");
+        ctx.el.innerHTML = `<div class="card"><div class="empty">${icon("book")}<div>${isSupervisor2() ? "這學期還沒有英語班。" : "你目前沒有負責的英語班。"}</div></div></div>`;
+        const b = $("#e-imp");
+        if (b) b.onclick = () => importFlow(ctx);
+        return;
+      }
+      if (isSupervisor2() && !q.get("class")) {
+        st3 = null;
+        return renderAll4(ctx, term);
+      }
+      let cid = q.get("class");
+      if (!cid || !pool.some((c) => c.id === cid)) cid = pool[0].id;
+      if (!q.get("class") || !q.get("term")) ctx.setQuery({ class: cid, term });
+      if (!st3 || st3.cid !== cid || st3.term !== term || !isDirty2()) st3 = loadState4(cid, term);
+      renderClass2(ctx);
+      bind3(ctx);
+    },
+    destroy() {
+      if (st3 && !isDirty2()) st3 = null;
+    }
+  };
+
   // src/js/pages/kids.js
   var LEVELS = [["all", "全部"], ["risk", "需關注"], ["高風險", "高風險"], ["中風險", "中風險"], ["低風險", "低風險"], ["穩定", "穩定"], ["資料不足", "資料不足"]];
   var evalDirty = false;
@@ -9292,6 +10368,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         <div class="card"><div class="card-head"><h3>學習表現趨勢</h3><span class="sub">老師每堂評分（1–5）</span></div><div class="card-body">${line(pts)}</div></div>
         <div class="card"><div class="card-head"><h3>上課紀錄</h3><span class="sub">出席、進度、任務、老師紀錄與事件</span></div><div class="card-body">${timeline(sid2)}</div></div>
         ${kidMathCard(sid2)}
+        ${kidEnglishCard(sid2)}
         ${kidSocialCard(sid2)}
       </div>
       <div class="stack gap16">
@@ -9322,7 +10399,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       </div>
     </div>`;
     let source = ev?.source || "";
-    let filled = "";
+    let filled2 = "";
     const ta = document.getElementById("ev-text");
     ta.oninput = () => {
       evalDirty = true;
@@ -9330,7 +10407,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     document.getElementById("ev-fill").onclick = () => {
       const text = `${ins?.summary || ""}${ins?.suggestions?.length ? "\n\n建議：\n" + ins.suggestions.map((x) => "・" + x).join("\n") : ""}`;
       ta.value = text;
-      filled = text;
+      filled2 = text;
       source = "系統規則";
       evalDirty = true;
     };
@@ -9339,7 +10416,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       try {
         const r = await post("/api/ai/summary", { studentId: sid2, semesterId: S.semester });
         ta.value = r.text;
-        filled = r.text;
+        filled2 = r.text;
         source = "AI";
         evalDirty = true;
       } catch (err) {
@@ -9350,7 +10427,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     });
     document.getElementById("ev-save").onclick = async () => {
       let src = source || "老師撰寫";
-      if (filled && ta.value !== filled) src = source === "AI" ? "AI+老師修訂" : "系統+老師修訂";
+      if (filled2 && ta.value !== filled2) src = source === "AI" ? "AI+老師修訂" : "系統+老師修訂";
       evalDirty = false;
       const now = /* @__PURE__ */ new Date();
       try {
@@ -9509,16 +10586,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     ctx.go("#/forum" + (q.toString() ? "?" + q : ""));
   }
   function topicRow(p) {
-    const st3 = postState(p);
+    const st4 = postState(p);
     const rs2 = repliesOf(p.id);
     const last = rs2[rs2.length - 1];
-    return `<div class="topic ${p.category === "公告" && st3.key !== "solved" ? "pinned" : ""}" data-id="${esc(p.id)}">
+    return `<div class="topic ${p.category === "公告" && st4.key !== "solved" ? "pinned" : ""}" data-id="${esc(p.id)}">
     <div class="cat-dot c-${esc(p.category)}">${esc(SHORT[p.category] || "其他")}</div>
-    <div style="min-width:0"><div class="t-title">${p.urgent === "急" && st3.key !== "solved" ? '<span class="chip critical" style="margin-right:6px">急</span>' : ""}${esc(p.title)}</div>
+    <div style="min-width:0"><div class="t-title">${p.urgent === "急" && st4.key !== "solved" ? '<span class="chip critical" style="margin-right:6px">急</span>' : ""}${esc(p.title)}</div>
       ${p.body ? `<div class="t-body">${esc(p.body)}</div>` : ""}
       <div class="t-meta"><span>${esc(p.author || "")}</span><span>${md2(p.date)}</span>${p.site ? `<span>${icon("pin", "sm")}${esc(p.site)}</span>` : ""}
         ${p.kid ? `<span>${icon("user", "sm")}${esc(kidName(p.kid))}</span>` : ""}</div></div>
-    <div class="t-side"><span class="chip ${st3.chip}">${st3.label}</span><span>${icon("message", "sm")} ${rs2.length}</span>
+    <div class="t-side"><span class="chip ${st4.chip}">${st4.label}</span><span>${icon("message", "sm")} ${rs2.length}</span>
       ${last ? `<span class="small">${esc(last.author || "")} ${md2(last.date)}</span>` : ""}</div></div>`;
   }
   function renderList(ctx) {
@@ -9571,17 +10648,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       ctx.el.innerHTML = `<div class="card"><div class="empty">${icon("forum")}<div>找不到這個主題，可能已被刪除。</div><a class="btn mt12" href="#/forum">回論壇</a></div></div>`;
       return;
     }
-    const st3 = postState(p);
+    const st4 = postState(p);
     const rs2 = repliesOf(p.id);
     const owner = canEdit(p);
     ctx.title(p.title, `<a href="#/forum">課輔論壇</a> ／ ${esc(p.category)}`);
     const a = ctx.actions(`<a class="btn" href="#/forum">${icon("left", "sm")}回列表</a>
     ${owner ? `<button class="btn" id="t-edit">${icon("edit", "sm")}編輯</button>
-      <button class="btn ${st3.key === "solved" ? "" : "primary"}" id="t-solve">${icon("check", "sm")}${st3.key === "solved" ? "重新開啟" : "標記已解決"}</button>` : ""}`);
+      <button class="btn ${st4.key === "solved" ? "" : "primary"}" id="t-solve">${icon("check", "sm")}${st4.key === "solved" ? "重新開啟" : "標記已解決"}</button>` : ""}`);
     a.querySelector("#t-edit")?.addEventListener("click", () => openPostEditor(p));
     a.querySelector("#t-solve")?.addEventListener("click", async () => {
       try {
-        await mutate("/api/save", { table: "posts", row: { ...p, status: st3.key === "solved" ? "" : "已解決" } }, st3.key === "solved" ? "已重新開啟" : "已標記為解決");
+        await mutate("/api/save", { table: "posts", row: { ...p, status: st4.key === "solved" ? "" : "已解決" } }, st4.key === "solved" ? "已重新開啟" : "已標記為解決");
       } catch {
       }
     });
@@ -9590,7 +10667,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       <div class="thread-post">
         <div class="row" style="gap:10px"><div class="avatar">${esc(initials(p.author))}</div>
           <div class="grow"><b>${esc(p.author || "")}</b><div class="small muted">${esc(p.date || "")}${p.updatedAt && p.updatedAt.slice(0, 10) !== p.date ? `・更新 ${esc(p.updatedAt.slice(0, 16))}` : ""}</div></div>
-          ${p.urgent === "急" ? '<span class="chip critical">急</span>' : ""}<span class="chip ${st3.chip}">${st3.label}</span></div>
+          ${p.urgent === "急" ? '<span class="chip critical">急</span>' : ""}<span class="chip ${st4.chip}">${st4.label}</span></div>
         <div class="row wrap small mt8" style="gap:6px 14px"><span class="chip outline">${esc(p.category)}</span>
           ${p.site ? `<span>${icon("pin", "sm")} ${esc(p.site)}</span>` : ""}
           ${p.kid ? `<span>${icon("user", "sm")} ${kid ? `<a href="#/kids/${esc(kid.id)}">${esc(kid.name)}</a>` : esc(p.kid)}</span>` : ""}</div>
@@ -9843,7 +10920,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   // src/js/importers.js
   var ROSTER_SUBJECTS = ["國語", "數學", "英語"];
   var WEEK = { 一: "週一", 二: "週二", 三: "週三", 四: "週四", 五: "週五", 六: "週六", 日: "週日" };
-  var CN2 = { 一: 1, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10 };
+  var CN4 = { 一: 1, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10 };
   var pad5 = (n) => String(n).padStart(2, "0");
   var today2 = () => {
     const d = /* @__PURE__ */ new Date();
@@ -9851,7 +10928,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   };
   var str = (v) => String(v ?? "").replace(/ /g, " ").trim();
   function normClass(name) {
-    return str(name).replace(/\s+/g, "").replace(/([一二三四五六七八九十])班$/, (m, c) => CN2[c] + "班");
+    return str(name).replace(/\s+/g, "").replace(/([一二三四五六七八九十])班$/, (m, c) => CN4[c] + "班");
   }
   function semesterOf(code) {
     const m = /^(\d{3})(0?[12])$/.exec(str(code));
@@ -9865,7 +10942,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   }
   function gradeOf(s) {
     const m = /([一二三四五六])年級/.exec(str(s)) || /(\d)/.exec(str(s));
-    return m ? CN2[m[1]] || Number(m[1]) : null;
+    return m ? CN4[m[1]] || Number(m[1]) : null;
   }
   function slotsOf2(text) {
     const out = [];
@@ -9913,7 +10990,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     const up = Object.fromEntries(BASE_TABLES.map((t) => [t, []]));
     const del = { classSlots: [] };
     const taken = Object.fromEntries(BASE_TABLES.map((t) => [t, /* @__PURE__ */ new Set()]));
-    const newId = (t) => {
+    const newId2 = (t) => {
       const id = nextId(t, taken[t]);
       taken[t].add(id);
       return id;
@@ -9941,7 +11018,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     }
     const subjByName = new Map(rows("subjects").map((s) => [s.name, s]));
     for (const n of ROSTER_SUBJECTS) if (use.some((r) => r["課輔科目"] === n) && !subjByName.has(n)) {
-      const s = { id: newId("subjects"), name: n, note: "" };
+      const s = { id: newId2("subjects"), name: n, note: "" };
       up.subjects.push(s);
       subjByName.set(n, s);
     }
@@ -9950,7 +11027,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     for (const r of use) {
       const n = r["課輔老師"];
       if (!n || tByName.has(n)) continue;
-      const t = { id: newId("teachers"), name: n, role: "課輔老師", subjectId: subjByName.get(r["課輔科目"])?.id || "", phone: "", email: "", status: "在職", note: "" };
+      const t = { id: newId2("teachers"), name: n, role: "課輔老師", subjectId: subjByName.get(r["課輔科目"])?.id || "", phone: "", email: "", status: "在職", note: "" };
       up.teachers.push(t);
       tByName.set(n, t);
       sum.teachersNew.push(n);
@@ -9972,7 +11049,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
         byName2.delete(s.name);
       } else {
-        s = { id: newId("students"), ...fields, needs: "", joined: today2(), note: "" };
+        s = { id: newId2("students"), ...fields, needs: "", joined: today2(), note: "" };
         up.students.push(s);
         sum.studentsNew.push(name);
       }
@@ -10000,7 +11077,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
           sum.classesUpd.push(`${name} ${subj}（${tname}）`);
         }
       } else {
-        c = { id: newId("classes"), ...fields, capacity: null, note: "" };
+        c = { id: newId2("classes"), ...fields, capacity: null, note: "" };
         up.classes.push(c);
         sum.classesNew.push(`${name} ${subj}（${tname}）`);
       }
@@ -10024,7 +11101,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             sum.slots++;
           }
         } else {
-          up.classSlots.push({ id: newId("classSlots"), classId: c.id, ...sl, note: "" });
+          up.classSlots.push({ id: newId2("classSlots"), classId: c.id, ...sl, note: "" });
           sum.slots++;
         }
       }
@@ -10037,7 +11114,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       for (const sid2 of kids) {
         const e = cur.find((x) => x.studentId === sid2);
         if (e && e.status === "在班") continue;
-        up.enrollments.push(e ? { ...e, status: "在班" } : { id: newId("enrollments"), studentId: sid2, classId: c.id, status: "在班", joined: today2(), note: "" });
+        up.enrollments.push(e ? { ...e, status: "在班" } : { id: newId2("enrollments"), studentId: sid2, classId: c.id, status: "在班", joined: today2(), note: "" });
         sum.enrollIn++;
       }
       for (const e of cur) if (e.status === "在班" && !kids.has(e.studentId)) {
@@ -10498,9 +11575,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             <span class="small muted">${slotsOf(c.id).map((x) => `${x.weekday} ${x.start}–${x.end}`).join("、")}・${rosterIds(c.id).length} 位孩子</span></div>`).join("") || '<div class="small muted">本學期沒有負責班級</div>'}
           <div class="section-title">${icon("journal", "sm")}最近課堂</div>
           ${recent.map(({ c, x }) => {
-            const st3 = sessionState(x);
+            const st4 = sessionState(x);
             return `<div class="row" style="padding:4px 0"><span class="num small">${md2(x.date)}</span>
-            <a href="#/record?class=${c.id}&date=${x.date}">${esc(c.name)}</a><span class="sp"></span><span class="chip ${st3.chip}">${st3.label}</span></div>`;
+            <a href="#/record?class=${c.id}&date=${x.date}">${esc(c.name)}</a><span class="sp"></span><span class="chip ${st4.chip}">${st4.label}</span></div>`;
           }).join("") || '<div class="small muted">尚無課堂紀錄</div>'}`
         });
       });
@@ -10589,12 +11666,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       ctx.actions(`<button class="btn" id="s-download">${icon("download", "sm")}下載完整資料 Excel</button>`);
       $("#s-download").onclick = () => downloadUrl("/api/export/workbook");
       ctx.el.innerHTML = `<div class="card"><div class="empty">${icon("clock")}<div>讀取中…</div></div></div>`;
-      const [st3, integ, cinfo] = await Promise.all([refreshStatus(), getJ("/api/integrity?semester=" + encodeURIComponent(S.semester)).catch(() => ({ issues: [] })), cacheInfo()]);
+      const [st4, integ, cinfo] = await Promise.all([refreshStatus(), getJ("/api/integrity?semester=" + encodeURIComponent(S.semester)).catch(() => ({ issues: [] })), cacheInfo()]);
       const ins = S.insights || await loadInsights();
       if (!ctx.el.isConnected) return;
       const sems = [...S.data.semesters].sort((a, b) => (b.start || "").localeCompare(a.start || ""));
       const issues = integ.issues || [];
-      const files = (st3?.files || []).sort((a, b) => a.path.localeCompare(b.path, "zh-Hant"));
+      const files = (st4?.files || []).sort((a, b) => a.path.localeCompare(b.path, "zh-Hant"));
       const dis = sup ? "" : "disabled";
       ctx.el.innerHTML = `
       <div class="grid g2">
@@ -10611,24 +11688,24 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             <label class="row small" style="gap:6px;align-self:end;padding-bottom:8px"><input type="checkbox" id="ro-roster" checked>一併複製孩子名單</label></div>
           <div><button class="btn" id="ro-go">${icon("copy", "sm")}建立新學期</button></div></div></div>` : `<div class="card"><div class="card-head"><h3>這台電腦</h3></div><div class="card-body stack">
           <div class="row"><span class="grow">目前身分：<b>${esc(S.who?.name || "未選擇")}</b>（課輔老師）</span><button class="btn sm" id="me-switch2">${icon(cloud ? "user" : "swap", "sm")}${cloud ? "我的帳號" : "切換身分"}</button></div>
-          <div class="small muted" style="line-height:1.8">你填寫的教學流程、課後紀錄與論壇發文，都存在 <code>${esc(st3?.myFile || "")}</code>。基本資料（孩子、班級、課表）由督導維護。</div></div></div>`}
+          <div class="small muted" style="line-height:1.8">你填寫的教學流程、課後紀錄與論壇發文，都存在 <code>${esc(st4?.myFile || "")}</code>。基本資料（孩子、班級、課表）由督導維護。</div></div></div>`}
       </div>
 
       <div class="card mt16"><div class="card-head"><h3>資料夾與檔案</h3><span class="sub">每個人只寫自己的檔，系統把所有人的檔合併顯示；同一筆資料以最後修改的為準</span><span class="sp"></span>
         <button class="btn sm" id="c-reload">${icon("refresh", "sm")}重新讀取</button><button class="btn sm" id="c-folder">${cloud ? icon("lock", "sm") + "登出" : icon("folder", "sm") + "更換資料夾"}</button></div>
         <div class="card-body"><div class="grid g3" style="gap:14px 24px">
-          <dl class="kv"><dt>資料夾</dt><dd class="small">${esc(st3?.path || "—")}</dd>
-            <dt>模式</dt><dd>${st3?.writable ? '<span class="chip good">可讀寫</span>' : '<span class="chip critical">唯讀</span>'} <span class="small muted">${esc({ fs: "直接存取資料夾", http: "網路資料夾", files: "唯讀開啟", cloud: "雲端（Google 雲端硬碟）" }[st3?.storage] || "")}</span></dd>
-            <dt>你的存檔</dt><dd class="small">${st3?.myFile ? `<code>${esc(st3.myFile)}</code>` : "請先選擇身分"}</dd></dl>
-          <dl class="kv"><dt>最後讀取</dt><dd>${esc(st3?.lastReadAt || "—")}</dd><dt>你最後存檔</dt><dd>${esc(st3?.lastFlushAt || "本次開啟尚未存檔")}</dd>
+          <dl class="kv"><dt>資料夾</dt><dd class="small">${esc(st4?.path || "—")}</dd>
+            <dt>模式</dt><dd>${st4?.writable ? '<span class="chip good">可讀寫</span>' : '<span class="chip critical">唯讀</span>'} <span class="small muted">${esc({ fs: "直接存取資料夾", http: "網路資料夾", files: "唯讀開啟", cloud: "雲端（Google 雲端硬碟）" }[st4?.storage] || "")}</span></dd>
+            <dt>你的存檔</dt><dd class="small">${st4?.myFile ? `<code>${esc(st4.myFile)}</code>` : "請先選擇身分"}</dd></dl>
+          <dl class="kv"><dt>最後讀取</dt><dd>${esc(st4?.lastReadAt || "—")}</dd><dt>你最後存檔</dt><dd>${esc(st4?.lastFlushAt || "本次開啟尚未存檔")}</dd>
             <dt>資料版本</dt><dd class="num">${S.version}</dd><dt>自動檢查</dt><dd>每 ${cloud ? 60 : 20} 秒檢查其他人有沒有存檔</dd></dl>
           <dl class="kv"><dt>本機快取</dt><dd>${cinfo.keys.length} 個學期快照${cinfo.usage ? `・約 ${kb(cinfo.usage)}` : ""}</dd>
             <dt>未儲存草稿</dt><dd>${cinfo.drafts} 份</dd><dt>每日備份</dt><dd class="small">每天第一次存檔前，備份到 <code>備份/</code></dd>
             <dd style="grid-column:1/-1"><button class="btn sm" id="c-clear">${icon("trash", "sm")}清除這台電腦的快取與草稿</button></dd></dl>
         </div>
-        ${st3?.lastError ? `<div class="callout warn mt12">${icon("alert", "sm")} ${esc(st3.lastError)}</div>` : ""}
+        ${st4?.lastError ? `<div class="callout warn mt12">${icon("alert", "sm")} ${esc(st4.lastError)}</div>` : ""}
         <div class="tbl-wrap mt12" style="max-height:300px"><table class="tbl"><thead><tr><th>檔案</th><th>誰的</th><th>最後更新</th></tr></thead><tbody>
-          ${files.map((f) => `<tr><td class="small"><code>${esc(f.path)}</code>${f.path === st3?.myFile ? ' <span class="chip accent">你的</span>' : ""}</td><td class="small">${esc(f.owner || "")}</td><td class="small">${esc(f.updatedAt || "")}</td></tr>`).join("")}</tbody></table></div>
+          ${files.map((f) => `<tr><td class="small"><code>${esc(f.path)}</code>${f.path === st4?.myFile ? ' <span class="chip accent">你的</span>' : ""}</td><td class="small">${esc(f.owner || "")}</td><td class="small">${esc(f.updatedAt || "")}</td></tr>`).join("")}</tbody></table></div>
         <details class="mt12"><summary class="small muted" style="cursor:pointer">多人同時使用怎麼運作？</summary><ol class="small ink2" style="line-height:1.85">
           <li>資料夾裡：<code>基本資料.json</code>（督導維護的學期、老師、孩子、班級…）、<code>督導.json</code>（督導回饋與評語）、<code>老師/姓名.json</code>（每位老師自己的紀錄）。</li>
           <li>每個人只寫自己的檔案，所以兩位老師同時存檔不會互相覆蓋。存檔前會先讀取磁碟上最新的版本再合併，同一個人在兩台電腦用也不會蓋掉。</li>
@@ -10754,7 +11831,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   };
 
   // src/js/main.js
-  var MODULES = { dashboard: dashboard_default, journal: journal_default, month: month_default, flow: flow_default, record: record_default, kids: kids_default, forum: forum_default, resources: resources_default, classes: classes_default, teachers: teachers_default, data: data_default, settings: settings_default, math: math_default, visits, teachereval, cases, events, followups };
+  var MODULES = { dashboard: dashboard_default, journal: journal_default, month: month_default, flow: flow_default, record: record_default, kids: kids_default, forum: forum_default, resources: resources_default, classes: classes_default, teachers: teachers_default, data: data_default, settings: settings_default, math: math_default, english: english_default, visits, teachereval, cases, events, followups };
   var PAGES = [
     { group: "督導監控", items: [
       { id: "dashboard", title: "總覽", icon: "grid" },
@@ -10764,7 +11841,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     { group: "課堂", items: [
       { id: "flow", title: "教學流程", icon: "flow" },
       { id: "record", title: "課後紀錄", icon: "edit" },
-      { id: "math", title: "數學月檢測", icon: "check" }
+      { id: "math", title: "數學月檢測", icon: "check" },
+      { id: "english", title: "英語檢測", icon: "book" }
     ] },
     { group: "孩子", items: [
       { id: "kids", title: "學習檔案與風險", icon: "shield" }
@@ -10908,7 +11986,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   }
   function renderSync() {
     const el = $("#sync");
-    const st3 = S.status;
+    const st4 = S.status;
     let dot = "busy", text = "讀取中…";
     if (!DB.backend) {
       dot = "warn";
@@ -10919,7 +11997,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     } else if (!DB.backend.writable) {
       dot = "warn";
       text = "唯讀模式（無法存檔）";
-    } else if (st3?.lastError) {
+    } else if (st4?.lastError) {
       dot = "warn";
       text = "有檔案格式錯誤";
     } else if (S.lastSync) {
@@ -10927,7 +12005,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       text = `已同步 · ${S.lastSync.toLocaleTimeString("zh-TW", { hour12: false })}`;
     }
     el.innerHTML = `<i class="dot ${dot}"></i><span>${esc(text)}</span>`;
-    el.title = [DB.backend ? DB.backend.kind === "cloud" ? `資料：${DB.backend.label}（${DB.backend.user}）` : `資料夾：${DB.backend.label}` : "", st3?.myFile ? `你的存檔：${st3.myFile}` : "", st3?.lastError || "", "（點此查看詳情）"].filter(Boolean).join("\n");
+    el.title = [DB.backend ? DB.backend.kind === "cloud" ? `資料：${DB.backend.label}（${DB.backend.user}）` : `資料夾：${DB.backend.label}` : "", st4?.myFile ? `你的存檔：${st4.myFile}` : "", st4?.lastError || "", "（點此查看詳情）"].filter(Boolean).join("\n");
   }
   var choosing = false;
   async function accountBox() {
