@@ -10989,11 +10989,11 @@ ${lines.join("\n")}`;
         const wb = X.read(await f.arrayBuffer(), { type: "array", cellDates: true });
         for (const sn of wb.SheetNames) {
           const aoa = X.utils.sheet_to_json(wb.Sheets[sn], { header: 1, raw: true, defval: "" });
-          const hr = aoa.findIndex((r) => r.some((v) => /服務班級/.test(String(v))) && r.some((v) => /老師/.test(String(v))));
+          const hr = aoa.findIndex((r) => r.some((v) => /服務班級|^課輔班$/.test(String(v).trim())) && r.some((v) => /老師/.test(String(v))));
           if (hr < 0) continue;
           const H = aoa[hr].map((v) => String(v).trim());
           const ci = (re) => H.findIndex((v) => re.test(v));
-          const cTime = ci(/時間戳記|時間/), cCls = ci(/服務班級/), cT = ci(/老師姓名|課輔老師/);
+          const cTime = ci(/時間戳記|送出時間|時間/), cCls = ci(/服務班級|^課輔班$/), cT = ci(/老師姓名|課輔老師/), cSubj = ci(/^科目$/), cRound = ci(/^測驗$/);
           const cQ = Object.fromEntries([1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => [`q${n}`, H.findIndex((v) => new RegExp(`^\\s*${n}\\s*[.、．]`).test(v))]));
           if (Object.values(cQ).some((i) => i < 0)) {
             toast(`「${f.name}」${sn} 找不到 9 題的欄位`, "err");
@@ -11002,16 +11002,20 @@ ${lines.join("\n")}`;
           const round = SURVEY_ROUNDS.find((r) => f.name.includes(r) || sn.includes(r)) || "前測";
           for (const r of aoa.slice(hr + 1)) {
             if (!String(r[cCls] ?? "").trim() && !String(r[cT] ?? "").trim()) continue;
+            if (QK.every((k) => String(r[cQ[k]] ?? "").trim() === "")) continue;
             const tv = r[cTime];
             const time = tv instanceof Date ? `${tv.getFullYear()}-${String(tv.getMonth() + 1).padStart(2, "0")}-${String(tv.getDate()).padStart(2, "0")} ${String(tv.getHours()).padStart(2, "0")}:${String(tv.getMinutes()).padStart(2, "0")}` : String(tv || "").trim().replace(/^(\d{4})\/(\d{1,2})\/(\d{1,2})/, (_, y, m, d) => `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`).replace(/\s*(上午|下午)\s*(\d{1,2}):(\d{2})(:\d{2})?/, (_, ap, hh, mm) => ` ${String(+hh % 12 + (ap === "下午" ? 12 : 0)).padStart(2, "0")}:${mm}`);
-            const it = { file: f.name, time, clsText: String(r[cCls]).trim(), tName: String(r[cT]).trim(), round, q: Object.fromEntries(QK.map((k) => [k, Number(String(r[cQ[k]]).trim()) || null])) };
-            const g = groups.find((x) => normClass(it.clsText).startsWith(normClass(x.name))) || groups.find((x) => normClass(it.clsText).includes(normClass(x.name)));
+            const subj = cSubj >= 0 ? String(r[cSubj] ?? "").trim() : "";
+            const rr = cRound >= 0 ? String(r[cRound] ?? "").trim() : "";
+            const it = { file: f.name, time, clsText: String(r[cCls]).trim() + (subj ? ` ${subj}` : ""), tName: String(r[cT]).trim(), round: SURVEY_ROUNDS.includes(rr) ? rr : round, q: Object.fromEntries(QK.map((k) => [k, Number(String(r[cQ[k]]).trim()) || null])) };
+            const cn = normClass(String(r[cCls]).trim());
+            const g = groups.find((x) => normClass(x.name) === cn) || groups.find((x) => cn.startsWith(normClass(x.name))) || groups.find((x) => cn.includes(normClass(x.name)));
             const tid = teachers.find((t) => t.name === it.tName)?.id;
             let cands = g ? g.ids.map((id) => get("classes", id)) : [];
             const byT = cands.filter((c) => tid && c.teacherId === tid);
             if (byT.length) cands = byT;
-            if (cands.length > 1) {
-              const bySubj = cands.filter((c) => subjectOfClass(c) && it.clsText.includes(subjectOfClass(c)));
+            if (cands.length > 1 || subj && cands.length) {
+              const bySubj = cands.filter((c) => subjectOfClass(c) && (subj ? subjectOfClass(c) === subj : it.clsText.includes(subjectOfClass(c))));
               if (bySubj.length) cands = bySubj;
             }
             it.classId = cands.length === 1 ? cands[0].id : "";
@@ -11025,7 +11029,7 @@ ${lines.join("\n")}`;
       }
     }
     if (!items.length) {
-      toast("檔案裡找不到問卷回覆（要有「服務班級」「課輔老師姓名」和 9 題的欄位）", "err");
+      toast("檔案裡找不到有分數的問卷回覆（要有「服務班級」或「課輔班」、「課輔老師」和 9 題的欄位）", "err");
       return;
     }
     const body = h("<div></div>");
@@ -11033,7 +11037,7 @@ ${lines.join("\n")}`;
       const key = (it) => `${it.classId}|${it.round}`;
       const latest = /* @__PURE__ */ new Map();
       for (const it of items) if (it.on && it.classId && (!latest.has(key(it)) || it.time > latest.get(key(it)).time)) latest.set(key(it), it);
-      body.innerHTML = `<p class="small muted" style="margin:0 0 8px">從 Google 試算表下載（.xlsx 或 .csv）。系統依「服務班級＋老師姓名」對到科目班；同一班同一次測驗有好幾筆時用最新的一筆。已經在系統裡填過的會被覆蓋。</p>
+      body.innerHTML = `<p class="small muted" style="margin:0 0 8px">可以匯入 Google 試算表下載的回覆（.xlsx 或 .csv），或系統「下載 Excel」的回覆明細填好分數後再匯入。系統依班級、科目與老師姓名對到科目班；9 題都空白的列會略過；同一班同一次測驗有好幾筆時用最新的一筆。已經在系統裡填過的會被覆蓋。</p>
       <div class="tbl-wrap" style="max-height:60vh"><table class="tbl"><thead><tr><th></th><th>時間</th><th>表上班級・老師</th><th>測驗</th><th>系統班級</th><th class="num">平均</th><th></th></tr></thead><tbody>
       ${items.map((it, i) => {
         const ex = it.classId && surveyOf(it.classId, it.round)?.submittedAt;
