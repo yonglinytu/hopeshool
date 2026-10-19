@@ -10992,7 +10992,7 @@ ${lines.join("\n")}`;
     });
     inp.remove();
     if (!files.length) return;
-    const X = window.XLSX, books2 = [];
+    const X = window.XLSX, books2 = [], today3 = todayISO();
     for (const f of files) {
       try {
         const r = parseRollWorkbook(X, X.read(await f.arrayBuffer(), { type: "array" }), f.name);
@@ -11021,11 +11021,15 @@ ${lines.join("\n")}`;
     };
     books2.forEach(autoKids);
     const stats2 = (b) => {
-      const st6 = { days: /* @__PURE__ */ new Set(), add: 0, same: 0, diff: 0, bad: [] };
+      const st6 = { days: /* @__PURE__ */ new Set(), add: 0, same: 0, diff: 0, bad: [], future: 0 };
       for (const s of b.sheets) for (const k of s.kids) {
         st6.bad.push(...k.bad.map((x) => `${k.name} ${x}`));
         const sid2 = b.kidMap[k.name];
         for (const [d, m] of Object.entries(k.marks)) {
+          if (d > today3) {
+            st6.future++;
+            continue;
+          }
           st6.days.add(d);
           if (!sid2 || !b.classId) continue;
           const ses = sessionFor(b.classId, d);
@@ -11052,6 +11056,7 @@ ${lines.join("\n")}`;
             ${miss2.length ? `<div class="small"><span class="chip warn small">${miss2.length} 位對不到名單</span></div>` : ""}
             <div class="row wrap" style="gap:6px 14px">${names(b).map((n) => `<label class="row small" style="gap:4px"><span>${esc(n)} →</span><select class="select sm" data-x="kid" data-n="${esc(n)}" style="width:auto"><option value="">不匯入</option>
               ${[...ros, ...b.kidMap[n] && !ros.some((r) => r.id === b.kidMap[n]) ? [get("students", b.kidMap[n])] : []].filter(Boolean).map((s) => `<option value="${s.id}" ${b.kidMap[n] === s.id ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></label>`).join("")}</div>` : ""}
+          ${st6.future ? `<div class="small muted">還沒到的日期有 ${st6.future} 格（例如先登記的請假），不會匯入；到那天由老師在課後紀錄點名。</div>` : ""}
           ${st6.bad.length ? `<div class="small muted">看不懂、不會匯入的格子：${esc(st6.bad.slice(0, 8).join("、"))}${st6.bad.length > 8 ? `…共 ${st6.bad.length} 格` : ""}</div>` : ""}
         </div></div>`;
       }).join("")}`;
@@ -11092,6 +11097,7 @@ ${lines.join("\n")}`;
         const sid2 = b.kidMap[k.name];
         if (!sid2) continue;
         for (const [d, m] of Object.entries(k.marks)) {
+          if (d > today3) continue;
           const key = `${b.classId}|${d}`;
           if (!byDay.has(key)) {
             const sl = slotFor(b.classId, d);
