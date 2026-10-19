@@ -17106,7 +17106,7 @@ ${lines.join("\n")}`;
       const d = addDays2(w, i);
       if (pool.some((c) => slotFor(c.id, d) || sessionFor(c.id, d))) days2.push(d);
     }
-    ctx.title("教學流程排課", `${md2(w)}–${md2(addDays2(w, days2.length > 5 ? 6 : 4))}${sup ? "・全部班級" : ""}`);
+    ctx.title("每日教學流程", `${md2(w)}–${md2(addDays2(w, days2.length > 5 ? 6 : 4))}${sup ? "・全部班級" : ""}`);
     const a = ctx.actions(`<button class="btn" data-w="-7">${icon("left", "sm")}上一週</button><button class="btn ${w === monday2(today3) ? "primary" : ""}" data-w="0">本週</button><button class="btn" data-w="7">下一週${icon("right", "sm")}</button>`);
     a.querySelectorAll("[data-w]").forEach((b) => b.onclick = () => ctx.go(`#/flowmon?w=${+b.dataset.w ? addDays2(w, +b.dataset.w) : monday2(today3)}`));
     const alert = [];
@@ -17320,9 +17320,9 @@ ${lines.join("\n")}`;
   var PAGES = [
     { group: "督導監控", items: [
       { id: "dashboard", title: "總覽", icon: "grid" },
+      { id: "flowmon", title: "每日教學流程", icon: "flow" },
       { id: "journal", title: "每日日誌", icon: "journal" },
-      { id: "month", title: "月出席", icon: "calendar" },
-      { id: "flowmon", title: "教學流程排課", icon: "flow" }
+      { id: "month", title: "月出席", icon: "calendar" }
     ] },
     { group: "課堂", items: [
       { id: "flow", title: "教學流程", icon: "flow" },
