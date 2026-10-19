@@ -11090,7 +11090,11 @@ ${lines.join("\n")}`;
     };
     const meets = (cid, d) => !!slotFor(cid, d) || !!sessionFor(cid, d);
     const enrolled = (cid, sid2) => S.data.enrollments.some((e) => e.classId === cid && e.studentId === sid2);
-    const target = (b, sid2, d) => ids(b).filter((id) => meets(id, d)).find((id) => enrolled(id, sid2)) || "";
+    const active2 = (cid, sid2) => S.data.enrollments.some((e) => e.classId === cid && e.studentId === sid2 && (e.status || "在班") === "在班");
+    const target = (b, sid2, d) => {
+      const on2 = ids(b).filter((id) => meets(id, d));
+      return on2.find((id) => active2(id, sid2)) || on2.find((id) => enrolled(id, sid2)) || "";
+    };
     for (const f of files) {
       try {
         const r = parseRollWorkbook(X, X.read(await f.arrayBuffer(), { type: "array" }), f.name);
