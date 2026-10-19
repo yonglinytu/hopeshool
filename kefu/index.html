@@ -793,6 +793,14 @@ table.vfp.vfp-head th { width: auto; } table.vfp.vfp-head td { min-width: 18mm; 
 .todo-later .todo-row { margin-top: 6px; }
 .card.stat.stat-bad .value { color: var(--critical); }
 
+/* 教學流程排課 */
+.tbl.fm td.fm-off { background: var(--surface-3); }
+.tbl.fm td.fm-cell { cursor: pointer; text-align: center; vertical-align: top; }
+.tbl.fm td.fm-cell:hover { background: var(--surface-3); }
+.tbl.fm th.fm-today { color: var(--accent); }
+.fm-b { padding: 8px 0; border-bottom: 1px solid var(--line-2); }
+.fm-b .chip { margin-left: 6px; }
+
 </style>
   <script>
     try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
@@ -7769,6 +7777,16 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   function tasksOf(bid) {
     return S.idx.tasksByBlock.get(bid) || [];
   }
+  function flowStatus(cid, date) {
+    const s = sessionFor(cid, date);
+    const bs = s ? blocksOf(s.id).filter((b) => b.mode !== "備用") : [];
+    const kids = roster(cid);
+    if (!bs.length) return { key: "none", label: "未排", session: s, blocks: [], kids, missing: kids };
+    const ind = bs.filter((b) => b.mode === "個別");
+    const has = (b, k) => tasksOf(b.id).some((t) => t.studentId === k.id && (String(t.type || "").trim() || String(t.content || "").trim() || String(t.unit || "").trim()));
+    const missing = ind.length ? kids.filter((k) => ind.some((b) => !has(b, k))) : [];
+    return { key: missing.length ? "partial" : "done", label: missing.length ? "部分" : "已排", session: s, blocks: bs, ind, kids, missing };
+  }
   function recordsOf(sid2) {
     return S.idx.recordsBySession.get(sid2) || [];
   }
@@ -8487,13 +8505,13 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     const kids = st6.kids;
     const wk = weekNo(st6.date);
     const plans = Object.fromEntries(kids.map((k) => [k.id, kidPlan(st6, k.id)]));
-    const cellOf = (k, b) => {
+    const cellOf2 = (k, b) => {
       const it = plans[k.id].items.find((x) => x.block === b && x.kind === "task");
       if (!it) return "";
       return `<b class="pt-tag">${esc(it.tag)}</b> ${esc(it.text)}${it.detail ? `<div class="pt-detail">${esc(it.detail)}</div>` : ""}`;
     };
     const backups = st6.blocks.filter(isBackup);
-    const rows2 = st6.blocks.filter((b) => !isBackup(b)).map((b) => b.mode === "個別" ? `<tr><th>${esc(b.start || "")}–${esc(b.end || "")}<div>${esc(b.title)}</div></th>${kids.map((k) => `<td>${cellOf(k, b)}</td>`).join("")}</tr>` : `<tr class="pt-whole"><th>${esc(b.start || "")}–${esc(b.end || "")}<div>${esc(b.title)}</div></th><td colspan="${kids.length}"><b>${esc(b.title)}</b>${b.content ? `　${esc(b.content)}` : ""}</td></tr>`).join("");
+    const rows2 = st6.blocks.filter((b) => !isBackup(b)).map((b) => b.mode === "個別" ? `<tr><th>${esc(b.start || "")}–${esc(b.end || "")}<div>${esc(b.title)}</div></th>${kids.map((k) => `<td>${cellOf2(k, b)}</td>`).join("")}</tr>` : `<tr class="pt-whole"><th>${esc(b.start || "")}–${esc(b.end || "")}<div>${esc(b.title)}</div></th><td colspan="${kids.length}"><b>${esc(b.title)}</b>${b.content ? `　${esc(b.content)}` : ""}</td></tr>`).join("");
     const brows = backups.map((b, i) => `<tr class="pt-backup"><th>備用 ${i + 1}<div>${i === 0 ? esc(subj) + "學習任務" : "可選其他類"}</div></th>${kids.map((k) => `<td>${esc(b.tasks[k.id]?.content || "")}</td>`).join("")}</tr>`).join("");
     const html = `<div class="pt">
     <div class="pt-head"><h1>${esc(c.name)}　${esc(subj)}　教學流程</h1>
@@ -11240,10 +11258,10 @@ ${lines.join("\n")}`;
     const horizon = nextSchoolDay(today3);
     for (const c of own) for (const d of expectedDates(c.id, today3, horizon)) {
       if (d === today3 && ended(c.id, d, today3)) continue;
-      const s = sessionFor(c.id, d);
-      if (s && blocksOf(s.id).length) continue;
+      const fsx = flowStatus(c.id, d);
+      if (fsx.key === "done") continue;
       const sub = subOf(c.id, d);
-      add("flow", d === today3 ? "over" : "soon", d, { date: d, cls: c, text: `${mdw(d)}${d === today3 ? "（今天上課）" : ""}${sub ? `・代課 ${get("teachers", sub.teacherId)?.name || ""}` : ""}`, href: `#/flow?class=${c.id}&date=${d}` });
+      add("flow", d === today3 ? "over" : "soon", d, { date: d, cls: c, text: `${mdw(d)}${d === today3 ? "（今天上課）" : ""}${fsx.key === "partial" ? `・${fsx.missing.length} 位孩子還沒有個別任務` : ""}${sub ? `・代課 ${get("teachers", sub.teacherId)?.name || ""}` : ""}`, href: `#/flow?class=${c.id}&date=${d}` });
     }
     for (const c of own) {
       const rs2 = (S.data.mathScores || []).filter((r) => r.classId === c.id && r.semesterId === S.semester && r.planned === "V" && (r.score == null || r.score === "") && r.period !== "前測");
@@ -17054,6 +17072,98 @@ ${lines.join("\n")}`;
     }
   }
 
+  // src/js/pages/flowmon.js
+  var WD3 = "一二三四五六日";
+  var monday2 = (d) => addDays2(d, -weekdayIdx(d));
+  function cellOf(c, d, today3, next) {
+    const hol = isHoliday(d);
+    const slot = slotFor(c.id, d), ses = sessionFor(c.id, d);
+    if (!slot && !ses) return { off: true };
+    if (hol && !ses) return { hol };
+    const st6 = flowStatus(c.id, d);
+    const sub = subOf(c.id, d);
+    const live2 = d > today3 || d === today3 && !ended(c.id, d, today3);
+    const urgent = st6.key !== "done" && live2 && (d === today3 ? "over" : d <= next ? "soon" : "");
+    return { st: st6, sub, live: live2, urgent, slot };
+  }
+  function cellHtml(c, d, x) {
+    if (x.off) return '<td class="fm-off"></td>';
+    if (x.hol) return `<td class="fm-off c small muted">停課</td>`;
+    const { st: st6 } = x;
+    const cls = st6.key === "done" ? "good" : st6.key === "partial" ? "warn" : x.urgent === "over" ? "critical" : x.urgent === "soon" ? "warn" : "outline";
+    const label2 = st6.key === "none" && !x.live ? "沒排" : st6.label;
+    const detail2 = st6.key === "none" ? "" : `${st6.blocks.length} 段${st6.ind?.length ? `・${st6.kids.length - st6.missing.length}/${st6.kids.length} 位有任務` : "・全班活動"}`;
+    return `<td class="fm-cell" data-c="${esc(c.id)}" data-d="${d}"><span class="chip small ${cls}">${st6.key === "done" ? "✓ " : ""}${label2}</span>
+    ${detail2 ? `<div class="small muted num">${esc(detail2)}</div>` : ""}${x.sub ? `<div class="small muted">代課 ${esc(get("teachers", x.sub.teacherId)?.name || "")}</div>` : ""}</td>`;
+  }
+  function render2(ctx) {
+    const sup = isSupervisor2();
+    const today3 = todayISO(), next = nextSchoolDay(today3);
+    const w = ctx.query.get("w") && /^\d{4}-\d{2}-\d{2}$/.test(ctx.query.get("w")) ? monday2(ctx.query.get("w")) : monday2(today3);
+    const pool = sup ? classes() : myClasses();
+    let days2 = [0, 1, 2, 3, 4].map((i) => addDays2(w, i));
+    for (const i of [5, 6]) {
+      const d = addDays2(w, i);
+      if (pool.some((c) => slotFor(c.id, d) || sessionFor(c.id, d))) days2.push(d);
+    }
+    ctx.title("教學流程排課", `${md2(w)}–${md2(addDays2(w, days2.length > 5 ? 6 : 4))}${sup ? "・全部班級" : ""}`);
+    const a = ctx.actions(`<button class="btn" data-w="-7">${icon("left", "sm")}上一週</button><button class="btn ${w === monday2(today3) ? "primary" : ""}" data-w="0">本週</button><button class="btn" data-w="7">下一週${icon("right", "sm")}</button>`);
+    a.querySelectorAll("[data-w]").forEach((b) => b.onclick = () => ctx.go(`#/flowmon?w=${+b.dataset.w ? addDays2(w, +b.dataset.w) : monday2(today3)}`));
+    const alert = [];
+    for (const c of pool) for (const d of expectedDates(c.id, today3, next)) {
+      const x = cellOf(c, d, today3, next);
+      if (x.urgent) alert.push({ c, d, x });
+    }
+    alert.sort((p, q) => (p.x.urgent === "over" ? 0 : 1) - (q.x.urgent === "over" ? 0 : 1) || p.d.localeCompare(q.d) || p.c.name.localeCompare(q.c.name, "zh-Hant"));
+    const chipA = ({ c, d, x }) => `<a class="chip ${x.urgent === "over" ? "critical" : "warn"}" style="margin:2px" href="#/flow?class=${c.id}&date=${d}">${esc(c.name)}（${esc(subjectOfClass(c))}・${esc(teacherOfClass(c) || "")}）${d === today3 ? "今天" : mdw(d)}${x.st.key === "partial" ? `・${x.st.missing.length} 位沒任務` : "・未排"}</a>`;
+    const over = alert.filter((x) => x.x.urgent === "over"), soon = alert.filter((x) => x.x.urgent === "soon");
+    const alertHtml = alert.length ? `<div class="callout ${over.length ? "warn" : "accent"} mb8">${icon("alert", "sm")}
+      ${over.length ? `<div><b>今天要上課、還沒排好（${over.length}）</b> ${over.map(chipA).join("")}</div>` : ""}
+      ${soon.length ? `<div class="${over.length ? "mt4" : ""}"><b>${mdw(next)} 要上課、還沒排好（${soon.length}）</b> ${soon.map(chipA).join("")}</div>` : ""}</div>` : `<div class="callout small mb8">${icon("check", "sm")} 今天和 ${mdw(next)} 的課都排好教學流程了。</div>`;
+    const cells = pool.map((c) => ({ c, xs: days2.map((d) => cellOf(c, d, today3, next)) })).filter((r) => r.xs.some((x) => !x.off));
+    const cnt = (k) => cells.reduce((s, r) => s + r.xs.filter((x) => x.st && x.live && (k === "none" ? x.st.key === "none" : x.st.key === k)).length, 0);
+    const legend3 = `<span class="small muted">從今天起：已排 ${cnt("done")}・部分 ${cnt("partial")}・未排 ${cnt("none")}</span>`;
+    ctx.el.innerHTML = `${alertHtml}
+    <div class="callout small mb8">${icon("info", "sm")} 排好＝有時間區塊，而且每個個別時段每位孩子都有任務；有區塊但有孩子沒任務＝<b>部分</b>。紅色是今天要上課還沒排好、黃色是下一個上課日。點格子看那天的流程。</div>
+    <div class="card"><div class="card-head"><h3>本週教學流程</h3>${legend3}</div><div class="tbl-wrap"><table class="tbl fm"><thead><tr><th>班級</th>${days2.map((d) => `<th class="c ${d === today3 ? "fm-today" : ""}">${md2(d)}（${WD3[weekdayIdx(d)]}）${isHoliday(d) ? `<div class="small muted">${esc(isHoliday(d).name || "停課")}</div>` : ""}</th>`).join("")}</tr></thead><tbody>
+      ${cells.map((r) => `<tr><td class="nowrap"><b>${esc(r.c.name)}</b><div class="small muted">${esc(subjectOfClass(r.c))}・${esc(teacherOfClass(r.c) || "—")}</div></td>${r.xs.map((x, i) => cellHtml(r.c, days2[i], x)).join("")}</tr>`).join("") || `<tr><td colspan="${days2.length + 1}"><div class="empty">${icon("calendar")}<div>這週沒有課</div></div></td></tr>`}
+    </tbody></table></div></div>`;
+    ctx.el.querySelectorAll(".fm-cell").forEach((td) => td.onclick = () => preview(td.dataset.c, td.dataset.d));
+  }
+  function preview(cid, d) {
+    const c = get("classes", cid), st6 = flowStatus(cid, d), subj = subjectOfClass(c);
+    const miss = new Set(st6.missing.map((k) => k.id));
+    const blk = (b) => {
+      if (b.mode !== "個別") return `<div class="fm-b"><b class="num">${esc(b.start || "")}–${esc(b.end || "")}</b> ${esc(b.title || "")}<span class="chip outline small">${esc(b.mode || "")}</span>${b.content ? `<div class="small muted">${esc(b.content)}</div>` : ""}</div>`;
+      const ts = tasksOf(b.id);
+      return `<div class="fm-b"><b class="num">${esc(b.start || "")}–${esc(b.end || "")}</b> ${esc(b.title || "")}<span class="chip outline small">個別</span>
+      <table class="tbl small mt4"><tbody>${st6.kids.map((k) => {
+        const t = ts.find((x) => x.studentId === k.id);
+        const txt4 = t && (t.type || t.content || t.unit) ? taskText(t, subj, t.unit || "") : "";
+        return `<tr><td class="nowrap">${esc(k.name)}</td><td>${txt4 ? esc(txt4) : '<span class="chip critical small">沒有任務</span>'}</td></tr>`;
+      }).join("")}</tbody></table></div>`;
+    };
+    const body = `<div class="row wrap mb8" style="gap:6px"><span class="chip ${st6.key === "done" ? "good" : st6.key === "partial" ? "warn" : "outline"}">${st6.label}</span>
+      ${st6.key === "partial" ? `<span class="small">還沒有個別任務：${st6.missing.map((k) => esc(k.name)).join("、")}</span>` : ""}${subOf(cid, d) ? `<span class="small muted">代課 ${esc(get("teachers", subOf(cid, d).teacherId)?.name || "")}</span>` : ""}</div>
+    ${st6.blocks.length ? st6.blocks.map(blk).join("") : `<div class="empty">${icon("flow")}<div>這天還沒有排教學流程</div></div>`}`;
+    openDrawer({
+      title: `${esc(c.name)}（${esc(subj)}・${esc(teacherOfClass(c) || "")}）${mdw(d)}`,
+      body,
+      wide: true,
+      foot: `<span class="sp"></span><a class="btn primary" href="#/flow?class=${encodeURIComponent(cid)}&date=${d}">${icon("flow", "sm")}打開教學流程</a>`
+    });
+    document.querySelectorAll(".drawer-foot a").forEach((x) => x.addEventListener("click", () => document.querySelector(".drawer [data-close]")?.click()));
+  }
+  function flowAlerts(pool = isSupervisor2() ? classes() : myClasses()) {
+    const today3 = todayISO(), next = nextSchoolDay(today3), out = [];
+    for (const c of pool) for (const d of expectedDates(c.id, today3, next)) {
+      const x = cellOf(c, d, today3, next);
+      if (x.urgent) out.push(x.urgent);
+    }
+    return out;
+  }
+  var flowmon_default = { render: render2 };
+
   // src/js/pages/syslists.js
   var custom = () => S.settings?.lists || {};
   function tableRows(d) {
@@ -17206,12 +17316,13 @@ ${lines.join("\n")}`;
   };
 
   // src/js/main.js
-  var MODULES = { dashboard: dashboard_default, journal: journal_default, month: month_default, flow: flow_default, record: record_default, kids: kids_default, forum: forum_default, resources: resources_default, classes: classes_default, teachers: teachers_default, data: data_default, settings: settings_default, math: math_default, english: english_default, selfb: selfb_default, selsurvey: selsurvey_default, tvisits: tvisits_default, syslists: syslists_default, chinese: chinese_default, visits, teachereval, cases, events, followups };
+  var MODULES = { dashboard: dashboard_default, journal: journal_default, month: month_default, flowmon: flowmon_default, flow: flow_default, record: record_default, kids: kids_default, forum: forum_default, resources: resources_default, classes: classes_default, teachers: teachers_default, data: data_default, settings: settings_default, math: math_default, english: english_default, selfb: selfb_default, selsurvey: selsurvey_default, tvisits: tvisits_default, syslists: syslists_default, chinese: chinese_default, visits, teachereval, cases, events, followups };
   var PAGES = [
     { group: "督導監控", items: [
       { id: "dashboard", title: "總覽", icon: "grid" },
       { id: "journal", title: "每日日誌", icon: "journal" },
-      { id: "month", title: "月出席", icon: "calendar" }
+      { id: "month", title: "月出席", icon: "calendar" },
+      { id: "flowmon", title: "教學流程排課", icon: "flow" }
     ] },
     { group: "課堂", items: [
       { id: "flow", title: "教學流程", icon: "flow" },
@@ -17257,7 +17368,7 @@ ${lines.join("\n")}`;
     return { id, params: parts.slice(1), query: new URLSearchParams(qs || "") };
   }
   function go(hash) {
-    if (location.hash === hash) render2();
+    if (location.hash === hash) render3();
     else location.hash = hash;
   }
   function ctxFor(route) {
@@ -17288,7 +17399,7 @@ ${lines.join("\n")}`;
       }
     };
   }
-  async function render2(keepScroll = false) {
+  async function render3(keepScroll = false) {
     if (!DB.backend) return;
     const route = parseHash();
     const y = keepScroll ? scrollY : 0;
@@ -17329,7 +17440,7 @@ ${lines.join("\n")}`;
       $("#content").prepend(b);
       return;
     }
-    render2(true);
+    render3(true);
   }
   function badges() {
     const out = {};
@@ -17352,6 +17463,8 @@ ${lines.join("\n")}`;
       const ss = surveyTodo();
       if (ss.length) out.selsurvey = [ss.length, ss.some((x) => x.st.key === "over") ? "" : "soft"];
     }
+    const fa = flowAlerts();
+    if (fa.length) out.flowmon = [fa.length, fa.includes("over") ? "" : "soft"];
     const high = Object.values(S.insights?.students || {}).filter((s) => s.levelLabel === "高風險").length;
     if (high) out.kids = [high, ""];
     const open2 = openPosts();
@@ -17453,7 +17566,7 @@ ${lines.join("\n")}`;
     S.insightsKey = "";
     await sync({ full: true }).catch((e) => toast(e.message, "err"));
     loadInsights();
-    render2();
+    render3();
   }
   async function hasBase(dir) {
     try {
@@ -17624,7 +17737,7 @@ ${lines.join("\n")}`;
       } catch {
       }
       setThemeIcon();
-      render2(true);
+      render3(true);
     };
     if (LS.get("sideCollapsed")) $("#app").classList.add("collapsed");
     $("#btn-collapse").onclick = () => {
@@ -17689,7 +17802,7 @@ ${lines.join("\n")}`;
       toast(e.message, "err");
     }
     renderNav();
-    render2();
+    render3();
     refreshStatus();
     loadInsights();
     if (!S.who && S.data.teachers.length && backend.kind !== "cloud") chooseIdentity();
@@ -17701,7 +17814,7 @@ ${lines.join("\n")}`;
       if (kind === "insights") onDataChanged();
       if (kind === "status") renderSync();
     });
-    addEventListener("hashchange", () => render2());
+    addEventListener("hashchange", () => render3());
     addEventListener("beforeunload", (e) => {
       if (!current.mod?.isDirty?.()) return;
       try {
