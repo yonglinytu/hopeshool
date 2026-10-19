@@ -10776,6 +10776,16 @@ ${lines.join("\n")}`;
     for (n++; n > 0; n = Math.floor((n - 1) / 26)) s = String.fromCharCode(65 + (n - 1) % 26) + s;
     return s;
   }
+  function classGroups(pool) {
+    const m = /* @__PURE__ */ new Map();
+    for (const c of pool) {
+      const k = `${c.semesterId}|${normClass(c.name)}`;
+      if (!m.has(k)) m.set(k, { key: k, name: c.name, ids: [] });
+      m.get(k).ids.push(c.id);
+    }
+    return [...m.values()].sort((a, b) => a.name.localeCompare(b.name, "zh-Hant"));
+  }
+  var RANK = { 出席: 4, 遲到: 3, 早退: 3, 請假: 2, 缺席: 1 };
   function weekdays(month, sem) {
     const [y, m] = month.split("-").map(Number);
     const out = [];
@@ -10788,26 +10798,41 @@ ${lines.join("\n")}`;
     }
     return out;
   }
-  function rollcallData(cid, month) {
-    const sem = get("semesters", get("classes", cid)?.semesterId) || {};
+  function rollcallData(ids, month) {
+    const sem = get("semesters", get("classes", ids[0])?.semesterId) || {};
     const days = weekdays(month, sem);
     const [y, m] = month.split("-").map(Number);
     const first = `${y}-${pad7(m)}-01`, last = isoOf3(new Date(y, m, 0));
-    const classDays = new Set(expectedDates(cid, first, last));
-    for (const s of S.idx.sessionsByClass.get(cid) || []) if (s.date >= first && s.date <= last) classDays.add(s.date);
-    const marks = /* @__PURE__ */ new Map();
-    for (const d of classDays) {
+    const dayClass = /* @__PURE__ */ new Map();
+    const addDay = (d, cid) => {
+      if (!dayClass.has(d)) dayClass.set(d, /* @__PURE__ */ new Set());
+      dayClass.get(d).add(cid);
+    };
+    for (const cid of ids) {
+      for (const d of expectedDates(cid, first, last)) addDay(d, cid);
+      for (const s of S.idx.sessionsByClass.get(cid) || []) if (s.date >= first && s.date <= last) addDay(s.date, cid);
+    }
+    const marks = /* @__PURE__ */ new Map(), kidClasses = /* @__PURE__ */ new Map();
+    const kc = (k, cid) => {
+      if (!kidClasses.has(k)) kidClasses.set(k, /* @__PURE__ */ new Set());
+      kidClasses.get(k).add(cid);
+    };
+    for (const cid of ids) for (const k of roster(cid)) kc(k.id, cid);
+    for (const [d, cs] of dayClass) for (const cid of cs) {
       const s = sessionFor(cid, d);
-      if (s) {
-        for (const r of recordsOf(s.id)) if (r.attendance) marks.set(`${r.studentId}|${d}`, r.attendance);
+      if (s) for (const r of recordsOf(s.id)) {
+        if (!r.attendance) continue;
+        kc(r.studentId, cid);
+        const key = `${r.studentId}|${d}`, cur = marks.get(key);
+        if (!cur || (RANK[r.attendance] || 0) > (RANK[cur] || 0)) marks.set(key, r.attendance);
       }
     }
-    const ids = new Set(roster(cid).map((k) => k.id));
-    for (const k of marks.keys()) ids.add(k.split("|")[0]);
-    const kids = [...ids].map((id) => get("students", id) || { id, name: id }).sort((a, b) => (Number(a.grade) || 0) - (Number(b.grade) || 0) || String(a.name).localeCompare(String(b.name), "zh-Hant"));
-    const extra = [...classDays].filter((d) => !days.includes(d) && d >= first && d <= last);
+    const kids = [...kidClasses.keys()].map((id) => get("students", id) || { id, name: id }).sort((a, b) => (Number(a.grade) || 0) - (Number(b.grade) || 0) || String(a.name).localeCompare(String(b.name), "zh-Hant"));
+    const classDays = new Set(dayClass.keys());
+    const extra = [...classDays].filter((d) => !days.includes(d));
     const cols = [...days, ...extra].sort();
-    return { sem, cols, classDays, marks, kids, first, last };
+    const applies = (kid, d) => [...dayClass.get(d) || []].some((cid) => kidClasses.get(kid)?.has(cid));
+    return { sem, cols, classDays, dayClass, marks, kids, applies, first, last };
   }
   var thin = { style: "thin", color: { rgb: "000000" } };
   var BORDER = { top: thin, bottom: thin, left: thin, right: thin };
@@ -10818,9 +10843,10 @@ ${lines.join("\n")}`;
     alignment: { horizontal: o.h || "center", vertical: o.v || "center", wrapText: o.wrap !== false },
     fill: o.fill ? { patternType: "solid", fgColor: { rgb: o.fill } } : void 0
   });
-  function rollcallSheet(XS, cid, month, org) {
-    const c = get("classes", cid);
-    const D = rollcallData(cid, month);
+  function rollcallSheet(XS, group3, month, org) {
+    const ids = group3.ids, c = get("classes", ids[0]);
+    const D = rollcallData(ids, month);
+    const subj = (cid) => (subjectOfClass(get("classes", cid)) || "").slice(0, 1);
     const m = Number(month.slice(5));
     const n = D.cols.length;
     const C0 = 4, cR = C0 + n, cS = cR + 1, cT = cR + 2, last = cT;
@@ -10845,7 +10871,12 @@ ${lines.join("\n")}`;
     mg(0, 0, 0, last);
     set(1, 0, `${yy}學年度第${tt || "1"}學期 ${m}月學童出席點名表`, st({ sz: 12, b: true, nb: true }));
     mg(1, 0, 1, last);
-    set(2, 0, `課輔班別：${c?.name || ""}　科目：${subjectOfClass(c)}　課輔老師：${teacherOfClass(c)}`, st({ nb: true, h: "left", wrap: false }));
+    const plan = ids.map((cid) => {
+      const x = get("classes", cid);
+      const wd = [...new Set(slotsOf(cid).map((s) => s.weekday.replace("週", "")))].join("、");
+      return `${subjectOfClass(x)} ${teacherOfClass(x)}${wd ? `（${wd}）` : ""}`;
+    }).join("・");
+    set(2, 0, `課輔班別：${group3.name}　科目／課輔老師：${plan}`, st({ nb: true, h: "left", wrap: false }));
     mg(2, 0, 2, last);
     const H = st({ b: true });
     [["序號", 0], ["課輔\n班別", 1], ["就讀\n年級", 2], ["學生\n姓名", 3]].forEach(([t, col]) => {
@@ -10859,7 +10890,8 @@ ${lines.join("\n")}`;
       const fill = off || hol ? "E7E6E6" : void 0;
       set(3, col, i + 1, st({ b: true, fill }));
       set(4, col, `${Number(d.slice(5, 7))}/${Number(d.slice(8))}`, st({ sz: 10, fill }));
-      set(5, col, hol ? "停課" : wdOf(d), st({ sz: hol ? 9 : 12, fill, color: hol ? "C00000" : void 0 }));
+      const sj = ids.length > 1 ? [...D.dayClass.get(d) || []].map(subj).join("") : "";
+      set(5, col, hol ? "停課" : wdOf(d) + sj, st({ sz: hol ? 9 : sj ? 10 : 12, fill, color: hol ? "C00000" : void 0 }));
     });
     set(3, cR, "學童小計", H);
     set(3, cS, "", H);
@@ -10872,20 +10904,19 @@ ${lines.join("\n")}`;
     });
     const dayRange = (r) => `${colName(C0)}${r + 1}:${colName(cR - 1)}${r + 1}`;
     const today3 = isoOf3(/* @__PURE__ */ new Date());
-    const due = D.cols.filter((d) => D.classDays.has(d) && !isHoliday(d) && d <= today3);
+    const dueOf = (kid) => D.cols.filter((d) => D.applies(kid, d) && !isHoliday(d) && d <= today3);
     for (let i = 0; i < nk; i++) {
       const r = r0 + i, k = D.kids[i];
       set(r, 0, i + 1, st());
-      set(r, 1, i === 0 ? c?.name || "" : "", st());
+      set(r, 1, i === 0 ? group3.name : "", st());
       set(r, 2, k ? Number(k.grade) || k.grade || "" : "", st());
       set(r, 3, k ? k.name : "", st());
       D.cols.forEach((d, j) => {
-        const off = !D.classDays.has(d) || isHoliday(d);
+        const off = !(k ? D.applies(k.id, d) : D.classDays.has(d)) || isHoliday(d);
         const v = k ? MARK[D.marks.get(`${k.id}|${d}`)] ?? "" : "";
         set(r, C0 + j, v, st({ fill: off ? "E7E6E6" : void 0, color: v === "X" ? "C00000" : void 0 }));
       });
-      const inRoster = k && roster(cid).some((x) => x.id === k.id);
-      const dueN = k ? inRoster ? due.length : due.filter((d) => D.marks.has(`${k.id}|${d}`)).length : "";
+      const dueN = k ? dueOf(k.id).length : "";
       set(r, cR, dueN, st());
       set(r, cS, k ? { f: `COUNT(${dayRange(r)})` } : "", st());
       set(r, cT, k ? { f: `IFERROR(${colName(cS)}${r + 1}/${colName(cR)}${r + 1},"")` } : "", st(), { z: "0%" });
@@ -10900,7 +10931,7 @@ ${lines.join("\n")}`;
       mg(r, 1, r, 3);
       D.cols.forEach((d, j) => {
         const col = colName(C0 + j), off = !D.classDays.has(d) || isHoliday(d);
-        const f = off || d > today3 ? "" : i === 0 ? D.kids.length : i === 1 ? { f: `COUNT(${col}${r0 + 1}:${col}${r0 + nk})` } : { f: `IFERROR(${col}${rSum + 2}/${col}${rSum + 1},"")` };
+        const f = off || d > today3 ? "" : i === 0 ? D.kids.filter((k) => D.applies(k.id, d)).length : i === 1 ? { f: `COUNT(${col}${r0 + 1}:${col}${r0 + nk})` } : { f: `IFERROR(${col}${rSum + 2}/${col}${rSum + 1},"")` };
         set(r, C0 + j, f, st({ sz: 11, fill: off ? "E7E6E6" : void 0 }), i === 2 ? { z: "0%" } : {});
       });
       const tot = [cR, cS].map((cc) => `${colName(cc)}${r0 + 1}:${colName(cc)}${r0 + nk}`);
@@ -10912,7 +10943,7 @@ ${lines.join("\n")}`;
     const rN = rSum + 3;
     const sem = D.sem;
     const span = sem.start && sem.end ? `${roc(sem.start)}（${wdOf(sem.start)}）～${roc(sem.end)}（${wdOf(sem.end)}）` : "";
-    const note = `圖例說明："1"：表示學童有到（遲到、早退也記 1）； X：表示學童曠課； 假：學童請假（假別請看課後紀錄）； 灰底：這個班當天沒有課
+    const note = `圖例說明："1"：表示學童有到（遲到、早退也記 1）； X：表示學童曠課； 假：學童請假（假別請看課後紀錄）； 灰底：這位孩子當天沒有課
 
 備註：
  1.到校後，須先點名，確認學童出席狀況並且做回報，若有緊急狀況請立即通知社工
@@ -10944,15 +10975,15 @@ ${lines.join("\n")}`;
     used.add(n);
     return n;
   };
-  function classWorkbook(XS, cid, org) {
-    const c = get("classes", cid), sem = get("semesters", c?.semesterId) || {};
+  function classWorkbook(XS, group3, org) {
+    const c = get("classes", group3.ids[0]), sem = get("semesters", c?.semesterId) || {};
     const wb = XS.utils.book_new(), used = /* @__PURE__ */ new Set();
-    for (const m of semesterMonths(sem)) XS.utils.book_append_sheet(wb, rollcallSheet(XS, cid, m, org), safeSheet(`${m.slice(5)}月`, used));
-    return { wb, name: `${termCode2(c?.semesterId || "")} 課輔學童出席點名表-${c?.name || cid}.xlsx` };
+    for (const m of semesterMonths(sem)) XS.utils.book_append_sheet(wb, rollcallSheet(XS, group3, m, org), safeSheet(`${m.slice(5)}月`, used));
+    return { wb, name: `${termCode2(c?.semesterId || "")} 課輔學童出席點名表-${group3.name}.xlsx` };
   }
-  function monthWorkbook(XS, cids, month, org) {
+  function monthWorkbook(XS, groups, month, org) {
     const wb = XS.utils.book_new(), used = /* @__PURE__ */ new Set();
-    for (const cid of cids) XS.utils.book_append_sheet(wb, rollcallSheet(XS, cid, month, org), safeSheet(get("classes", cid)?.name || cid, used));
+    for (const g of groups) XS.utils.book_append_sheet(wb, rollcallSheet(XS, g, month, org), safeSheet(g.name, used));
     return { wb, name: `課輔學童出席點名表_${month.replace("-", "年")}月.xlsx` };
   }
   function saveFitted(XS, wb, name) {
@@ -10993,6 +11024,17 @@ ${lines.join("\n")}`;
     inp.remove();
     if (!files.length) return;
     const X = window.XLSX, books2 = [], today3 = todayISO();
+    const groups = classGroups(classes());
+    const ids = (b) => b.g >= 0 ? groups[b.g].ids : [];
+    const rosterOf = (b) => {
+      const seen = /* @__PURE__ */ new Set();
+      return ids(b).flatMap((id) => roster(id)).filter((k) => !seen.has(k.id) && seen.add(k.id));
+    };
+    const meets = (cid, d) => !!slotFor(cid, d) || !!sessionFor(cid, d);
+    const target = (b, sid2, d) => {
+      const on2 = ids(b).filter((id) => meets(id, d));
+      return on2.find((id) => roster(id).some((k) => k.id === sid2)) || on2[0] || "";
+    };
     for (const f of files) {
       try {
         const r = parseRollWorkbook(X, X.read(await f.arrayBuffer(), { type: "array" }), f.name);
@@ -11000,8 +11042,8 @@ ${lines.join("\n")}`;
           toast(`「${f.name}」裡找不到填過的點名表`, "err");
           continue;
         }
-        const hit = classes().filter((c) => normClass(c.name) === normClass(r.className));
-        books2.push({ ...r, classId: hit.length === 1 ? hit[0].id : "", kidMap: {}, on: true });
+        const gi = groups.findIndex((g) => normClass(g.name) === normClass(r.className));
+        books2.push({ ...r, g: gi, kidMap: {}, on: true });
       } catch (e) {
         toast(`「${f.name}」讀取失敗：${e.message}`, "err");
       }
@@ -11009,7 +11051,7 @@ ${lines.join("\n")}`;
     if (!books2.length) return;
     const names = (b) => [...new Set(b.sheets.flatMap((s) => s.kids.map((k) => k.name)))];
     const autoKids = (b) => {
-      const ros = b.classId ? roster(b.classId) : [];
+      const ros = rosterOf(b);
       b.kidMap = Object.fromEntries(names(b).map((n) => {
         let id = matchKid(n, ros);
         if (!id) {
@@ -11021,7 +11063,7 @@ ${lines.join("\n")}`;
     };
     books2.forEach(autoKids);
     const stats2 = (b) => {
-      const st6 = { days: /* @__PURE__ */ new Set(), add: 0, same: 0, diff: 0, bad: [], future: 0 };
+      const st6 = { days: /* @__PURE__ */ new Set(), add: 0, same: 0, diff: 0, bad: [], future: 0, nocls: 0 };
       for (const s of b.sheets) for (const k of s.kids) {
         st6.bad.push(...k.bad.map((x) => `${k.name} ${x}`));
         const sid2 = b.kidMap[k.name];
@@ -11031,8 +11073,13 @@ ${lines.join("\n")}`;
             continue;
           }
           st6.days.add(d);
-          if (!sid2 || !b.classId) continue;
-          const ses = sessionFor(b.classId, d);
+          if (!sid2 || b.g < 0) continue;
+          const cid = target(b, sid2, d);
+          if (!cid) {
+            st6.nocls++;
+            continue;
+          }
+          const ses = sessionFor(cid, d);
           const cur = ses ? recordsOf(ses.id).find((r) => r.studentId === sid2)?.attendance : "";
           if (!cur) st6.add++;
           else if (cur === m.att) st6.same++;
@@ -11044,15 +11091,15 @@ ${lines.join("\n")}`;
     let overwrite = false;
     const body = h("<div></div>");
     const draw = () => {
-      body.innerHTML = `<p class="small muted" style="margin:0 0 10px">一個檔案＝一個班。1 記出席、X／曠記缺席；事、病、假、補英語、資源班、比賽…記請假（原因寫進那天的觀察紀錄）。
+      body.innerHTML = `<p class="small muted" style="margin:0 0 10px">一個檔案＝一個課輔班級（英語、數學等科目合在一起）：每一天會依那天上的科目，寫進對應的班。1 記出席、X／曠記缺席；事、病、假、補英語、資源班、比賽…記請假（原因寫進那天的觀察紀錄）。
       系統裡那天還沒有課堂的，會新增一堂只有出席的紀錄（已送出、已看過）。</p>
       <label class="row small mb8" style="gap:6px"><input type="checkbox" data-x="ow" ${overwrite ? "checked" : ""}>點名表和系統裡已經點的名不一樣時，<b>以點名表為準</b>（不勾＝保留系統裡的）</label>
       ${books2.map((b, bi) => {
-        const st6 = stats2(b), ros = b.classId ? roster(b.classId) : [], miss2 = names(b).filter((n) => !b.kidMap[n]);
+        const st6 = stats2(b), ros = rosterOf(b), miss2 = names(b).filter((n) => !b.kidMap[n]);
         return `<div class="card mb8" data-b="${bi}"><div class="card-body stack gap8">
           <div class="row wrap" style="gap:8px"><input type="checkbox" data-x="on" ${b.on ? "checked" : ""}><b>${esc(b.file)}</b><span class="small muted">${b.sheets.map((s) => esc(s.name)).join("、")}</span></div>
-          <label class="field"><span>班級（表上是「${esc(b.className || "—")}」）</span><select class="select" data-x="cls"><option value="">請選擇班級</option>${classes().map((c) => `<option value="${c.id}" ${c.id === b.classId ? "selected" : ""}>${esc(c.name)}（${esc(subjectOfClass(c))}・${esc(teacherOfClass(c))}）</option>`).join("")}</select></label>
-          ${b.classId ? `<div class="small">${st6.days.size} 天・新增 <b>${st6.add}</b> 筆・和系統相同 ${st6.same} 筆・${st6.diff ? `<span class="chip warn small">和系統不同 ${st6.diff} 筆</span>` : "沒有不同"}</div>
+          <label class="field"><span>班級（表上是「${esc(b.className || "—")}」）</span><select class="select" data-x="cls"><option value="-1">請選擇班級</option>${groups.map((g, i) => `<option value="${i}" ${i === b.g ? "selected" : ""}>${esc(g.name)}（${esc(g.ids.map((id) => `${subjectOfClass(get("classes", id))}・${teacherOfClass(get("classes", id))}`).join("／"))}）</option>`).join("")}</select></label>
+          ${b.g >= 0 ? `<div class="small">${st6.days.size} 天・新增 <b>${st6.add}</b> 筆・和系統相同 ${st6.same} 筆・${st6.diff ? `<span class="chip warn small">和系統不同 ${st6.diff} 筆</span>` : "沒有不同"}${st6.nocls ? `・那天這個班沒排課 ${st6.nocls} 格（不匯入）` : ""}</div>
             ${miss2.length ? `<div class="small"><span class="chip warn small">${miss2.length} 位對不到名單</span></div>` : ""}
             <div class="row wrap" style="gap:6px 14px">${names(b).map((n) => `<label class="row small" style="gap:4px"><span>${esc(n)} →</span><select class="select sm" data-x="kid" data-n="${esc(n)}" style="width:auto"><option value="">不匯入</option>
               ${[...ros, ...b.kidMap[n] && !ros.some((r) => r.id === b.kidMap[n]) ? [get("students", b.kidMap[n])] : []].filter(Boolean).map((s) => `<option value="${s.id}" ${b.kidMap[n] === s.id ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></label>`).join("")}</div>` : ""}
@@ -11071,7 +11118,7 @@ ${lines.join("\n")}`;
       const b = books2[+card2.dataset.b], x = e.target.dataset.x;
       if (x === "on") b.on = e.target.checked;
       else if (x === "cls") {
-        b.classId = e.target.value;
+        b.g = +e.target.value;
         autoKids(b);
         draw();
       } else if (x === "kid") {
@@ -11085,23 +11132,24 @@ ${lines.join("\n")}`;
     if (md5) md5.style.width = "min(900px, calc(100vw - 32px))";
     if (!await done) return;
     const use = books2.filter((b) => b.on);
-    const miss = use.filter((b) => !b.classId);
+    const miss = use.filter((b) => b.g < 0);
     if (miss.length) {
       toast(`還沒選班級：${miss.map((b) => b.file).join("、")}`, "err");
       return;
     }
     const byDay = /* @__PURE__ */ new Map();
     for (const b of use) {
-      const c = get("classes", b.classId);
       for (const s of b.sheets) for (const k of s.kids) {
         const sid2 = b.kidMap[k.name];
         if (!sid2) continue;
         for (const [d, m] of Object.entries(k.marks)) {
           if (d > today3) continue;
-          const key = `${b.classId}|${d}`;
+          const cid = target(b, sid2, d);
+          if (!cid) continue;
+          const key = `${cid}|${d}`;
           if (!byDay.has(key)) {
-            const sl = slotFor(b.classId, d);
-            byDay.set(key, { classId: b.classId, date: d, start: sl?.start || "", end: sl?.end || "", teacherId: c?.teacherId || "", marks: [] });
+            const sl = slotFor(cid, d);
+            byDay.set(key, { classId: cid, date: d, start: sl?.start || "", end: sl?.end || "", teacherId: get("classes", cid)?.teacherId || "", marks: [] });
           }
           byDay.get(key).marks.push({ studentId: sid2, att: m.att, why: m.why || "" });
         }
@@ -11132,17 +11180,20 @@ ${lines.join("\n")}`;
       toast("沒有班級", "err");
       return;
     }
+    const groups = classGroups(pool);
+    const gLabel = (g) => `${g.name}（${g.ids.map((id) => `${subjectOfClass(get("classes", id))}・${teacherOfClass(get("classes", id))}`).join("／")}）`;
     const body = h(`<div class="stack gap12">
     <label class="row" style="gap:8px"><input type="radio" name="rc" value="month" checked><span><b>${Number(m.slice(5))} 月${isSupervisor2() ? "全部班級" : "我的班級"}</b><div class="small muted">一個檔案，一班一張工作表</div></span></label>
-    <label class="row" style="gap:8px"><input type="radio" name="rc" value="class"><span><b>一個班的整學期</b><div class="small muted">一個月一張工作表，和原本的「課輔學童出席點名表」檔案一樣</div></span></label>
-    <select class="select" id="rc-cls">${pool.map((c) => `<option value="${c.id}">${esc(c.name)}（${esc(subjectOfClass(c))}・${esc(teacherOfClass(c))}）</option>`).join("")}</select>
+    <label class="row" style="gap:8px"><input type="radio" name="rc" value="class"><span><b>一個班級的整學期</b><div class="small muted">一個月一張工作表，和原本的「課輔學童出席點名表」檔案一樣</div></span></label>
+    <select class="select" id="rc-cls">${groups.map((g, i) => `<option value="${i}">${esc(gLabel(g))}</option>`).join("")}</select>
+    <div class="small muted">以課輔班級為單位：同一個班的英語、數學（不同老師）會合在同一張，星期列下面標出那天上的科目。</div>
     <div class="small muted">出席、遲到、早退記 1，缺席記 X，請假記「假」，灰底是那個班當天沒有課。還沒點名的格子是空白。</div></div>`);
     const ok = await openModal({ title: "下載點名表", body, buttons: [{ text: "取消", value: false }, { text: "下載", value: true, primary: true }] });
     if (!ok) return;
     const kind = body.querySelector("input[name=rc]:checked").value;
     const org = S.settings?.orgName || S.meta?.org || "";
     try {
-      const out = kind === "class" ? classWorkbook(XS, body.querySelector("#rc-cls").value, org) : monthWorkbook(XS, pool.filter((c) => get("classes", c.id)?.semesterId === S.semester).map((c) => c.id), m, org);
+      const out = kind === "class" ? classWorkbook(XS, groups[+body.querySelector("#rc-cls").value], org) : monthWorkbook(XS, groups.filter((g) => get("classes", g.ids[0])?.semesterId === S.semester), m, org);
       saveFitted(XS, out.wb, out.name);
     } catch (e) {
       console.error(e);
