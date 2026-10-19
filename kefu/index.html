@@ -16092,12 +16092,22 @@ ${lines.join("\n")}`;
     }
     return out;
   }
-  async function readSheet(file, { sheet: sheet2 } = {}) {
+  async function readCsvText(file) {
+    const buf = await file.arrayBuffer();
+    try {
+      return new TextDecoder("utf-8", { fatal: true }).decode(buf).replace(/^﻿/, "");
+    } catch {
+      return new TextDecoder("big5").decode(buf);
+    }
+  }
+  async function readSheet(file, { sheet: sheet2, headerHas } = {}) {
     if (!window.XLSX) throw new DbError("Excel 元件沒有載入");
-    const wb = window.XLSX.read(await file.arrayBuffer(), { type: "array" });
+    const csv = /\.csv$/i.test(file.name || "");
+    const wb = csv ? window.XLSX.read(await readCsvText(file), { type: "string", raw: true }) : window.XLSX.read(await file.arrayBuffer(), { type: "array" });
     const name = sheet2 && wb.SheetNames.includes(sheet2) ? sheet2 : wb.SheetNames[0];
     const aoa = window.XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1, defval: "", raw: false });
-    const hi = aoa.findIndex((r) => r.filter((v) => str2(v)).length >= 1);
+    let hi = headerHas ? aoa.findIndex((r) => r.some((v) => str2(v) === headerHas)) : -1;
+    if (hi < 0) hi = aoa.findIndex((r) => r.filter((v) => str2(v)).length >= 1);
     if (hi < 0) return [];
     const head = aoa[hi].map(str2);
     return aoa.slice(hi + 1).filter((r) => r.some((v) => str2(v))).map((r) => Object.fromEntries(head.map((h2, i) => [h2, str2(r[i])]).filter(([h2]) => h2)));
@@ -16279,11 +16289,11 @@ ${lines.join("\n")}`;
   }
   var li = (title, list2, max = 12) => list2.length ? `<li>${title}：${list2.length}<div class="small muted">${list2.slice(0, max).map(esc).join("、")}${list2.length > max ? "…" : ""}</div></li>` : "";
   async function importRosterFlow() {
-    const file = await pickFile(".xls,.xlsx,.html,.htm");
+    const file = await pickFile(".xls,.xlsx,.csv,.html,.htm");
     if (!file) return;
     let plan;
     try {
-      plan = planRoster(await readSheet(file));
+      plan = planRoster(await readSheet(file, { headerHas: "學生姓名" }));
     } catch (e) {
       toast(e.message, "err");
       return;
