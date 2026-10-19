@@ -897,7 +897,6 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     nowStr: () => nowStr,
     references: () => references,
     remove: () => remove,
-    removeOrphanAttendance: () => removeOrphanAttendance,
     rollover: () => rollover,
     rows: () => rows,
     saveChinese: () => saveChinese,
@@ -909,6 +908,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     setRoster: () => setRoster,
     setRules: () => setRules,
     setSetting: () => setSetting,
+    tidyAttendance: () => tidyAttendance,
     upsert: () => upsert
   });
 
@@ -4023,6 +4023,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
 
   // src/js/engine.js
   var ATTENDED = ["出席", "遲到", "早退"];
+  var WEEKDAYS = ["週一", "週二", "週三", "週四", "週五", "週六", "週日"];
   var WDC = "一二三四五六日";
   var pad = (n) => String(n).padStart(2, "0");
   var toDate = (s) => {
@@ -4440,6 +4441,8 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
       return p.join("");
     }
   };
+  var IMPORT_NOTE = "由點名表匯入";
+  var isImportOnly = (s, withBlocks) => !!s && String(s.note || "").includes(IMPORT_NOTE) && !withBlocks?.has(s.id);
   var GRADE_LABEL = { 1: "一年級", 2: "二年級", 3: "三年級", 4: "四年級", 5: "五年級", 6: "六年級" };
   var stroke = new Intl.Collator("zh-Hant-TW-u-co-stroke");
   function monthAttendance(data, month, onlyWithDays = false) {
@@ -4452,10 +4455,18 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     const sems = new Map((data.semesters || []).map((s) => [s.id, s]));
     const sessions = /* @__PURE__ */ new Map();
     for (const s of data.sessions || []) if (s.date >= first && s.date <= last && classes2.has(s.classId)) sessions.set(s.id, s);
+    const slotDays = /* @__PURE__ */ new Map();
+    for (const sl of data.classSlots || []) {
+      if (!slotDays.has(sl.classId)) slotDays.set(sl.classId, /* @__PURE__ */ new Set());
+      slotDays.get(sl.classId).add(WEEKDAYS.indexOf(sl.weekday));
+    }
+    const subs2 = new Set((data.substitutes || []).map((x) => `${x.classId}|${x.date}`));
+    const withBlocks = new Set((data.blocks || []).map((b) => b.sessionId));
+    const ownDay = (s) => !isImportOnly(s, withBlocks) || slotDays.get(s.classId)?.has((toDate(s.date).getDay() + 6) % 7) || subs2.has(`${s.classId}|${s.date}`);
     const marks = /* @__PURE__ */ new Map(), classDates2 = /* @__PURE__ */ new Map();
     for (const r of data.records || []) {
       const s = sessions.get(r.sessionId);
-      if (!s || !r.attendance) continue;
+      if (!s || !r.attendance || !ownDay(s)) continue;
       if (!marks.has(s.classId)) {
         marks.set(s.classId, /* @__PURE__ */ new Map());
         classDates2.set(s.classId, /* @__PURE__ */ new Set());
@@ -4602,6 +4613,406 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     return out;
   }
 
+  // src/js/oldrecords.js
+  var SKIP_SHEETS = /^(使用說明|備用任務參考表|選單資料)$|^希望小學版/;
+  var PLACEHOLDER = /* @__PURE__ */ new Set(["今日共通主題／主要課程", "靜心活動", "班級提醒／默契", "教具／備註", "其他"]);
+  var txt = (v) => String(v ?? "").replace(/\r/g, "").trim();
+  var pad2 = (n) => String(n).padStart(2, "0");
+  function grid(X, ws) {
+    const ref = ws["!ref"] ? X.utils.decode_range(ws["!ref"]) : { e: { r: -1, c: -1 } };
+    const merge = /* @__PURE__ */ new Map();
+    for (const m of ws["!merges"] || []) for (let r = m.s.r; r <= m.e.r; r++) for (let c = m.s.c; c <= m.e.c; c++) merge.set(`${r},${c}`, m);
+    const raw = (r, c) => ws[X.utils.encode_cell({ r, c })];
+    const at = (r, c) => {
+      const m = merge.get(`${r - 1},${c - 1}`);
+      const cell2 = m ? raw(m.s.r, m.s.c) : raw(r - 1, c - 1);
+      return { cell: cell2, v: cell2 ? cell2.v : "", c1: m ? m.s.c + 1 : c, c2: m ? m.e.c + 1 : c, top: !m || m.s.r === r - 1 && m.s.c === c - 1 };
+    };
+    return { rows: ref.e.r + 1, cols: ref.e.c + 1, at, t: (r, c) => txt(at(r, c).v) };
+  }
+  var WEEK = "日一二三四五六";
+  function dateCandidates(X, cell2, sheetName) {
+    const out = [];
+    const md5 = (m2, d) => {
+      if (m2 >= 1 && m2 <= 12 && d >= 1 && d <= 31) out.push({ m: m2, d });
+    };
+    const digits = (s) => {
+      if (s.length === 4) md5(+s.slice(0, 2), +s.slice(2));
+      else if (s.length === 3) {
+        md5(+s[0], +s.slice(1));
+        md5(+s.slice(0, 2), +s[2]);
+      }
+    };
+    if (cell2 && cell2.t === "n" && cell2.v > 2e4) {
+      const p = X.SSF.parse_date_code(cell2.v);
+      return [{ y: p.y, m: p.m, d: p.d }];
+    }
+    if (cell2 && cell2.v instanceof Date) {
+      const d = cell2.v;
+      return [{ y: d.getFullYear(), m: d.getMonth() + 1, d: d.getDate() }];
+    }
+    const v = txt(cell2?.v);
+    let m = /(\d{4})\s*[-/.年]\s*(\d{1,2})\s*[-/.月]\s*(\d{1,2})/.exec(v);
+    if (m) return [{ y: +m[1], m: +m[2], d: +m[3] }];
+    if (m = /^(\d{1,2})\s*[/.月]\s*(\d{1,2})/.exec(v)) md5(+m[1], +m[2]);
+    else if (m = /^(\d{3,4})(?:\.0+)?$/.exec(v)) digits(m[1]);
+    if (!out.length) {
+      const n = txt(sheetName);
+      if (m = /^(\d{1,2})[/.月-](\d{1,2})/.exec(n)) md5(+m[1], +m[2]);
+      else if (m = /^(\d{3,4})/.exec(n)) digits(m[1]);
+    }
+    return out;
+  }
+  function pickDate(cands, sheetName, semesters = [], today3 = /* @__PURE__ */ new Date()) {
+    const wd = /[（(]\s*([一二三四五六日])\s*[)）]/.exec(sheetName || "");
+    const list = [];
+    for (const c of cands) for (const y of c.y ? [c.y] : [today3.getFullYear() - 1, today3.getFullYear(), today3.getFullYear() + 1]) {
+      const d = new Date(y, c.m - 1, c.d);
+      if (d.getMonth() !== c.m - 1) continue;
+      const iso3 = `${y}-${pad2(c.m)}-${pad2(c.d)}`;
+      const inSem = semesters.some((s) => s.start && s.end && iso3 >= s.start && iso3 <= s.end);
+      const wdOk = !wd || WEEK[d.getDay()] === wd[1];
+      list.push({ iso: iso3, score: (c.y ? 100 : 0) + (inSem ? 10 : 0) + (wdOk ? 5 : 0) - Math.abs(d - today3) / 864e8 / 400 });
+    }
+    list.sort((a, b) => b.score - a.score);
+    return list[0]?.iso || "";
+  }
+  var TIME_RE = /(\d{1,2})\s*[:：]\s*(\d{2})\s*[-~－–—～至到]\s*(\d{1,2})\s*[:：]\s*(\d{2})/;
+  var WHOLE_RE = /暖身|入場券|點名|統整|出場券/;
+  var REST_RE = /下課|打掃|休息|午餐|午休|用餐/;
+  var ROW_KEYS = [
+    ["progress", /^今日個別進度/],
+    ["goal", /^今日個別目標/],
+    ["remind", /^課前提醒/],
+    ["attendance", /^出席/],
+    ["homework", /^學校作業/],
+    ["taskDone", /^完成進度/],
+    ["learning", /^學習表現/],
+    ["behavior", /^行為表現/],
+    ["event", /^需要協助|^事件/],
+    ["action", /^處理方式/],
+    ["social", /^社工回饋/],
+    ["follow", /^後續追蹤/]
+  ];
+  function parseSheet(X, ws, name, opts2 = {}) {
+    const g = grid(X, ws);
+    const label2 = (r) => g.t(r, 2);
+    const findRow = (re) => {
+      for (let r = 1; r <= Math.min(g.rows, 80); r++) if (re.test(label2(r))) return r;
+      return 0;
+    };
+    const rInfo = findRow(/^課輔班別/), rKid = findRow(/^項目／學生|^項目\/學生/), rName = findRow(/^年級／姓名|^年級\/姓名|^姓名/);
+    const rMid = findRow(/^課中/), rAfter = findRow(/^課後/);
+    if (!rInfo || !(rKid || rName) || !rMid) return null;
+    const info2 = {};
+    for (let c = 2; c <= g.cols; c++) {
+      const t = g.t(rInfo, c);
+      const k = /^課輔班別/.test(t) ? "className" : /^課輔老師/.test(t) ? "teacherName" : /^日期/.test(t) ? "date" : /^第.*週/.test(t) ? "week" : /^時段類型/.test(t) ? "slot" : "";
+      if (!k) continue;
+      let n = c + 1;
+      while (n <= g.cols && g.at(rInfo, n).c1 === g.at(rInfo, c).c1) n++;
+      info2[k] = k === "date" ? g.at(rInfo, n).cell : g.t(rInfo, n);
+    }
+    const rPlan = rInfo + 1;
+    const plan = (c) => {
+      const t = g.t(rPlan, c);
+      return PLACEHOLDER.has(t) ? "" : t;
+    };
+    let mindful = "";
+    for (let c = 3; c <= g.cols; c++) if (g.t(rPlan, c) === "靜心活動") {
+      let n = c + 1;
+      while (n <= g.cols && g.at(rPlan, n).c1 === g.at(rPlan, c).c1) n++;
+      mindful = plan(n);
+      break;
+    }
+    const focus = plan(3), remind = plan(8), tools = plan(10);
+    const dateIso = pickDate(dateCandidates(X, info2.date, name), name, opts2.semesters, opts2.today);
+    const kids = [];
+    let supCol = 0;
+    for (let c = 3; c <= Math.min(g.cols, 20); c++) {
+      const head = rKid ? g.t(rKid, c) : "";
+      if (/^班級|^全班|備註|補充/.test(head)) {
+        if (!supCol) supCol = c;
+        continue;
+      }
+      const nm = (rName ? g.t(rName, c) : "").replace(/^[一二三四五六1-6]\s*年(級)?\s*[\/／、,，\s]*/, "").replace(/^[一二三四五六1-6]\s*[\/／、]\s*/, "").trim();
+      const named = nm || (head && !/^學生\s*\d+$/.test(head) ? head : "");
+      if (!named) continue;
+      kids.push({ col: c, name: named, nick: head && !/^學生\s*\d+$/.test(head) && head !== named ? head : "" });
+    }
+    const rows2 = {};
+    for (let r = rName || rKid; r <= Math.min(g.rows, 80); r++) {
+      const l = label2(r);
+      for (const [k, re] of ROW_KEYS) if (!rows2[k] && re.test(l)) rows2[k] = r;
+    }
+    const slots = [];
+    for (let r = rMid + 1; r < (rAfter || rMid + 30); r++) {
+      const l = label2(r);
+      if (!l) continue;
+      const tm = TIME_RE.exec(l);
+      const title = l.split("\n")[0].replace(TIME_RE, "").trim() || l;
+      const cells = {}, span = {};
+      for (const k of kids) {
+        const a = g.at(r, k.col);
+        cells[k.col] = txt(a.v);
+        span[k.col] = [a.c1, a.c2];
+      }
+      slots.push({ row: r, title, start: tm ? `${pad2(tm[1])}:${tm[2]}` : "", end: tm ? `${pad2(tm[3])}:${tm[4]}` : "", cells, span, sup: supCol ? txt(g.at(r, supCol).v) : "" });
+    }
+    const per = {}, shared = {};
+    for (const [k] of ROW_KEYS) {
+      const r = rows2[k];
+      if (!r) continue;
+      per[k] = {};
+      const sv = supCol ? g.at(r, supCol) : null;
+      if (sv && txt(sv.v) && !kids.some((x) => x.col >= sv.c1 && x.col <= sv.c2)) (shared[k] = shared[k] || []).push(txt(sv.v));
+      for (const kid of kids) {
+        const a = g.at(r, kid.col);
+        const multi2 = kids.filter((x) => x.col >= a.c1 && x.col <= a.c2).length > 1;
+        if (multi2) {
+          if (kids.find((x) => x.col >= a.c1)?.col === kid.col && txt(a.v)) (shared[k] = shared[k] || []).push(txt(a.v));
+        } else per[k][kid.col] = txt(a.v);
+      }
+    }
+    const filled2 = slots.some((s) => Object.values(s.cells).some(Boolean)) || Object.values(per).some((o) => Object.values(o).some(Boolean));
+    return {
+      name,
+      info: { className: info2.className || "", teacherName: info2.teacherName || "", week: info2.week || "", slot: info2.slot || "" },
+      date: dateIso,
+      mindful,
+      focus,
+      remind,
+      tools,
+      kids,
+      slots,
+      per,
+      shared,
+      filled: filled2
+    };
+  }
+  function parseWorkbook(X, wb, opts2 = {}) {
+    const sheets = [], skipped = [];
+    for (const n of wb.SheetNames) {
+      if (SKIP_SHEETS.test(n.trim())) continue;
+      const p = parseSheet(X, wb.Sheets[n], n, opts2);
+      if (!p) skipped.push({ name: n, why: "不是每日教學紀錄表" });
+      else if (!p.filled) skipped.push({ name: n, why: "沒有填寫內容" });
+      else sheets.push(p);
+    }
+    return { sheets, skipped };
+  }
+  var ATT = { 正常: "出席", 出席: "出席", 遲到: "遲到", 早退: "早退", 請假: "請假", 曠課: "缺席", 缺席: "缺席" };
+  var HW = { 完成: "完成", 部分完成: "未完成", 未完成: "未完成", 無作業: "沒有作業", 沒有作業: "沒有作業", 無: "沒有作業", 未帶: "沒帶", 沒帶: "沒帶", 完成未訂正: "完成未訂正" };
+  var DONE = { 全部完成: "全部完成", 完成大部分: "大部分完成", 大部分完成: "大部分完成", 完成一半: "大多沒完成", 少量完成: "大多沒完成", 未完成: "大多沒完成", 大多沒完成: "大多沒完成" };
+  var LEARN = { 穩定完成: ["很好"], 很好: ["很好"], 需提醒: ["普通"], 普通: ["普通"], 需個別協助: ["需要關注", "需要個別指導"], 明顯困難: ["需要關注", "需要個別指導"], 需要關注: ["需要關注"], 未觀察: [""] };
+  var BEHAV = { 穩定: ["很好"], 很好: ["很好"], 分心: ["普通"], 普通: ["普通"], 干擾他人: ["需要關注", "干擾他人"], 情緒起伏: ["需要關注", "情緒起伏大"], 衝突: ["需要關注", "與同儕衝突"], 需關注: ["需要關注"], 需要關注: ["需要關注"] };
+  var SCORE = { 很好: 5, 普通: 3, 需要關注: 2 };
+  var EMPTY = /* @__PURE__ */ new Set(["", "無", "-", "—", "／", "/"]);
+  function toPayload(p, { classId, teacherId = "", subject = "本科", kidMap = {}, nameOf: nameOf2 = (id) => id }) {
+    const kids = p.kids.filter((k) => kidMap[k.col]);
+    const unknown = {};
+    const pickMap = (map, k, col, lab) => {
+      const v = p.per[k]?.[col] || "";
+      if (EMPTY.has(v) && !(k === "homework" && v === "無")) return null;
+      if (map[v]) return map[v];
+      (unknown[col] = unknown[col] || []).push(`${lab}：${v}`);
+      const key = Object.keys(map).filter((x) => x.length >= 2 && v.startsWith(x)).sort((a, b) => b.length - a.length)[0];
+      if (key) return map[key];
+      if ((k === "learning" || k === "behavior") && /不願|拒絕|不肯|不想/.test(v)) return k === "learning" ? ["需要關注", "學習意願低"] : ["需要關注"];
+      return null;
+    };
+    const blocks = [];
+    for (const s of p.slots) {
+      const vals = kids.map((k) => s.cells[k.col] || "");
+      const filled2 = vals.filter(Boolean);
+      const allSame = filled2.length && filled2.every((v) => v === filled2[0]);
+      const spanAll = kids.length > 0 && kids.every((k) => s.span[k.col][0] === s.span[kids[0].col][0] && s.span[k.col][1] === s.span[kids[0].col][1]) && s.span[kids[0].col][1] > s.span[kids[0].col][0];
+      let b;
+      if (REST_RE.test(s.title)) b = { mode: "休息", content: filled2[0] || "" };
+      else if (!filled2.length) b = { mode: WHOLE_RE.test(s.title) ? "全班" : "個別", content: "" };
+      else if (allSame && (filled2.length === kids.length || spanAll || WHOLE_RE.test(s.title))) b = { mode: "全班", content: filled2[0] };
+      else if (WHOLE_RE.test(s.title) && filled2.length === 1) b = { mode: "全班", content: filled2[0] };
+      else b = { mode: "個別", content: "", tasks: kids.map((k) => {
+        const v = s.cells[k.col] || "";
+        if (!v) return null;
+        return /^家課|^寫作業|^學校作業/.test(v) ? { studentId: kidMap[k.col], type: "家課", unit: "", content: v === "家課" ? "" : v, detail: "", status: "" } : /^閱讀/.test(v) ? { studentId: kidMap[k.col], type: "閱讀", unit: "", content: v.replace(/^閱讀[:：\s]*/, ""), detail: "", status: "" } : { studentId: kidMap[k.col], type: subject, unit: "", content: v, detail: "", status: "" };
+      }).filter(Boolean) };
+      const sig = JSON.stringify([s.title, b.mode, b.content, b.tasks]);
+      const last = blocks[blocks.length - 1];
+      if (last && last.sig === sig && (filled2.length || b.mode === "休息") && last.end === s.start) {
+        last.end = s.end;
+        continue;
+      }
+      blocks.push({ ...b, title: s.title, start: s.start, end: s.end, sig });
+    }
+    blocks.forEach((b) => delete b.sig);
+    const records = [], incidents = [], fb = [];
+    for (const k of kids) {
+      const sid2 = kidMap[k.col];
+      const att = pickMap(ATT, "attendance", k.col, "出席");
+      const hw = pickMap(HW, "homework", k.col, "學校作業");
+      const done = pickMap(DONE, "taskDone", k.col, "完成進度");
+      const lv = pickMap(LEARN, "learning", k.col, "學習表現") || [""];
+      const bv = pickMap(BEHAV, "behavior", k.col, "行為表現") || [""];
+      const ev = p.per.event?.[k.col] || "", act = p.per.action?.[k.col] || "", fol = p.per.follow?.[k.col] || "", soc = p.per.social?.[k.col] || "";
+      const note = [];
+      if (p.per.remind?.[k.col]) note.push(`課前提醒：${p.per.remind[k.col]}`);
+      note.push(...unknown[k.col] || []);
+      if (!EMPTY.has(ev)) {
+        const type = /衝突|打架|吵架/.test(ev + bv.join("")) ? "衝突" : /情緒|哭/.test(ev + bv.join("")) ? "情緒" : /受傷|跌倒/.test(ev) ? "受傷" : /不舒服|發燒|頭痛|肚子痛/.test(ev) ? "身體不適" : "其他";
+        incidents.push({ studentId: sid2, type, severity: "低", description: ev, action: [act, fol && `後續追蹤：${fol}`].filter(Boolean).join("\n"), status: fol ? "處理中" : "已結案" });
+      } else {
+        if (!EMPTY.has(act)) note.push(`處理方式：${act}`);
+        if (!EMPTY.has(fol)) note.push(`後續追蹤：${fol}`);
+      }
+      if (!EMPTY.has(soc)) fb.push(`${nameOf2(sid2)}：${soc}`);
+      const rec = {
+        studentId: sid2,
+        attendance: att || "",
+        homework: hw || "",
+        taskDone: done || "",
+        undone: "",
+        learning: lv[0],
+        learningTags: lv.slice(1).join("、"),
+        behavior: bv[0],
+        behaviorTags: bv.slice(1).join("、"),
+        progress: p.per.progress?.[k.col] || "",
+        score: SCORE[lv[0]] ?? null,
+        note: note.join("\n"),
+        polished: "",
+        summary: "",
+        tags: ""
+      };
+      records.push(rec);
+    }
+    for (const ev of p.shared.event || []) incidents.push({ studentId: "", type: "其他", severity: "低", description: ev, action: (p.shared.action || []).join("\n"), status: (p.shared.follow || []).length ? "處理中" : "已結案" });
+    fb.push(...p.shared.social || []);
+    const supSlots = p.slots.filter((s) => s.sup).map((s) => `${s.start && s.end ? `${s.start}-${s.end} ` : ""}${s.title}：${s.sup}`);
+    const LAB = { progress: "個別進度", remind: "課前提醒", attendance: "出席", homework: "學校作業", taskDone: "完成進度", learning: "學習表現", behavior: "行為表現" };
+    const supRec = Object.entries(LAB).flatMap(([k, l]) => k === "remind" ? [] : (p.shared[k] || []).map((x) => `${l}：${x}`));
+    const sessNote = [
+      p.remind && `班級提醒：${p.remind}`,
+      p.tools && `教具／備註：${p.tools}`,
+      ...supSlots,
+      ...supRec,
+      ...(p.shared.remind || []).map((x) => `課前提醒：${x}`),
+      ...!(p.shared.event || []).length ? (p.shared.action || []).map((x) => `處理方式：${x}`) : [],
+      ...(p.shared.follow || []).map((x) => `後續追蹤：${x}`)
+    ].filter(Boolean).join("\n");
+    const timed = blocks.filter((b) => b.start && b.end);
+    return {
+      session: {
+        classId,
+        date: p.date,
+        start: timed[0]?.start || "",
+        end: timed[timed.length - 1]?.end || "",
+        mindful: p.mindful || "",
+        focus: p.focus || "",
+        note: sessNote,
+        teacherId,
+        mood: "",
+        polished: "",
+        selActivity: "",
+        selContent: "",
+        selTime: "",
+        selResponse: "",
+        selWhy: "",
+        selRecord: "",
+        selQuestion: ""
+      },
+      blocks,
+      records,
+      incidents,
+      feedback: fb.join("\n")
+    };
+  }
+  function matchKid(name, roster2) {
+    const n = txt(name).replace(/\s+/g, "");
+    if (!n) return "";
+    const exact = roster2.filter((s) => s.name === n);
+    if (exact.length === 1) return exact[0].id;
+    const tail = roster2.filter((s) => s.name && (s.name.endsWith(n) || n.endsWith(s.name)) && Math.min(s.name.length, n.length) >= 2);
+    if (tail.length === 1) return tail[0].id;
+    const nick = roster2.filter((s) => s.nickname && String(s.nickname).toLowerCase() === n.toLowerCase());
+    return nick.length === 1 ? nick[0].id : "";
+  }
+
+  // src/js/rollimport.js
+  var txt2 = (v) => String(v ?? "").replace(/\r/g, "").trim();
+  var pad3 = (n) => String(n).padStart(2, "0");
+  function markOf(v) {
+    const s = txt2(v).replace(/\s+/g, "");
+    if (!s) return null;
+    if (/^(1(\.0+)?|１|V|v|✓|✔|○|O|o)$/.test(s)) return { att: "出席" };
+    if (/^(X|x|×|✗|✘|❌|曠|曠課|缺|缺席)$/.test(s)) return { att: "缺席", why: s.length > 1 && !/^[Xx×]$/.test(s) ? s : "" };
+    if (/遲到?$/.test(s) && s.length <= 2) return { att: "遲到" };
+    if (/^早退/.test(s)) return { att: "早退", why: s.length > 2 ? s : "" };
+    if (/假|事|病|喪|公|發燒|不舒服|補|資源|比賽|活動|校隊|家中|回診|看醫生/.test(s)) return { att: "請假", why: /^(請假|假)$/.test(s) ? "" : s };
+    return { bad: s };
+  }
+  function isoOfCell(X, cell2) {
+    if (!cell2) return "";
+    if (cell2.t === "n" && cell2.v > 2e4) {
+      const p = X.SSF.parse_date_code(cell2.v);
+      return `${p.y}-${pad3(p.m)}-${pad3(p.d)}`;
+    }
+    if (cell2.v instanceof Date) {
+      const d = cell2.v;
+      return `${d.getFullYear()}-${pad3(d.getMonth() + 1)}-${pad3(d.getDate())}`;
+    }
+    const m = /(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/.exec(txt2(cell2.v));
+    return m ? `${m[1]}-${pad3(m[2])}-${pad3(m[3])}` : "";
+  }
+  function parseRollSheet(X, ws, name) {
+    const g = grid(X, ws);
+    let hr = 0;
+    for (let r = 1; r <= Math.min(g.rows, 12); r++) if (g.t(r, 1) === "序號") {
+      hr = r;
+      break;
+    }
+    if (!hr) return null;
+    let cName = 0, cGrade = 0, cClass = 0;
+    for (let c = 1; c <= Math.min(g.cols, 8); c++) {
+      const t = g.t(hr, c).replace(/\s/g, "");
+      if (/姓名/.test(t)) cName = c;
+      else if (/年級/.test(t)) cGrade = c;
+      else if (/班/.test(t)) cClass = c;
+    }
+    if (!cName) return null;
+    const days = [];
+    for (let c = cName + 1; c <= g.cols; c++) {
+      const d = isoOfCell(X, g.at(hr + 1, c).cell);
+      if (d) days.push({ c, d });
+    }
+    if (!days.length) return null;
+    const kids = [];
+    for (let r = hr + 3; r <= g.rows; r++) {
+      const a = g.t(r, 1);
+      if (/^(小計|合計)/.test(a) || /應到人數/.test(g.t(r, 2))) break;
+      const nm = g.t(r, cName);
+      if (!nm) continue;
+      const marks = {}, bad = [];
+      for (const { c, d } of days) {
+        const m = markOf(g.at(r, c).v);
+        if (!m) continue;
+        if (m.bad) bad.push(`${d.slice(5)} ${m.bad}`);
+        else marks[d] = m;
+      }
+      kids.push({ name: nm, grade: cGrade ? g.t(r, cGrade) : "", marks, bad });
+    }
+    return { name, className: cClass ? g.t(hr + 3, cClass) : "", days: days.map((x) => x.d), kids };
+  }
+  function parseRollWorkbook(X, wb, fileName2 = "") {
+    const sheets = [];
+    for (const n of wb.SheetNames) {
+      const p = parseRollSheet(X, wb.Sheets[n], n);
+      if (p && p.kids.some((k) => Object.keys(k.marks).length || k.bad.length)) sheets.push(p);
+    }
+    const fromFile = (/點名表[-－_\s]*(.+?)\.(xlsx|xls)$/i.exec(fileName2) || [])[1] || "";
+    return { file: fileName2, className: fromFile || sheets.find((s) => s.className)?.className || "", sheets };
+  }
+  var normClass = (s) => String(s || "").replace(/\s+/g, "").replace(/[一二三四五六七八九]/g, (ch) => "一二三四五六七八九".indexOf(ch) + 1).replace(/班$/, "");
+
   // src/js/db.js
   var TDEF = SCHEMA.tables;
   var LIST_TABLES = ["units", "selActivities", "backupOptions", "readingList"];
@@ -4617,10 +5028,10 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   var BACKUP_DAYS = 30;
   var DbError = class extends Error {
   };
-  var pad2 = (n) => String(n).padStart(2, "0");
+  var pad4 = (n) => String(n).padStart(2, "0");
   function nowStr() {
     const d = /* @__PURE__ */ new Date();
-    return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+    return `${d.getFullYear()}-${pad4(d.getMonth() + 1)}-${pad4(d.getDate())} ${pad4(d.getHours())}:${pad4(d.getMinutes())}:${pad4(d.getSeconds())}`;
   }
   var todayStr = () => nowStr().slice(0, 10);
   var rid = (p) => `${p}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
@@ -4930,7 +5341,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     if (DB.backend.remove) {
       const d = /* @__PURE__ */ new Date();
       d.setDate(d.getDate() - BACKUP_DAYS);
-      const cut = `${d.getFullYear()}${pad2(d.getMonth() + 1)}${pad2(d.getDate())}`;
+      const cut = `${d.getFullYear()}${pad4(d.getMonth() + 1)}${pad4(d.getDate())}`;
       for (const n of await DB.backend.list(BACKUP_DIR)) if (/^\d{8}_/.test(n) && n.slice(0, 8) < cut) await DB.backend.remove(`${BACKUP_DIR}/${n}`).catch(() => {
       });
     }
@@ -5008,7 +5419,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
       else if (typeof v === "string") v = v.trim();
       if (c.kind === "time" && v) {
         const m = /^(\d{1,2})[:：](\d{2})/.exec(v);
-        if (m) v = `${pad2(+m[1])}:${m[2]}`;
+        if (m) v = `${pad4(+m[1])}:${m[2]}`;
       }
       if (c.kind === "date" && v) v = String(v).slice(0, 10).replace(/\//g, "-");
       out[c.key] = v;
@@ -5299,29 +5710,85 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     if (ops.length) await commit(ops);
     return { added, changed, kept, sessions, version: DB.version };
   }
-  async function removeOrphanAttendance(ids) {
-    if (!isSupervisor()) throw new DbError("只有社工／督導可以移除");
-    const enr = new Set(rows("enrollments").map((e) => `${e.classId}|${e.studentId}`));
-    const ops = [], gone = /* @__PURE__ */ new Set();
-    for (const id of ids || []) {
-      const r = getRow("records", id), s = r && getRow("sessions", r.sessionId);
-      if (!r || !s || enr.has(`${s.classId}|${r.studentId}`)) continue;
-      ops.push({ table: "records", id: r.id, delete: true });
+  var WD7 = ["週一", "週二", "週三", "週四", "週五", "週六", "週日"];
+  var wdOf = (d) => {
+    const [y, m, dd] = d.split("-").map(Number);
+    return WD7[(new Date(y, m - 1, dd).getDay() + 6) % 7];
+  };
+  async function tidyAttendance() {
+    if (!isSupervisor()) throw new DbError("只有社工／督導可以整理");
+    const stamp = nowStr(), ops = [];
+    const withBlocks = new Set(rows("blocks").map((b) => b.sessionId));
+    const importOnly2 = (s) => !!s && String(s.note || "").includes("由點名表匯入") && !withBlocks.has(s.id);
+    const slotOn = (cid, d) => rows("classSlots").find((x) => x.classId === cid && x.weekday === wdOf(d)) || null;
+    const subOn = (cid, d) => !!getRow("substitutes", `SUB-${cid}-${d}`);
+    const teaches = (cid, d) => !!slotOn(cid, d) || subOn(cid, d) || getRow("sessions", sid(cid, d)) && !importOnly2(getRow("sessions", sid(cid, d)));
+    const enr = rows("enrollments");
+    const inClass = (cid, st6, activeOnly) => enr.some((e) => e.classId === cid && e.studentId === st6 && (!activeOnly || (e.status || "在班") === "在班"));
+    const recs = /* @__PURE__ */ new Map();
+    for (const r of rows("records")) {
+      if (!recs.has(r.sessionId)) recs.set(r.sessionId, []);
+      recs.get(r.sessionId).push(r);
+    }
+    const newSess = /* @__PURE__ */ new Map(), newRec = /* @__PURE__ */ new Set(), gone = /* @__PURE__ */ new Set(), touched = /* @__PURE__ */ new Set();
+    let moved = 0, dropped = 0, kept = 0, orphans = 0, created = 0;
+    for (const s of rows("sessions")) {
+      if (!importOnly2(s) || slotOn(s.classId, s.date) || subOn(s.classId, s.date)) continue;
+      const c = getRow("classes", s.classId);
+      if (!c) continue;
+      const sibs = rows("classes").filter((x) => x.id !== c.id && x.semesterId === c.semesterId && normClass(x.name) === normClass(c.name) && teaches(x.id, s.date));
+      for (const r of recs.get(s.id) || []) {
+        gone.add(r.id);
+        ops.push({ table: "records", id: r.id, delete: true });
+        touched.add(s.id);
+        if (!r.attendance) continue;
+        const t = sibs.find((x) => inClass(x.id, r.studentId, true)) || sibs.find((x) => inClass(x.id, r.studentId, false));
+        if (!t) {
+          dropped++;
+          continue;
+        }
+        const tsid = sid(t.id, s.date), rid2 = `R-${t.id}-${s.date}-${r.studentId}`;
+        if (getRow("records", rid2)?.attendance || newRec.has(rid2)) {
+          kept++;
+          continue;
+        }
+        if (!getRow("sessions", tsid) && !newSess.has(tsid)) {
+          const sl = slotOn(t.id, s.date);
+          const ns = prepare("sessions", { id: tsid, classId: t.id, date: s.date, start: sl?.start || "", end: sl?.end || "", teacherId: getRow("substitutes", `SUB-${t.id}-${s.date}`)?.teacherId || t.teacherId || "", submit: "已送出", submittedAt: stamp, submitVersion: 1, note: "（由點名表匯入，只有出席）" });
+          for (const k of ["feedback", "feedbackStatus", "feedbackBy", "feedbackAt", "feedbackVersion", "feedbackHistory"]) delete ns[k];
+          newSess.set(tsid, ns);
+          ops.push({ table: "sessions", row: ns });
+          ops.push({ table: "feedback", row: { id: `F-${tsid}`, sessionId: tsid, text: "", status: "已看過", by: "", at: stamp, version: 1, history: [] } });
+          created++;
+        }
+        const KEYS = ["attendance", "homework", "taskDone", "undone", "learning", "learningTags", "behavior", "behaviorTags", "progress", "score", "note", "polished", "summary", "tags"];
+        ops.push({ table: "records", row: { id: rid2, sessionId: tsid, studentId: r.studentId, ...Object.fromEntries(KEYS.map((k) => [k, r[k] ?? (k === "score" ? null : "")])) } });
+        newRec.add(rid2);
+        moved++;
+      }
+    }
+    const enrSet = new Set(enr.map((e) => `${e.classId}|${e.studentId}`));
+    for (const r of rows("records")) {
+      if (gone.has(r.id) || !r.attendance) continue;
+      const s = getRow("sessions", r.sessionId);
+      if (!s || enrSet.has(`${s.classId}|${r.studentId}`)) continue;
       gone.add(r.id);
+      ops.push({ table: "records", id: r.id, delete: true });
+      touched.add(s.id);
+      orphans++;
     }
     let sessions = 0;
-    const touched = new Set(ids.map((id) => getRow("records", id)?.sessionId).filter(Boolean));
     for (const sid0 of touched) {
       const s = getRow("sessions", sid0);
-      if (!s || !String(s.note || "").includes("由點名表匯入")) continue;
-      if (rows("records").some((r) => r.sessionId === sid0 && !gone.has(r.id))) continue;
-      if (rows("blocks").some((b) => b.sessionId === sid0) || rows("incidents").some((i) => i.sessionId === sid0)) continue;
+      if (!importOnly2(s)) continue;
+      if ((recs.get(sid0) || []).some((r) => !gone.has(r.id))) continue;
+      if (rows("incidents").some((i) => i.sessionId === sid0)) continue;
       ops.push({ table: "sessions", id: sid0, delete: true });
       if (getRow("feedback", `F-${sid0}`)) ops.push({ table: "feedback", id: `F-${sid0}`, delete: true });
       sessions++;
     }
     if (ops.length) await commit(ops);
-    return { records: gone.size, sessions, version: DB.version };
+    return { moved, kept, dropped, orphans, sessions, created, version: DB.version };
   }
   async function saveMath(list) {
     const ops = [];
@@ -5648,9 +6115,9 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     return `<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name] || ""}</svg>`;
   }
   var WD = "一二三四五六日";
-  var pad3 = (n) => String(n).padStart(2, "0");
+  var pad5 = (n) => String(n).padStart(2, "0");
   function iso2(d) {
-    return `${d.getFullYear()}-${pad3(d.getMonth() + 1)}-${pad3(d.getDate())}`;
+    return `${d.getFullYear()}-${pad5(d.getMonth() + 1)}-${pad5(d.getDate())}`;
   }
   function parseISO(s) {
     const [y, m, d] = String(s).slice(0, 10).split("-").map(Number);
@@ -6150,10 +6617,10 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   }
 
   // src/js/localapi.js
-  var pad4 = (n) => String(n).padStart(2, "0");
+  var pad6 = (n) => String(n).padStart(2, "0");
   var today = () => {
     const d = /* @__PURE__ */ new Date();
-    return `${d.getFullYear()}-${pad4(d.getMonth() + 1)}-${pad4(d.getDate())}`;
+    return `${d.getFullYear()}-${pad6(d.getMonth() + 1)}-${pad6(d.getDate())}`;
   };
   var GLOBAL_TABLES = ["semesters", "defaultSlots", "holidays", "subjects", "taskTypes", "teachers", "students", "resources", "posts", "replies", ...LIST_TABLES, ...SOCIAL_TABLES];
   function allData() {
@@ -6230,7 +6697,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
       counts: Object.fromEntries(ALL_TABLES.map((t) => [t, DB.T[t]?.size || 0]))
     };
   }
-  var fmt = (d) => `${d.getFullYear()}-${pad4(d.getMonth() + 1)}-${pad4(d.getDate())} ${pad4(d.getHours())}:${pad4(d.getMinutes())}:${pad4(d.getSeconds())}`;
+  var fmt = (d) => `${d.getFullYear()}-${pad6(d.getMonth() + 1)}-${pad6(d.getDate())} ${pad6(d.getHours())}:${pad6(d.getMinutes())}:${pad6(d.getSeconds())}`;
   async function handle(path, method, body, who) {
     const u = new URL(path, "http://x");
     const q = u.searchParams;
@@ -6299,7 +6766,8 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
         case "/api/attendance/import":
           return importAttendance(b.list || [], !!b.overwrite, who?.name || "");
         case "/api/attendance/orphans":
-          return removeOrphanAttendance(b.ids || []);
+        case "/api/attendance/tidy":
+          return tidyAttendance();
         case "/api/session/feedback": {
           const st6 = b.status || "已看過";
           if (!["已看過", "已回饋"].includes(st6)) throw new DbError("回饋狀態不正確");
@@ -6519,16 +6987,16 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   }
   function cellValue(v, col) {
     if (v instanceof Date) {
-      if (col.kind === "time") return `${pad4(v.getHours())}:${pad4(v.getMinutes())}`;
-      return `${v.getFullYear()}-${pad4(v.getMonth() + 1)}-${pad4(v.getDate())}`;
+      if (col.kind === "time") return `${pad6(v.getHours())}:${pad6(v.getMinutes())}`;
+      return `${v.getFullYear()}-${pad6(v.getMonth() + 1)}-${pad6(v.getDate())}`;
     }
     if (col.kind === "time" && typeof v === "number" && v < 1) {
       const m = Math.round(v * 1440);
-      return `${pad4(Math.floor(m / 60))}:${pad4(m % 60)}`;
+      return `${pad6(Math.floor(m / 60))}:${pad6(m % 60)}`;
     }
     if (col.kind === "date" && typeof v === "string") {
       const m = /^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/.exec(v.trim());
-      if (m) return `${m[1]}-${pad4(+m[2])}-${pad4(+m[3])}`;
+      if (m) return `${m[1]}-${pad6(+m[2])}-${pad6(+m[3])}`;
     }
     if (col.kind === "int") return v === "" ? null : Number(v);
     return typeof v === "string" ? v.trim() : String(v ?? "");
@@ -7008,7 +7476,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     "zhTests",
     "substitutes"
   ];
-  var WEEKDAYS = ["週一", "週二", "週三", "週四", "週五", "週六", "週日"];
+  var WEEKDAYS2 = ["週一", "週二", "週三", "週四", "週五", "週六", "週日"];
   var ATTENDED2 = ["出席", "遲到", "早退"];
   var S = {
     meta: null,
@@ -7059,7 +7527,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     const d = S.data;
     const I = {};
     for (const k of TABLES) I[k] = new Map((d[k] || []).map((r) => [String(r.id), r]));
-    I.slotsByClass = group(d.classSlots, "classId", (a, b) => WEEKDAYS.indexOf(a.weekday) - WEEKDAYS.indexOf(b.weekday) || (a.start || "").localeCompare(b.start || ""));
+    I.slotsByClass = group(d.classSlots, "classId", (a, b) => WEEKDAYS2.indexOf(a.weekday) - WEEKDAYS2.indexOf(b.weekday) || (a.start || "").localeCompare(b.start || ""));
     const active2 = d.enrollments.filter((e) => (e.status || "在班") === "在班");
     I.rosterByClass = group(active2, "classId");
     I.classesByStudent = group(active2, "studentId");
@@ -7135,7 +7603,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   }
   function scheduledOn(date) {
     const out = [];
-    const wd = WEEKDAYS[weekdayIdx(date)];
+    const wd = WEEKDAYS2[weekdayIdx(date)];
     const holiday = isHoliday(date);
     const seen = /* @__PURE__ */ new Set();
     if (!holiday && inSemester(date)) {
@@ -7163,7 +7631,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     const a = from > s.start ? from : s.start;
     const b = to < s.end ? to : s.end;
     if (!a || !b || a > b) return [];
-    const days = new Set(slotsOf(cid).map((sl) => WEEKDAYS.indexOf(sl.weekday)));
+    const days = new Set(slotsOf(cid).map((sl) => WEEKDAYS2.indexOf(sl.weekday)));
     const out = [];
     for (let d = a; d <= b; d = addDays2(d, 1)) if (days.has(weekdayIdx(d)) && !isHoliday(d)) out.push(d);
     return out;
@@ -7175,7 +7643,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     const s = semester();
     const today3 = around || iso2(/* @__PURE__ */ new Date());
     const list = new Set(expectedDates(cid, s.start || today3, s.end || today3));
-    for (const x of S.idx.sessionsByClass.get(cid) || []) list.add(x.date);
+    for (const x of S.idx.sessionsByClass.get(cid) || []) if (!importOnly(x) || slotFor(cid, x.date)) list.add(x.date);
     return [...list].sort();
   }
   function nearestDate(cid, date) {
@@ -7185,8 +7653,18 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     const past = ds.filter((d) => d <= date);
     return past.length ? past[past.length - 1] : ds[0];
   }
+  var importOnly = (s) => !!s && String(s.note || "").includes("由點名表匯入") && !blocksOf(s.id).length;
+  function teachesOn(cid, date) {
+    if (slotFor(cid, date) || subOf(cid, date)) return true;
+    const s = sessionFor(cid, date);
+    return !!s && !importOnly(s);
+  }
+  function misplacedImports() {
+    const cls = new Set(S.data.classes.filter((c) => c.semesterId === S.semester).map((c) => c.id));
+    return S.data.sessions.filter((s) => cls.has(s.classId) && importOnly(s) && !slotFor(s.classId, s.date) && !subOf(s.classId, s.date));
+  }
   function slotFor(cid, date) {
-    const wd = WEEKDAYS[weekdayIdx(date)];
+    const wd = WEEKDAYS2[weekdayIdx(date)];
     return slotsOf(cid).find((s) => s.weekday === wd) || null;
   }
   function lastProgress(studentId, cid, before) {
@@ -9834,330 +10312,6 @@ ${lines.join("\n")}`;
     return done ? `<a class="btn sm ghost" href="#/events/${esc(done.id)}">${icon("lock", "sm")}已轉特殊事件</a>` : `<a class="btn sm" href="#/events/new?incident=${esc(inc2.id)}">${icon("lock", "sm")}轉為特殊事件</a>`;
   }
 
-  // src/js/oldrecords.js
-  var SKIP_SHEETS = /^(使用說明|備用任務參考表|選單資料)$|^希望小學版/;
-  var PLACEHOLDER = /* @__PURE__ */ new Set(["今日共通主題／主要課程", "靜心活動", "班級提醒／默契", "教具／備註", "其他"]);
-  var txt = (v) => String(v ?? "").replace(/\r/g, "").trim();
-  var pad5 = (n) => String(n).padStart(2, "0");
-  function grid(X, ws) {
-    const ref = ws["!ref"] ? X.utils.decode_range(ws["!ref"]) : { e: { r: -1, c: -1 } };
-    const merge = /* @__PURE__ */ new Map();
-    for (const m of ws["!merges"] || []) for (let r = m.s.r; r <= m.e.r; r++) for (let c = m.s.c; c <= m.e.c; c++) merge.set(`${r},${c}`, m);
-    const raw = (r, c) => ws[X.utils.encode_cell({ r, c })];
-    const at = (r, c) => {
-      const m = merge.get(`${r - 1},${c - 1}`);
-      const cell2 = m ? raw(m.s.r, m.s.c) : raw(r - 1, c - 1);
-      return { cell: cell2, v: cell2 ? cell2.v : "", c1: m ? m.s.c + 1 : c, c2: m ? m.e.c + 1 : c, top: !m || m.s.r === r - 1 && m.s.c === c - 1 };
-    };
-    return { rows: ref.e.r + 1, cols: ref.e.c + 1, at, t: (r, c) => txt(at(r, c).v) };
-  }
-  var WEEK = "日一二三四五六";
-  function dateCandidates(X, cell2, sheetName) {
-    const out = [];
-    const md5 = (m2, d) => {
-      if (m2 >= 1 && m2 <= 12 && d >= 1 && d <= 31) out.push({ m: m2, d });
-    };
-    const digits = (s) => {
-      if (s.length === 4) md5(+s.slice(0, 2), +s.slice(2));
-      else if (s.length === 3) {
-        md5(+s[0], +s.slice(1));
-        md5(+s.slice(0, 2), +s[2]);
-      }
-    };
-    if (cell2 && cell2.t === "n" && cell2.v > 2e4) {
-      const p = X.SSF.parse_date_code(cell2.v);
-      return [{ y: p.y, m: p.m, d: p.d }];
-    }
-    if (cell2 && cell2.v instanceof Date) {
-      const d = cell2.v;
-      return [{ y: d.getFullYear(), m: d.getMonth() + 1, d: d.getDate() }];
-    }
-    const v = txt(cell2?.v);
-    let m = /(\d{4})\s*[-/.年]\s*(\d{1,2})\s*[-/.月]\s*(\d{1,2})/.exec(v);
-    if (m) return [{ y: +m[1], m: +m[2], d: +m[3] }];
-    if (m = /^(\d{1,2})\s*[/.月]\s*(\d{1,2})/.exec(v)) md5(+m[1], +m[2]);
-    else if (m = /^(\d{3,4})(?:\.0+)?$/.exec(v)) digits(m[1]);
-    if (!out.length) {
-      const n = txt(sheetName);
-      if (m = /^(\d{1,2})[/.月-](\d{1,2})/.exec(n)) md5(+m[1], +m[2]);
-      else if (m = /^(\d{3,4})/.exec(n)) digits(m[1]);
-    }
-    return out;
-  }
-  function pickDate(cands, sheetName, semesters = [], today3 = /* @__PURE__ */ new Date()) {
-    const wd = /[（(]\s*([一二三四五六日])\s*[)）]/.exec(sheetName || "");
-    const list = [];
-    for (const c of cands) for (const y of c.y ? [c.y] : [today3.getFullYear() - 1, today3.getFullYear(), today3.getFullYear() + 1]) {
-      const d = new Date(y, c.m - 1, c.d);
-      if (d.getMonth() !== c.m - 1) continue;
-      const iso3 = `${y}-${pad5(c.m)}-${pad5(c.d)}`;
-      const inSem = semesters.some((s) => s.start && s.end && iso3 >= s.start && iso3 <= s.end);
-      const wdOk = !wd || WEEK[d.getDay()] === wd[1];
-      list.push({ iso: iso3, score: (c.y ? 100 : 0) + (inSem ? 10 : 0) + (wdOk ? 5 : 0) - Math.abs(d - today3) / 864e8 / 400 });
-    }
-    list.sort((a, b) => b.score - a.score);
-    return list[0]?.iso || "";
-  }
-  var TIME_RE = /(\d{1,2})\s*[:：]\s*(\d{2})\s*[-~－–—～至到]\s*(\d{1,2})\s*[:：]\s*(\d{2})/;
-  var WHOLE_RE = /暖身|入場券|點名|統整|出場券/;
-  var REST_RE = /下課|打掃|休息|午餐|午休|用餐/;
-  var ROW_KEYS = [
-    ["progress", /^今日個別進度/],
-    ["goal", /^今日個別目標/],
-    ["remind", /^課前提醒/],
-    ["attendance", /^出席/],
-    ["homework", /^學校作業/],
-    ["taskDone", /^完成進度/],
-    ["learning", /^學習表現/],
-    ["behavior", /^行為表現/],
-    ["event", /^需要協助|^事件/],
-    ["action", /^處理方式/],
-    ["social", /^社工回饋/],
-    ["follow", /^後續追蹤/]
-  ];
-  function parseSheet(X, ws, name, opts2 = {}) {
-    const g = grid(X, ws);
-    const label2 = (r) => g.t(r, 2);
-    const findRow = (re) => {
-      for (let r = 1; r <= Math.min(g.rows, 80); r++) if (re.test(label2(r))) return r;
-      return 0;
-    };
-    const rInfo = findRow(/^課輔班別/), rKid = findRow(/^項目／學生|^項目\/學生/), rName = findRow(/^年級／姓名|^年級\/姓名|^姓名/);
-    const rMid = findRow(/^課中/), rAfter = findRow(/^課後/);
-    if (!rInfo || !(rKid || rName) || !rMid) return null;
-    const info2 = {};
-    for (let c = 2; c <= g.cols; c++) {
-      const t = g.t(rInfo, c);
-      const k = /^課輔班別/.test(t) ? "className" : /^課輔老師/.test(t) ? "teacherName" : /^日期/.test(t) ? "date" : /^第.*週/.test(t) ? "week" : /^時段類型/.test(t) ? "slot" : "";
-      if (!k) continue;
-      let n = c + 1;
-      while (n <= g.cols && g.at(rInfo, n).c1 === g.at(rInfo, c).c1) n++;
-      info2[k] = k === "date" ? g.at(rInfo, n).cell : g.t(rInfo, n);
-    }
-    const rPlan = rInfo + 1;
-    const plan = (c) => {
-      const t = g.t(rPlan, c);
-      return PLACEHOLDER.has(t) ? "" : t;
-    };
-    let mindful = "";
-    for (let c = 3; c <= g.cols; c++) if (g.t(rPlan, c) === "靜心活動") {
-      let n = c + 1;
-      while (n <= g.cols && g.at(rPlan, n).c1 === g.at(rPlan, c).c1) n++;
-      mindful = plan(n);
-      break;
-    }
-    const focus = plan(3), remind = plan(8), tools = plan(10);
-    const dateIso = pickDate(dateCandidates(X, info2.date, name), name, opts2.semesters, opts2.today);
-    const kids = [];
-    let supCol = 0;
-    for (let c = 3; c <= Math.min(g.cols, 20); c++) {
-      const head = rKid ? g.t(rKid, c) : "";
-      if (/^班級|^全班|備註|補充/.test(head)) {
-        if (!supCol) supCol = c;
-        continue;
-      }
-      const nm = (rName ? g.t(rName, c) : "").replace(/^[一二三四五六1-6]\s*年(級)?\s*[\/／、,，\s]*/, "").replace(/^[一二三四五六1-6]\s*[\/／、]\s*/, "").trim();
-      const named = nm || (head && !/^學生\s*\d+$/.test(head) ? head : "");
-      if (!named) continue;
-      kids.push({ col: c, name: named, nick: head && !/^學生\s*\d+$/.test(head) && head !== named ? head : "" });
-    }
-    const rows2 = {};
-    for (let r = rName || rKid; r <= Math.min(g.rows, 80); r++) {
-      const l = label2(r);
-      for (const [k, re] of ROW_KEYS) if (!rows2[k] && re.test(l)) rows2[k] = r;
-    }
-    const slots = [];
-    for (let r = rMid + 1; r < (rAfter || rMid + 30); r++) {
-      const l = label2(r);
-      if (!l) continue;
-      const tm = TIME_RE.exec(l);
-      const title = l.split("\n")[0].replace(TIME_RE, "").trim() || l;
-      const cells = {}, span = {};
-      for (const k of kids) {
-        const a = g.at(r, k.col);
-        cells[k.col] = txt(a.v);
-        span[k.col] = [a.c1, a.c2];
-      }
-      slots.push({ row: r, title, start: tm ? `${pad5(tm[1])}:${tm[2]}` : "", end: tm ? `${pad5(tm[3])}:${tm[4]}` : "", cells, span, sup: supCol ? txt(g.at(r, supCol).v) : "" });
-    }
-    const per = {}, shared = {};
-    for (const [k] of ROW_KEYS) {
-      const r = rows2[k];
-      if (!r) continue;
-      per[k] = {};
-      const sv = supCol ? g.at(r, supCol) : null;
-      if (sv && txt(sv.v) && !kids.some((x) => x.col >= sv.c1 && x.col <= sv.c2)) (shared[k] = shared[k] || []).push(txt(sv.v));
-      for (const kid of kids) {
-        const a = g.at(r, kid.col);
-        const multi2 = kids.filter((x) => x.col >= a.c1 && x.col <= a.c2).length > 1;
-        if (multi2) {
-          if (kids.find((x) => x.col >= a.c1)?.col === kid.col && txt(a.v)) (shared[k] = shared[k] || []).push(txt(a.v));
-        } else per[k][kid.col] = txt(a.v);
-      }
-    }
-    const filled2 = slots.some((s) => Object.values(s.cells).some(Boolean)) || Object.values(per).some((o) => Object.values(o).some(Boolean));
-    return {
-      name,
-      info: { className: info2.className || "", teacherName: info2.teacherName || "", week: info2.week || "", slot: info2.slot || "" },
-      date: dateIso,
-      mindful,
-      focus,
-      remind,
-      tools,
-      kids,
-      slots,
-      per,
-      shared,
-      filled: filled2
-    };
-  }
-  function parseWorkbook(X, wb, opts2 = {}) {
-    const sheets = [], skipped = [];
-    for (const n of wb.SheetNames) {
-      if (SKIP_SHEETS.test(n.trim())) continue;
-      const p = parseSheet(X, wb.Sheets[n], n, opts2);
-      if (!p) skipped.push({ name: n, why: "不是每日教學紀錄表" });
-      else if (!p.filled) skipped.push({ name: n, why: "沒有填寫內容" });
-      else sheets.push(p);
-    }
-    return { sheets, skipped };
-  }
-  var ATT = { 正常: "出席", 出席: "出席", 遲到: "遲到", 早退: "早退", 請假: "請假", 曠課: "缺席", 缺席: "缺席" };
-  var HW = { 完成: "完成", 部分完成: "未完成", 未完成: "未完成", 無作業: "沒有作業", 沒有作業: "沒有作業", 無: "沒有作業", 未帶: "沒帶", 沒帶: "沒帶", 完成未訂正: "完成未訂正" };
-  var DONE = { 全部完成: "全部完成", 完成大部分: "大部分完成", 大部分完成: "大部分完成", 完成一半: "大多沒完成", 少量完成: "大多沒完成", 未完成: "大多沒完成", 大多沒完成: "大多沒完成" };
-  var LEARN = { 穩定完成: ["很好"], 很好: ["很好"], 需提醒: ["普通"], 普通: ["普通"], 需個別協助: ["需要關注", "需要個別指導"], 明顯困難: ["需要關注", "需要個別指導"], 需要關注: ["需要關注"], 未觀察: [""] };
-  var BEHAV = { 穩定: ["很好"], 很好: ["很好"], 分心: ["普通"], 普通: ["普通"], 干擾他人: ["需要關注", "干擾他人"], 情緒起伏: ["需要關注", "情緒起伏大"], 衝突: ["需要關注", "與同儕衝突"], 需關注: ["需要關注"], 需要關注: ["需要關注"] };
-  var SCORE = { 很好: 5, 普通: 3, 需要關注: 2 };
-  var EMPTY = /* @__PURE__ */ new Set(["", "無", "-", "—", "／", "/"]);
-  function toPayload(p, { classId, teacherId = "", subject = "本科", kidMap = {}, nameOf: nameOf2 = (id) => id }) {
-    const kids = p.kids.filter((k) => kidMap[k.col]);
-    const unknown = {};
-    const pickMap = (map, k, col, lab) => {
-      const v = p.per[k]?.[col] || "";
-      if (EMPTY.has(v) && !(k === "homework" && v === "無")) return null;
-      if (map[v]) return map[v];
-      (unknown[col] = unknown[col] || []).push(`${lab}：${v}`);
-      const key = Object.keys(map).filter((x) => x.length >= 2 && v.startsWith(x)).sort((a, b) => b.length - a.length)[0];
-      if (key) return map[key];
-      if ((k === "learning" || k === "behavior") && /不願|拒絕|不肯|不想/.test(v)) return k === "learning" ? ["需要關注", "學習意願低"] : ["需要關注"];
-      return null;
-    };
-    const blocks = [];
-    for (const s of p.slots) {
-      const vals = kids.map((k) => s.cells[k.col] || "");
-      const filled2 = vals.filter(Boolean);
-      const allSame = filled2.length && filled2.every((v) => v === filled2[0]);
-      const spanAll = kids.length > 0 && kids.every((k) => s.span[k.col][0] === s.span[kids[0].col][0] && s.span[k.col][1] === s.span[kids[0].col][1]) && s.span[kids[0].col][1] > s.span[kids[0].col][0];
-      let b;
-      if (REST_RE.test(s.title)) b = { mode: "休息", content: filled2[0] || "" };
-      else if (!filled2.length) b = { mode: WHOLE_RE.test(s.title) ? "全班" : "個別", content: "" };
-      else if (allSame && (filled2.length === kids.length || spanAll || WHOLE_RE.test(s.title))) b = { mode: "全班", content: filled2[0] };
-      else if (WHOLE_RE.test(s.title) && filled2.length === 1) b = { mode: "全班", content: filled2[0] };
-      else b = { mode: "個別", content: "", tasks: kids.map((k) => {
-        const v = s.cells[k.col] || "";
-        if (!v) return null;
-        return /^家課|^寫作業|^學校作業/.test(v) ? { studentId: kidMap[k.col], type: "家課", unit: "", content: v === "家課" ? "" : v, detail: "", status: "" } : /^閱讀/.test(v) ? { studentId: kidMap[k.col], type: "閱讀", unit: "", content: v.replace(/^閱讀[:：\s]*/, ""), detail: "", status: "" } : { studentId: kidMap[k.col], type: subject, unit: "", content: v, detail: "", status: "" };
-      }).filter(Boolean) };
-      const sig = JSON.stringify([s.title, b.mode, b.content, b.tasks]);
-      const last = blocks[blocks.length - 1];
-      if (last && last.sig === sig && (filled2.length || b.mode === "休息") && last.end === s.start) {
-        last.end = s.end;
-        continue;
-      }
-      blocks.push({ ...b, title: s.title, start: s.start, end: s.end, sig });
-    }
-    blocks.forEach((b) => delete b.sig);
-    const records = [], incidents = [], fb = [];
-    for (const k of kids) {
-      const sid2 = kidMap[k.col];
-      const att = pickMap(ATT, "attendance", k.col, "出席");
-      const hw = pickMap(HW, "homework", k.col, "學校作業");
-      const done = pickMap(DONE, "taskDone", k.col, "完成進度");
-      const lv = pickMap(LEARN, "learning", k.col, "學習表現") || [""];
-      const bv = pickMap(BEHAV, "behavior", k.col, "行為表現") || [""];
-      const ev = p.per.event?.[k.col] || "", act = p.per.action?.[k.col] || "", fol = p.per.follow?.[k.col] || "", soc = p.per.social?.[k.col] || "";
-      const note = [];
-      if (p.per.remind?.[k.col]) note.push(`課前提醒：${p.per.remind[k.col]}`);
-      note.push(...unknown[k.col] || []);
-      if (!EMPTY.has(ev)) {
-        const type = /衝突|打架|吵架/.test(ev + bv.join("")) ? "衝突" : /情緒|哭/.test(ev + bv.join("")) ? "情緒" : /受傷|跌倒/.test(ev) ? "受傷" : /不舒服|發燒|頭痛|肚子痛/.test(ev) ? "身體不適" : "其他";
-        incidents.push({ studentId: sid2, type, severity: "低", description: ev, action: [act, fol && `後續追蹤：${fol}`].filter(Boolean).join("\n"), status: fol ? "處理中" : "已結案" });
-      } else {
-        if (!EMPTY.has(act)) note.push(`處理方式：${act}`);
-        if (!EMPTY.has(fol)) note.push(`後續追蹤：${fol}`);
-      }
-      if (!EMPTY.has(soc)) fb.push(`${nameOf2(sid2)}：${soc}`);
-      const rec = {
-        studentId: sid2,
-        attendance: att || "",
-        homework: hw || "",
-        taskDone: done || "",
-        undone: "",
-        learning: lv[0],
-        learningTags: lv.slice(1).join("、"),
-        behavior: bv[0],
-        behaviorTags: bv.slice(1).join("、"),
-        progress: p.per.progress?.[k.col] || "",
-        score: SCORE[lv[0]] ?? null,
-        note: note.join("\n"),
-        polished: "",
-        summary: "",
-        tags: ""
-      };
-      records.push(rec);
-    }
-    for (const ev of p.shared.event || []) incidents.push({ studentId: "", type: "其他", severity: "低", description: ev, action: (p.shared.action || []).join("\n"), status: (p.shared.follow || []).length ? "處理中" : "已結案" });
-    fb.push(...p.shared.social || []);
-    const supSlots = p.slots.filter((s) => s.sup).map((s) => `${s.start && s.end ? `${s.start}-${s.end} ` : ""}${s.title}：${s.sup}`);
-    const LAB = { progress: "個別進度", remind: "課前提醒", attendance: "出席", homework: "學校作業", taskDone: "完成進度", learning: "學習表現", behavior: "行為表現" };
-    const supRec = Object.entries(LAB).flatMap(([k, l]) => k === "remind" ? [] : (p.shared[k] || []).map((x) => `${l}：${x}`));
-    const sessNote = [
-      p.remind && `班級提醒：${p.remind}`,
-      p.tools && `教具／備註：${p.tools}`,
-      ...supSlots,
-      ...supRec,
-      ...(p.shared.remind || []).map((x) => `課前提醒：${x}`),
-      ...!(p.shared.event || []).length ? (p.shared.action || []).map((x) => `處理方式：${x}`) : [],
-      ...(p.shared.follow || []).map((x) => `後續追蹤：${x}`)
-    ].filter(Boolean).join("\n");
-    const timed = blocks.filter((b) => b.start && b.end);
-    return {
-      session: {
-        classId,
-        date: p.date,
-        start: timed[0]?.start || "",
-        end: timed[timed.length - 1]?.end || "",
-        mindful: p.mindful || "",
-        focus: p.focus || "",
-        note: sessNote,
-        teacherId,
-        mood: "",
-        polished: "",
-        selActivity: "",
-        selContent: "",
-        selTime: "",
-        selResponse: "",
-        selWhy: "",
-        selRecord: "",
-        selQuestion: ""
-      },
-      blocks,
-      records,
-      incidents,
-      feedback: fb.join("\n")
-    };
-  }
-  function matchKid(name, roster2) {
-    const n = txt(name).replace(/\s+/g, "");
-    if (!n) return "";
-    const exact = roster2.filter((s) => s.name === n);
-    if (exact.length === 1) return exact[0].id;
-    const tail = roster2.filter((s) => s.name && (s.name.endsWith(n) || n.endsWith(s.name)) && Math.min(s.name.length, n.length) >= 2);
-    if (tail.length === 1) return tail[0].id;
-    const nick = roster2.filter((s) => s.nickname && String(s.nickname).toLowerCase() === n.toLowerCase());
-    return nick.length === 1 ? nick[0].id : "";
-  }
-
   // src/js/pages/oldimport.js
   var norm = (s) => String(s || "").replace(/\s+/g, "").replace(/班$/, "");
   function guessClass(sheets) {
@@ -10471,82 +10625,6 @@ ${lines.join("\n")}`;
     }
   };
 
-  // src/js/rollimport.js
-  var txt2 = (v) => String(v ?? "").replace(/\r/g, "").trim();
-  var pad6 = (n) => String(n).padStart(2, "0");
-  function markOf(v) {
-    const s = txt2(v).replace(/\s+/g, "");
-    if (!s) return null;
-    if (/^(1(\.0+)?|１|V|v|✓|✔|○|O|o)$/.test(s)) return { att: "出席" };
-    if (/^(X|x|×|✗|✘|❌|曠|曠課|缺|缺席)$/.test(s)) return { att: "缺席", why: s.length > 1 && !/^[Xx×]$/.test(s) ? s : "" };
-    if (/遲到?$/.test(s) && s.length <= 2) return { att: "遲到" };
-    if (/^早退/.test(s)) return { att: "早退", why: s.length > 2 ? s : "" };
-    if (/假|事|病|喪|公|發燒|不舒服|補|資源|比賽|活動|校隊|家中|回診|看醫生/.test(s)) return { att: "請假", why: /^(請假|假)$/.test(s) ? "" : s };
-    return { bad: s };
-  }
-  function isoOfCell(X, cell2) {
-    if (!cell2) return "";
-    if (cell2.t === "n" && cell2.v > 2e4) {
-      const p = X.SSF.parse_date_code(cell2.v);
-      return `${p.y}-${pad6(p.m)}-${pad6(p.d)}`;
-    }
-    if (cell2.v instanceof Date) {
-      const d = cell2.v;
-      return `${d.getFullYear()}-${pad6(d.getMonth() + 1)}-${pad6(d.getDate())}`;
-    }
-    const m = /(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/.exec(txt2(cell2.v));
-    return m ? `${m[1]}-${pad6(m[2])}-${pad6(m[3])}` : "";
-  }
-  function parseRollSheet(X, ws, name) {
-    const g = grid(X, ws);
-    let hr = 0;
-    for (let r = 1; r <= Math.min(g.rows, 12); r++) if (g.t(r, 1) === "序號") {
-      hr = r;
-      break;
-    }
-    if (!hr) return null;
-    let cName = 0, cGrade = 0, cClass = 0;
-    for (let c = 1; c <= Math.min(g.cols, 8); c++) {
-      const t = g.t(hr, c).replace(/\s/g, "");
-      if (/姓名/.test(t)) cName = c;
-      else if (/年級/.test(t)) cGrade = c;
-      else if (/班/.test(t)) cClass = c;
-    }
-    if (!cName) return null;
-    const days = [];
-    for (let c = cName + 1; c <= g.cols; c++) {
-      const d = isoOfCell(X, g.at(hr + 1, c).cell);
-      if (d) days.push({ c, d });
-    }
-    if (!days.length) return null;
-    const kids = [];
-    for (let r = hr + 3; r <= g.rows; r++) {
-      const a = g.t(r, 1);
-      if (/^(小計|合計)/.test(a) || /應到人數/.test(g.t(r, 2))) break;
-      const nm = g.t(r, cName);
-      if (!nm) continue;
-      const marks = {}, bad = [];
-      for (const { c, d } of days) {
-        const m = markOf(g.at(r, c).v);
-        if (!m) continue;
-        if (m.bad) bad.push(`${d.slice(5)} ${m.bad}`);
-        else marks[d] = m;
-      }
-      kids.push({ name: nm, grade: cGrade ? g.t(r, cGrade) : "", marks, bad });
-    }
-    return { name, className: cClass ? g.t(hr + 3, cClass) : "", days: days.map((x) => x.d), kids };
-  }
-  function parseRollWorkbook(X, wb, fileName2 = "") {
-    const sheets = [];
-    for (const n of wb.SheetNames) {
-      const p = parseRollSheet(X, wb.Sheets[n], n);
-      if (p && p.kids.some((k) => Object.keys(k.marks).length || k.bad.length)) sheets.push(p);
-    }
-    const fromFile = (/點名表[-－_\s]*(.+?)\.(xlsx|xls)$/i.exec(fileName2) || [])[1] || "";
-    return { file: fileName2, className: fromFile || sheets.find((s) => s.className)?.className || "", sheets };
-  }
-  var normClass = (s) => String(s || "").replace(/\s+/g, "").replace(/[一二三四五六七八九]/g, (ch) => "一二三四五六七八九".indexOf(ch) + 1).replace(/班$/, "");
-
   // src/js/english.js
   var papers = derived(() => EN_PAPERS.map(([name, kind, book, range]) => ({ name, kind, book, range })));
   var byName2 = derived(() => new Map(papers().map((p, i) => [p.name, { ...p, i }])));
@@ -10796,7 +10874,7 @@ ${lines.join("\n")}`;
     const [y, m, d] = iso3.split("-").map(Number);
     return `${y - 1911}/${m}/${d}`;
   };
-  var wdOf = (iso3) => WD2[(/* @__PURE__ */ new Date(iso3 + "T00:00:00")).getDay()];
+  var wdOf2 = (iso3) => WD2[(/* @__PURE__ */ new Date(iso3 + "T00:00:00")).getDay()];
   var MARK = { 出席: 1, 遲到: 1, 早退: 1, 請假: "假", 缺席: "X" };
   function colName(n) {
     let s = "";
@@ -10837,7 +10915,7 @@ ${lines.join("\n")}`;
     };
     for (const cid of ids) {
       for (const d of expectedDates(cid, first, last)) addDay(d, cid);
-      for (const s of S.idx.sessionsByClass.get(cid) || []) if (s.date >= first && s.date <= last) addDay(s.date, cid);
+      for (const s of S.idx.sessionsByClass.get(cid) || []) if (s.date >= first && s.date <= last && teachesOn(cid, s.date)) addDay(s.date, cid);
     }
     const marks = /* @__PURE__ */ new Map(), kidClasses = /* @__PURE__ */ new Map();
     const kc = (k, cid) => {
@@ -10918,7 +10996,7 @@ ${lines.join("\n")}`;
       set(3, col, i + 1, st({ b: true, fill }));
       set(4, col, `${Number(d.slice(5, 7))}/${Number(d.slice(8))}`, st({ sz: 10, fill }));
       const sj = ids.length > 1 ? [...D.dayClass.get(d) || []].map(subj).join("") : "";
-      set(5, col, hol ? "停課" : wdOf(d) + sj, st({ sz: hol ? 9 : sj ? 10 : 12, fill, color: hol ? "C00000" : void 0 }));
+      set(5, col, hol ? "停課" : wdOf2(d) + sj, st({ sz: hol ? 9 : sj ? 10 : 12, fill, color: hol ? "C00000" : void 0 }));
     });
     set(3, cR, "學童小計", H);
     set(3, cS, "", H);
@@ -10969,7 +11047,7 @@ ${lines.join("\n")}`;
     mg(rSum, 0, rSum + 2, 0);
     const rN = rSum + 3;
     const sem = D.sem;
-    const span = sem.start && sem.end ? `${roc(sem.start)}（${wdOf(sem.start)}）～${roc(sem.end)}（${wdOf(sem.end)}）` : "";
+    const span = sem.start && sem.end ? `${roc(sem.start)}（${wdOf2(sem.start)}）～${roc(sem.end)}（${wdOf2(sem.end)}）` : "";
     const note = `圖例說明："1"：表示學童有到（遲到、早退也記 1）； X：表示學童曠課； 假：學童請假（假別請看課後紀錄）； 灰底：這位孩子當天沒有課
 
 備註：
@@ -11037,32 +11115,45 @@ ${lines.join("\n")}`;
   }
 
   // src/js/pages/month.js
-  function orphanRecords() {
+  function needsTidy() {
+    const bad = misplacedImports(), badIds = new Set(bad.map((s) => s.id));
     const enr = new Set(S.data.enrollments.map((e) => `${e.classId}|${e.studentId}`));
-    return S.data.records.filter((r) => {
+    const orphans = S.data.records.filter((r) => {
       const s = get("sessions", r.sessionId);
-      return s && r.attendance && !enr.has(`${s.classId}|${r.studentId}`);
+      return s && r.attendance && !badIds.has(s.id) && !enr.has(`${s.classId}|${r.studentId}`);
     });
+    return { bad, orphans, n: bad.length + orphans.length };
   }
-  async function cleanOrphans(ctx) {
-    const list = orphanRecords();
-    const by = /* @__PURE__ */ new Map();
-    for (const r of list) {
-      const c = get("classes", get("sessions", r.sessionId)?.classId);
-      const k = c ? `${c.name}（${subjectOfClass(c)}）` : "?";
-      by.set(k, (by.get(k) || 0) + 1);
+  var clsLabel = (cid) => {
+    const c = get("classes", cid);
+    return c ? `${c.name}（${subjectOfClass(c)}・${teacherOfClass(c)}）` : "?";
+  };
+  async function tidyFlow(ctx) {
+    const { bad, orphans } = needsTidy();
+    const days = /* @__PURE__ */ new Map(), orph = /* @__PURE__ */ new Map();
+    for (const s of bad) days.set(s.classId, [...days.get(s.classId) || [], s.date]);
+    for (const r of orphans) {
+      const k = get("sessions", r.sessionId)?.classId;
+      orph.set(k, (orph.get(k) || 0) + 1);
     }
+    const md5 = (d) => d.slice(5).replace("-", "/").replace(/^0/, "").replace("/0", "/");
     const ok = await openModal({
-      title: "移除名單外的出席",
-      body: `<p style="margin:0 0 8px">這些孩子不在那個班的名單上，卻有那個班的出席紀錄，多半是匯入點名表時，孩子那天上的其實是別的班（例如作業與家課）。</p>
-    <div class="small">${[...by].map(([k, n]) => `${esc(k)}：${n} 筆`).join("<br>")}</div><p class="small muted">只會移除這 ${list.length} 筆出席；只剩下這些出席、由點名表新增的課堂也一併移除。孩子原本班級的紀錄不受影響。</p>`,
-      buttons: [{ text: "取消", value: false }, { text: `移除 ${list.length} 筆`, value: true, danger: true }]
+      title: "整理點名表匯入的出席",
+      body: `
+    ${bad.length ? `<p style="margin:0 0 6px"><b>放在老師沒有上課的日子</b>（不是這個班課表上的星期幾，也沒有代課）：</p>
+      <div class="small mb8">${[...days].map(([cid, ds]) => `${esc(clsLabel(cid))}：${ds.sort().map(md5).join("、")}`).join("<br>")}</div>
+      <p class="small muted" style="margin:0 0 12px">這些出席會搬到同一個課輔班、那天有上課的另一科（孩子要在那班的名單上）；那邊已經點過名的，保留那邊的。兩科那天都沒有課的（例如作業與家課），就移除。</p>` : ""}
+    ${orphans.length ? `<p style="margin:0 0 6px"><b>孩子不在那個班的名單上</b>：</p>
+      <div class="small mb8">${[...orph].map(([cid, n]) => `${esc(clsLabel(cid))}：${n} 筆`).join("<br>")}</div>
+      <p class="small muted" style="margin:0 0 12px">這些出席會移除；孩子在自己班級的紀錄不受影響。</p>` : ""}
+    <p class="small muted" style="margin:0">老師自己寫的課堂不會動；只剩下這些出席、由點名表新增的課堂會一併移除。</p>`,
+      buttons: [{ text: "取消", value: false }, { text: "整理", value: true, primary: true }]
     });
     if (!ok) return;
     try {
-      const r = await post("/api/attendance/orphans", { ids: list.map((x) => x.id) });
+      const r = await post("/api/attendance/tidy", {});
       await sync();
-      toast(`已移除 ${r.records} 筆名單外的出席${r.sessions ? `、${r.sessions} 堂空的課堂` : ""}`);
+      toast(["已整理", r.moved ? `搬到正確科目 ${r.moved} 筆` : "", r.kept ? `那邊已點過、保留 ${r.kept} 筆` : "", r.dropped ? `那天沒有課、移除 ${r.dropped} 筆` : "", r.orphans ? `名單外移除 ${r.orphans} 筆` : "", r.sessions ? `刪掉 ${r.sessions} 堂匯入的空課堂` : ""].filter(Boolean).join("，"));
       ctx.go(location.hash);
     } catch (e) {
       toast(e.message, "err");
@@ -11088,7 +11179,7 @@ ${lines.join("\n")}`;
       const seen = /* @__PURE__ */ new Set();
       return ids(b).flatMap((id) => roster(id)).filter((k) => !seen.has(k.id) && seen.add(k.id));
     };
-    const meets = (cid, d) => !!slotFor(cid, d) || !!sessionFor(cid, d);
+    const meets = (cid, d) => teachesOn(cid, d);
     const enrolled = (cid, sid2) => S.data.enrollments.some((e) => e.classId === cid && e.studentId === sid2);
     const active2 = (cid, sid2) => S.data.enrollments.some((e) => e.classId === cid && e.studentId === sid2 && (e.status || "在班") === "在班");
     const target = (b, sid2, d) => {
@@ -11209,7 +11300,7 @@ ${lines.join("\n")}`;
           const key = `${cid}|${d}`;
           if (!byDay.has(key)) {
             const sl = slotFor(cid, d);
-            byDay.set(key, { classId: cid, date: d, start: sl?.start || "", end: sl?.end || "", teacherId: get("classes", cid)?.teacherId || "", marks: [] });
+            byDay.set(key, { classId: cid, date: d, start: sl?.start || "", end: sl?.end || "", teacherId: subOf(cid, d)?.teacherId || get("classes", cid)?.teacherId || "", marks: [] });
           }
           byDay.get(key).marks.push({ studentId: sid2, att: m.att, why: m.why || "" });
         }
@@ -11263,12 +11354,12 @@ ${lines.join("\n")}`;
   function shift(m, n) {
     const [y, mo] = m.split("-").map(Number);
     const d = new Date(y, mo - 1 + n, 1);
-    return `${d.getFullYear()}-${pad3(d.getMonth() + 1)}`;
+    return `${d.getFullYear()}-${pad5(d.getMonth() + 1)}`;
   }
   var month_default = {
     async render(ctx) {
       const now = /* @__PURE__ */ new Date();
-      const m = ctx.query.get("m") || `${now.getFullYear()}-${pad3(now.getMonth() + 1)}`;
+      const m = ctx.query.get("m") || `${now.getFullYear()}-${pad5(now.getMonth() + 1)}`;
       const all = ctx.query.get("all") === "1";
       const sup = isSupervisor2();
       ctx.title("月出席", `${m.replace("-", " 年 ")} 月・出席率＝(出席＋遲到＋早退)÷已點名人次`);
@@ -11287,7 +11378,7 @@ ${lines.join("\n")}`;
       a.querySelector("#m-print").onclick = () => print();
       a.querySelector("#m-export").onclick = () => downloadUrl(`/api/attendance/month/export?month=${m}`);
       ctx.el.innerHTML = `<div class="card"><div class="empty">${icon("clock")}<div>計算中…</div></div></div>`;
-      const orphans = sup ? orphanRecords() : [];
+      const tidy = sup ? needsTidy() : { n: 0 };
       let res;
       try {
         res = await getJ(`/api/attendance/month?month=${m}${all ? "&all=1" : ""}`);
@@ -11296,14 +11387,14 @@ ${lines.join("\n")}`;
         return;
       }
       const mine = new Set(myClasses().map((c) => c.id));
-      setTimeout(() => document.getElementById("m-orph")?.addEventListener("click", () => cleanOrphans(ctx)));
+      setTimeout(() => document.getElementById("m-orph")?.addEventListener("click", () => tidyFlow(ctx)));
       const list = res.classes.filter((c) => sup || mine.has(c.classId));
       const tot = list.reduce(
         (s, c) => ({ marked: s.marked + c.marked, att: s.att + c.present + c.late + c.early, days: s.days + c.days, absent: s.absent + c.absent, leave: s.leave + c.leave }),
         { marked: 0, att: 0, days: 0, absent: 0, leave: 0 }
       );
-      ctx.el.innerHTML = `${orphans.length ? `<div class="callout warn mb8">${icon("alert", "sm")} 有 ${orphans.length} 筆出席的孩子不在那個班的名單上（多半是匯入點名表時，孩子那天其實上的是別的班）。
-        <button class="btn sm" id="m-orph">看看並移除</button></div>` : ""}
+      ctx.el.innerHTML = `${tidy.n ? `<div class="callout warn mb8">${icon("alert", "sm")} 點名表匯入的出席有 ${[tidy.bad.length ? `${tidy.bad.length} 堂放在老師沒有上課的日子` : "", tidy.orphans.length ? `${tidy.orphans.length} 筆孩子不在那個班的名單上` : ""].filter(Boolean).join("、")}，需要整理。
+        <button class="btn sm" id="m-orph">看看並整理</button></div>` : ""}
       <div class="grid g4">
         <div class="card stat"><div class="label">上課班級</div><div class="value">${list.filter((c) => c.days).length}<small>班</small></div><div class="foot">共 ${tot.days} 堂次</div></div>
         <div class="card stat"><div class="label">整體出席率</div><div class="value">${tot.marked ? Math.round(tot.att / tot.marked * 100) + "%" : "—"}</div><div class="foot">已點名 ${tot.marked} 人次</div></div>
@@ -15330,7 +15421,7 @@ ${lines.join("\n")}`;
   var TABS = [["week", "週課表"], ["arrange", "孩子安排總表"], ["list", "班級列表"], ["subs", "代課"]];
   function usedDays() {
     const used = new Set(S.data.classSlots.map((s) => s.weekday));
-    return WEEKDAYS.filter((w, i) => i < 5 || used.has(w));
+    return WEEKDAYS2.filter((w, i) => i < 5 || used.has(w));
   }
   function weekView(ctx, pool) {
     const t = ctx.query.get("teacher") || "";
@@ -15392,7 +15483,7 @@ ${lines.join("\n")}`;
     const selected = new Set(cid ? rosterIds(cid) : []);
     const kids = S.data.students.filter((s) => s.status === "在班" || !s.status || selected.has(s.id)).sort((a, b) => (a.grade || 0) - (b.grade || 0) || byName(a, b));
     const slotRows = () => slots.map((s, i) => `<div class="row" style="margin-bottom:6px" data-slot="${i}">
-      <select class="select" data-s="weekday">${WEEKDAYS.map((w) => `<option ${w === s.weekday ? "selected" : ""}>${w}</option>`).join("")}</select>
+      <select class="select" data-s="weekday">${WEEKDAYS2.map((w) => `<option ${w === s.weekday ? "selected" : ""}>${w}</option>`).join("")}</select>
       <input class="input" data-s="start" value="${esc(s.start)}" style="width:80px"><span>–</span><input class="input" data-s="end" value="${esc(s.end)}" style="width:80px">
       <button class="btn sm ghost" data-delslot="${i}" title="移除">${icon("trash", "sm")}</button></div>`).join("") || '<div class="small muted">尚未設定上課日</div>';
     const kidList = (q = "") => kids.filter((k) => !q || k.name.includes(q)).map((k) => {
@@ -15419,7 +15510,7 @@ ${lines.join("\n")}`;
     el.addEventListener("click", (e) => {
       if (e.target.closest("[data-addslot]")) {
         const used = new Set(slots.map((s) => s.weekday));
-        const w = WEEKDAYS.slice(0, 5).find((x) => !used.has(x)) || "週一";
+        const w = WEEKDAYS2.slice(0, 5).find((x) => !used.has(x)) || "週一";
         const def = S.idx.defaultSlot.get(w) || { start: "16:00", end: "17:30" };
         slots.push({ id: null, weekday: w, start: def.start, end: def.end });
         $("#slots", el).innerHTML = slotRows();
