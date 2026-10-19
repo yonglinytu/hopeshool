@@ -8799,8 +8799,8 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   var timeText = (p) => [p.start, p.end].filter(Boolean).join("–");
   var cnum = ["", "一", "二", "三", "四", "五", "六"];
   var termCode = (sem) => {
-    const m = /^(\d{2,3})(上|下)$/.exec(sem || "");
-    return m ? `${m[1]}-${m[2] === "上" ? 1 : 2}` : String(sem || "");
+    const m = /^(\d{2,3})(上|下|暑)$/.exec(sem || "");
+    return m ? `${m[1]}-${{ 上: 1, 下: 2, 暑: 3 }[m[2]]}` : String(sem || "");
   };
   var clsName = (p) => get("classes", p.classId)?.name || "";
   var tName = (p) => teacherOfClass(get("classes", p.classId)) || p.teacherName || "";
@@ -9328,9 +9328,9 @@ ${lines.join("\n")}`;
   }
   var pad22 = (n) => String(n).padStart(2, "0");
   function semYear(month) {
-    const m = /^(\d{2,3})(上|下)$/.exec(S.semester || "");
+    const m = /^(\d{2,3})(上|下|暑)$/.exec(S.semester || "");
     const y = m ? Number(m[1]) + 1911 : (/* @__PURE__ */ new Date()).getFullYear();
-    return m && (m[2] === "下" || month < 8) ? y + 1 : y;
+    return m && (m[2] !== "上" || month < 8) ? y + 1 : y;
   }
   function isoOf(v) {
     if (v instanceof Date && !isNaN(v)) return `${v.getFullYear()}-${pad22(v.getMonth() + 1)}-${pad22(v.getDate())}`;
@@ -9528,8 +9528,9 @@ ${lines.join("\n")}`;
   var CN = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"];
   var idx = (c) => codes().indexOf(c);
   var pass = (s) => s != null && s !== "" && Number(s) >= MATH_RULE.pass;
-  var isUpper = (sem) => !/下/.test(String(sem || ""));
-  var periodMonths = (sem) => isUpper(sem) ? [10, 11, 12, 1] : [3, 4, 5, 6];
+  var termOf = (sem) => (/[上下暑]$/.exec(String(sem || "")) || ["上"])[0];
+  var isUpper = (sem) => termOf(sem) === "上";
+  var periodMonths = (sem) => ({ 上: [10, 11, 12, 1], 下: [3, 4, 5, 6], 暑: [7, 8] })[termOf(sem)];
   var pad23 = (n) => String(n).padStart(2, "0");
   var mdOf = (d) => `${Number(d.slice(5, 7))}/${Number(d.slice(8, 10))}`;
   function mathWindow(p, sem = S.semester) {
@@ -9544,7 +9545,7 @@ ${lines.join("\n")}`;
   var periodLabel = (p, sem) => {
     if (p === "前測") return "前測（之前的紀錄）";
     const w = mathWindow(p, sem), m = periodMonths(sem)[PERIODS.indexOf(p) - 1];
-    return w.set ? `${p}（${w.start === w.end ? mdOf(w.start) : `${mdOf(w.start)}–${mdOf(w.end)}`}）` : `${p}（${m} 月）`;
+    return w.set ? `${p}（${w.start === w.end ? mdOf(w.start) : `${mdOf(w.start)}–${mdOf(w.end)}`}）` : m ? `${p}（${m} 月）` : `${p}（未排）`;
   };
   function defaultPeriod(sem) {
     const today3 = `${(/* @__PURE__ */ new Date()).getFullYear()}-${pad23((/* @__PURE__ */ new Date()).getMonth() + 1)}-${pad23((/* @__PURE__ */ new Date()).getDate())}`;
@@ -9559,6 +9560,7 @@ ${lines.join("\n")}`;
     const m = (/* @__PURE__ */ new Date()).getMonth() + 1;
     const at = periodMonths(sem).indexOf(m);
     if (at >= 0) return PERIODS[at + 1];
+    if (termOf(sem) === "暑") return m === 8 ? "第二次" : "第一次";
     return (isUpper(sem) ? m === 2 : m >= 7) ? "第四次" : "第一次";
   }
   var msId = (classId, studentId, period, code) => `MS-${classId || "X"}~${studentId}~${period}~${code}`;
@@ -9761,7 +9763,7 @@ ${lines.join("\n")}`;
     const body = h(`<div class="stack" style="gap:10px"><p class="small muted" style="margin:0">設定每一次月檢測的期間：「開始」是考試開始的日期，「登分截止」是老師最晚要登好分數的日期。老師的總覽會在期間內提醒，過了截止日還沒登分數算逾期。沒設定的次別用那個月的 1 號到月底。</p>
     ${PERIODS.slice(1).map((p) => {
       const w = mathWindow(p, sem);
-      return `<div class="grid g3" style="gap:8px;align-items:end"><div><b>${p}</b><div class="small muted">${periodMonths(sem)[PERIODS.indexOf(p) - 1]} 月${w.set ? "" : "・未設定"}</div></div>
+      return `<div class="grid g3" style="gap:8px;align-items:end"><div><b>${p}</b><div class="small muted">${periodMonths(sem)[PERIODS.indexOf(p) - 1] ? periodMonths(sem)[PERIODS.indexOf(p) - 1] + " 月" : "暑期預設沒有"}${w.set ? "" : "・未設定"}</div></div>
       <label class="field"><span>開始</span><input class="input" type="date" data-p="${p}" data-k="start" value="${w.set ? w.start : ""}"></label>
       <label class="field"><span>登分截止</span><input class="input" type="date" data-p="${p}" data-k="end" value="${w.set ? w.end : ""}"></label></div>`;
     }).join("")}</div>`);
@@ -10796,7 +10798,7 @@ ${lines.join("\n")}`;
     }
     set(0, 0, `【永齡希望小學】 ${branch.trim()} 分校`, st3({ sz: 14, b: true, nb: true }));
     mg(0, 0, 0, last);
-    set(1, 0, `${yy}學年度第${tt || "1"}學期 ${m}月學童出席點名表`, st3({ sz: 12, b: true, nb: true }));
+    set(1, 0, `${yy}學年度${tt === "3" ? "暑期" : `第${tt || "1"}學期`} ${m}月學童出席點名表`, st3({ sz: 12, b: true, nb: true }));
     mg(1, 0, 1, last);
     const plan = ids.map((cid) => {
       const x = get("classes", cid);
@@ -10990,8 +10992,8 @@ ${lines.join("\n")}`;
   var meanOf = (s) => avg2(QK.map((k) => s?.[k]));
   var clsLabel = (c) => `${c.name}（${subjectOfClass(c)}・${teacherOfClass(c) || "—"}）`;
   var termCode3 = (sem) => {
-    const m = /^(\d{2,3})(上|下)$/.exec(sem || "");
-    return m ? `${m[1]}-${m[2] === "上" ? 1 : 2}` : String(sem || "");
+    const m = /^(\d{2,3})(上|下|暑)$/.exec(sem || "");
+    return m ? `${m[1]}-${{ 上: 1, 下: 2, 暑: 3 }[m[2]]}` : String(sem || "");
   };
   function renderList2(ctx) {
     const sup = isSupervisor2();
@@ -16066,15 +16068,19 @@ ${lines.join("\n")}`;
     return str2(name).replace(/\s+/g, "").replace(/([一二三四五六七八九十])班$/, (m, c) => CN5[c] + "班");
   }
   function semesterOf(code) {
-    const m = /^(\d{3})(0?[12])$/.exec(str2(code));
-    return m ? m[1] + (Number(m[2]) === 1 ? "上" : "下") : str2(code);
+    const m = /^(\d{3})(0?[123])$/.exec(str2(code));
+    return m ? m[1] + ["", "上", "下", "暑"][Number(m[2])] : str2(code);
   }
   function semesterDates(id) {
-    const m = /^(\d{3})([上下])$/.exec(id);
+    const m = /^(\d{3})([上下暑])$/.exec(id);
     if (!m) return ["", ""];
     const y = Number(m[1]) + 1911;
-    return m[2] === "上" ? [`${y}-08-01`, `${y + 1}-01-31`] : [`${y + 1}-02-01`, `${y + 1}-07-31`];
+    return { 上: [`${y}-09-01`, `${y + 1}-01-31`], 下: [`${y + 1}-02-01`, `${y + 1}-06-30`], 暑: [`${y + 1}-07-01`, `${y + 1}-08-31`] }[m[2]];
   }
+  var semesterName = (id) => {
+    const m = /^(\d{3})([上下暑])$/.exec(id || "");
+    return m ? `${m[1]}學年度${m[2] === "暑" ? "暑期" : m[2] + "學期"}` : String(id || "");
+  };
   function gradeOf(s) {
     const m = /([一二三四五六])年級/.exec(str2(s)) || /(\d)/.exec(str2(s));
     return m ? CN5[m[1]] || Number(m[1]) : null;
@@ -16148,7 +16154,7 @@ ${lines.join("\n")}`;
     };
     if (!getRow("semesters", sem)) {
       const [start, end] = semesterDates(sem);
-      up.semesters.push({ id: sem, name: `${sem.slice(0, 3)}學年度${sem.endsWith("上") ? "上" : "下"}學期`, start, end, note: "匯入編班報表時建立，請確認開始與結束日期" });
+      up.semesters.push({ id: sem, name: semesterName(sem), start, end, note: "匯入編班報表時建立，請確認開始與結束日期" });
       sum.semNew = true;
     }
     const subjByName = new Map(rows("subjects").map((s) => [s.name, s]));
@@ -16258,8 +16264,9 @@ ${lines.join("\n")}`;
       }
     }
     for (const c of semClasses) if (!usedClass.has(c.id)) sum.classesUntouched.push(`${c.name} ${getRow("subjects", c.subjectId)?.name || ""}（${getRow("teachers", c.teacherId)?.name || ""}）`);
+    sum.summer = sem.endsWith("暑");
     const inRoster = new Set(kidOf.values());
-    const semKids = new Set(rows("enrollments").filter((e) => semClasses.some((c) => c.id === e.classId)).map((e) => e.studentId));
+    const semKids = new Set(sum.summer ? [] : rows("enrollments").filter((e) => semClasses.some((c) => c.id === e.classId)).map((e) => e.studentId));
     for (const sid2 of semKids) if (!inRoster.has(sid2)) {
       const s = getRow("students", sid2);
       if (s && s.status === "在班") {
@@ -16290,6 +16297,7 @@ ${lines.join("\n")}`;
       ${s.studentsUpd ? `<li>更新孩子資料（學號、年級、學校）：${s.studentsUpd}</li>` : ""}
       <li>分班名單：加入 ${s.enrollIn}・改為離班 ${s.enrollOut}</li><li>上課時段異動：${s.slots}</li>
       ${li("不在報表上、改為離班的孩子", s.studentsLeft)}${li("報表沒有、維持原狀的班級", s.classesUntouched)}</ul>
+    ${s.summer ? `<div class="callout small">${icon("info", "sm")} 暑期報表：沒有報名暑期的孩子只會移出暑期的班，不會改成離班。暑假後開上學期時，請從「下學期」複製班級與名單，再匯入上學期的報表，才比對得出誰結案。</div>` : ""}
     <div class="callout small">${icon("info", "sm")} 舊的課堂與紀錄都會保留；離班只是不再出現在點名名單。</div></div>`;
     const ok = await openModal({ title: "匯入課輔編班報表", body, buttons: [{ text: "取消", value: false }, { text: "確認匯入", value: true, primary: true }] });
     if (!ok) return;
@@ -16959,7 +16967,7 @@ ${lines.join("\n")}`;
           ${sup ? `<div><button class="btn primary" id="set-save">${icon("save", "sm")}儲存設定</button></div>` : ""}</div></div>
         ${sup ? `<div class="card"><div class="card-head"><h3>開新學期</h3><span class="sub">複製班級與上課時段，可選擇一併複製孩子名單</span></div><div class="card-body stack">
           <div class="grid g2" style="gap:10px"><label class="field"><span>從哪個學期複製</span><select class="select" id="ro-from">${sems.map((s) => `<option value="${esc(s.id)}">${esc(s.id)}</option>`).join("")}</select></label>
-            <label class="field"><span>新學期ID</span><input class="input" id="ro-id" placeholder="例：115下"></label>
+            <label class="field"><span>新學期ID（115上／115下／115暑）</span><input class="input" id="ro-id" placeholder="例：115下"></label>
             <label class="field"><span>學期名稱</span><input class="input" id="ro-name" placeholder="例：115學年度下學期"></label>
             <label class="field"><span>開始日期</span><input class="input" id="ro-start" type="date"></label>
             <label class="field"><span>結束日期</span><input class="input" id="ro-end" type="date"></label>
