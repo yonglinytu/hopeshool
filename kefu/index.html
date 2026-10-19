@@ -884,6 +884,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     createDatabase: () => createDatabase,
     feedback: () => feedback,
     getRow: () => getRow,
+    importAttendance: () => importAttendance,
     importBase: () => importBase,
     importSel: () => importSel,
     importSessions: () => importSessions,
@@ -5260,6 +5261,43 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     if (ops.length) await commit(ops);
     return { saved: ops.filter((o) => o.table === "sessions").length, version: DB.version };
   }
+  async function importAttendance(list, overwrite, user) {
+    if (!isSupervisor()) throw new DbError("只有社工／督導可以匯入點名表");
+    const stamp = nowStr(), ops = [];
+    const KEYS = ["attendance", "homework", "taskDone", "undone", "learning", "learningTags", "behavior", "behaviorTags", "progress", "score", "note", "polished", "summary", "tags"];
+    let added = 0, changed = 0, kept = 0, sessions = 0;
+    for (const it of list || []) {
+      if (!it.classId || !it.date || !getRow("classes", it.classId)) continue;
+      const id = sid(it.classId, it.date);
+      if (!getRow("sessions", id)) {
+        const s = prepare("sessions", { id, classId: it.classId, date: it.date, start: it.start || "", end: it.end || "", teacherId: it.teacherId || "", submit: "已送出", submittedAt: stamp, submitVersion: 1, note: "（由點名表匯入，只有出席）" });
+        for (const k of ["feedback", "feedbackStatus", "feedbackBy", "feedbackAt", "feedbackVersion", "feedbackHistory"]) delete s[k];
+        ops.push({ table: "sessions", row: s });
+        DB.T.sessions.set(id, s);
+        ops.push({ table: "feedback", row: { id: `F-${id}`, sessionId: id, text: "", status: "已看過", by: user || "", at: stamp, version: 1, history: [] } });
+        sessions++;
+      }
+      for (const m of it.marks || []) {
+        if (!m.studentId || !m.att || !getRow("students", m.studentId)) continue;
+        const rid2 = `R-${it.classId}-${it.date}-${m.studentId}`;
+        const prev = getRow("records", rid2);
+        if (prev?.attendance) {
+          if (prev.attendance === m.att || !overwrite) {
+            kept++;
+            continue;
+          }
+        }
+        const base = Object.fromEntries(KEYS.map((k) => [k, prev?.[k] ?? (k === "score" ? null : "")]));
+        base.attendance = m.att;
+        if (m.why && !String(base.note || "").includes(m.why)) base.note = [base.note, `點名表：${m.why}`].filter(Boolean).join("\n");
+        ops.push({ table: "records", row: { id: rid2, sessionId: id, studentId: m.studentId, ...base } });
+        if (prev?.attendance) changed++;
+        else added++;
+      }
+    }
+    if (ops.length) await commit(ops);
+    return { added, changed, kept, sessions, version: DB.version };
+  }
   async function saveMath(list) {
     const ops = [];
     for (const it of list || []) {
@@ -6233,6 +6271,8 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
           return importSessions(b.list || [], who?.name || "");
         case "/api/sel/import":
           return importSel(b.list || [], who?.name || "");
+        case "/api/attendance/import":
+          return importAttendance(b.list || [], !!b.overwrite, who?.name || "");
         case "/api/session/feedback": {
           const st6 = b.status || "已看過";
           if (!["已看過", "已回饋"].includes(st6)) throw new DbError("回饋狀態不正確");
@@ -10404,6 +10444,82 @@ ${lines.join("\n")}`;
     }
   };
 
+  // src/js/rollimport.js
+  var txt2 = (v) => String(v ?? "").replace(/\r/g, "").trim();
+  var pad6 = (n) => String(n).padStart(2, "0");
+  function markOf(v) {
+    const s = txt2(v).replace(/\s+/g, "");
+    if (!s) return null;
+    if (/^(1(\.0+)?|１|V|v|✓|✔|○|O|o)$/.test(s)) return { att: "出席" };
+    if (/^(X|x|×|✗|✘|❌|曠|曠課|缺|缺席)$/.test(s)) return { att: "缺席", why: s.length > 1 && !/^[Xx×]$/.test(s) ? s : "" };
+    if (/遲到?$/.test(s) && s.length <= 2) return { att: "遲到" };
+    if (/^早退/.test(s)) return { att: "早退", why: s.length > 2 ? s : "" };
+    if (/假|事|病|喪|公|發燒|不舒服|補|資源|比賽|活動|校隊|家中|回診|看醫生/.test(s)) return { att: "請假", why: /^(請假|假)$/.test(s) ? "" : s };
+    return { bad: s };
+  }
+  function isoOfCell(X, cell2) {
+    if (!cell2) return "";
+    if (cell2.t === "n" && cell2.v > 2e4) {
+      const p = X.SSF.parse_date_code(cell2.v);
+      return `${p.y}-${pad6(p.m)}-${pad6(p.d)}`;
+    }
+    if (cell2.v instanceof Date) {
+      const d = cell2.v;
+      return `${d.getFullYear()}-${pad6(d.getMonth() + 1)}-${pad6(d.getDate())}`;
+    }
+    const m = /(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/.exec(txt2(cell2.v));
+    return m ? `${m[1]}-${pad6(m[2])}-${pad6(m[3])}` : "";
+  }
+  function parseRollSheet(X, ws, name) {
+    const g = grid(X, ws);
+    let hr = 0;
+    for (let r = 1; r <= Math.min(g.rows, 12); r++) if (g.t(r, 1) === "序號") {
+      hr = r;
+      break;
+    }
+    if (!hr) return null;
+    let cName = 0, cGrade = 0, cClass = 0;
+    for (let c = 1; c <= Math.min(g.cols, 8); c++) {
+      const t = g.t(hr, c).replace(/\s/g, "");
+      if (/姓名/.test(t)) cName = c;
+      else if (/年級/.test(t)) cGrade = c;
+      else if (/班/.test(t)) cClass = c;
+    }
+    if (!cName) return null;
+    const days = [];
+    for (let c = cName + 1; c <= g.cols; c++) {
+      const d = isoOfCell(X, g.at(hr + 1, c).cell);
+      if (d) days.push({ c, d });
+    }
+    if (!days.length) return null;
+    const kids = [];
+    for (let r = hr + 3; r <= g.rows; r++) {
+      const a = g.t(r, 1);
+      if (/^(小計|合計)/.test(a) || /應到人數/.test(g.t(r, 2))) break;
+      const nm = g.t(r, cName);
+      if (!nm) continue;
+      const marks = {}, bad = [];
+      for (const { c, d } of days) {
+        const m = markOf(g.at(r, c).v);
+        if (!m) continue;
+        if (m.bad) bad.push(`${d.slice(5)} ${m.bad}`);
+        else marks[d] = m;
+      }
+      kids.push({ name: nm, grade: cGrade ? g.t(r, cGrade) : "", marks, bad });
+    }
+    return { name, className: cClass ? g.t(hr + 3, cClass) : "", days: days.map((x) => x.d), kids };
+  }
+  function parseRollWorkbook(X, wb, fileName2 = "") {
+    const sheets = [];
+    for (const n of wb.SheetNames) {
+      const p = parseRollSheet(X, wb.Sheets[n], n);
+      if (p && p.kids.some((k) => Object.keys(k.marks).length || k.bad.length)) sheets.push(p);
+    }
+    const fromFile = (/點名表[-－_\s]*(.+?)\.(xlsx|xls)$/i.exec(fileName2) || [])[1] || "";
+    return { file: fileName2, className: fromFile || sheets.find((s) => s.className)?.className || "", sheets };
+  }
+  var normClass = (s) => String(s || "").replace(/\s+/g, "").replace(/[一二三四五六七八九]/g, (ch) => "一二三四五六七八九".indexOf(ch) + 1).replace(/班$/, "");
+
   // src/js/english.js
   var papers = derived(() => EN_PAPERS.map(([name, kind, book, range]) => ({ name, kind, book, range })));
   var byName2 = derived(() => new Map(papers().map((p, i) => [p.name, { ...p, i }])));
@@ -10647,8 +10763,8 @@ ${lines.join("\n")}`;
 
   // src/js/rollcall.js
   var WD2 = "日一二三四五六";
-  var pad6 = (n) => String(n).padStart(2, "0");
-  var isoOf3 = (d) => `${d.getFullYear()}-${pad6(d.getMonth() + 1)}-${pad6(d.getDate())}`;
+  var pad7 = (n) => String(n).padStart(2, "0");
+  var isoOf3 = (d) => `${d.getFullYear()}-${pad7(d.getMonth() + 1)}-${pad7(d.getDate())}`;
   var roc = (iso3) => {
     const [y, m, d] = iso3.split("-").map(Number);
     return `${y - 1911}/${m}/${d}`;
@@ -10676,7 +10792,7 @@ ${lines.join("\n")}`;
     const sem = get("semesters", get("classes", cid)?.semesterId) || {};
     const days = weekdays(month, sem);
     const [y, m] = month.split("-").map(Number);
-    const first = `${y}-${pad6(m)}-01`, last = isoOf3(new Date(y, m, 0));
+    const first = `${y}-${pad7(m)}-01`, last = isoOf3(new Date(y, m, 0));
     const classDays = new Set(expectedDates(cid, first, last));
     for (const s of S.idx.sessionsByClass.get(cid) || []) if (s.date >= first && s.date <= last) classDays.add(s.date);
     const marks = /* @__PURE__ */ new Map();
@@ -10863,6 +10979,142 @@ ${lines.join("\n")}`;
   }
 
   // src/js/pages/month.js
+  async function importRollFlow(ctx) {
+    const inp = document.createElement("input");
+    inp.type = "file";
+    inp.accept = ".xlsx,.xls";
+    inp.multiple = true;
+    inp.style.display = "none";
+    document.body.appendChild(inp);
+    const files = await new Promise((res) => {
+      inp.addEventListener("change", () => res([...inp.files]), { once: true });
+      inp.click();
+    });
+    inp.remove();
+    if (!files.length) return;
+    const X = window.XLSX, books2 = [];
+    for (const f of files) {
+      try {
+        const r = parseRollWorkbook(X, X.read(await f.arrayBuffer(), { type: "array" }), f.name);
+        if (!r.sheets.length) {
+          toast(`「${f.name}」裡找不到填過的點名表`, "err");
+          continue;
+        }
+        const hit = classes().filter((c) => normClass(c.name) === normClass(r.className));
+        books2.push({ ...r, classId: hit.length === 1 ? hit[0].id : "", kidMap: {}, on: true });
+      } catch (e) {
+        toast(`「${f.name}」讀取失敗：${e.message}`, "err");
+      }
+    }
+    if (!books2.length) return;
+    const names = (b) => [...new Set(b.sheets.flatMap((s) => s.kids.map((k) => k.name)))];
+    const autoKids = (b) => {
+      const ros = b.classId ? roster(b.classId) : [];
+      b.kidMap = Object.fromEntries(names(b).map((n) => {
+        let id = matchKid(n, ros);
+        if (!id) {
+          const same = S.data.students.filter((s) => s.name === n);
+          if (same.length === 1) id = same[0].id;
+        }
+        return [n, id || ""];
+      }));
+    };
+    books2.forEach(autoKids);
+    const stats2 = (b) => {
+      const st6 = { days: /* @__PURE__ */ new Set(), add: 0, same: 0, diff: 0, bad: [] };
+      for (const s of b.sheets) for (const k of s.kids) {
+        st6.bad.push(...k.bad.map((x) => `${k.name} ${x}`));
+        const sid2 = b.kidMap[k.name];
+        for (const [d, m] of Object.entries(k.marks)) {
+          st6.days.add(d);
+          if (!sid2 || !b.classId) continue;
+          const ses = sessionFor(b.classId, d);
+          const cur = ses ? recordsOf(ses.id).find((r) => r.studentId === sid2)?.attendance : "";
+          if (!cur) st6.add++;
+          else if (cur === m.att) st6.same++;
+          else st6.diff++;
+        }
+      }
+      return st6;
+    };
+    let overwrite = false;
+    const body = h("<div></div>");
+    const draw = () => {
+      body.innerHTML = `<p class="small muted" style="margin:0 0 10px">一個檔案＝一個班。1 記出席、X／曠記缺席；事、病、假、補英語、資源班、比賽…記請假（原因寫進那天的觀察紀錄）。
+      系統裡那天還沒有課堂的，會新增一堂只有出席的紀錄（已送出、已看過）。</p>
+      <label class="row small mb8" style="gap:6px"><input type="checkbox" data-x="ow" ${overwrite ? "checked" : ""}>點名表和系統裡已經點的名不一樣時，<b>以點名表為準</b>（不勾＝保留系統裡的）</label>
+      ${books2.map((b, bi) => {
+        const st6 = stats2(b), ros = b.classId ? roster(b.classId) : [], miss2 = names(b).filter((n) => !b.kidMap[n]);
+        return `<div class="card mb8" data-b="${bi}"><div class="card-body stack gap8">
+          <div class="row wrap" style="gap:8px"><input type="checkbox" data-x="on" ${b.on ? "checked" : ""}><b>${esc(b.file)}</b><span class="small muted">${b.sheets.map((s) => esc(s.name)).join("、")}</span></div>
+          <label class="field"><span>班級（表上是「${esc(b.className || "—")}」）</span><select class="select" data-x="cls"><option value="">請選擇班級</option>${classes().map((c) => `<option value="${c.id}" ${c.id === b.classId ? "selected" : ""}>${esc(c.name)}（${esc(subjectOfClass(c))}・${esc(teacherOfClass(c))}）</option>`).join("")}</select></label>
+          ${b.classId ? `<div class="small">${st6.days.size} 天・新增 <b>${st6.add}</b> 筆・和系統相同 ${st6.same} 筆・${st6.diff ? `<span class="chip warn small">和系統不同 ${st6.diff} 筆</span>` : "沒有不同"}</div>
+            ${miss2.length ? `<div class="small"><span class="chip warn small">${miss2.length} 位對不到名單</span></div>` : ""}
+            <div class="row wrap" style="gap:6px 14px">${names(b).map((n) => `<label class="row small" style="gap:4px"><span>${esc(n)} →</span><select class="select sm" data-x="kid" data-n="${esc(n)}" style="width:auto"><option value="">不匯入</option>
+              ${[...ros, ...b.kidMap[n] && !ros.some((r) => r.id === b.kidMap[n]) ? [get("students", b.kidMap[n])] : []].filter(Boolean).map((s) => `<option value="${s.id}" ${b.kidMap[n] === s.id ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></label>`).join("")}</div>` : ""}
+          ${st6.bad.length ? `<div class="small muted">看不懂、不會匯入的格子：${esc(st6.bad.slice(0, 8).join("、"))}${st6.bad.length > 8 ? `…共 ${st6.bad.length} 格` : ""}</div>` : ""}
+        </div></div>`;
+      }).join("")}`;
+    };
+    body.addEventListener("change", (e) => {
+      if (e.target.dataset.x === "ow") {
+        overwrite = e.target.checked;
+        return;
+      }
+      const card2 = e.target.closest("[data-b]");
+      if (!card2) return;
+      const b = books2[+card2.dataset.b], x = e.target.dataset.x;
+      if (x === "on") b.on = e.target.checked;
+      else if (x === "cls") {
+        b.classId = e.target.value;
+        autoKids(b);
+        draw();
+      } else if (x === "kid") {
+        b.kidMap[e.target.dataset.n] = e.target.value;
+        draw();
+      }
+    });
+    draw();
+    const done = openModal({ title: "匯入點名表", body, buttons: [{ text: "取消", value: false }, { text: "匯入", value: true, primary: true }] });
+    const md5 = body.closest(".modal");
+    if (md5) md5.style.width = "min(900px, calc(100vw - 32px))";
+    if (!await done) return;
+    const use = books2.filter((b) => b.on);
+    const miss = use.filter((b) => !b.classId);
+    if (miss.length) {
+      toast(`還沒選班級：${miss.map((b) => b.file).join("、")}`, "err");
+      return;
+    }
+    const byDay = /* @__PURE__ */ new Map();
+    for (const b of use) {
+      const c = get("classes", b.classId);
+      for (const s of b.sheets) for (const k of s.kids) {
+        const sid2 = b.kidMap[k.name];
+        if (!sid2) continue;
+        for (const [d, m] of Object.entries(k.marks)) {
+          const key = `${b.classId}|${d}`;
+          if (!byDay.has(key)) {
+            const sl = slotFor(b.classId, d);
+            byDay.set(key, { classId: b.classId, date: d, start: sl?.start || "", end: sl?.end || "", teacherId: c?.teacherId || "", marks: [] });
+          }
+          byDay.get(key).marks.push({ studentId: sid2, att: m.att, why: m.why || "" });
+        }
+      }
+    }
+    if (!byDay.size) {
+      toast("沒有可以匯入的出席");
+      return;
+    }
+    try {
+      toast(`匯入中…（${byDay.size} 天）`);
+      const r = await post("/api/attendance/import", { list: [...byDay.values()], overwrite });
+      await sync();
+      toast(`已匯入：新增 ${r.added} 筆${r.changed ? `、更新 ${r.changed} 筆` : ""}${r.kept ? `、和系統相同或保留系統的 ${r.kept} 筆` : ""}${r.sessions ? `（新增 ${r.sessions} 堂只有出席的紀錄）` : ""}`);
+      ctx.go(location.hash);
+    } catch (e) {
+      toast(e.message, "err");
+    }
+  }
   async function rollcallFlow(m) {
     const XS = window.XLSXS;
     if (!XS) {
@@ -10907,9 +11159,11 @@ ${lines.join("\n")}`;
       <input class="input" type="month" value="${m}" style="border-radius:0;margin-left:-1px;width:150px"><button class="btn icon" data-m="1" title="下個月">${icon("right")}</button></div>
       <label class="row small" style="gap:6px"><input type="checkbox" id="m-all" ${all ? "checked" : ""}>顯示沒有上課的班級</label>
       <button class="btn" id="m-print">${icon("print")}列印</button>
+      ${sup ? `<button class="btn" id="m-rollimp" title="把老師以前填的課輔學童出席點名表匯進系統">${icon("upload")}匯入點名表</button>` : ""}
       <button class="btn primary" id="m-roll">${icon("download")}點名表</button>
       <button class="btn" id="m-export">${icon("download")}出席彙整 Excel</button>`);
       a.querySelector("#m-roll").onclick = () => rollcallFlow(m);
+      a.querySelector("#m-rollimp")?.addEventListener("click", () => importRollFlow(ctx));
       a.querySelectorAll("[data-m]").forEach((b) => b.onclick = () => ctx.go(`#/month?m=${shift(m, +b.dataset.m)}${all ? "&all=1" : ""}`));
       a.querySelector("input[type=month]").onchange = (e) => e.target.value && ctx.go(`#/month?m=${e.target.value}${all ? "&all=1" : ""}`);
       a.querySelector("#m-all").onchange = (e) => ctx.go(`#/month?m=${m}${e.target.checked ? "&all=1" : ""}`);
@@ -14404,13 +14658,13 @@ ${lines.join("\n")}`;
   var ROSTER_SUBJECTS = ["國語", "數學", "英語"];
   var WEEK2 = { 一: "週一", 二: "週二", 三: "週三", 四: "週四", 五: "週五", 六: "週六", 日: "週日" };
   var CN5 = { 一: 1, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10 };
-  var pad7 = (n) => String(n).padStart(2, "0");
+  var pad8 = (n) => String(n).padStart(2, "0");
   var today2 = () => {
     const d = /* @__PURE__ */ new Date();
-    return `${d.getFullYear()}-${pad7(d.getMonth() + 1)}-${pad7(d.getDate())}`;
+    return `${d.getFullYear()}-${pad8(d.getMonth() + 1)}-${pad8(d.getDate())}`;
   };
   var str2 = (v) => String(v ?? "").replace(/ /g, " ").trim();
-  function normClass(name) {
+  function normClass2(name) {
     return str2(name).replace(/\s+/g, "").replace(/([一二三四五六七八九十])班$/, (m, c) => CN5[c] + "班");
   }
   function semesterOf(code) {
@@ -14541,7 +14795,7 @@ ${lines.join("\n")}`;
     const semClasses = rows("classes").filter((c) => c.semesterId === sem);
     const groups = /* @__PURE__ */ new Map();
     for (const r of use) {
-      const k = `${normClass(r["班級名稱"])}|${r["課輔科目"]}|${r["課輔老師"]}`;
+      const k = `${normClass2(r["班級名稱"])}|${r["課輔科目"]}|${r["課輔老師"]}`;
       if (!groups.has(k)) groups.set(k, []);
       groups.get(k).push(r);
     }
@@ -14550,7 +14804,7 @@ ${lines.join("\n")}`;
       const [name, subj, tname] = k.split("|");
       const subjectId = subjByName.get(subj)?.id, teacherId = tByName.get(tname)?.id;
       const r0 = rs2[0];
-      let c = semClasses.find((x) => !usedClass.has(x.id) && normClass(x.name) === name && x.subjectId === subjectId && x.teacherId === teacherId) || semClasses.find((x) => !usedClass.has(x.id) && normClass(x.name) === name && x.subjectId === subjectId && !groups.has(`${name}|${subj}|${getRow("teachers", x.teacherId)?.name}`));
+      let c = semClasses.find((x) => !usedClass.has(x.id) && normClass2(x.name) === name && x.subjectId === subjectId && x.teacherId === teacherId) || semClasses.find((x) => !usedClass.has(x.id) && normClass2(x.name) === name && x.subjectId === subjectId && !groups.has(`${name}|${subj}|${getRow("teachers", x.teacherId)?.name}`));
       const site = name.replace(/\d+班$/, "") || str2(r0["合作單位"]).replace(/^縣立|國\(中\)小$|國小$/g, "");
       const fields = { semesterId: sem, name, site, subjectId, teacherId, room: str2(r0["課輔教室"]) };
       if (c) {
@@ -15456,7 +15710,7 @@ ${lines.join("\n")}`;
   };
 
   // src/js/selimport.js
-  var txt2 = (v) => String(v ?? "").replace(/\r/g, "").trim();
+  var txt3 = (v) => String(v ?? "").replace(/\r/g, "").trim();
   var HEAD = {
     date: /施行日期|上課日期|^日期/,
     teacher: /課師|老師|姓名/,
@@ -15492,14 +15746,14 @@ ${lines.join("\n")}`;
     const valCol = col.status + 1;
     const items = [];
     for (let r = hr + 1; r <= g.rows; r++) {
-      if (txt2(g.at(r, col.status).v) !== "教案內容") continue;
+      if (txt3(g.at(r, col.status).v) !== "教案內容") continue;
       if (/範例/.test(g.t(r, 1))) continue;
       const cell2 = g.at(r, col.date).cell;
-      if (!txt2(cell2?.v)) continue;
+      if (!txt3(cell2?.v)) continue;
       const date = pickDate(dateCandidates(X, cell2, ""), "", opts2.semesters, opts2.today);
       const it = {
         row: r,
-        rawDate: txt2(cell2?.v),
+        rawDate: txt3(cell2?.v),
         date,
         teacher: col.teacher ? g.t(r, col.teacher) : "",
         selActivity: col.act ? g.t(r, col.act) : "",
@@ -15520,7 +15774,7 @@ ${lines.join("\n")}`;
         }
       }
       for (let k = 0; k < 3; k++) {
-        const lab = txt2(g.at(r + k, col.status).v), v = txt2(g.at(r + k, valCol).v);
+        const lab = txt3(g.at(r + k, col.status).v), v = txt3(g.at(r + k, valCol).v);
         if (ASPECT[lab] && ["良好", "不佳"].includes(v)) it[ASPECT[lab]] = v;
       }
       items.push(it);
