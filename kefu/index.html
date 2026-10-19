@@ -897,6 +897,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     nowStr: () => nowStr,
     references: () => references,
     remove: () => remove,
+    removeOrphanAttendance: () => removeOrphanAttendance,
     rollover: () => rollover,
     rows: () => rows,
     saveChinese: () => saveChinese,
@@ -5298,6 +5299,30 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     if (ops.length) await commit(ops);
     return { added, changed, kept, sessions, version: DB.version };
   }
+  async function removeOrphanAttendance(ids) {
+    if (!isSupervisor()) throw new DbError("只有社工／督導可以移除");
+    const enr = new Set(rows("enrollments").map((e) => `${e.classId}|${e.studentId}`));
+    const ops = [], gone = /* @__PURE__ */ new Set();
+    for (const id of ids || []) {
+      const r = getRow("records", id), s = r && getRow("sessions", r.sessionId);
+      if (!r || !s || enr.has(`${s.classId}|${r.studentId}`)) continue;
+      ops.push({ table: "records", id: r.id, delete: true });
+      gone.add(r.id);
+    }
+    let sessions = 0;
+    const touched = new Set(ids.map((id) => getRow("records", id)?.sessionId).filter(Boolean));
+    for (const sid0 of touched) {
+      const s = getRow("sessions", sid0);
+      if (!s || !String(s.note || "").includes("由點名表匯入")) continue;
+      if (rows("records").some((r) => r.sessionId === sid0 && !gone.has(r.id))) continue;
+      if (rows("blocks").some((b) => b.sessionId === sid0) || rows("incidents").some((i) => i.sessionId === sid0)) continue;
+      ops.push({ table: "sessions", id: sid0, delete: true });
+      if (getRow("feedback", `F-${sid0}`)) ops.push({ table: "feedback", id: `F-${sid0}`, delete: true });
+      sessions++;
+    }
+    if (ops.length) await commit(ops);
+    return { records: gone.size, sessions, version: DB.version };
+  }
   async function saveMath(list) {
     const ops = [];
     for (const it of list || []) {
@@ -6273,6 +6298,8 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
           return importSel(b.list || [], who?.name || "");
         case "/api/attendance/import":
           return importAttendance(b.list || [], !!b.overwrite, who?.name || "");
+        case "/api/attendance/orphans":
+          return removeOrphanAttendance(b.ids || []);
         case "/api/session/feedback": {
           const st6 = b.status || "已看過";
           if (!["已看過", "已回饋"].includes(st6)) throw new DbError("回饋狀態不正確");
@@ -11010,6 +11037,37 @@ ${lines.join("\n")}`;
   }
 
   // src/js/pages/month.js
+  function orphanRecords() {
+    const enr = new Set(S.data.enrollments.map((e) => `${e.classId}|${e.studentId}`));
+    return S.data.records.filter((r) => {
+      const s = get("sessions", r.sessionId);
+      return s && r.attendance && !enr.has(`${s.classId}|${r.studentId}`);
+    });
+  }
+  async function cleanOrphans(ctx) {
+    const list = orphanRecords();
+    const by = /* @__PURE__ */ new Map();
+    for (const r of list) {
+      const c = get("classes", get("sessions", r.sessionId)?.classId);
+      const k = c ? `${c.name}（${subjectOfClass(c)}）` : "?";
+      by.set(k, (by.get(k) || 0) + 1);
+    }
+    const ok = await openModal({
+      title: "移除名單外的出席",
+      body: `<p style="margin:0 0 8px">這些孩子不在那個班的名單上，卻有那個班的出席紀錄，多半是匯入點名表時，孩子那天上的其實是別的班（例如作業與家課）。</p>
+    <div class="small">${[...by].map(([k, n]) => `${esc(k)}：${n} 筆`).join("<br>")}</div><p class="small muted">只會移除這 ${list.length} 筆出席；只剩下這些出席、由點名表新增的課堂也一併移除。孩子原本班級的紀錄不受影響。</p>`,
+      buttons: [{ text: "取消", value: false }, { text: `移除 ${list.length} 筆`, value: true, danger: true }]
+    });
+    if (!ok) return;
+    try {
+      const r = await post("/api/attendance/orphans", { ids: list.map((x) => x.id) });
+      await sync();
+      toast(`已移除 ${r.records} 筆名單外的出席${r.sessions ? `、${r.sessions} 堂空的課堂` : ""}`);
+      ctx.go(location.hash);
+    } catch (e) {
+      toast(e.message, "err");
+    }
+  }
   async function importRollFlow(ctx) {
     const inp = document.createElement("input");
     inp.type = "file";
@@ -11031,10 +11089,8 @@ ${lines.join("\n")}`;
       return ids(b).flatMap((id) => roster(id)).filter((k) => !seen.has(k.id) && seen.add(k.id));
     };
     const meets = (cid, d) => !!slotFor(cid, d) || !!sessionFor(cid, d);
-    const target = (b, sid2, d) => {
-      const on2 = ids(b).filter((id) => meets(id, d));
-      return on2.find((id) => roster(id).some((k) => k.id === sid2)) || on2[0] || "";
-    };
+    const enrolled = (cid, sid2) => S.data.enrollments.some((e) => e.classId === cid && e.studentId === sid2);
+    const target = (b, sid2, d) => ids(b).filter((id) => meets(id, d)).find((id) => enrolled(id, sid2)) || "";
     for (const f of files) {
       try {
         const r = parseRollWorkbook(X, X.read(await f.arrayBuffer(), { type: "array" }), f.name);
@@ -11055,7 +11111,7 @@ ${lines.join("\n")}`;
       b.kidMap = Object.fromEntries(names(b).map((n) => {
         let id = matchKid(n, ros);
         if (!id) {
-          const same = S.data.students.filter((s) => s.name === n);
+          const same = S.data.students.filter((s) => s.name === n && ids(b).some((cid) => enrolled(cid, s.id)));
           if (same.length === 1) id = same[0].id;
         }
         return [n, id || ""];
@@ -11099,7 +11155,7 @@ ${lines.join("\n")}`;
         return `<div class="card mb8" data-b="${bi}"><div class="card-body stack gap8">
           <div class="row wrap" style="gap:8px"><input type="checkbox" data-x="on" ${b.on ? "checked" : ""}><b>${esc(b.file)}</b><span class="small muted">${b.sheets.map((s) => esc(s.name)).join("、")}</span></div>
           <label class="field"><span>班級（表上是「${esc(b.className || "—")}」）</span><select class="select" data-x="cls"><option value="-1">請選擇班級</option>${groups.map((g, i) => `<option value="${i}" ${i === b.g ? "selected" : ""}>${esc(g.name)}（${esc(g.ids.map((id) => `${subjectOfClass(get("classes", id))}・${teacherOfClass(get("classes", id))}`).join("／"))}）</option>`).join("")}</select></label>
-          ${b.g >= 0 ? `<div class="small">${st6.days.size} 天・新增 <b>${st6.add}</b> 筆・和系統相同 ${st6.same} 筆・${st6.diff ? `<span class="chip warn small">和系統不同 ${st6.diff} 筆</span>` : "沒有不同"}${st6.nocls ? `・那天這個班沒排課 ${st6.nocls} 格（不匯入）` : ""}</div>
+          ${b.g >= 0 ? `<div class="small">${st6.days.size} 天・新增 <b>${st6.add}</b> 筆・和系統相同 ${st6.same} 筆・${st6.diff ? `<span class="chip warn small">和系統不同 ${st6.diff} 筆</span>` : "沒有不同"}${st6.nocls ? `・<span class="muted">孩子那天在系統裡沒有這個班的課（例如作業與家課時段）${st6.nocls} 格，不匯入</span>` : ""}</div>
             ${miss2.length ? `<div class="small"><span class="chip warn small">${miss2.length} 位對不到名單</span></div>` : ""}
             <div class="row wrap" style="gap:6px 14px">${names(b).map((n) => `<label class="row small" style="gap:4px"><span>${esc(n)} →</span><select class="select sm" data-x="kid" data-n="${esc(n)}" style="width:auto"><option value="">不匯入</option>
               ${[...ros, ...b.kidMap[n] && !ros.some((r) => r.id === b.kidMap[n]) ? [get("students", b.kidMap[n])] : []].filter(Boolean).map((s) => `<option value="${s.id}" ${b.kidMap[n] === s.id ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></label>`).join("")}</div>` : ""}
@@ -11227,6 +11283,7 @@ ${lines.join("\n")}`;
       a.querySelector("#m-print").onclick = () => print();
       a.querySelector("#m-export").onclick = () => downloadUrl(`/api/attendance/month/export?month=${m}`);
       ctx.el.innerHTML = `<div class="card"><div class="empty">${icon("clock")}<div>計算中…</div></div></div>`;
+      const orphans = sup ? orphanRecords() : [];
       let res;
       try {
         res = await getJ(`/api/attendance/month?month=${m}${all ? "&all=1" : ""}`);
@@ -11235,12 +11292,14 @@ ${lines.join("\n")}`;
         return;
       }
       const mine = new Set(myClasses().map((c) => c.id));
+      setTimeout(() => document.getElementById("m-orph")?.addEventListener("click", () => cleanOrphans(ctx)));
       const list = res.classes.filter((c) => sup || mine.has(c.classId));
       const tot = list.reduce(
         (s, c) => ({ marked: s.marked + c.marked, att: s.att + c.present + c.late + c.early, days: s.days + c.days, absent: s.absent + c.absent, leave: s.leave + c.leave }),
         { marked: 0, att: 0, days: 0, absent: 0, leave: 0 }
       );
-      ctx.el.innerHTML = `
+      ctx.el.innerHTML = `${orphans.length ? `<div class="callout warn mb8">${icon("alert", "sm")} 有 ${orphans.length} 筆出席的孩子不在那個班的名單上（多半是匯入點名表時，孩子那天其實上的是別的班）。
+        <button class="btn sm" id="m-orph">看看並移除</button></div>` : ""}
       <div class="grid g4">
         <div class="card stat"><div class="label">上課班級</div><div class="value">${list.filter((c) => c.days).length}<small>班</small></div><div class="foot">共 ${tot.days} 堂次</div></div>
         <div class="card stat"><div class="label">整體出席率</div><div class="value">${tot.marked ? Math.round(tot.att / tot.marked * 100) + "%" : "—"}</div><div class="foot">已點名 ${tot.marked} 人次</div></div>
