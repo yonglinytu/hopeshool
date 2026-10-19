@@ -10953,6 +10953,7 @@ ${lines.join("\n")}`;
   var QK = SURVEY_ITEMS.map((x) => x[0]);
   var HINT = "評分標準以班級為單位：若全班 7 位，請以 3 位或以上學童大部分的表現來進行課程評估。";
   var ROUND_NOTE = { 前測: "開學第 2 週", 中測: "課輔中間", 後測: "結業前 2 週" };
+  var rounds = (semId = S.semester) => /暑$/.test(semId || "") ? SURVEY_ROUNDS.filter((r) => r !== "中測") : SURVEY_ROUNDS;
   var monday = (d) => addDays2(d, -weekdayIdx(d));
   function suggestRounds(sem) {
     if (!sem?.start || !sem?.end) return {};
@@ -10964,7 +10965,7 @@ ${lines.join("\n")}`;
     const sem = get("semesters", semId) || semester();
     const set = (S.settings?.selSurveyRounds || {})[semId] || {};
     const sug = suggestRounds(sem);
-    return Object.fromEntries(SURVEY_ROUNDS.map((r) => [r, { start: set[r]?.start || sug[r]?.start || "", end: set[r]?.end || sug[r]?.end || "", set: !!set[r]?.start }]));
+    return Object.fromEntries(rounds(semId).map((r) => [r, { start: set[r]?.start || sug[r]?.start || "", end: set[r]?.end || sug[r]?.end || "", set: !!set[r]?.start }]));
   }
   var surveyOf = (cid, round) => get("selSurveys", `SS-${cid}~${round}`);
   function surveyState(cid, round, today3 = todayISO()) {
@@ -10978,7 +10979,7 @@ ${lines.join("\n")}`;
   var chipOf = (st6) => `<span class="chip small ${st6.key === "done" ? "good" : st6.key === "over" ? "critical" : st6.key === "open" ? "warn" : "outline"}">${esc(st6.label)}</span>`;
   function surveyTodo(cls = myClasses()) {
     const out = [];
-    for (const c of cls) for (const r of SURVEY_ROUNDS) {
+    for (const c of cls) for (const r of rounds()) {
       const st6 = surveyState(c.id, r);
       if (st6.key === "open" || st6.key === "over") out.push({ c, round: r, st: st6 });
     }
@@ -10998,7 +10999,7 @@ ${lines.join("\n")}`;
   function renderList2(ctx) {
     const sup = isSupervisor2();
     const view = ctx.query.get("view") || "status";
-    ctx.title("情緒課程回饋問卷", sup ? `${esc(S.semester)}・前測、中測、後測，各科老師各填一份` : "依全班整體表現評估，各科老師各填一份");
+    ctx.title("情緒課程回饋問卷", sup ? `${esc(S.semester)}・${rounds().join("、")}，各科老師各填一份` : "依全班整體表現評估，各科老師各填一份");
     const a = ctx.actions(sup ? `<div class="seg">${[["status", "填寫狀況"], ["compare", "前後測對照"]].map(([v, l]) => `<button data-view="${v}" class="${v === view ? "on" : ""}">${l}</button>`).join("")}</div>
     <button class="btn" id="ss-rounds">${icon("calendar", "sm")}測驗時段</button><button class="btn" id="ss-imp">${icon("upload", "sm")}匯入舊回覆</button>
     <button class="btn" id="ss-xls">${icon("download", "sm")}下載 Excel</button>` : "");
@@ -11010,7 +11011,7 @@ ${lines.join("\n")}`;
     }
     const R = roundsOf();
     const warn = !surveyReady() ? `<div class="callout warn mb8">${icon("alert", "sm")} 雲端主機還沒更新到有問卷的版本，暫時不能填。請督導到 Apps Script 重新部署（管理部署作業 → 編輯 → 新版本）。</div>` : "";
-    const roundsCard = `<div class="callout small mb8">${icon("info", "sm")} ${SURVEY_ROUNDS.map((r) => `<b>${r}</b>（${ROUND_NOTE[r]}）${R[r].start ? `${md2(R[r].start)}–${md2(R[r].end)}` : "未排"}${sup && !R[r].set && R[r].start ? '<span class="muted">（建議日期）</span>' : ""}`).join("　")}<br>${esc(HINT)}</div>`;
+    const roundsCard = `<div class="callout small mb8">${icon("info", "sm")} ${rounds().map((r) => `<b>${r}</b>（${ROUND_NOTE[r]}）${R[r].start ? `${md2(R[r].start)}–${md2(R[r].end)}` : "未排"}${sup && !R[r].set && R[r].start ? '<span class="muted">（建議日期）</span>' : ""}`).join("　")}<br>${esc(HINT)}</div>`;
     if (sup && view === "compare") {
       ctx.el.innerHTML = warn + roundsCard + compareView(ctx);
       bindCompare(ctx);
@@ -11026,10 +11027,10 @@ ${lines.join("\n")}`;
       const n = pool.filter((c) => surveyOf(c.id, r)?.submittedAt).length;
       return `${n}/${pool.length}`;
     };
-    ctx.el.innerHTML = warn + roundsCard + `<div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>課輔班</th><th>科目・老師</th>${SURVEY_ROUNDS.map((r) => `<th>${r}${sup ? ` <span class="small muted">${cnt(r)}</span>` : ""}</th>`).join("")}</tr></thead><tbody>
+    ctx.el.innerHTML = warn + roundsCard + `<div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>課輔班</th><th>科目・老師</th>${rounds().map((r) => `<th>${r}${sup ? ` <span class="small muted">${cnt(r)}</span>` : ""}</th>`).join("")}</tr></thead><tbody>
     ${groups.map((g) => g.ids.map(get.bind(null, "classes")).map((c, i) => `<tr>${i === 0 ? `<td rowspan="${g.ids.length}"><b>${esc(g.name)}</b></td>` : ""}
       <td>${esc(subjectOfClass(c))}・${esc(teacherOfClass(c) || "—")}</td>
-      ${SURVEY_ROUNDS.map((r) => {
+      ${rounds().map((r) => {
       const st6 = surveyState(c.id, r);
       const m = st6.s?.submittedAt ? meanOf(st6.s) : null;
       return `<td class="nowrap"><a href="#/selsurvey/${encodeURIComponent(c.id)}/${encodeURIComponent(r)}">${chipOf(st6)}</a>${m != null ? ` <span class="small muted num">平均 ${f12(m)}</span>` : ""}</td>`;
@@ -11039,7 +11040,7 @@ ${lines.join("\n")}`;
   async function editRounds(ctx) {
     const R = roundsOf(), sug = suggestRounds(semester());
     const body = h(`<div class="stack" style="gap:10px"><p class="small muted" style="margin:0">老師在開放時段內會在總覽看到要填的問卷；過了結束日還沒送出會標成逾期。沒有設定的用建議日期。</p>
-    ${SURVEY_ROUNDS.map((r) => `<div class="grid g3" style="gap:8px;align-items:end"><div><b>${r}</b><div class="small muted">${ROUND_NOTE[r]}${sug[r] ? `・建議 ${md2(sug[r].start)}–${md2(sug[r].end)}` : ""}</div></div>
+    ${rounds().map((r) => `<div class="grid g3" style="gap:8px;align-items:end"><div><b>${r}</b><div class="small muted">${ROUND_NOTE[r]}${sug[r] ? `・建議 ${md2(sug[r].start)}–${md2(sug[r].end)}` : ""}</div></div>
       <label class="field"><span>開始</span><input class="input" type="date" data-r="${r}" data-k="start" value="${esc(R[r].start)}"></label>
       <label class="field"><span>結束</span><input class="input" type="date" data-r="${r}" data-k="end" value="${esc(R[r].end)}"></label></div>`).join("")}</div>`);
     let v;
@@ -11048,7 +11049,7 @@ ${lines.join("\n")}`;
       if (!ok) return;
       v = {};
       let err = "";
-      for (const r of SURVEY_ROUNDS) {
+      for (const r of rounds()) {
         const st6 = $(`[data-r="${r}"][data-k=start]`, body).value, en = $(`[data-r="${r}"][data-k=end]`, body).value;
         if (st6 && en && st6 > en) {
           err = `${r}的開始日期晚於結束日期`;
@@ -11072,15 +11073,15 @@ ${lines.join("\n")}`;
     return `<span class="chip small ${d > 0 ? "good" : d < 0 ? "critical" : "outline"}">${d > 0 ? "▲" : d < 0 ? "▼" : "＝"} ${Math.abs(d).toFixed(1)}</span>`;
   })();
   function cmpTable(ids, title, perTeacher) {
-    const G = Object.fromEntries(SURVEY_ROUNDS.map((r) => [r, groupRound(ids, r)]));
-    const last = [...SURVEY_ROUNDS].reverse().find((r) => r !== "前測" && G[r].n);
+    const G = Object.fromEntries(rounds().map((r) => [r, groupRound(ids, r)]));
+    const last = [...rounds()].reverse().find((r) => r !== "前測" && G[r].n);
     const meanQ = (g) => avg2(QK.map((k) => g.q[k]));
     const tip = (r, k) => perTeacher && G[r].ss.length > 1 ? G[r].ss.map((s) => `${subjectOfClass(get("classes", s.classId)) || ""} ${s[k] ?? "—"}`).join("・") : "";
-    return `<div class="card mb8"><div class="card-head"><h3>${esc(title)}</h3><span class="sub">${SURVEY_ROUNDS.map((r) => `${r} ${G[r].n} 份`).join("・")}${perTeacher ? "（各科老師平均）" : "（各班各科老師平均）"}</span></div>
-    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>題目</th>${SURVEY_ROUNDS.map((r) => `<th class="num">${r}</th>`).join("")}<th>${last ? `${last} − 前測` : "變化"}</th></tr></thead><tbody>
-    ${SURVEY_ROUNDS.length && SURVEY_ITEMS.map(([k, short3, full], i) => `<tr><td title="${esc(full)}">${i + 1}. ${esc(short3)}</td>
-      ${SURVEY_ROUNDS.map((r) => `<td class="num">${f12(G[r].q[k])}${tip(r, k) ? `<div class="small muted">${esc(tip(r, k))}</div>` : ""}</td>`).join("")}<td>${last ? delta(G.前測.q[k], G[last].q[k]) : ""}</td></tr>`).join("")}
-    <tr><th>平均</th>${SURVEY_ROUNDS.map((r) => `<th class="num">${f12(meanQ(G[r]))}</th>`).join("")}<th>${last ? delta(meanQ(G.前測), meanQ(G[last])) : ""}</th></tr></tbody></table></div></div>`;
+    return `<div class="card mb8"><div class="card-head"><h3>${esc(title)}</h3><span class="sub">${rounds().map((r) => `${r} ${G[r].n} 份`).join("・")}${perTeacher ? "（各科老師平均）" : "（各班各科老師平均）"}</span></div>
+    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>題目</th>${rounds().map((r) => `<th class="num">${r}</th>`).join("")}<th>${last ? `${last} − 前測` : "變化"}</th></tr></thead><tbody>
+    ${rounds().length && SURVEY_ITEMS.map(([k, short3, full], i) => `<tr><td title="${esc(full)}">${i + 1}. ${esc(short3)}</td>
+      ${rounds().map((r) => `<td class="num">${f12(G[r].q[k])}${tip(r, k) ? `<div class="small muted">${esc(tip(r, k))}</div>` : ""}</td>`).join("")}<td>${last ? delta(G.前測.q[k], G[last].q[k]) : ""}</td></tr>`).join("")}
+    <tr><th>平均</th>${rounds().map((r) => `<th class="num">${f12(meanQ(G[r]))}</th>`).join("")}<th>${last ? delta(meanQ(G.前測), meanQ(G[last])) : ""}</th></tr></tbody></table></div></div>`;
   }
   function compareView(ctx) {
     const pool = classes();
@@ -11106,20 +11107,20 @@ ${lines.join("\n")}`;
     const wb = X.utils.book_new();
     const head = ["測驗", "送出時間", "課輔班", "科目", "課輔老師", ...SURVEY_ITEMS.map(([, s], i) => `${i + 1}.${s}`), "平均", "來源"];
     const rows2 = [];
-    for (const r of SURVEY_ROUNDS) for (const gg of groups) for (const id of gg.ids) {
+    for (const r of rounds()) for (const gg of groups) for (const id of gg.ids) {
       const c = get("classes", id), s = surveyOf(id, r);
       rows2.push([r, s?.submittedAt || "", gg.name, subjectOfClass(c), teacherOfClass(c) || s?.teacherName || "", ...QK.map((k) => s?.submittedAt ? s[k] ?? "" : ""), s?.submittedAt ? Number(f12(meanOf(s))) : "", s?.submittedAt ? s.source || "系統" : "未填"]);
     }
     const ws1 = X.utils.aoa_to_sheet([head, ...rows2]);
     ws1["!cols"] = [6, 17, 10, 6, 9, ...QK.map(() => 9), 6, 6].map((w) => ({ wch: w }));
     X.utils.book_append_sheet(wb, ws1, "回覆明細");
-    const cmp = [["課輔班", "題目", ...SURVEY_ROUNDS, "後測−前測"]];
+    const cmp = [["課輔班", "題目", ...rounds(), "後測−前測"]];
     for (const gg of [{ name: "全分校平均", ids: pool.map((c) => c.id) }, ...groups]) {
-      const G = Object.fromEntries(SURVEY_ROUNDS.map((r) => [r, groupRound(gg.ids, r)]));
+      const G = Object.fromEntries(rounds().map((r) => [r, groupRound(gg.ids, r)]));
       const num3 = (v) => v == null ? "" : Math.round(v * 100) / 100;
-      SURVEY_ITEMS.forEach(([k, short3], i) => cmp.push([gg.name, `${i + 1}.${short3}`, ...SURVEY_ROUNDS.map((r) => num3(G[r].q[k])), G.前測.q[k] != null && G.後測.q[k] != null ? num3(G.後測.q[k] - G.前測.q[k]) : ""]));
+      SURVEY_ITEMS.forEach(([k, short3], i) => cmp.push([gg.name, `${i + 1}.${short3}`, ...rounds().map((r) => num3(G[r].q[k])), G.前測.q[k] != null && G.後測.q[k] != null ? num3(G.後測.q[k] - G.前測.q[k]) : ""]));
       const m = (r) => avg2(QK.map((k) => G[r].q[k]));
-      cmp.push([gg.name, "平均", ...SURVEY_ROUNDS.map((r) => num3(m(r))), m("前測") != null && m("後測") != null ? num3(m("後測") - m("前測")) : ""]);
+      cmp.push([gg.name, "平均", ...rounds().map((r) => num3(m(r))), m("前測") != null && m("後測") != null ? num3(m("後測") - m("前測")) : ""]);
     }
     const ws2 = X.utils.aoa_to_sheet(cmp);
     ws2["!cols"] = [10, 16, 7, 7, 7, 9].map((w) => ({ wch: w }));
@@ -11249,7 +11250,7 @@ ${lines.join("\n")}`;
   var auto4 = null;
   function renderForm2(ctx, cid, round) {
     const c = get("classes", cid);
-    if (!c || !SURVEY_ROUNDS.includes(round)) {
+    if (!c || !rounds().includes(round)) {
       ctx.title("情緒課程回饋問卷");
       ctx.el.innerHTML = `<div class="card"><div class="empty">${icon("table")}<div>找不到這份問卷</div></div></div>`;
       return;
@@ -11260,8 +11261,8 @@ ${lines.join("\n")}`;
     const mine = isSupervisor2() || c.teacherId === DB.me?.teacherId;
     const canEdit2 = mine && surveyReady();
     ctx.title(`${round}・情緒課程回饋問卷`, `${esc(c.name)}・${esc(subjectOfClass(c))}・${esc(teacherOfClass(c) || "")}・${st6.w.start ? `${md2(st6.w.start)}–${md2(st6.w.end)}` : "未排時段"}`);
-    ctx.actions(`<a class="btn ghost" href="#/selsurvey">${icon("left", "sm")}問卷清單</a>${SURVEY_ROUNDS.map((r) => `<a class="btn ${r === round ? "primary" : ""}" href="#/selsurvey/${encodeURIComponent(cid)}/${encodeURIComponent(r)}">${r}</a>`).join("")}`);
-    const prev = SURVEY_ROUNDS.slice(0, SURVEY_ROUNDS.indexOf(round)).map((r) => surveyOf(cid, r)).filter((x) => x?.submittedAt).pop();
+    ctx.actions(`<a class="btn ghost" href="#/selsurvey">${icon("left", "sm")}問卷清單</a>${rounds().map((r) => `<a class="btn ${r === round ? "primary" : ""}" href="#/selsurvey/${encodeURIComponent(cid)}/${encodeURIComponent(r)}">${r}</a>`).join("")}`);
+    const prev = rounds().slice(0, rounds().indexOf(round)).map((r) => surveyOf(cid, r)).filter((x) => x?.submittedAt).pop();
     ctx.el.innerHTML = `<div class="row wrap mb8" style="gap:6px">${chipOf(st6)}${s?.submittedAt ? `<span class="small muted">送出於 ${esc(s.submittedAt.slice(0, 16))}${s.source === "匯入" ? "（由 Google 表單匯入）" : ""}</span>` : ""}
       ${st6.key === "later" && st6.w.start ? `<span class="small muted">${md2(st6.w.start)} 開放，可以先填</span>` : ""}</div>
     ${!surveyReady() ? `<div class="callout warn mb8">${icon("alert", "sm")} 雲端主機還沒更新，暫時不能填問卷，請通知督導。</div>` : ""}
@@ -11451,7 +11452,7 @@ ${lines.join("\n")}`;
         add("eval", level(sem.end, today3, 7), sem.end, { date: sem.end, cls: c, text: `${k.name}`, href: `#/kids/${k.id}` });
       }
     }
-    for (const c of own) for (const r of SURVEY_ROUNDS) {
+    for (const c of own) for (const r of rounds()) {
       const st6 = surveyState(c.id, r, today3);
       if (st6.key !== "open" && st6.key !== "over") continue;
       add("survey", st6.key === "over" ? "over" : level(st6.w.end, today3), st6.w.end, { date: st6.w.end, cls: c, text: `${r}（${md2(st6.w.start)}–${md2(st6.w.end)}）${st6.s ? "・草稿" : ""}`, href: `#/selsurvey/${encodeURIComponent(c.id)}/${encodeURIComponent(r)}` });
