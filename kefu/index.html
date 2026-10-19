@@ -9369,8 +9369,32 @@ ${lines.join("\n")}`;
   var pass = (s) => s != null && s !== "" && Number(s) >= MATH_RULE.pass;
   var isUpper = (sem) => !/下/.test(String(sem || ""));
   var periodMonths = (sem) => isUpper(sem) ? [10, 11, 12, 1] : [3, 4, 5, 6];
-  var periodLabel = (p, sem) => p === "前測" ? "前測（之前的紀錄）" : `${p}（${periodMonths(sem)[PERIODS.indexOf(p) - 1]} 月）`;
+  var pad23 = (n) => String(n).padStart(2, "0");
+  var mdOf = (d) => `${Number(d.slice(5, 7))}/${Number(d.slice(8, 10))}`;
+  function mathWindow(p, sem = S.semester) {
+    const set = (S.settings?.mathDates || {})[sem]?.[p];
+    if (set?.start && set?.end) return { start: set.start, end: set.end, set: true };
+    const m = periodMonths(sem)[PERIODS.indexOf(p) - 1];
+    if (!m) return { start: "", end: "", set: false };
+    const s0 = get("semesters", sem)?.start || `${(/* @__PURE__ */ new Date()).getFullYear()}-08-01`;
+    const y = Number(s0.slice(0, 4)) + (m < Number(s0.slice(5, 7)) ? 1 : 0);
+    return { start: `${y}-${pad23(m)}-01`, end: `${y}-${pad23(m)}-${pad23(new Date(y, m, 0).getDate())}`, set: false };
+  }
+  var periodLabel = (p, sem) => {
+    if (p === "前測") return "前測（之前的紀錄）";
+    const w = mathWindow(p, sem), m = periodMonths(sem)[PERIODS.indexOf(p) - 1];
+    return w.set ? `${p}（${w.start === w.end ? mdOf(w.start) : `${mdOf(w.start)}–${mdOf(w.end)}`}）` : `${p}（${m} 月）`;
+  };
   function defaultPeriod(sem) {
+    const today3 = `${(/* @__PURE__ */ new Date()).getFullYear()}-${pad23((/* @__PURE__ */ new Date()).getMonth() + 1)}-${pad23((/* @__PURE__ */ new Date()).getDate())}`;
+    const ps = PERIODS.slice(1), set = ps.filter((p) => mathWindow(p, sem).set);
+    if (set.length) {
+      const hit = ps.find((p) => {
+        const w = mathWindow(p, sem);
+        return w.set && today3 <= w.end;
+      });
+      if (hit) return hit;
+    }
     const m = (/* @__PURE__ */ new Date()).getMonth() + 1;
     const at = periodMonths(sem).indexOf(m);
     if (at >= 0) return PERIODS[at + 1];
@@ -9470,7 +9494,7 @@ ${lines.join("\n")}`;
     $("#m-period", a).onchange = (e) => leave(() => ctx.go(`#/math?class=${st.cid}&period=${encodeURIComponent(e.target.value)}`));
     $("#m-g", a).onclick = () => downloadG([c]);
     ctx.title("數學月檢測", `${esc(c.name)}・${esc(teacherOfClass(c))}・${esc(periodLabel(st.period, st.sem))}`);
-    ctx.el.innerHTML = `<div class="callout small mb8">${icon("info", "sm")} ${st.period === "前測" ? "前測用來記之前的成績（例如系統上線前、轉班前考過的考卷），選考卷後直接填分數。系統裡以前學期的成績會自動算進進度格。" : `考前：替每位孩子選這次要考的考卷（可以選好幾張），社工會依此準備考卷。考完：把分數填進去，${MATH_RULE.pass} 分以上算通過；沒通過的下次再考同一張。`}</div>
+    ctx.el.innerHTML = `<div class="callout small mb8">${icon("info", "sm")} ${st.period === "前測" ? "前測用來記之前的成績（例如系統上線前、轉班前考過的考卷），選考卷後直接填分數。系統裡以前學期的成績會自動算進進度格。" : `${((w) => w.set ? `<b>這次檢測：${mdOf(w.start)}${w.start !== w.end ? `–${mdOf(w.end)}` : ""}，請在 ${mdOf(w.end)} 前登好分數。</b><br>` : "")(mathWindow(st.period, st.sem))}考前：替每位孩子選這次要考的考卷（可以選好幾張），社工會依此準備考卷。考完：把分數填進去，${MATH_RULE.pass} 分以上算通過；沒通過的下次再考同一張。`}</div>
     <div class="card"><div class="card-head"><h3>孩子</h3><span class="sub" id="m-count"></span><span class="sp"></span>${legend2()}</div>
       <div class="card-body" id="m-kids">${st.kids.map(kidRow).join("") || `<div class="empty">${icon("users")}<div>這個班還沒有孩子名單</div></div>`}</div></div>
     <div class="sticky-foot"><span id="m-foot" class="small muted"></span><span class="sp"></span><button class="btn primary" id="m-save">${icon("save", "sm")}儲存</button></div>`;
@@ -9571,11 +9595,46 @@ ${lines.join("\n")}`;
   async function leave(fn) {
     if (await saveBeforeLeave(auto2, () => confirmBox("月檢測還沒存到雲端，確定要離開？", { okText: "離開" }))) fn();
   }
+  async function editDates(ctx) {
+    const sem = S.semester;
+    const body = h(`<div class="stack" style="gap:10px"><p class="small muted" style="margin:0">設定每一次月檢測的期間：「開始」是考試開始的日期，「登分截止」是老師最晚要登好分數的日期。老師的總覽會在期間內提醒，過了截止日還沒登分數算逾期。沒設定的次別用那個月的 1 號到月底。</p>
+    ${PERIODS.slice(1).map((p) => {
+      const w = mathWindow(p, sem);
+      return `<div class="grid g3" style="gap:8px;align-items:end"><div><b>${p}</b><div class="small muted">${periodMonths(sem)[PERIODS.indexOf(p) - 1]} 月${w.set ? "" : "・未設定"}</div></div>
+      <label class="field"><span>開始</span><input class="input" type="date" data-p="${p}" data-k="start" value="${w.set ? w.start : ""}"></label>
+      <label class="field"><span>登分截止</span><input class="input" type="date" data-p="${p}" data-k="end" value="${w.set ? w.end : ""}"></label></div>`;
+    }).join("")}</div>`);
+    let v;
+    for (; ; ) {
+      const ok = await openModal({ title: `${sem} 數學月檢測日期`, body, buttons: [{ text: "取消", value: false }, { text: "儲存", value: true, primary: true }] });
+      if (!ok) return;
+      v = {};
+      let err = "";
+      for (const p of PERIODS.slice(1)) {
+        const s1 = $(`[data-p="${p}"][data-k=start]`, body).value, e1 = $(`[data-p="${p}"][data-k=end]`, body).value;
+        if (!s1 && !e1) continue;
+        if (!s1 || !e1) {
+          err = `${p}要同時填開始和登分截止`;
+          break;
+        }
+        if (s1 > e1) {
+          err = `${p}的開始日期晚於登分截止`;
+          break;
+        }
+        v[p] = { start: s1, end: e1 };
+      }
+      if (!err) break;
+      toast(err, "err");
+    }
+    await mutate("/api/settings", { key: "mathDates", value: { ...S.settings?.mathDates || {}, [sem]: v } }, "已更新檢測日期");
+    ctx.go(location.hash);
+  }
   function renderAll(ctx, period) {
     const sem = S.semester;
     const list = classes().filter(isMathClass);
     const a = ctx.actions(`<select class="select" id="m-period">${PERIODS.map((p) => `<option value="${p}" ${p === period ? "selected" : ""}>${esc(periodLabel(p, sem))}</option>`).join("")}</select>
-    <button class="btn" id="m-print">${icon("print", "sm")}列印需求表</button><button class="btn" id="m-gall">${icon("download", "sm")}全部 G 表</button>`);
+    <button class="btn" id="m-dates">${icon("calendar", "sm")}檢測日期</button><button class="btn" id="m-print">${icon("print", "sm")}列印需求表</button><button class="btn" id="m-gall">${icon("download", "sm")}全部 G 表</button>`);
+    $("#m-dates", a).onclick = () => editDates(ctx);
     $("#m-period", a).onchange = (e) => ctx.go(`#/math?view=all&period=${encodeURIComponent(e.target.value)}`);
     $("#m-gall", a).onclick = () => downloadG(list);
     $("#m-print", a).onclick = () => window.print();
@@ -9903,12 +9962,12 @@ ${lines.join("\n")}`;
     }
     return String(raw).trim();
   }
-  var pad23 = (n) => String(n).padStart(2, "0");
+  var pad24 = (n) => String(n).padStart(2, "0");
   function parseDate(v) {
-    if (v instanceof Date && !isNaN(v)) return `${v.getFullYear()}-${pad23(v.getMonth() + 1)}-${pad23(v.getDate())}`;
+    if (v instanceof Date && !isNaN(v)) return `${v.getFullYear()}-${pad24(v.getMonth() + 1)}-${pad24(v.getDate())}`;
     if (typeof v === "number" && v > 3e4 && v < 8e4) {
       const d = new Date(Math.round((v - 25569) * 864e5));
-      return `${d.getUTCFullYear()}-${pad23(d.getUTCMonth() + 1)}-${pad23(d.getUTCDate())}`;
+      return `${d.getUTCFullYear()}-${pad24(d.getUTCMonth() + 1)}-${pad24(d.getUTCDate())}`;
     }
     const s = String(v ?? "").trim();
     let m = /^(\d{2,4})[./-](\d{1,2})[./-](\d{1,2})/.exec(s);
@@ -9916,7 +9975,7 @@ ${lines.join("\n")}`;
       let y = Number(m[1]);
       if (y < 1e3) y += 1911;
       const mo = Number(m[2]), d = Number(m[3]);
-      if (mo >= 1 && mo <= 12 && d >= 1 && d <= 31) return `${y}-${pad23(mo)}-${pad23(d)}`;
+      if (mo >= 1 && mo <= 12 && d >= 1 && d <= 31) return `${y}-${pad24(mo)}-${pad24(d)}`;
     }
     return "";
   }
@@ -10820,16 +10879,22 @@ ${lines.join("\n")}`;
     ${SURVEY_ROUNDS.map((r) => `<div class="grid g3" style="gap:8px;align-items:end"><div><b>${r}</b><div class="small muted">${ROUND_NOTE[r]}${sug[r] ? `・建議 ${md2(sug[r].start)}–${md2(sug[r].end)}` : ""}</div></div>
       <label class="field"><span>開始</span><input class="input" type="date" data-r="${r}" data-k="start" value="${esc(R[r].start)}"></label>
       <label class="field"><span>結束</span><input class="input" type="date" data-r="${r}" data-k="end" value="${esc(R[r].end)}"></label></div>`).join("")}</div>`);
-    const ok = await openModal({ title: `${S.semester} 情緒課程問卷時段`, body, buttons: [{ text: "取消", value: false }, { text: "儲存", value: true, primary: true }] });
-    if (!ok) return;
-    const v = {};
-    for (const r of SURVEY_ROUNDS) {
-      const st6 = $(`[data-r="${r}"][data-k=start]`, body).value, en = $(`[data-r="${r}"][data-k=end]`, body).value;
-      if (st6 && en && st6 > en) {
-        toast(`${r}的開始日期晚於結束日期`, "err");
-        return;
+    let v;
+    for (; ; ) {
+      const ok = await openModal({ title: `${S.semester} 情緒課程問卷時段`, body, buttons: [{ text: "取消", value: false }, { text: "儲存", value: true, primary: true }] });
+      if (!ok) return;
+      v = {};
+      let err = "";
+      for (const r of SURVEY_ROUNDS) {
+        const st6 = $(`[data-r="${r}"][data-k=start]`, body).value, en = $(`[data-r="${r}"][data-k=end]`, body).value;
+        if (st6 && en && st6 > en) {
+          err = `${r}的開始日期晚於結束日期`;
+          break;
+        }
+        if (st6 && en) v[r] = { start: st6, end: en };
       }
-      if (st6 && en) v[r] = { start: st6, end: en };
+      if (!err) break;
+      toast(err, "err");
     }
     const all = { ...S.settings?.selSurveyRounds || {}, [S.semester]: v };
     await mutate("/api/settings", { key: "selSurveyRounds", value: all }, "已更新測驗時段");
@@ -11176,7 +11241,6 @@ ${lines.join("\n")}`;
       const sub = subOf(c.id, d);
       add("flow", d === today3 ? "over" : "soon", d, { date: d, cls: c, text: `${mdw(d)}${d === today3 ? "（今天上課）" : ""}${sub ? `・代課 ${get("teachers", sub.teacherId)?.name || ""}` : ""}`, href: `#/flow?class=${c.id}&date=${d}` });
     }
-    const months = periodMonths(S.semester);
     for (const c of own) {
       const rs2 = (S.data.mathScores || []).filter((r) => r.classId === c.id && r.semesterId === S.semester && r.planned === "V" && (r.score == null || r.score === "") && r.period !== "前測");
       const by = /* @__PURE__ */ new Map();
@@ -11185,13 +11249,9 @@ ${lines.join("\n")}`;
         by.set(k, (by.get(k) || 0) + 1);
       }
       for (const [p, n] of by) {
-        const m = months[["第一次", "第二次", "第三次", "第四次"].indexOf(p)];
-        if (!m) continue;
-        const y = Number(String(sem.start || today3).slice(0, 4)) + (m < Number(String(sem.start || today3).slice(5, 7)) ? 1 : 0);
-        const last = new Date(y, m, 0), lastISO = `${y}-${String(m).padStart(2, "0")}-${String(last.getDate()).padStart(2, "0")}`;
-        const first = `${y}-${String(m).padStart(2, "0")}-01`;
-        if (today3 < first) continue;
-        add("math", level(lastISO, today3, 7), lastISO, { date: lastISO, cls: c, text: `${p}（${m} 月）${n} 張考卷還沒登分數`, href: `#/math?class=${c.id}&period=${encodeURIComponent(p)}`, n });
+        const w = mathWindow(p, S.semester);
+        if (!w.start || today3 < w.start) continue;
+        add("math", level(w.end, today3, w.set ? SOON_DAYS : 7), w.end, { date: w.end, cls: c, text: `${p}（${md2(w.end)} 前登分數）${n} 張考卷還沒登分數`, href: `#/math?class=${c.id}&period=${encodeURIComponent(p)}`, n });
       }
     }
     for (const [kind, table, done] of [["english", "enTests", hasErr], ["chinese", "zhTests", result]]) {
@@ -11769,9 +11829,9 @@ ${lines.join("\n")}`;
     });
   }
   var SUBJ = { 英: "英語", 數: "數學", 國: "國語" };
-  var pad24 = (n) => String(n).padStart(2, "0");
-  var isoOf3 = (v) => v instanceof Date && !isNaN(v) ? `${v.getFullYear()}-${pad24(v.getMonth() + 1)}-${pad24(v.getDate())}` : /^\d{4}[-/]\d{1,2}[-/]\d{1,2}/.test(String(v || "")) ? String(v).slice(0, 10).replace(/\//g, "-").replace(/-(\d)(?=-|$)/g, "-0$1") : "";
-  var stampOf = (v) => v instanceof Date && !isNaN(v) ? `${v.getFullYear()}${pad24(v.getMonth() + 1)}${pad24(v.getDate())}${pad24(v.getHours())}${pad24(v.getMinutes())}${pad24(v.getSeconds())}` : String(v || "").replace(/\D/g, "");
+  var pad25 = (n) => String(n).padStart(2, "0");
+  var isoOf3 = (v) => v instanceof Date && !isNaN(v) ? `${v.getFullYear()}-${pad25(v.getMonth() + 1)}-${pad25(v.getDate())}` : /^\d{4}[-/]\d{1,2}[-/]\d{1,2}/.test(String(v || "")) ? String(v).slice(0, 10).replace(/\//g, "-").replace(/-(\d)(?=-|$)/g, "-0$1") : "";
+  var stampOf = (v) => v instanceof Date && !isNaN(v) ? `${v.getFullYear()}${pad25(v.getMonth() + 1)}${pad25(v.getDate())}${pad25(v.getHours())}${pad25(v.getMinutes())}${pad25(v.getSeconds())}` : String(v || "").replace(/\D/g, "");
   var semOf = (d) => S.data.semesters.find((s) => s.start && s.end && d >= s.start && d <= s.end)?.id || S.semester;
   function parseResponses(aoa) {
     const head = (aoa[0] || []).map((v) => String(v ?? "").trim());
