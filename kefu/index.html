@@ -913,6 +913,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     isSocial: () => isSocial,
     isSupervisor: () => isSupervisor,
     loadAll: () => loadAll,
+    mergeStudents: () => mergeStudents,
     myFile: () => myFile,
     nextId: () => nextId,
     nowStr: () => nowStr,
@@ -930,6 +931,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     setRoster: () => setRoster,
     setRules: () => setRules,
     setSetting: () => setSetting,
+    studentLinks: () => studentLinks,
     surveyReady: () => surveyReady,
     tidyAttendance: () => tidyAttendance,
     upsert: () => upsert
@@ -5745,6 +5747,11 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   async function upsert(table, row) {
     if (!TDEF[table]) throw new DbError("未知的資料表：" + table);
     const r = prepare(table, row);
+    if (table === "students" && r.studentNo) {
+      const no = String(r.studentNo).replace(/\s+/g, "").toUpperCase();
+      const dup = rows("students").find((x) => x.id !== r.id && String(x.studentNo || "").replace(/\s+/g, "").toUpperCase() === no);
+      if (dup) throw new DbError(`學號 ${r.studentNo} 已經是「${dup.name}」（${dup.id}）；請改那一筆，或到「基本資料 → 孩子」合併重複的孩子`);
+    }
     if (table === "sessions") {
       delete r.feedback;
       delete r.feedbackStatus;
@@ -6342,6 +6349,10 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
       for (const r of rowsByTable[t] || []) {
         const c = clean(t, r);
         let id = c[TDEF[t].idKey];
+        if ((id == null || id === "") && t === "students" && c.studentNo) {
+          const no = String(c.studentNo).replace(/\s+/g, "").toUpperCase();
+          id = rows("students").find((x) => String(x.studentNo || "").replace(/\s+/g, "").toUpperCase() === no)?.id ?? id;
+        }
         if (id == null || id === "") {
           id = nextId(t, taken[t]);
         }
@@ -6364,6 +6375,99 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     }
     if (ops.length) await commit(ops);
     return counts;
+  }
+  var KID_SEP = "、";
+  var splitKids = (v) => String(v || "").split(/[、,，]/).map((x) => x.trim()).filter(Boolean);
+  var kidSeg = (id) => new RegExp(`(^|[-~])${String(id).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?=$|[-~])`);
+  var KID_TX = ["records", "tasks", "evaluations", "mathScores", "enTests", "zhTests"];
+  var KID_SOCIAL = [["visits", "kidIds", ""], ["cases", "studentIds", "studentNames"], ["specialEvents", "studentIds", "studentNames"]];
+  function studentLinks(sid2) {
+    const n = (t) => rows(t).filter((r) => r.studentId === sid2).length;
+    return {
+      enrollments: rows("enrollments").filter((e) => e.studentId === sid2),
+      records: n("records"),
+      tasks: n("tasks"),
+      scores: n("mathScores") + n("enTests") + n("zhTests"),
+      evaluations: n("evaluations"),
+      incidents: n("incidents"),
+      social: KID_SOCIAL.reduce((a, [t, k]) => a + rows(t).filter((r) => splitKids(r[k]).includes(sid2)).length, 0)
+    };
+  }
+  async function mergeStudents(keepId, dropId) {
+    if (!isSupervisor()) throw new DbError("只有社工／督導可以合併孩子資料");
+    const keep = getRow("students", keepId), drop = getRow("students", dropId);
+    if (!keep || !drop || String(keepId) === String(dropId)) throw new DbError("請選兩筆不同的孩子資料");
+    const name = keep.name || drop.name;
+    const tx = [], social = [], base = [];
+    const count = { enrollments: 0, records: 0, scores: 0, other: 0 };
+    const merged = { ...keep };
+    for (const [k, v] of Object.entries(drop)) if (k !== "id" && k !== "updatedAt" && (merged[k] == null || merged[k] === "") && v != null && v !== "") merged[k] = v;
+    if (drop.status === "在班" && keep.status !== "在班") merged.status = "在班";
+    if (drop.joined && (!keep.joined || String(drop.joined) < String(keep.joined))) merged.joined = drop.joined;
+    for (const k of ["needs", "note"]) if (keep[k] && drop[k] && keep[k] !== drop[k] && !String(keep[k]).includes(drop[k])) merged[k] = `${keep[k]}；${drop[k]}`;
+    delete merged.updatedAt;
+    base.push({ table: "students", row: merged });
+    const keepEnr = new Map(rows("enrollments").filter((e) => e.studentId === keepId).map((e) => [e.classId, e]));
+    for (const e of rows("enrollments").filter((e2) => e2.studentId === dropId)) {
+      const twin = keepEnr.get(e.classId);
+      if (twin) {
+        if ((e.status || "在班") === "在班" && twin.status !== "在班") {
+          const r = { ...twin, status: "在班" };
+          delete r.updatedAt;
+          base.push({ table: "enrollments", row: r });
+        }
+        base.push({ table: "enrollments", id: e.id, delete: true });
+      } else {
+        const r = { ...e, studentId: keepId };
+        if ("studentName" in e) r.studentName = name;
+        delete r.updatedAt;
+        base.push({ table: "enrollments", row: r });
+        keepEnr.set(e.classId, r);
+      }
+      count.enrollments++;
+    }
+    const re = kidSeg(dropId);
+    for (const t of KID_TX) for (const r of rows(t)) {
+      if (r.studentId !== dropId) continue;
+      const oid = String(r.id), nid = re.test(oid) ? oid.replace(re, `$1${keepId}`) : oid;
+      const row = { ...r, id: nid, studentId: keepId };
+      if ("studentName" in r) row.studentName = name;
+      delete row.updatedAt;
+      if (nid === oid) tx.push({ table: t, row });
+      else {
+        const cur = getRow(t, nid);
+        if (!cur || String(r.updatedAt || "") > String(cur.updatedAt || "")) tx.push({ table: t, row });
+        tx.push({ table: t, id: oid, delete: true });
+      }
+      if (t === "records") count.records++;
+      else if (t === "tasks" || t === "evaluations") count.other++;
+      else count.scores++;
+    }
+    for (const r of rows("incidents").filter((r2) => r2.studentId === dropId)) {
+      const row = { ...r, studentId: keepId };
+      if ("studentName" in r) row.studentName = name;
+      delete row.updatedAt;
+      tx.push({ table: "incidents", row });
+      count.other++;
+    }
+    for (const r of rows("posts").filter((r2) => String(r2.kid || "") === String(dropId))) {
+      const row = { ...r, kid: keepId };
+      delete row.updatedAt;
+      tx.push({ table: "posts", row });
+    }
+    for (const [t, k, nk] of KID_SOCIAL) for (const r of rows(t)) {
+      const ids = splitKids(r[k]);
+      if (!ids.includes(dropId)) continue;
+      const nids = [...new Set(ids.map((x) => x === dropId ? keepId : x))];
+      const row = { ...r, [k]: nids.join(KID_SEP) };
+      if (nk) row[nk] = nids.map((x) => x === keepId ? name : getRow("students", x)?.name || x).join(KID_SEP);
+      delete row.updatedAt;
+      social.push({ table: t, row });
+      count.other++;
+    }
+    base.push({ table: "students", id: dropId, delete: true });
+    await commit([...tx, ...social, ...base]);
+    return { ...count, version: DB.version };
   }
 
   // src/js/ui.js
@@ -7087,6 +7191,8 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
         case "/api/attendance/orphans":
         case "/api/attendance/tidy":
           return tidyAttendance();
+        case "/api/students/merge":
+          return mergeStudents(String(b.keep || ""), String(b.drop || ""));
         case "/api/session/feedback": {
           const st6 = b.status || "已看過";
           if (!["已看過", "已回饋"].includes(st6)) throw new DbError("回饋狀態不正確");
@@ -16184,7 +16290,9 @@ ${lines.join("\n")}`;
       tByName.set(n, t);
       sum.teachersNew.push(n);
     }
-    const byNo = new Map(rows("students").filter((s) => s.studentNo).map((s) => [s.studentNo, s]));
+    const noKey = (v) => str2(v).replace(/\s+/g, "").toUpperCase();
+    const byNo = /* @__PURE__ */ new Map();
+    for (const s of rows("students")) if (s.studentNo && (!byNo.has(noKey(s.studentNo)) || s.status === "在班")) byNo.set(noKey(s.studentNo), s);
     const byName3 = /* @__PURE__ */ new Map();
     for (const s of rows("students")) if (!s.studentNo) byName3.set(s.name, s);
     const kidOf = /* @__PURE__ */ new Map();
@@ -16192,7 +16300,7 @@ ${lines.join("\n")}`;
       const no = r["學生學號"], name = r["學生姓名"];
       const key = no || name;
       if (kidOf.has(key)) continue;
-      let s = no && byNo.get(no) || byName3.get(name);
+      let s = no && byNo.get(noKey(no)) || byName3.get(name);
       const fields = { studentNo: no || s?.studentNo || "", name, grade: gradeOf(r["就讀年級"]) ?? s?.grade ?? null, school: r["就讀學校"] || s?.school || "", status: "在班" };
       if (s) {
         if (Object.entries(fields).some(([k, v]) => String(s[k] ?? "") !== String(v ?? ""))) {
@@ -16880,6 +16988,123 @@ ${lines.join("\n")}`;
     }
   };
 
+  // src/js/pages/dedupe.js
+  var norm2 = (v) => String(v ?? "").replace(/\s+/g, "").toUpperCase();
+  function duplicateGroups() {
+    const kids = rows("students");
+    const up = new Map(kids.map((k) => [k.id, k.id]));
+    const find = (x) => {
+      while (up.get(x) !== x) {
+        up.set(x, up.get(up.get(x)));
+        x = up.get(x);
+      }
+      return x;
+    };
+    const join = (a, b) => {
+      const ra = find(a), rb = find(b);
+      if (ra !== rb) up.set(ra, rb);
+    };
+    const byNo = /* @__PURE__ */ new Map(), byName3 = /* @__PURE__ */ new Map();
+    for (const k of kids) {
+      const no = norm2(k.studentNo);
+      if (no) {
+        if (byNo.has(no)) join(k.id, byNo.get(no));
+        else byNo.set(no, k.id);
+      }
+      const key = `${norm2(k.name)}|${norm2(k.school)}`;
+      if (!norm2(k.name)) continue;
+      if (!byName3.has(key)) byName3.set(key, []);
+      byName3.get(key).push(k);
+    }
+    for (const list2 of byName3.values()) for (let i = 1; i < list2.length; i++) for (let j = 0; j < i; j++) {
+      const a = norm2(list2[i].studentNo), b = norm2(list2[j].studentNo);
+      if (!a || !b || a === b) join(list2[i].id, list2[j].id);
+    }
+    const groups = /* @__PURE__ */ new Map();
+    for (const k of kids) {
+      const r = find(k.id);
+      if (!groups.has(r)) groups.set(r, []);
+      groups.get(r).push(k);
+    }
+    return [...groups.values()].filter((g) => g.length > 1);
+  }
+  var weight = (k) => {
+    const l = studentLinks(k.id);
+    return l.records + l.tasks + l.scores * 2 + l.enrollments.length * 5 + (k.studentNo ? 1 : 0);
+  };
+  function kidInfo(k) {
+    const l = studentLinks(k.id);
+    const cls = l.enrollments.map((e) => {
+      const c = getRow("classes", e.classId);
+      return c ? `${c.semesterId || ""} ${c.name}${getRow("subjects", c.subjectId)?.name ? " " + getRow("subjects", c.subjectId).name : ""}${e.status === "離班" ? "（離班）" : ""}` : "";
+    }).filter(Boolean);
+    return { l, cls };
+  }
+  function groupHtml(g, gi) {
+    const best = [...g].sort((a, b) => weight(b) - weight(a) || String(a.id).localeCompare(String(b.id)))[0];
+    return `<div class="card mt12" style="padding:12px 14px"><div class="small muted mb8">第 ${gi + 1} 組・${esc(g[0].name)}</div>
+    ${g.map((k) => {
+      const { l, cls } = kidInfo(k);
+      return `<label class="row" style="gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line)">
+      <input type="radio" name="keep-${gi}" value="${esc(k.id)}" ${k === best ? "checked" : ""} style="margin-top:4px">
+      <div class="grow"><div><b>${esc(k.name)}</b>　<span class="small muted">${esc(k.id)}</span>　<span class="chip outline">${esc(k.status || "—")}</span></div>
+        <div class="small">學號 ${esc(k.studentNo || "—")}・${esc(k.school || "學校未填")}・${k.grade ? esc(k.grade) + " 年級" : "年級未填"}</div>
+        <div class="small muted">班級：${cls.length ? esc(cls.join("、")) : "沒有分班"}</div>
+        <div class="small muted">課後紀錄 ${l.records}・任務 ${l.tasks}・檢測成績 ${l.scores}・評語 ${l.evaluations}・事件 ${l.incidents}・社工紀錄 ${l.social}</div></div></label>`;
+    }).join("")}
+    <div class="row mt8"><span class="small muted grow">選好要保留的那筆，其他筆的資料會移過來</span><button class="btn primary sm" data-merge="${gi}">${icon("check", "sm")}合併成一筆</button></div></div>`;
+  }
+  async function openMergeFlow(ctx) {
+    for (; ; ) {
+      const groups = duplicateGroups();
+      const kids = rows("students").sort((a, b) => String(a.name).localeCompare(String(b.name), "zh-Hant"));
+      const opt = (sel) => kids.map((k2) => `<option value="${esc(k2.id)}" ${k2.id === sel ? "selected" : ""}>${esc(k2.name)}（${esc(k2.studentNo || k2.id)}・${esc(k2.school || "")}）</option>`).join("");
+      const body = document.createElement("div");
+      body.innerHTML = `<p class="small muted" style="margin:0;line-height:1.7">同學號、或同姓名又同學校的孩子會列在這裡。合併後，另一筆的分班、課後紀錄、任務、成績、評語、事件與社工紀錄都會改到保留的那筆，另一筆會刪除。</p>
+      ${groups.length ? groups.map(groupHtml).join("") : `<div class="callout mt12 small">${icon("check", "sm")} 沒有找到疑似重複的孩子。</div>`}
+      <details class="mt12"><summary class="small" style="cursor:pointer">名字打錯的兩筆？手動選兩位合併</summary>
+        <div class="grid g2 mt8" style="gap:8px"><label class="field"><span>保留</span><select class="select" id="mm-keep"><option value="">選擇孩子</option>${opt("")}</select></label>
+          <label class="field"><span>合併進來後刪除</span><select class="select" id="mm-drop"><option value="">選擇孩子</option>${opt("")}</select></label></div>
+        <div class="mt8"><button class="btn sm" data-merge="manual">合併這兩筆</button></div></details>`;
+      const pick2 = await new Promise((resolve) => {
+        openModal({ title: "合併重複的孩子", body, buttons: [{ text: "關閉", value: null }] }).then(() => resolve(null));
+        body.querySelectorAll("[data-merge]").forEach((b) => b.onclick = () => {
+          const v = b.dataset.merge;
+          let keep, drops;
+          if (v === "manual") {
+            keep = body.querySelector("#mm-keep").value;
+            drops = [body.querySelector("#mm-drop").value].filter(Boolean);
+          } else {
+            const g = groups[+v];
+            keep = body.querySelector(`input[name="keep-${v}"]:checked`)?.value;
+            drops = g.map((k2) => k2.id).filter((id) => id !== keep);
+          }
+          if (!keep || !drops.length || drops.includes(keep)) {
+            toast("請選要保留的那筆，和另一筆不同的孩子", "err");
+            return;
+          }
+          body.closest(".modal")?._finish?.(void 0);
+          resolve({ keep, drops });
+        });
+      });
+      if (!pick2) break;
+      const k = getRow("students", pick2.keep);
+      const lines = pick2.drops.map((id) => {
+        const d = getRow("students", id), { l } = kidInfo(d);
+        return `<li><b>${esc(d.name)}</b>（${esc(d.studentNo || d.id)}）：分班 ${l.enrollments.length}、課後紀錄 ${l.records}、任務 ${l.tasks}、檢測成績 ${l.scores}、評語 ${l.evaluations}、事件 ${l.incidents}、社工紀錄 ${l.social}</li>`;
+      }).join("");
+      const ok = await confirmBox(`保留 <b>${esc(k.name)}</b>（${esc(k.studentNo || k.id)}・${esc(k.school || "")}），把下面的資料移過來後刪除：<ul style="margin:8px 0;padding-left:20px;line-height:1.8">${lines}</ul><span class="small muted">合併後不能直接復原；每天第一次存檔前的備份仍保留在「備份」資料夾。</span>`, { okText: "合併", title: "確認合併" });
+      if (!ok) continue;
+      try {
+        let r = null;
+        for (const id of pick2.drops) r = await mutate("/api/students/merge", { keep: pick2.keep, drop: id });
+        if (r) toast(`已合併：${k.name}`);
+      } catch {
+      }
+    }
+    ctx?.go?.(location.hash);
+  }
+
   // src/js/pages/data.js
   var ORDER = [
     "students",
@@ -16928,8 +17153,11 @@ ${lines.join("\n")}`;
       const a = ctx.actions(`<div class="search"><span>${icon("search", "sm")}</span><input class="input" id="d-q" placeholder="搜尋這張表" value="${esc(q)}" style="width:180px"></div>
       ${LIST_TABLES.includes(key) ? `<button class="btn" id="d-export" title="下載成 Excel，修改後可再匯入">${icon("download", "sm")}下載清單</button>` : ""}
       ${LIST_TABLES.includes(key) && !locked ? `<button class="btn" id="d-import" title="${esc(LIST_INFO[key].need)}">${icon("upload", "sm")}匯入清單</button>` : ""}
+      ${key === "students" && isSupervisor2() ? `<button class="btn" id="d-merge" title="同一位孩子被建成兩筆時，合併成一筆">${icon("users", "sm")}合併重複的孩子</button>` : ""}
       ${locked ? `<span class="chip outline">${icon("lock", "sm")}督導維護</span>` : `<button class="btn primary" id="d-new">${icon("plus", "sm")}新增</button>`}`);
       a.querySelector("#d-import")?.addEventListener("click", () => importListFlow(key));
+      a.querySelector("#d-merge")?.addEventListener("click", () => openMergeFlow(ctx));
+      const dups = key === "students" && isSupervisor2() ? duplicateGroups() : [];
       a.querySelector("#d-export")?.addEventListener("click", () => exportList(key));
       a.querySelector("#d-q").onchange = (e) => ctx.go(`#/data/${key}${e.target.value.trim() ? "?q=" + encodeURIComponent(e.target.value.trim()) : ""}`);
       const defaults2 = key === "classes" || key === "evaluations" ? { semesterId: S.semester } : key === "teachers" ? { role: "課輔老師", status: "在職" } : key === "students" ? { status: "在班" } : {};
@@ -16940,12 +17168,14 @@ ${lines.join("\n")}`;
         ${ORDER.filter((k) => tables[k].group === g).map((k) => `<a href="#/data/${k}" class="row" style="padding:7px 10px;border-radius:7px;${k === key ? "background:var(--accent-soft);color:var(--accent);font-weight:700" : "color:var(--ink)"}">
           <span class="grow">${esc(tables[k].sheet)}</span><span class="small muted num">${(S.data[k] || []).length}</span></a>`).join("")}`).join("")}</div>
       <div class="card"><div class="card-head"><h3>${esc(t.label)}</h3><span class="sub">${rows2.length} 筆${t.note ? "・" + esc(t.note) : ""}</span></div>
+        ${dups.length ? `<div class="card-body" style="padding-bottom:0"><div class="callout warn small row" style="gap:8px">${icon("alert", "sm")}<span class="grow">有 ${dups.length} 位孩子疑似重複建成兩筆（同學號、或同姓名又同學校）：${esc(dups.slice(0, 5).map((g) => g[0].name).join("、"))}${dups.length > 5 ? "…" : ""}</span><button class="btn sm" id="d-merge2">看看並合併</button></div></div>` : ""}
         ${LIST_TABLES.includes(key) ? `<div class="card-body" style="padding-bottom:0"><div class="callout small">${icon("info", "sm")} 匯入 Excel 會整份取代這個清單；需要的欄位：${esc(LIST_INFO[key].need)}。${rows2.length ? "" : "目前是空的，教學流程會先用系統內建的清單。"}</div></div>` : ""}
         ${t.group === "record" ? `<div class="card-body" style="padding-bottom:0"><div class="callout small">${icon("info", "sm")} 教學紀錄建議從「教學流程」「課後紀錄」頁面填寫；這裡適合查詢或修正個別資料。修正會存到你自己的檔案，並以最新的修改為準。</div></div>` : ""}
         <div class="card-body"><div class="tbl-wrap tall"><table class="tbl"><thead><tr>${cols.map((c) => `<th>${esc(c.label)}</th>`).join("")}</tr></thead><tbody>
           ${rows2.slice(0, 500).map((r) => `<tr class="click" data-id="${esc(r[t.idKey])}">${cols.map((c) => `<td class="small">${cell(c, r[c.key])}</td>`).join("")}</tr>`).join("") || `<tr><td colspan="${cols.length}"><div class="empty">沒有資料</div></td></tr>`}</tbody></table></div>
           ${rows2.length > 500 ? `<div class="small muted mt8">只顯示前 500 筆，請用搜尋縮小範圍</div>` : ""}</div></div></div>
       <style>@media (max-width: 860px) { .data-layout { grid-template-columns: 1fr !important; } }</style>`;
+      ctx.el.querySelector("#d-merge2")?.addEventListener("click", () => openMergeFlow(ctx));
       ctx.el.querySelectorAll("tr[data-id]").forEach((tr) => tr.onclick = () => {
         const row = (S.data[key] || []).find((r) => String(r[t.idKey]) === tr.dataset.id);
         openRecordDrawer(key, row);
@@ -17292,11 +17522,11 @@ ${lines.join("\n")}`;
         <details ${f !== "all" ? "open" : ""}><summary class="small muted">看 ${x.ss.length} 筆紀錄</summary>${x.ss.map(recHtml).join("")}</details></div>`).join("") || `<div class="empty">${icon("sparkle")}<div>${f === "ask" ? "沒有待回覆的提問" : "這學期還沒有 SEL 活動紀錄"}</div></div>`}</div></div>`;
     }
   };
-  var norm2 = (s) => String(s || "").replace(/\s+/g, "").replace(/班$/, "");
+  var norm3 = (s) => String(s || "").replace(/\s+/g, "").replace(/班$/, "");
   function guessSelClass(sheet2) {
-    const cls = classes(), n = norm2(sheet2.name);
-    let hit = cls.filter((c) => norm2(c.name) === n);
-    if (!hit.length) hit = cls.filter((c) => n && (norm2(c.name).includes(n) || n.includes(norm2(c.name))));
+    const cls = classes(), n = norm3(sheet2.name);
+    let hit = cls.filter((c) => norm3(c.name) === n);
+    if (!hit.length) hit = cls.filter((c) => n && (norm3(c.name).includes(n) || n.includes(norm3(c.name))));
     const ts = [...new Set(sheet2.items.map((i) => i.teacher).filter(Boolean))];
     if (hit.length !== 1 && ts.length) {
       const byT = cls.filter((c) => ts.includes(get("teachers", c.teacherId)?.name || ""));
@@ -17573,8 +17803,8 @@ ${lines.join("\n")}`;
         if (d.table) {
           const plan = planList(d.table, ordered.map((r) => Object.fromEntries(d.head.map((x, i) => [x, r[i] ?? ""]))));
           p.plan = plan;
-          const norm3 = (list2) => JSON.stringify(list2.map((r) => r.map((v) => String(v ?? "").trim())));
-          p.same = norm3(tableRows(d)) === norm3(ordered);
+          const norm4 = (list2) => JSON.stringify(list2.map((r) => r.map((v) => String(v ?? "").trim())));
+          p.same = norm4(tableRows(d)) === norm4(ordered);
           p.n = plan.sum.count;
         } else {
           p.value = d.parse(ordered);
