@@ -924,6 +924,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     saveChinese: () => saveChinese,
     saveEnglish: () => saveEnglish,
     saveMath: () => saveMath,
+    saveSchedule: () => saveSchedule,
     saveSelSurvey: () => saveSelSurvey,
     saveSession: () => saveSession,
     saveVisitForm: () => saveVisitForm,
@@ -3845,6 +3846,166 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
             "kind": "text"
           }
         ]
+      },
+      "daySlots": {
+        "key": "daySlots",
+        "sheet": "每日時段",
+        "label": "每日上課時段",
+        "idKey": "id",
+        "idPrefix": "",
+        "scope": "semester",
+        "group": "master",
+        "note": "暑期班表：每天時段不同的班，一天一筆；有這張表的班只照這裡的日期上課（每週課表不用）；id：DS-班級-日期",
+        "cols": [
+          {
+            "key": "id",
+            "label": "時段ID",
+            "kind": "text",
+            "required": true
+          },
+          {
+            "key": "classId",
+            "label": "班級ID",
+            "kind": "ref",
+            "ref": "classes",
+            "required": true
+          },
+          {
+            "key": "className",
+            "label": "班級(自動)",
+            "kind": "auto"
+          },
+          {
+            "key": "date",
+            "label": "日期",
+            "kind": "date",
+            "required": true
+          },
+          {
+            "key": "start",
+            "label": "開始時間",
+            "kind": "time",
+            "required": true
+          },
+          {
+            "key": "end",
+            "label": "結束時間",
+            "kind": "time",
+            "required": true
+          },
+          {
+            "key": "note",
+            "label": "備註",
+            "kind": "text"
+          }
+        ]
+      },
+      "lunchDuty": {
+        "key": "lunchDuty",
+        "sheet": "午餐導師",
+        "label": "午餐時段",
+        "idKey": "id",
+        "idPrefix": "",
+        "scope": "semester",
+        "group": "master",
+        "note": "暑期每個課輔班每天中午由哪位老師負責（算導師時間）；id：LD-學期-課輔班-日期",
+        "cols": [
+          {
+            "key": "id",
+            "label": "午餐ID",
+            "kind": "text",
+            "required": true
+          },
+          {
+            "key": "semesterId",
+            "label": "學期",
+            "kind": "ref",
+            "ref": "semesters",
+            "required": true
+          },
+          {
+            "key": "group",
+            "label": "課輔班",
+            "kind": "text",
+            "required": true
+          },
+          {
+            "key": "date",
+            "label": "日期",
+            "kind": "date",
+            "required": true
+          },
+          {
+            "key": "start",
+            "label": "開始時間",
+            "kind": "time"
+          },
+          {
+            "key": "end",
+            "label": "結束時間",
+            "kind": "time"
+          },
+          {
+            "key": "teacherId",
+            "label": "負責老師ID",
+            "kind": "ref",
+            "ref": "teachers",
+            "required": true
+          },
+          {
+            "key": "teacherName",
+            "label": "負責老師(自動)",
+            "kind": "auto"
+          },
+          {
+            "key": "subTeacherId",
+            "label": "代課老師ID",
+            "kind": "ref",
+            "ref": "teachers",
+            "hint": "負責老師請假時填，導師時間算給代課老師"
+          },
+          {
+            "key": "note",
+            "label": "備註",
+            "kind": "text"
+          }
+        ]
+      },
+      "schedEvents": {
+        "key": "schedEvents",
+        "sheet": "課輔行程",
+        "label": "課輔行程",
+        "idKey": "id",
+        "idPrefix": "EV",
+        "idWidth": 3,
+        "scope": "global",
+        "group": "master",
+        "note": "班表上方的課輔行程（開課、前測、月檢測、月聚會、結業…）",
+        "cols": [
+          {
+            "key": "id",
+            "label": "行程ID",
+            "kind": "text"
+          },
+          {
+            "key": "date",
+            "label": "日期",
+            "kind": "date",
+            "required": true
+          },
+          {
+            "key": "text",
+            "label": "行程",
+            "kind": "text",
+            "required": true
+          },
+          {
+            "key": "sites",
+            "label": "據點",
+            "kind": "text",
+            "hint": "空白＝全部據點；多個以「、」分隔"
+          }
+        ]
       }
     },
     "enums": {
@@ -4689,7 +4850,8 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     }
     const subs2 = new Set((data.substitutes || []).map((x) => `${x.classId}|${x.date}`));
     const withBlocks = new Set((data.blocks || []).map((b) => b.sessionId));
-    const ownDay = (s) => !isImportOnly(s, withBlocks) || slotDays.get(s.classId)?.has((toDate(s.date).getDay() + 6) % 7) || subs2.has(`${s.classId}|${s.date}`);
+    const dayKeys = new Set((data.daySlots || []).map((x) => `${x.classId}|${x.date}`)), dayPlan = new Set((data.daySlots || []).map((x) => x.classId));
+    const ownDay = (s) => !isImportOnly(s, withBlocks) || (dayPlan.has(s.classId) ? dayKeys.has(`${s.classId}|${s.date}`) : slotDays.get(s.classId)?.has((toDate(s.date).getDay() + 6) % 7)) || subs2.has(`${s.classId}|${s.date}`);
     const marks = /* @__PURE__ */ new Map(), classDates2 = /* @__PURE__ */ new Map();
     for (const r of data.records || []) {
       const s = sessions.get(r.sessionId);
@@ -4825,17 +4987,35 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     if (s == null || e == null || e <= s) return [];
     const out = [];
     const add = (a, b, title, mode) => out.push({ seq: out.length + 1, start: hm(a), end: hm(b), title, mode, content: "" });
-    let t = s;
-    for (const o of tpl.opening) if (t + o.minutes <= e) {
+    const N1 = 12 * 60, N2 = 13 * 60;
+    const lunch = s <= N1 && e >= N2 && e - s > 60;
+    let t = s, n = 0;
+    if (lunch && N1 - s < 20) {
+      add(s, N2, "午餐（用餐＋午休）", "全班");
+      t = N2;
+    }
+    const before = lunch && t < N1;
+    for (const o of tpl.opening) if (t + o.minutes <= (before ? N1 : e)) {
       add(t, t + o.minutes, o.title, o.mode || "全班");
       t += o.minutes;
     }
+    const tasks = (to) => {
+      const L = to - t;
+      if (L >= 5) sliceMinutes(L, Number(tpl.taskMinutes) || 15).forEach((m) => {
+        n++;
+        add(t, t + m, tpl.taskTitle.replace("{n}", n), "個別");
+        t += m;
+      });
+      else t = Math.max(t, to);
+    };
+    if (before) {
+      tasks(N1);
+      t = Math.max(t, N1);
+      add(N1, N2, "午餐（用餐＋午休）", "全班");
+      t = N2;
+    }
     const closing = e - t >= tpl.closing.minutes + 5 ? tpl.closing.minutes : 0;
-    const L = e - t - closing;
-    if (L >= 5) sliceMinutes(L, Number(tpl.taskMinutes) || 15).forEach((m, i) => {
-      add(t, t + m, tpl.taskTitle.replace("{n}", i + 1), "個別");
-      t += m;
-    });
+    tasks(e - closing);
     if (closing) add(t, e, tpl.closing.title, tpl.closing.mode || "全班");
     return out;
   }
@@ -4909,7 +5089,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     return { rows: ref.e.r + 1, cols: ref.e.c + 1, at, t: (r, c) => txt(at(r, c).v) };
   }
   var WEEK = "日一二三四五六";
-  function dateCandidates(X, cell2, sheetName) {
+  function dateCandidates(X, cell2, sheetName2) {
     const out = [];
     const md5 = (m2, d) => {
       if (m2 >= 1 && m2 <= 12 && d >= 1 && d <= 31) out.push({ m: m2, d });
@@ -4935,14 +5115,14 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     if (m = /^(\d{1,2})\s*[/.月]\s*(\d{1,2})/.exec(v)) md5(+m[1], +m[2]);
     else if (m = /^(\d{3,4})(?:\.0+)?$/.exec(v)) digits(m[1]);
     if (!out.length) {
-      const n = txt(sheetName);
+      const n = txt(sheetName2);
       if (m = /^(\d{1,2})[/.月-](\d{1,2})/.exec(n)) md5(+m[1], +m[2]);
       else if (m = /^(\d{3,4})/.exec(n)) digits(m[1]);
     }
     return out;
   }
-  function pickDate(cands, sheetName, semesters = [], today3 = /* @__PURE__ */ new Date()) {
-    const wd = /[（(]\s*([一二三四五六日])\s*[)）]/.exec(sheetName || "");
+  function pickDate(cands, sheetName2, semesters = [], today3 = /* @__PURE__ */ new Date()) {
+    const wd = /[（(]\s*([一二三四五六日])\s*[)）]/.exec(sheetName2 || "");
     const list2 = [];
     for (const c of cands) for (const y of c.y ? [c.y] : [today3.getFullYear() - 1, today3.getFullYear(), today3.getFullYear() + 1]) {
       const d = new Date(y, c.m - 1, c.d);
@@ -5294,7 +5474,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   // src/js/db.js
   var TDEF = SCHEMA.tables;
   var LIST_TABLES = ["units", "selActivities", "backupOptions", "readingList"];
-  var BASE_TABLES = ["semesters", "defaultSlots", "holidays", "closures", "subjects", "taskTypes", "teachers", "students", "classes", "classSlots", "enrollments", "resources", ...LIST_TABLES, "substitutes"];
+  var BASE_TABLES = ["semesters", "defaultSlots", "holidays", "closures", "subjects", "taskTypes", "teachers", "students", "classes", "classSlots", "enrollments", "resources", ...LIST_TABLES, "substitutes", "daySlots", "lunchDuty", "schedEvents"];
   var TX_TABLES = ["sessions", "blocks", "tasks", "records", "incidents", "evaluations", "feedback", "posts", "replies", "submissions", "mathScores", "enTests", "visitPlans", "visitForms", "zhTests", "selSurveys"];
   var SOCIAL_TABLES = ["visits", "cases", "specialEvents"];
   var ALL_TABLES = [...BASE_TABLES, ...TX_TABLES, ...SOCIAL_TABLES];
@@ -6344,7 +6524,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   async function importBase(rowsByTable, deletes = {}) {
     const ops = [], taken = Object.fromEntries(BASE_TABLES.map((t) => [t, /* @__PURE__ */ new Set()]));
     const counts = {};
-    const order = ["semesters", "defaultSlots", "holidays", "closures", "subjects", "taskTypes", "teachers", "students", "classes", "classSlots", "enrollments", "resources", ...LIST_TABLES, "substitutes"];
+    const order = ["semesters", "defaultSlots", "holidays", "closures", "subjects", "taskTypes", "teachers", "students", "classes", "classSlots", "enrollments", "resources", ...LIST_TABLES, "substitutes", "schedEvents", "daySlots", "lunchDuty"];
     for (const t of order) {
       for (const r of rowsByTable[t] || []) {
         const c = clean(t, r);
@@ -6469,6 +6649,24 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     await commit([...tx, ...social, ...base]);
     return { ...count, version: DB.version };
   }
+  var SCHED_TABLES = ["daySlots", "lunchDuty", "schedEvents", "substitutes"];
+  async function saveSchedule(list2) {
+    if (!isSupervisor()) throw new DbError("班表由社工／督導安排");
+    const ops = [], taken = /* @__PURE__ */ new Set();
+    for (const op of list2 || []) {
+      if (!SCHED_TABLES.includes(op.table)) throw new DbError("不能用班表修改：" + op.table);
+      if (op.delete) {
+        if (getRow(op.table, op.id)) ops.push({ table: op.table, id: String(op.id), delete: true });
+        continue;
+      }
+      const row = prepare(op.table, op.row, taken);
+      taken.add(row.id);
+      if (op.table === "daySlots" && !(row.start < row.end)) throw new DbError(`${row.date} 的時間不正確（${row.start}–${row.end}）`);
+      ops.push({ table: op.table, row });
+    }
+    if (ops.length) await commit(ops);
+    return { count: ops.length, version: DB.version };
+  }
 
   // src/js/ui.js
   var $ = (sel, el = document) => el.querySelector(sel);
@@ -6566,6 +6764,9 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   function mdw(s) {
     if (!s) return "";
     return `${md2(s)}（${WD[weekdayIdx(s)]}）`;
+  }
+  function mondayOf(s) {
+    return addDays2(s, -weekdayIdx(s));
   }
   function minutes(t) {
     const [a, b] = String(t || "").split(":").map(Number);
@@ -7044,7 +7245,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     const d = /* @__PURE__ */ new Date();
     return `${d.getFullYear()}-${pad6(d.getMonth() + 1)}-${pad6(d.getDate())}`;
   };
-  var GLOBAL_TABLES = ["semesters", "defaultSlots", "holidays", "closures", "subjects", "taskTypes", "teachers", "students", "resources", "posts", "replies", ...LIST_TABLES, ...SOCIAL_TABLES];
+  var GLOBAL_TABLES = ["semesters", "defaultSlots", "holidays", "closures", "subjects", "taskTypes", "teachers", "students", "resources", "schedEvents", "posts", "replies", ...LIST_TABLES, ...SOCIAL_TABLES];
   function allData() {
     return Object.fromEntries(ALL_TABLES.map((t) => [t, rows(t)]));
   }
@@ -7075,7 +7276,9 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
       visitForms: rows("visitForms"),
       zhTests: rows("zhTests"),
       selSurveys: rows("selSurveys"),
-      substitutes: rows("substitutes").filter((s) => cids.has(s.classId))
+      substitutes: rows("substitutes").filter((s) => cids.has(s.classId)),
+      daySlots: rows("daySlots").filter((s) => cids.has(s.classId)),
+      lunchDuty: rows("lunchDuty").filter((s) => s.semesterId === sem)
     });
     return { mode: "full", epoch: DB.epoch, version: DB.version, semester: sem, data, settings: { ...DB.settings } };
   }
@@ -7191,6 +7394,8 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
         case "/api/attendance/orphans":
         case "/api/attendance/tidy":
           return tidyAttendance();
+        case "/api/schedule/save":
+          return saveSchedule(b.ops || []);
         case "/api/students/merge":
           return mergeStudents(String(b.keep || ""), String(b.drop || ""));
         case "/api/session/feedback": {
@@ -7324,6 +7529,9 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     "semesters",
     "holidays",
     "closures",
+    "schedEvents",
+    "daySlots",
+    "lunchDuty",
     "resources",
     "units",
     "selActivities",
@@ -7906,7 +8114,10 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     "visitForms",
     "zhTests",
     "substitutes",
-    "selSurveys"
+    "selSurveys",
+    "daySlots",
+    "lunchDuty",
+    "schedEvents"
   ];
   var WEEKDAYS2 = ["週一", "週二", "週三", "週四", "週五", "週六", "週日"];
   var ATTENDED2 = ["出席", "遲到", "早退"];
@@ -7976,6 +8187,8 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     I.tasksByStudent = group(d.tasks, "studentId");
     I.holidays = new Map(d.holidays.map((h2) => [h2.id, h2]));
     I.cl = closureIndex(d);
+    I.daySlot = new Map((d.daySlots || []).map((r) => [`${r.classId}|${r.date}`, r]));
+    I.dayPlan = new Set((d.daySlots || []).map((r) => r.classId));
     I.evalByStudent = new Map(d.evaluations.filter((v) => v.semesterId === S.semester).map((v) => [v.studentId, v]));
     I.defaultSlot = new Map(d.defaultSlots.map((s) => [s.id, s]));
     I.repliesByPost = group(d.replies, "postId", (a, b) => (a.date || "").localeCompare(b.date || "") || (a.updatedAt || "").localeCompare(b.updatedAt || ""));
@@ -7994,6 +8207,8 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   function slotsOf(cid) {
     return S.idx.slotsByClass.get(cid) || [];
   }
+  var hasDayPlan = (cid) => !!S.idx?.dayPlan?.has(cid);
+  var daySlotOf = (cid, date) => S.idx?.daySlot?.get(`${cid}|${date}`) || null;
   function rosterIds(cid) {
     return (S.idx.rosterByClass.get(cid) || []).map((e) => e.studentId);
   }
@@ -8063,7 +8278,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     if (inSemester(date)) {
       for (const c of classes()) {
         if (closedFor(c.id, date)) continue;
-        const sl = slotsOf(c.id).find((x) => x.weekday === wd) || (makeupOf(c.id, date) ? slotFor(c.id, date) : null);
+        const sl = hasDayPlan(c.id) ? slotFor(c.id, date) : slotsOf(c.id).find((x) => x.weekday === wd) || (makeupOf(c.id, date) ? slotFor(c.id, date) : null);
         if (sl && !seen.has(c.id)) {
           seen.add(c.id);
           out.push({ cls: c, slot: sl, session: sessionFor(c.id, date), planned: true, makeup: makeupOf(c.id, date) });
@@ -8085,8 +8300,12 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     const a = from > s.start ? from : s.start;
     const b = to < s.end ? to : s.end;
     if (!a || !b || a > b) return [];
-    const days2 = new Set(slotsOf(cid).map((sl) => WEEKDAYS2.indexOf(sl.weekday)));
     const out = [];
+    if (hasDayPlan(cid)) {
+      for (let d = a; d <= b; d = addDays2(d, 1)) if (daySlotOf(cid, d) && !closedFor(cid, d)) out.push(d);
+      return out;
+    }
+    const days2 = new Set(slotsOf(cid).map((sl) => WEEKDAYS2.indexOf(sl.weekday)));
     for (let d = a; d <= b; d = addDays2(d, 1)) if (days2.has(weekdayIdx(d)) && !closedFor(cid, d) || makeupOf(cid, d)) out.push(d);
     return out;
   }
@@ -8119,6 +8338,10 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   }
   function slotFor(cid, date) {
     const wd = WEEKDAYS2[weekdayIdx(date)];
+    if (hasDayPlan(cid)) {
+      const ds = daySlotOf(cid, date);
+      return ds ? { id: ds.id, classId: cid, weekday: wd, start: ds.start, end: ds.end, day: true } : null;
+    }
     const own = slotsOf(cid).find((s) => s.weekday === wd);
     if (own) return own;
     const orig = makeupOf(cid, date);
@@ -8604,7 +8827,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   }
   var Skip = class extends Error {
   };
-  function autosave({ isDirty: isDirty4, save: save3, show = () => {
+  function autosave({ isDirty: isDirty4, save: save4, show = () => {
   } }) {
     const a = { timer: null, retry: null, running: null, lastAt: "", state: "" };
     const say = () => {
@@ -8628,7 +8851,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
       say();
       a.running = (async () => {
         try {
-          await save3();
+          await save4();
           a.lastAt = hhmm();
           a.state = "";
           clearTimeout(a.retry);
@@ -9356,7 +9579,7 @@ ${lines.join("\n")}`;
         dirty2();
       }
     });
-    const save3 = async (submit) => {
+    const save4 = async (submit) => {
       await auto?.wait();
       const d = fs.data;
       if (submit === 1 && kind === "pre" && !(d.teachQ || "").trim()) {
@@ -9379,9 +9602,9 @@ ${lines.join("\n")}`;
       } catch {
       }
     };
-    $("#vf-save")?.addEventListener("click", () => save3(0));
-    $("#vf-sub1")?.addEventListener("click", () => save3(1));
-    $("#vf-sub2")?.addEventListener("click", () => save3(2));
+    $("#vf-save")?.addEventListener("click", () => save4(0));
+    $("#vf-sub1")?.addEventListener("click", () => save4(1));
+    $("#vf-sub2")?.addEventListener("click", () => save4(2));
   }
   var fileName = (p, kind) => `${termCode(p.semesterId)}_${p.subject}_${clsName(p)}_${tName(p)}_${kind === "pre" ? "訪視提問單" : "訪視自評與調整"}`;
   var nl = (v) => esc(v || "").replace(/\n/g, "<br>");
@@ -10821,6 +11044,18 @@ ${lines.join("\n")}`;
     return [...m.values()].sort((a, b) => a.name.localeCompare(b.name, "zh-Hant"));
   }
   var RANK = { 出席: 4, 遲到: 3, 早退: 3, 請假: 2, 缺席: 1 };
+  var PRESENT = /* @__PURE__ */ new Set(["出席", "遲到", "早退"]);
+  function mergeDay(segs) {
+    const list2 = [...segs].filter((x) => x && x.att).sort((a, b) => String(a.start || "").localeCompare(String(b.start || "")));
+    if (!list2.length) return null;
+    if (list2.length === 1) return { att: list2[0].att, note: "" };
+    const idx2 = list2.map((x, i) => PRESENT.has(x.att) ? i : -1).filter((i) => i >= 0);
+    if (!idx2.length) return { att: list2.every((x) => x.att === "缺席") ? "缺席" : "請假", note: "" };
+    const f = idx2[0], l = idx2[idx2.length - 1];
+    const late = f > 0 || list2[f].att === "遲到", early = l < list2.length - 1 || list2[l].att === "早退";
+    if (late && early) return { att: "出席", note: "遲到早退" };
+    return { att: late ? "遲到" : early ? "早退" : "出席", note: "" };
+  }
   function weekdays(month, sem) {
     const [y, m] = month.split("-").map(Number);
     const out = [];
@@ -10853,13 +11088,26 @@ ${lines.join("\n")}`;
       kidClasses.get(k).add(cid);
     };
     for (const cid of ids) for (const k of roster(cid)) kc(k.id, cid);
+    const day = ids.some(hasDayPlan), segs = /* @__PURE__ */ new Map(), notes = /* @__PURE__ */ new Map();
     for (const [d, cs] of dayClass) for (const cid of cs) {
       const s = sessionFor(cid, d);
       if (s) for (const r of recordsOf(s.id)) {
         if (!r.attendance) continue;
         kc(r.studentId, cid);
         const key = `${r.studentId}|${d}`, cur = marks.get(key);
+        if (day) {
+          if (!segs.has(key)) segs.set(key, []);
+          segs.get(key).push({ start: slotFor(cid, d)?.start || s.start || "", att: r.attendance });
+          continue;
+        }
         if (!cur || (RANK[r.attendance] || 0) > (RANK[cur] || 0)) marks.set(key, r.attendance);
+      }
+    }
+    for (const [key, list2] of segs) {
+      const m2 = mergeDay(list2);
+      if (m2) {
+        marks.set(key, m2.att);
+        if (m2.note) notes.set(key, m2.note);
       }
     }
     const kids = [...kidClasses.keys()].map((id) => get("students", id) || { id, name: id }).sort((a, b) => (Number(a.grade) || 0) - (Number(b.grade) || 0) || String(a.name).localeCompare(String(b.name), "zh-Hant"));
@@ -10867,7 +11115,7 @@ ${lines.join("\n")}`;
     const extra = [...classDays].filter((d) => !days2.includes(d));
     const cols = [...days2, ...extra].sort();
     const applies = (kid, d) => [...dayClass.get(d) || []].some((cid) => kidClasses.get(kid)?.has(cid));
-    return { sem, cols, classDays, dayClass, marks, kids, applies, first, last };
+    return { sem, cols, classDays, dayClass, marks, notes, kids, applies, first, last };
   }
   var thin = { style: "thin", color: { rgb: "000000" } };
   var BORDER = { top: thin, bottom: thin, left: thin, right: thin };
@@ -10949,7 +11197,8 @@ ${lines.join("\n")}`;
       D.cols.forEach((d, j) => {
         const off = !(k ? D.applies(k.id, d) : D.classDays.has(d)) || closedFor(ids[0], d);
         const v = k ? MARK[D.marks.get(`${k.id}|${d}`)] ?? "" : "";
-        set(r, C0 + j, v, st3({ fill: off ? "E7E6E6" : void 0, color: v === "X" ? "C00000" : void 0 }));
+        const nt = k ? D.notes.get(`${k.id}|${d}`) || { 遲到: "遲到", 早退: "早退" }[D.marks.get(`${k.id}|${d}`)] || "" : "";
+        set(r, C0 + j, v, st3({ fill: off ? "E7E6E6" : void 0, color: v === "X" ? "C00000" : void 0 }), nt ? { c: [{ a: "課輔系統", t: nt }] } : {});
       });
       const dueN = k ? dueOf(k.id).length : "";
       set(r, cR, dueN, st3());
@@ -11409,7 +11658,7 @@ ${lines.join("\n")}`;
       auto4.touch();
       left();
     });
-    const save3 = async (submit) => {
+    const save4 = async (submit) => {
       await auto4.wait();
       const miss = QK.findIndex((k) => fs2.data[k] == null);
       if (submit && miss >= 0) {
@@ -11424,8 +11673,8 @@ ${lines.join("\n")}`;
       } catch {
       }
     };
-    $("#ss-save").onclick = () => save3(false);
-    $("#ss-sub").onclick = () => save3(true);
+    $("#ss-save").onclick = () => save4(false);
+    $("#ss-sub").onclick = () => save4(true);
   }
   var selsurvey_default = {
     isDirty() {
@@ -12250,7 +12499,7 @@ ${lines.join("\n")}`;
       if (!row.date) throw new Skip("填好紀錄時間後會自動儲存");
       return row;
     });
-    const save3 = async (next) => {
+    const save4 = async (next) => {
       await auto5?.wait();
       const row = read();
       if (!row.date) {
@@ -12266,8 +12515,8 @@ ${lines.join("\n")}`;
       } catch {
       }
     };
-    $("#vf-save").onclick = () => save3();
-    $("#vf-case").onclick = () => save3("case");
+    $("#vf-save").onclick = () => save4();
+    $("#vf-case").onclick = () => save4("case");
     $("#vf-del")?.addEventListener("click", async () => {
       if (await delRow("visits", v.id, "訪視紀錄")) {
         dirty = false;
@@ -13082,8 +13331,8 @@ ${lines.join("\n")}`;
         problems.push(`「${b.file}」有兩個名字對到同一位孩子（${esc(get("students", dup[0])?.name || "")}）`);
         continue;
       }
-      const tname = String(b.sheets[0].info.teacherName || "").trim();
-      const teacherId = (S.data.teachers || []).find((t) => t.name === tname)?.id || cls.teacherId || "";
+      const tname2 = String(b.sheets[0].info.teacherName || "").trim();
+      const teacherId = (S.data.teachers || []).find((t) => t.name === tname2)?.id || cls.teacherId || "";
       for (const p of pick2) {
         if (!p.date) {
           problems.push(`「${b.file}」的「${p.name}」沒有日期`);
@@ -16324,8 +16573,8 @@ ${lines.join("\n")}`;
     }
     const usedClass = /* @__PURE__ */ new Set();
     for (const [k, rs2] of groups) {
-      const [name, subj, tname] = k.split("|");
-      const subjectId = subjByName.get(subj)?.id, teacherId = tByName.get(tname)?.id;
+      const [name, subj, tname2] = k.split("|");
+      const subjectId = subjByName.get(subj)?.id, teacherId = tByName.get(tname2)?.id;
       const r0 = rs2[0];
       let c = semClasses.find((x) => !usedClass.has(x.id) && normClass2(x.name) === name && x.subjectId === subjectId && x.teacherId === teacherId) || semClasses.find((x) => !usedClass.has(x.id) && normClass2(x.name) === name && x.subjectId === subjectId && !groups.has(`${name}|${subj}|${getRow("teachers", x.teacherId)?.name}`));
       const site = name.replace(/\d+班$/, "") || str2(r0["合作單位"]).replace(/^縣立|國\(中\)小$|國小$/g, "");
@@ -16334,12 +16583,12 @@ ${lines.join("\n")}`;
         usedClass.add(c.id);
         if (Object.entries(fields).some(([f, v]) => String(c[f] ?? "") !== String(v ?? ""))) {
           up.classes.push({ ...c, ...fields });
-          sum.classesUpd.push(`${name} ${subj}（${tname}）`);
+          sum.classesUpd.push(`${name} ${subj}（${tname2}）`);
         }
       } else {
         c = { id: newId3("classes"), ...fields, capacity: null, note: "" };
         up.classes.push(c);
-        sum.classesNew.push(`${name} ${subj}（${tname}）`);
+        sum.classesNew.push(`${name} ${subj}（${tname2}）`);
       }
       const want = [];
       const seen = /* @__PURE__ */ new Set();
@@ -17740,6 +17989,569 @@ ${lines.join("\n")}`;
   }
   var flowmon_default = { render: render2 };
 
+  // src/js/pages/summer.js
+  var WDC2 = "一二三四五六日";
+  var split2 = (v) => String(v || "").split(/[、,，]/).map((x) => x.trim()).filter(Boolean);
+  var subjOf = (cid) => subjectOfClass(get("classes", cid)) || "";
+  var subj1 = (cid) => subjOf(cid).slice(0, 1);
+  var tname = (id) => get("teachers", id)?.name || "";
+  var t4 = (t) => String(t || "").replace(":", "");
+  var spanText = (a, b) => a && b ? `${t4(a)}-${t4(b)}` : "";
+  var hoursOf2 = (a, b) => Math.max(0, ((minutes(b) ?? 0) - (minutes(a) ?? 0)) / 60);
+  function parseSpan(v) {
+    const m = /(\d{1,2}):?(\d{2})\s*[-~～–－]\s*(\d{1,2}):?(\d{2})/.exec(String(v || ""));
+    if (!m) return null;
+    const a = `${m[1].padStart(2, "0")}:${m[2]}`, b = `${m[3].padStart(2, "0")}:${m[4]}`;
+    return minutes(a) < minutes(b) ? [a, b] : null;
+  }
+  var teachersSorted = () => S.data.teachers.filter((t) => t.status !== "離職").sort((a, b) => collator.compare(a.name, b.name));
+  var teacherByName = (name) => {
+    const n = String(name || "").replace(/\s+/g, "");
+    return n ? S.data.teachers.find((t) => String(t.name || "").replace(/\s+/g, "") === n) || null : null;
+  };
+  function summerGroups(site = "") {
+    return classGroups(classes()).map((g) => ({ ...g, ids: [...g.ids].sort((a, b) => collator.compare(subjOf(a), subjOf(b))), site: get("classes", g.ids[0])?.site || "" })).filter((g) => !site || g.site === site);
+  }
+  var sitesOf = () => [...new Set(classes().map((c) => c.site || "").filter(Boolean))].sort((a, b) => collator.compare(a, b));
+  var gKey = (g) => normClass(g.name);
+  var lunchId = (g, d) => `LD-${S.semester}-${gKey(g)}-${d}`;
+  var lunchOf = (g, d) => get("lunchDuty", lunchId(g, d));
+  var subRow = (cid, d) => get("substitutes", `SUB-${cid}-${d}`);
+  function termDays() {
+    const s = semester();
+    if (!s.start || !s.end) return [];
+    const extra = new Set((S.data.daySlots || []).map((x) => x.date));
+    const out = [];
+    for (let d = s.start; d <= s.end; d = addDays2(d, 1)) if (weekdayIdx(d) < 5 || extra.has(d)) out.push(d);
+    return out;
+  }
+  var eventsOn = (d, site = "") => (S.data.schedEvents || []).filter((e) => e.date === d && (!site || !split2(e.sites).length || split2(e.sites).includes(site)));
+  function dayOf(g, d) {
+    const segs = g.ids.map((cid) => {
+      const ds = daySlotOf(cid, d);
+      return ds ? { cid, start: ds.start, end: ds.end, sub: subRow(cid, d) } : null;
+    }).filter(Boolean).sort((a, b) => a.start.localeCompare(b.start));
+    return { segs, lunch: lunchOf(g, d), closed: closedFor(g.ids[0], d) };
+  }
+  function cellHtml2(g, gi, d) {
+    const x = dayOf(g, d);
+    let s = "";
+    if (x.closed) s += `<div><span class="chip warn small">停課</span> <span class="small muted">${esc(x.closed.name || "")}</span></div>`;
+    for (const sg of x.segs) s += `<div class="small" style="line-height:1.7"><b>${esc(subj1(sg.cid))}</b> ${esc(teacherOfClass(get("classes", sg.cid)))}${sg.sub ? ` <span class="chip warn small">代 ${esc(tname(sg.sub.teacherId))}</span>` : ""} <span class="muted">${esc(spanText(sg.start, sg.end))}</span></div>`;
+    if (x.lunch) s += `<div class="small" style="line-height:1.7"><b>午</b> ${esc(tname(x.lunch.teacherId))}${x.lunch.subTeacherId ? ` <span class="chip warn small">代 ${esc(tname(x.lunch.subTeacherId))}</span>` : ""}</div>`;
+    if (!x.segs.length && !x.closed) s += '<span class="small muted">沒排</span>';
+    return `<td class="click" data-g="${gi}" data-d="${d}" style="vertical-align:top;min-width:180px">${s}</td>`;
+  }
+  var summer_default = {
+    render(ctx) {
+      ctx.title("暑期班表", `${esc(S.semester)}・社工排好每天的時段、午餐與代課；老師的教學流程、點名與時數表都照這份`);
+      if (!isSupervisor2()) {
+        ctx.el.innerHTML = `<div class="card"><div class="empty">${icon("lock")}<div>班表由社工／督導安排</div></div></div>`;
+        return;
+      }
+      const site = ctx.query.get("site") || "";
+      const days2 = termDays(), today3 = todayISO();
+      const weeks = [...new Set(days2.map(mondayOf))];
+      let wk = ctx.query.get("week") || mondayOf(days2.find((d) => d >= today3) || days2[0] || today3);
+      if (!weeks.includes(wk)) wk = weeks[0] || wk;
+      const wdays = days2.filter((d) => mondayOf(d) === wk), wi = weeks.indexOf(wk);
+      const groups = summerGroups(site);
+      const a = ctx.actions(`<select class="select" id="sm-site"><option value="">全部據點</option>${sitesOf().map((s) => `<option ${s === site ? "selected" : ""}>${esc(s)}</option>`).join("")}</select>
+      <button class="btn" id="sm-gen" title="照編班報表的每週時間，一次排好整期">${icon("copy", "sm")}從課表產生</button>
+      <button class="btn" id="sm-tpl">${icon("download", "sm")}下載公版</button>
+      <button class="btn" id="sm-imp">${icon("upload", "sm")}匯入班表</button>
+      <button class="btn primary" id="sm-hours">${icon("download", "sm")}時數表</button>`);
+      const go2 = (q) => ctx.go(`#/summer?${new URLSearchParams({ ...site ? { site } : {}, week: wk, ...q })}`);
+      a.querySelector("#sm-site").onchange = (e) => ctx.go(`#/summer?${new URLSearchParams({ ...e.target.value ? { site: e.target.value } : {}, week: wk })}`);
+      a.querySelector("#sm-gen").onclick = () => generateFlow(ctx, site);
+      a.querySelector("#sm-tpl").onclick = () => downloadTemplate(site);
+      a.querySelector("#sm-imp").onclick = () => importFlow4(ctx);
+      a.querySelector("#sm-hours").onclick = () => downloadHours(site);
+      const done = groups.filter((g) => g.ids.some(hasDayPlan)).length;
+      const notSummer = !/暑$/.test(S.semester || "");
+      ctx.el.innerHTML = `
+      ${notSummer ? `<div class="callout small mb8">${icon("info", "sm")} 目前的學期不是暑期。暑期班表通常在暑期使用；有排的班會照班表上課，沒排的班照每週課表。</div>` : ""}
+      ${groups.length && !done ? `<div class="callout warn small mb8 row" style="gap:8px">${icon("alert", "sm")}<span class="grow">還沒有排班表。可以先按「從課表產生」照編班報表的時間排好整期，再逐日調整；或下載公版 Excel 填好後匯入。</span></div>` : ""}
+      <div class="row mb8" style="gap:8px"><button class="btn sm" data-wk="${weeks[wi - 1] || ""}" ${wi > 0 ? "" : "disabled"}>‹</button>
+        <b>第 ${wi + 1} 週　${wdays.length ? `${md2(wdays[0])}–${md2(wdays[wdays.length - 1])}` : ""}</b><button class="btn sm" data-wk="${weeks[wi + 1] || ""}" ${wi < weeks.length - 1 ? "" : "disabled"}>›</button>
+        <span class="sp"></span><span class="small muted">已排 ${done}／${groups.length} 班・點格子修改那一天；點日期修改課輔行程</span></div>
+      <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th style="min-width:150px">課輔班</th>
+        ${wdays.map((d) => `<th class="click" data-ev="${d}" style="vertical-align:top">${mdw(d)}${eventsOn(d, site).map((e) => `<div><span class="chip accent small">${esc(e.text)}${!site && split2(e.sites).length ? `・${esc(split2(e.sites).join("、"))}` : ""}</span></div>`).join("")}</th>`).join("")}</tr></thead>
+        <tbody>${groups.map((g, gi) => `<tr><td style="vertical-align:top"><b>${esc(g.name)}</b><div class="small muted">${g.ids.map((cid) => `${esc(subj1(cid))} ${esc(teacherOfClass(get("classes", cid)))}`).join("・")}</div></td>${wdays.map((d) => cellHtml2(g, gi, d)).join("")}</tr>`).join("") || `<tr><td colspan="${wdays.length + 1}"><div class="empty">這個學期還沒有班級，請先匯入暑期的編班報表</div></td></tr>`}</tbody></table></div></div>`;
+      ctx.el.querySelectorAll("[data-wk]").forEach((b) => b.onclick = () => b.dataset.wk && go2({ week: b.dataset.wk }));
+      ctx.el.querySelectorAll("td[data-g]").forEach((td) => td.onclick = () => editDay(ctx, groups[+td.dataset.g], td.dataset.d));
+      ctx.el.querySelectorAll("th[data-ev]").forEach((th) => th.onclick = () => editEvents(ctx, th.dataset.ev, site));
+    }
+  };
+  function editDay(ctx, g, d) {
+    const x = dayOf(g, d), lunch = x.lunch;
+    const own = new Set(g.ids.map((cid) => get("classes", cid)?.teacherId));
+    const opts2 = (sel, empty = "—") => `<option value="">${empty}</option><optgroup label="這班的老師">${teachersSorted().filter((t) => own.has(t.id)).map((t) => `<option value="${t.id}" ${t.id === sel ? "selected" : ""}>${esc(t.name)}</option>`).join("")}</optgroup><optgroup label="其他老師">${teachersSorted().filter((t) => !own.has(t.id)).map((t) => `<option value="${t.id}" ${t.id === sel ? "selected" : ""}>${esc(t.name)}</option>`).join("")}</optgroup>`;
+    const wd = WEEKDAYS2[weekdayIdx(d)];
+    const body = h(`<div class="stack" style="gap:12px">
+    ${x.closed ? `<div class="callout warn small">${icon("alert", "sm")} 這天停課（${esc(x.closed.name || "")}）：時段會保留，但老師不用上課、不算時數。</div>` : ""}
+    ${g.ids.map((cid) => {
+      const ds = daySlotOf(cid, d), sub = subRow(cid, d), w = slotsOf(cid).find((s) => s.weekday === wd);
+      return `<div class="card" style="padding:12px" data-cid="${cid}"><div class="row"><b class="grow">${esc(subjOf(cid))}・${esc(teacherOfClass(get("classes", cid)))}</b><label class="row small" style="gap:4px"><input type="checkbox" data-k="off" ${ds ? "" : "checked"}>這天沒排</label></div>
+        <div class="grid g3 mt8" style="gap:8px"><label class="field"><span>開始</span><input class="input" type="time" data-k="start" value="${esc(ds?.start || w?.start || "")}"></label>
+          <label class="field"><span>結束</span><input class="input" type="time" data-k="end" value="${esc(ds?.end || w?.end || "")}"></label>
+          <label class="field"><span>請假時的代課老師</span><select class="select" data-k="sub">${opts2(sub?.teacherId || "", "不用代課")}</select></label></div></div>`;
+    }).join("")}
+    <div class="card" style="padding:12px"><b>午餐 12:00–13:00</b><span class="small muted">　算負責老師的導師時間</span>
+      <div class="grid g2 mt8" style="gap:8px"><label class="field"><span>負責老師</span><select class="select" id="ld-t">${opts2(lunch?.teacherId || "", "這天沒有午餐")}</select></label>
+        <label class="field"><span>請假時的代課老師</span><select class="select" id="ld-s">${opts2(lunch?.subTeacherId || "", "不用代課")}</select></label></div></div>
+    <label class="field"><span>套用到</span><select class="select" id="sc-scope"><option value="day">只有這一天</option><option value="week">這一週（週一到週五）</option>
+      <option value="wd">從這天到結業的每個週${WDC2[weekdayIdx(d)]}</option><option value="all">從這天到結業的每一天</option></select></label>
+    <div class="small muted">套用到其他天時，只會改時段與午餐負責老師；代課只記在這一天，停課日會跳過。</div></div>`);
+    const dr = openDrawer({ title: `${esc(g.name)}・${mdw(d)}`, body, wide: true, foot: `<span class="sp"></span><button class="btn primary" id="sd-save">${icon("save", "sm")}儲存</button>` });
+    dr.el.querySelector("#sd-save").onclick = async () => {
+      const scope = body.querySelector("#sc-scope").value, days2 = termDays();
+      const targets = scope === "day" ? [d] : days2.filter((y) => y >= d && (scope === "all" || (scope === "wd" ? weekdayIdx(y) === weekdayIdx(d) : mondayOf(y) === mondayOf(d))) && (y === d || !closedFor(g.ids[0], y)));
+      const ops = [];
+      for (const card2 of body.querySelectorAll("[data-cid]")) {
+        const cid = card2.dataset.cid, off = card2.querySelector("[data-k=off]").checked;
+        const st6 = card2.querySelector("[data-k=start]").value, en = card2.querySelector("[data-k=end]").value, sub = card2.querySelector("[data-k=sub]").value;
+        if (!off && !(st6 && en && minutes(st6) < minutes(en))) {
+          toast(`${subjOf(cid)}的時間不正確`, "err");
+          return;
+        }
+        for (const y of targets) {
+          const id = `DS-${cid}-${y}`;
+          if (off) {
+            if (daySlotOf(cid, y)) ops.push({ table: "daySlots", id, delete: true });
+          } else ops.push({ table: "daySlots", row: { id, classId: cid, date: y, start: st6, end: en, note: daySlotOf(cid, y)?.note || "" } });
+        }
+        const cur = subRow(cid, d);
+        if (sub && !off) ops.push({ table: "substitutes", row: { id: `SUB-${cid}-${d}`, classId: cid, date: d, teacherId: sub, reason: cur?.reason || "請假", note: cur?.note || "", by: S.who?.name || "" } });
+        else if (cur) ops.push({ table: "substitutes", id: cur.id, delete: true });
+      }
+      const lt = body.querySelector("#ld-t").value, ls = body.querySelector("#ld-s").value;
+      for (const y of targets) {
+        const id = lunchId(g, y), cur = get("lunchDuty", id);
+        if (lt) ops.push({ table: "lunchDuty", row: { id, semesterId: S.semester, group: g.name, date: y, start: "12:00", end: "13:00", teacherId: lt, subTeacherId: y === d ? ls : cur?.subTeacherId || "", note: cur?.note || "" } });
+        else if (cur) ops.push({ table: "lunchDuty", id, delete: true });
+      }
+      try {
+        await mutate("/api/schedule/save", { ops }, targets.length > 1 ? `已套用到 ${targets.length} 天` : "班表已儲存");
+        dr.close();
+        ctx.go(location.hash);
+      } catch {
+      }
+    };
+  }
+  function editEvents(ctx, d, site) {
+    const list2 = (S.data.schedEvents || []).filter((e) => e.date === d);
+    const body = h(`<div class="stack" style="gap:8px"><div class="small muted">據點空白＝全部據點；多個據點用「、」分開。</div>
+    <div id="ev-rows">${[...list2, { id: "", text: "", sites: site }].map((e) => `<div class="grid g2 ev-row" style="gap:8px;grid-template-columns:2fr 1.4fr auto;align-items:end" data-id="${esc(e.id)}">
+      <label class="field"><span>行程</span><input class="input" data-k="text" value="${esc(e.text)}" placeholder="例：情緒課程前測"></label>
+      <label class="field"><span>據點</span><input class="input" data-k="sites" value="${esc(e.sites || "")}" placeholder="全部據點"></label>
+      ${e.id ? `<label class="row small" style="gap:4px;padding-bottom:10px"><input type="checkbox" data-k="del">刪除</label>` : "<span></span>"}</div>`).join("")}</div></div>`);
+    openModal({ title: `${mdw(d)} 課輔行程`, body, buttons: [{ text: "取消", value: null }, { text: "儲存", primary: true, value: true }] }).then(async (ok) => {
+      if (!ok) return;
+      const ops = [];
+      for (const r of body.querySelectorAll(".ev-row")) {
+        const id = r.dataset.id, text = r.querySelector("[data-k=text]").value.trim(), sites2 = r.querySelector("[data-k=sites]").value.trim(), del = r.querySelector("[data-k=del]")?.checked;
+        if (id && (del || !text)) ops.push({ table: "schedEvents", id, delete: true });
+        else if (text) ops.push({ table: "schedEvents", row: { id, date: d, text, sites: sites2 } });
+      }
+      if (!ops.length) return;
+      try {
+        await mutate("/api/schedule/save", { ops }, "課輔行程已儲存");
+        ctx.go(location.hash);
+      } catch {
+      }
+    });
+  }
+  function generatePlan(groups, overwrite, lunchMode) {
+    const days2 = termDays(), ops = [];
+    let slots = 0, lunches = 0;
+    for (const g of groups) for (const d of days2) {
+      if (weekdayIdx(d) > 4 || closedFor(g.ids[0], d)) continue;
+      const wd = WEEKDAYS2[weekdayIdx(d)];
+      const segs = [];
+      for (const cid of g.ids) {
+        const w = slotsOf(cid).find((s) => s.weekday === wd);
+        if (!w) continue;
+        segs.push({ cid, start: w.start, end: w.end });
+        if (daySlotOf(cid, d) && !overwrite) continue;
+        ops.push({ table: "daySlots", row: { id: `DS-${cid}-${d}`, classId: cid, date: d, start: w.start, end: w.end, note: "" } });
+        slots++;
+      }
+      if (lunchMode === "am" && segs.length) {
+        const st6 = Math.min(...segs.map((s) => minutes(s.start))), en = Math.max(...segs.map((s) => minutes(s.end)));
+        if (st6 < 12 * 60 && en > 13 * 60 && (!lunchOf(g, d) || overwrite)) {
+          const am = [...segs].sort((a, b) => a.start.localeCompare(b.start))[0];
+          ops.push({ table: "lunchDuty", row: { id: lunchId(g, d), semesterId: S.semester, group: g.name, date: d, start: "12:00", end: "13:00", teacherId: get("classes", am.cid)?.teacherId || "", subTeacherId: "", note: "" } });
+          lunches++;
+        }
+      }
+    }
+    return { ops: ops.filter((o) => o.table !== "lunchDuty" || o.row.teacherId), slots, lunches };
+  }
+  function generateFlow(ctx, site) {
+    const body = h(`<div class="stack" style="gap:10px"><p class="small muted" style="margin:0;line-height:1.7">照編班報表上每位老師每週的上課時間，把整期（${esc(semester().start || "")}～${esc(semester().end || "")}）每天的時段排好；停課日會跳過。之後再點格子逐日調整。</p>
+    <label class="field"><span>範圍</span><select class="select" id="gn-site"><option value="">全部據點</option>${sitesOf().map((s) => `<option ${s === site ? "selected" : ""}>${esc(s)}</option>`).join("")}</select></label>
+    <label class="field"><span>午餐負責老師</span><select class="select" id="gn-lunch"><option value="am">上午的老師</option><option value="none">先不排</option></select></label>
+    <label class="row small" style="gap:6px"><input type="checkbox" id="gn-over">已經排好的日子也照課表重排（會蓋掉手動調整）</label></div>`);
+    openModal({ title: "從課表產生班表", body, buttons: [{ text: "取消", value: null }, { text: "產生", primary: true, value: true }] }).then(async (ok) => {
+      if (!ok) return;
+      const plan = generatePlan(summerGroups(body.querySelector("#gn-site").value), body.querySelector("#gn-over").checked, body.querySelector("#gn-lunch").value);
+      if (!plan.ops.length) {
+        toast("沒有要新增的時段（編班報表沒有時間，或已經排好了）");
+        return;
+      }
+      try {
+        await mutate("/api/schedule/save", { ops: plan.ops }, `已排好 ${plan.slots} 個時段、${plan.lunches} 天午餐`);
+        ctx.go(location.hash);
+      } catch {
+      }
+    });
+  }
+  function blockCols(g) {
+    const out = [];
+    g.ids.forEach((cid, i) => {
+      out.push({ kind: "class", cid });
+      if (i === 0) out.push({ kind: "lunch" });
+    });
+    if (!g.ids.length) out.push({ kind: "lunch" });
+    return out;
+  }
+  var XL2 = () => window.XLSXS || window.XLSX;
+  function save3(wb, name) {
+    XL2().writeFile(wb, name);
+  }
+  var sheetName = (s) => String(s || "未分據點").replace(/[\\/?*[\]:]/g, "").slice(0, 31);
+  function downloadTemplate(site = "") {
+    const X = XL2();
+    if (!X) {
+      toast("Excel 元件沒有載入", "err");
+      return;
+    }
+    const wb = X.utils.book_new(), days2 = termDays();
+    const bySite = /* @__PURE__ */ new Map();
+    for (const g of summerGroups(site)) {
+      if (!bySite.has(g.site)) bySite.set(g.site, []);
+      bySite.get(g.site).push(g);
+    }
+    if (!bySite.size) {
+      toast("這個學期還沒有班級", "err");
+      return;
+    }
+    for (const [st6, groups] of bySite) {
+      const rows2 = [[`${S.semester} 暑期班表（公版）`, "", "時間寫成 0800-1200；那天沒排就空白；老師請假時在「代課老師」填代課老師全名；午餐填負責老師全名。不要改第 5 列的系統代號。"]];
+      const r1 = ["", "", "班級"], r2 = ["", "", "科目"], r3 = ["", "", "老師"], r4 = ["", "", "系統代號"], r5 = ["日期", "週", "課輔行程"];
+      const merges = [], cols = [];
+      for (const g of groups) {
+        const c0 = r1.length;
+        for (const b of blockCols(g)) {
+          cols.push({ g, b });
+          r1.push(g.name, "");
+          r2.push(b.kind === "class" ? subjOf(b.cid) : "午餐", "");
+          r3.push(b.kind === "class" ? teacherOfClass(get("classes", b.cid)) : "（負責老師）", "");
+          r4.push(b.kind === "class" ? b.cid : `午餐|${g.name}`, "");
+          r5.push(b.kind === "class" ? "時間" : "負責老師", "代課老師");
+        }
+        merges.push({ s: { r: 1, c: c0 }, e: { r: 1, c: r1.length - 1 } });
+      }
+      rows2.push(r1, r2, r3, r4, r5);
+      for (const d of days2) {
+        const r = [d, WDC2[weekdayIdx(d)], eventsOn(d, st6).map((e) => e.text).join("、")];
+        for (const { g, b } of cols) {
+          if (b.kind === "class") {
+            const ds = daySlotOf(b.cid, d);
+            r.push(ds ? spanText(ds.start, ds.end) : "", ds ? tname(subRow(b.cid, d)?.teacherId) : "");
+          } else {
+            const l = lunchOf(g, d);
+            r.push(l ? tname(l.teacherId) : "", l ? tname(l.subTeacherId) : "");
+          }
+        }
+        rows2.push(r);
+      }
+      const ws = X.utils.aoa_to_sheet(rows2);
+      ws["!merges"] = merges;
+      ws["!cols"] = [{ wch: 12 }, { wch: 4 }, { wch: 18 }, ...cols.flatMap(() => [{ wch: 12 }, { wch: 10 }])];
+      X.utils.book_append_sheet(wb, ws, sheetName(st6));
+    }
+    save3(wb, `${S.semester}_暑期班表公版.xlsx`);
+  }
+  var dateOf3 = (v) => {
+    if (v instanceof Date && !isNaN(v)) return `${v.getFullYear()}-${String(v.getMonth() + 1).padStart(2, "0")}-${String(v.getDate()).padStart(2, "0")}`;
+    if (typeof v === "number" && v > 3e4) {
+      const d = new Date(Math.round((v - 25569) * 864e5));
+      return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
+    }
+    const m = /(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/.exec(String(v || ""));
+    return m ? `${m[1]}-${m[2].padStart(2, "0")}-${m[3].padStart(2, "0")}` : "";
+  };
+  function planImport(wb) {
+    const X = XL2(), errors = [], ops = [];
+    const sum = { slots: 0, removed: 0, subs: 0, lunches: 0, events: 0, sheets: [] };
+    const groups = summerGroups(), byName3 = new Map(groups.map((g) => [g.name, g]));
+    const semDays = new Set(termDays());
+    for (const sn of wb.SheetNames) {
+      const aoa = X.utils.sheet_to_json(wb.Sheets[sn], { header: 1, defval: "", raw: true });
+      const hr = aoa.findIndex((r) => String(r[0]).trim() === "日期");
+      if (hr < 1) continue;
+      const codes2 = aoa[hr - 1], cols = [];
+      for (let c = 3; c < codes2.length; c++) {
+        const code = String(codes2[c] || "").trim();
+        if (!code) continue;
+        if (code.startsWith("午餐|")) {
+          const g = byName3.get(code.slice(3));
+          if (g) cols.push({ c, kind: "lunch", g });
+          else errors.push(`${sn}：找不到課輔班「${code.slice(3)}」`);
+        } else if (get("classes", code)?.semesterId === S.semester) cols.push({ c, kind: "class", cid: code });
+        else errors.push(`${sn}：第 ${c + 1} 欄的系統代號「${code}」不是這學期的班`);
+      }
+      if (!cols.length) continue;
+      sum.sheets.push(sn);
+      const site = sn;
+      const fileDays = [];
+      for (let r = hr + 1; r < aoa.length; r++) {
+        const d = dateOf3(aoa[r][0]);
+        if (!d) continue;
+        if (!semDays.has(d) && weekdayIdx(d) < 5) {
+          errors.push(`${sn} ${d}：不在學期期間`);
+          continue;
+        }
+        fileDays.push(d);
+        const row = aoa[r];
+        const who = (v, where) => {
+          const n = String(v || "").trim();
+          if (!n) return "";
+          const t = teacherByName(n);
+          if (!t) {
+            errors.push(`${sn} ${md2(d)} ${where}：老師名冊找不到「${n}」（請寫全名）`);
+            return null;
+          }
+          return t.id;
+        };
+        for (const col of cols) {
+          if (col.kind === "class") {
+            const cid = col.cid, txt4 = String(row[col.c] ?? "").trim(), subN = row[col.c + 1];
+            const cname = `${get("classes", cid)?.name || ""}${subjOf(cid)}`;
+            const sp = txt4 ? parseSpan(txt4) : null;
+            if (txt4 && !sp) {
+              errors.push(`${sn} ${md2(d)} ${cname}：時間「${txt4}」看不懂（例：0800-1200）`);
+              continue;
+            }
+            const cur = daySlotOf(cid, d);
+            if (sp) {
+              if (!cur || cur.start !== sp[0] || cur.end !== sp[1]) {
+                ops.push({ table: "daySlots", row: { id: `DS-${cid}-${d}`, classId: cid, date: d, start: sp[0], end: sp[1], note: cur?.note || "" } });
+                sum.slots++;
+              }
+            } else if (cur) {
+              ops.push({ table: "daySlots", id: cur.id, delete: true });
+              sum.removed++;
+            }
+            const sid2 = who(subN, `${cname}代課`);
+            if (sid2 === null) continue;
+            const cs = subRow(cid, d);
+            if (sid2 && sp) {
+              if (!cs || cs.teacherId !== sid2) {
+                ops.push({ table: "substitutes", row: { id: `SUB-${cid}-${d}`, classId: cid, date: d, teacherId: sid2, reason: cs?.reason || "請假", note: cs?.note || "", by: S.who?.name || "" } });
+                sum.subs++;
+              }
+            } else if (cs && !sid2) ops.push({ table: "substitutes", id: cs.id, delete: true });
+          } else {
+            const g = col.g, lt = who(row[col.c], `${g.name}午餐`), ls = who(row[col.c + 1], `${g.name}午餐代課`);
+            if (lt === null || ls === null) continue;
+            const cur = lunchOf(g, d);
+            if (lt) {
+              if (!cur || cur.teacherId !== lt || (cur.subTeacherId || "") !== ls) {
+                ops.push({ table: "lunchDuty", row: { id: lunchId(g, d), semesterId: S.semester, group: g.name, date: d, start: "12:00", end: "13:00", teacherId: lt, subTeacherId: ls, note: cur?.note || "" } });
+                sum.lunches++;
+              }
+            } else if (cur) ops.push({ table: "lunchDuty", id: cur.id, delete: true });
+          }
+        }
+        const want = split2(row[2]);
+        const have = (S.data.schedEvents || []).filter((e) => e.date === d && split2(e.sites).length === 1 && split2(e.sites)[0] === site);
+        const haveAll = eventsOn(d, site).map((e) => e.text);
+        for (const e of have) if (!want.includes(e.text)) ops.push({ table: "schedEvents", id: e.id, delete: true });
+        for (const t of want) if (!haveAll.includes(t)) {
+          ops.push({ table: "schedEvents", row: { id: "", date: d, text: t, sites: site } });
+          sum.events++;
+        }
+      }
+    }
+    return { ops, errors, sum };
+  }
+  function pickFile2(accept) {
+    return new Promise((resolve) => {
+      const inp = document.createElement("input");
+      inp.type = "file";
+      inp.accept = accept;
+      inp.style.display = "none";
+      inp.onchange = () => {
+        resolve(inp.files[0] || null);
+        inp.remove();
+      };
+      document.body.appendChild(inp);
+      inp.click();
+    });
+  }
+  async function importFlow4(ctx) {
+    const file = await pickFile2(".xlsx,.xls");
+    if (!file) return;
+    let plan;
+    try {
+      plan = planImport(XL2().read(await file.arrayBuffer(), { type: "array", cellDates: true }));
+    } catch (e) {
+      toast("讀不到這個檔案：" + e.message, "err");
+      return;
+    }
+    const s = plan.sum;
+    if (!s.sheets.length) {
+      toast("這不是系統下載的暑期班表公版（找不到「系統代號」與「日期」列）", "err");
+      return;
+    }
+    const body = `<div class="stack" style="gap:8px"><div>讀到：${esc(s.sheets.join("、"))}</div>
+    <ul style="margin:0;padding-left:20px;line-height:1.9"><li>新增或修改的時段：${s.slots}</li><li>改成沒排的時段：${s.removed}</li><li>代課：${s.subs}</li><li>午餐負責老師：${s.lunches}</li><li>課輔行程：${s.events}</li></ul>
+    ${plan.errors.length ? `<div class="callout warn small">${icon("alert", "sm")} 有 ${plan.errors.length} 個格子看不懂，會先略過：<div class="mt8" style="max-height:180px;overflow:auto;line-height:1.7">${plan.errors.slice(0, 40).map(esc).join("<br>")}${plan.errors.length > 40 ? "<br>…" : ""}</div></div>` : ""}</div>`;
+    const ok = await openModal({ title: "匯入暑期班表", body, buttons: [{ text: "取消", value: false }, { text: plan.ops.length ? "確認匯入" : "關閉", value: !!plan.ops.length, primary: true }] });
+    if (!ok) return;
+    try {
+      await mutate("/api/schedule/save", { ops: plan.ops }, "班表已匯入");
+      ctx.go(location.hash);
+    } catch {
+    }
+  }
+  function hoursData(groups = summerGroups()) {
+    const days2 = termDays(), per = /* @__PURE__ */ new Map();
+    const add = (tid, m, k, v) => {
+      if (!tid || !v) return;
+      if (!per.has(tid)) per.set(tid, /* @__PURE__ */ new Map());
+      const x = per.get(tid);
+      if (!x.has(m)) x.set(m, { teach: 0, sub: 0, lunch: 0 });
+      x.get(m)[k] += v;
+    };
+    for (const g of groups) for (const d of days2) {
+      if (closedFor(g.ids[0], d)) continue;
+      const m = d.slice(0, 7);
+      for (const cid of g.ids) {
+        const ds = daySlotOf(cid, d);
+        if (!ds) continue;
+        const hh = hoursOf2(ds.start, ds.end), sb = subRow(cid, d);
+        if (sb) add(sb.teacherId, m, "sub", hh);
+        else add(get("classes", cid)?.teacherId, m, "teach", hh);
+      }
+      const l = lunchOf(g, d);
+      if (l) add(l.subTeacherId || l.teacherId, m, "lunch", hoursOf2(l.start || "12:00", l.end || "13:00"));
+    }
+    return per;
+  }
+  function downloadHours(site = "") {
+    const X = XL2();
+    if (!X) {
+      toast("Excel 元件沒有載入", "err");
+      return;
+    }
+    const wb = X.utils.book_new(), days2 = termDays();
+    const groupsAll = summerGroups(site);
+    const bySite = /* @__PURE__ */ new Map();
+    for (const g of groupsAll) {
+      if (!bySite.has(g.site)) bySite.set(g.site, []);
+      bySite.get(g.site).push(g);
+    }
+    if (!bySite.size) {
+      toast("這個學期還沒有班級", "err");
+      return;
+    }
+    const months = [...new Set(days2.map((d) => d.slice(0, 7)))];
+    for (const [st6, groups] of bySite) {
+      const rows2 = [[`${S.semester} 上課時數表・${st6}`]];
+      const r1 = ["", "", "班級"], r2 = ["", "", "科目"], r3 = ["", "", "老師"], r4 = ["日期", "週", "課輔行程"];
+      const cols = [], merges = [];
+      for (const g of groups) {
+        const c0 = r1.length;
+        for (const b of blockCols(g)) {
+          cols.push({ g, b });
+          if (b.kind === "class") {
+            r1.push(g.name, "", "", "");
+            r2.push(subjOf(b.cid), "", "", "");
+            r3.push(teacherOfClass(get("classes", b.cid)), "", "", "");
+            r4.push("時數", "時間", "代課", "代課時數");
+          } else {
+            r1.push(g.name, "");
+            r2.push("午餐（導師時間）", "");
+            r3.push("", "");
+            r4.push("1200-1300", "時數");
+          }
+        }
+        merges.push({ s: { r: 1, c: c0 }, e: { r: 1, c: r1.length - 1 } });
+      }
+      rows2.push(r1, r2, r3, r4);
+      const width = r4.length;
+      const total = () => new Array(width).fill(0);
+      let grand = total();
+      for (const mo of months) {
+        let sub = total();
+        for (const d of days2.filter((x) => x.startsWith(mo))) {
+          const r = [d, WDC2[weekdayIdx(d)], eventsOn(d, st6).map((e) => e.text).join("、")];
+          for (const { g, b } of cols) {
+            const closed = closedFor(g.ids[0], d);
+            if (b.kind === "class") {
+              const ds = daySlotOf(b.cid, d);
+              if (!ds) {
+                r.push("", "", "", "");
+                continue;
+              }
+              if (closed) {
+                r.push("停課", spanText(ds.start, ds.end), "", "");
+                continue;
+              }
+              const hh = hoursOf2(ds.start, ds.end), sb = subRow(b.cid, d);
+              if (sb) {
+                r.push("請假", spanText(ds.start, ds.end), tname(sb.teacherId), hh);
+                sub[r.length - 1] += hh;
+              } else {
+                r.push(hh, spanText(ds.start, ds.end), "", "");
+                sub[r.length - 4] += hh;
+              }
+            } else {
+              const l = lunchOf(g, d);
+              if (!l || closed) {
+                r.push(closed && l ? "停課" : "", "");
+                continue;
+              }
+              const hh = hoursOf2(l.start || "12:00", l.end || "13:00");
+              r.push(l.subTeacherId ? `${tname(l.subTeacherId)}（代 ${tname(l.teacherId)}）` : tname(l.teacherId), hh);
+              sub[r.length - 1] += hh;
+            }
+          }
+          rows2.push(r);
+        }
+        rows2.push([`${Number(mo.slice(5))}月小計`, "", "", ...sub.slice(3).map((v) => v || "")]);
+        grand = grand.map((v, i) => v + sub[i]);
+      }
+      rows2.push(["合計", "", "", ...grand.slice(3).map((v) => v || "")]);
+      const ws = X.utils.aoa_to_sheet(rows2);
+      ws["!merges"] = merges;
+      ws["!cols"] = [{ wch: 12 }, { wch: 4 }, { wch: 18 }, ...cols.flatMap(({ b }) => b.kind === "class" ? [{ wch: 6 }, { wch: 11 }, { wch: 9 }, { wch: 8 }] : [{ wch: 14 }, { wch: 6 }])];
+      X.utils.book_append_sheet(wb, ws, sheetName(st6));
+    }
+    const per = hoursData(groupsAll);
+    const head = ["老師", ...months.flatMap((m) => [`${Number(m.slice(5))}月上課`, `${Number(m.slice(5))}月代課`, `${Number(m.slice(5))}月導師時間`]), "上課合計", "代課合計", "導師時間合計"];
+    const list2 = [...per.keys()].map((id) => get("teachers", id)).filter(Boolean).sort((a, b) => collator.compare(a.name, b.name));
+    const sumRows = list2.map((t) => {
+      const x = per.get(t.id), tot = { teach: 0, sub: 0, lunch: 0 };
+      const cells = months.flatMap((m) => {
+        const v = x.get(m) || { teach: 0, sub: 0, lunch: 0 };
+        tot.teach += v.teach;
+        tot.sub += v.sub;
+        tot.lunch += v.lunch;
+        return [v.teach || "", v.sub || "", v.lunch || ""];
+      });
+      return [t.name, ...cells, tot.teach || "", tot.sub || "", tot.lunch || ""];
+    });
+    const ws2 = X.utils.aoa_to_sheet([[`${S.semester} 老師時數彙整（請假的時數算給代課老師；午餐算導師時間）`], head, ...sumRows]);
+    ws2["!cols"] = head.map((x, i) => ({ wch: i ? 10 : 12 }));
+    X.utils.book_append_sheet(wb, ws2, "老師時數彙整");
+    save3(wb, `${S.semester}_上課時數表${site ? "_" + site : ""}.xlsx`);
+  }
+
   // src/js/pages/syslists.js
   var custom = () => S.settings?.lists || {};
   function tableRows(d) {
@@ -17776,7 +18588,7 @@ ${lines.join("\n")}`;
     }
     X.writeFile(wb, "永齡課輔_系統清單.xlsx");
   }
-  async function importFlow4(ctx) {
+  async function importFlow5(ctx) {
     const inp = document.createElement("input");
     inp.type = "file";
     inp.accept = ".xlsx,.xls";
@@ -17870,7 +18682,7 @@ ${lines.join("\n")}`;
       const a = ctx.actions(`<button class="btn" id="sl-dl">${icon("download", "sm")}下載全部清單</button>${sup ? `<button class="btn primary" id="sl-up">${icon("upload", "sm")}匯入清單</button>` : ""}`);
       $("#sl-dl", a).onclick = download2;
       const up = $("#sl-up", a);
-      if (up) up.onclick = () => importFlow4(ctx);
+      if (up) up.onclick = () => importFlow5(ctx);
       const open2 = ctx.query.get("open") || "";
       ctx.el.innerHTML = `<div class="callout small mb8">${icon("info", "sm")} 按「下載全部清單」會得到一個 Excel，一張工作表就是一個清單。在 Excel 裡一次改好，再按「匯入清單」：系統會列出有變動的工作表讓你勾選。
       之後要再改，也是同樣的步驟。${sup ? "" : "（只有督導、社工可以匯入）"}</div>
@@ -17892,11 +18704,12 @@ ${lines.join("\n")}`;
   };
 
   // src/js/main.js
-  var MODULES = { dashboard: dashboard_default, journal: journal_default, month: month_default, flowmon: flowmon_default, flow: flow_default, record: record_default, kids: kids_default, forum: forum_default, resources: resources_default, classes: classes_default, teachers: teachers_default, data: data_default, settings: settings_default, math: math_default, english: english_default, selfb: selfb_default, selsurvey: selsurvey_default, tvisits: tvisits_default, syslists: syslists_default, chinese: chinese_default, visits, teachereval, cases, events, followups };
+  var MODULES = { dashboard: dashboard_default, journal: journal_default, month: month_default, flowmon: flowmon_default, summer: summer_default, flow: flow_default, record: record_default, kids: kids_default, forum: forum_default, resources: resources_default, classes: classes_default, teachers: teachers_default, data: data_default, settings: settings_default, math: math_default, english: english_default, selfb: selfb_default, selsurvey: selsurvey_default, tvisits: tvisits_default, syslists: syslists_default, chinese: chinese_default, visits, teachereval, cases, events, followups };
   var PAGES = [
     { group: "督導監控", items: [
       { id: "dashboard", title: "總覽", icon: "grid" },
       { id: "flowmon", title: "每日教學流程", icon: "flow" },
+      { id: "summer", title: "暑期班表", icon: "calendar", sup: true, when: () => /暑$/.test(S.semester || "") || (S.data.daySlots || []).length > 0 },
       { id: "journal", title: "每日日誌", icon: "journal" },
       { id: "month", title: "月出席", icon: "calendar" }
     ] },
@@ -18056,7 +18869,7 @@ ${lines.join("\n")}`;
   function renderNav() {
     const b = badges();
     $("#nav").innerHTML = PAGES.filter((g) => !g.social || isSocial2()).map((g) => `<div class="nav-group"><div class="nav-label">${g.group}</div>
-    ${g.items.filter((i) => !i.sup || isSupervisor2()).map((i) => `<a href="#/${i.id}" data-id="${i.id}" title="${i.title}">${icon(i.icon)}<span>${i.title}</span>
+    ${g.items.filter((i) => (!i.sup || isSupervisor2()) && (!i.when || i.when())).map((i) => `<a href="#/${i.id}" data-id="${i.id}" title="${i.title}">${icon(i.icon)}<span>${i.title}</span>
       ${b[i.id] ? `<em class="badge ${b[i.id][1]}">${b[i.id][0]}</em>` : ""}</a>`).join("")}</div>`).join("");
     document.querySelectorAll(".nav a").forEach((a) => a.classList.toggle("active", a.dataset.id === current.id));
     const sel = $("#sem-select");
@@ -18408,7 +19221,7 @@ ${lines.join("\n")}`;
       sync().catch(() => {
       });
     });
-    window.__app = { S, DB, sync, cacheInfo, emit, db: db_exports };
+    window.__app = { S, DB, sync, cacheInfo, emit, db: db_exports, rc: { rollcallData, mergeDay } };
   }
   boot();
 })();
