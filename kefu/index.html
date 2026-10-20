@@ -18220,6 +18220,29 @@ ${lines.join("\n")}`;
   function save3(wb, name) {
     XL2().writeFile(wb, name);
   }
+  function styleSheet(ws, head) {
+    const X = window.XLSXS;
+    if (!X || !ws["!ref"]) return;
+    const R = X.utils.decode_range(ws["!ref"]), thin2 = { style: "thin", color: { rgb: "BFBFBF" } };
+    for (let r = 1; r <= R.e.r; r++) {
+      const first = String(ws[X.utils.encode_cell({ r, c: 0 })]?.v ?? "");
+      const isHead = r <= head, isSum = /小計|合計/.test(first);
+      for (let c = 0; c <= R.e.c; c++) {
+        const a = X.utils.encode_cell({ r, c });
+        if (!ws[a]) ws[a] = { t: "s", v: "" };
+        ws[a].s = {
+          font: { name: "微軟正黑體", sz: 11, bold: isHead || isSum },
+          border: { top: thin2, bottom: thin2, left: thin2, right: thin2 },
+          alignment: { horizontal: c < 3 && !isHead ? "left" : "center", vertical: "center", wrapText: true },
+          fill: isHead ? { patternType: "solid", fgColor: { rgb: "EFEAE2" } } : isSum ? { patternType: "solid", fgColor: { rgb: "FBF3DF" } } : void 0
+        };
+      }
+    }
+    const t = ws.A1;
+    if (t) t.s = { font: { name: "微軟正黑體", sz: 14, bold: true } };
+    const n = ws.C1;
+    if (n) n.s = { font: { name: "微軟正黑體", sz: 10, color: { rgb: "7F7F7F" } } };
+  }
   var sheetName = (s) => String(s || "未分據點").replace(/[\\/?*[\]:]/g, "").slice(0, 31);
   function downloadTemplate(site = "") {
     const X = XL2();
@@ -18270,6 +18293,7 @@ ${lines.join("\n")}`;
       const ws = X.utils.aoa_to_sheet(rows2);
       ws["!merges"] = merges;
       ws["!cols"] = [{ wch: 12 }, { wch: 4 }, { wch: 18 }, ...cols.flatMap(() => [{ wch: 12 }, { wch: 10 }])];
+      styleSheet(ws, 5);
       X.utils.book_append_sheet(wb, ws, sheetName(st6));
     }
     save3(wb, `${S.semester}_暑期班表公版.xlsx`);
@@ -18530,6 +18554,7 @@ ${lines.join("\n")}`;
       const ws = X.utils.aoa_to_sheet(rows2);
       ws["!merges"] = merges;
       ws["!cols"] = [{ wch: 12 }, { wch: 4 }, { wch: 18 }, ...cols.flatMap(({ b }) => b.kind === "class" ? [{ wch: 6 }, { wch: 11 }, { wch: 9 }, { wch: 8 }] : [{ wch: 14 }, { wch: 6 }])];
+      styleSheet(ws, 4);
       X.utils.book_append_sheet(wb, ws, sheetName(st6));
     }
     const per = hoursData(groupsAll);
@@ -18548,6 +18573,7 @@ ${lines.join("\n")}`;
     });
     const ws2 = X.utils.aoa_to_sheet([[`${S.semester} 老師時數彙整（請假的時數算給代課老師；午餐算導師時間）`], head, ...sumRows]);
     ws2["!cols"] = head.map((x, i) => ({ wch: i ? 10 : 12 }));
+    styleSheet(ws2, 1);
     X.utils.book_append_sheet(wb, ws2, "老師時數彙整");
     save3(wb, `${S.semester}_上課時數表${site ? "_" + site : ""}.xlsx`);
   }
