@@ -912,6 +912,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     importSocial: () => importSocial,
     isSocial: () => isSocial,
     isSupervisor: () => isSupervisor,
+    kidOrderReady: () => kidOrderReady,
     loadAll: () => loadAll,
     mergeStudents: () => mergeStudents,
     myFile: () => myFile,
@@ -923,6 +924,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     rows: () => rows,
     saveChinese: () => saveChinese,
     saveEnglish: () => saveEnglish,
+    saveKidOrder: () => saveKidOrder,
     saveMath: () => saveMath,
     saveSchedule: () => saveSchedule,
     saveSelSurvey: () => saveSelSurvey,
@@ -4006,6 +4008,41 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
             "hint": "空白＝全部據點；多個以「、」分隔"
           }
         ]
+      },
+      "kidOrders": {
+        "key": "kidOrders",
+        "sheet": "孩子順序",
+        "label": "孩子順序",
+        "idKey": "id",
+        "idPrefix": "",
+        "scope": "semester",
+        "group": "record",
+        "note": "老師自訂的孩子排列順序（教學流程、課後紀錄、任務單用；點名表不受影響）；id：KO-班級",
+        "cols": [
+          {
+            "key": "id",
+            "label": "順序ID",
+            "kind": "text",
+            "required": true
+          },
+          {
+            "key": "classId",
+            "label": "班級ID",
+            "kind": "ref",
+            "ref": "classes",
+            "required": true
+          },
+          {
+            "key": "order",
+            "label": "孩子ID順序",
+            "kind": "longtext"
+          },
+          {
+            "key": "by",
+            "label": "設定者",
+            "kind": "text"
+          }
+        ]
       }
     },
     "enums": {
@@ -5475,7 +5512,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   var TDEF = SCHEMA.tables;
   var LIST_TABLES = ["units", "selActivities", "backupOptions", "readingList"];
   var BASE_TABLES = ["semesters", "defaultSlots", "holidays", "closures", "subjects", "taskTypes", "teachers", "students", "classes", "classSlots", "enrollments", "resources", ...LIST_TABLES, "substitutes", "daySlots", "lunchDuty", "schedEvents"];
-  var TX_TABLES = ["sessions", "blocks", "tasks", "records", "incidents", "evaluations", "feedback", "posts", "replies", "submissions", "mathScores", "enTests", "visitPlans", "visitForms", "zhTests", "selSurveys"];
+  var TX_TABLES = ["sessions", "blocks", "tasks", "records", "incidents", "evaluations", "feedback", "posts", "replies", "submissions", "mathScores", "enTests", "visitPlans", "visitForms", "zhTests", "selSurveys", "kidOrders"];
   var SOCIAL_TABLES = ["visits", "cases", "specialEvents"];
   var ALL_TABLES = [...BASE_TABLES, ...TX_TABLES, ...SOCIAL_TABLES];
   var BASE_FILE = "基本資料.json";
@@ -6667,6 +6704,16 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     if (ops.length) await commit(ops);
     return { count: ops.length, version: DB.version };
   }
+  var kidOrderReady = () => DB.backend?.kind !== "cloud" || (DB.backend.caps || []).includes("kidOrder");
+  async function saveKidOrder(classId, ids) {
+    const c = getRow("classes", classId);
+    if (!c) throw new DbError("班級不存在");
+    if (!isSupervisor() && c.teacherId !== DB.me?.teacherId) throw new DbError("只能調整自己班的孩子順序");
+    if (!kidOrderReady()) throw new DbError("雲端主機還沒更新，暫時不能調整順序，請通知督導重新部署 Apps Script");
+    const list2 = [...new Set((ids || []).map(String).filter(Boolean))];
+    await commit([{ table: "kidOrders", row: { id: `KO-${classId}`, classId, order: list2.join("、"), by: DB.me?.name || "" } }]);
+    return { ok: true, version: DB.version };
+  }
 
   // src/js/ui.js
   var $ = (sel, el = document) => el.querySelector(sel);
@@ -7276,6 +7323,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
       visitForms: rows("visitForms"),
       zhTests: rows("zhTests"),
       selSurveys: rows("selSurveys"),
+      kidOrders: rows("kidOrders").filter((o) => cids.has(o.classId)),
       substitutes: rows("substitutes").filter((s) => cids.has(s.classId)),
       daySlots: rows("daySlots").filter((s) => cids.has(s.classId)),
       lunchDuty: rows("lunchDuty").filter((s) => s.semesterId === sem)
@@ -7394,6 +7442,8 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
         case "/api/attendance/orphans":
         case "/api/attendance/tidy":
           return tidyAttendance();
+        case "/api/kidorder/save":
+          return saveKidOrder(String(b.classId || ""), b.ids || []);
         case "/api/schedule/save":
           return saveSchedule(b.ops || []);
         case "/api/students/merge":
@@ -8117,7 +8167,8 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     "selSurveys",
     "daySlots",
     "lunchDuty",
-    "schedEvents"
+    "schedEvents",
+    "kidOrders"
   ];
   var WEEKDAYS2 = ["週一", "週二", "週三", "週四", "週五", "週六", "週日"];
   var ATTENDED2 = ["出席", "遲到", "早退"];
@@ -8209,6 +8260,16 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   }
   var hasDayPlan = (cid) => !!S.idx?.dayPlan?.has(cid);
   var daySlotOf = (cid, date) => S.idx?.daySlot?.get(`${cid}|${date}`) || null;
+  function kidOrderOf(cid) {
+    const o = get("kidOrders", `KO-${cid}`);
+    return o ? String(o.order || "").split("、").filter(Boolean) : [];
+  }
+  function orderedRoster(cid, kids = null) {
+    const list2 = kids || roster(cid), ord = kidOrderOf(cid);
+    if (!ord.length) return list2;
+    const pos = new Map(ord.map((id, i) => [id, i]));
+    return [...list2].sort((a, b) => (pos.has(a.id) ? pos.get(a.id) : 1e6) - (pos.has(b.id) ? pos.get(b.id) : 1e6) || byName(a, b));
+  }
   function rosterIds(cid) {
     return (S.idx.rosterByClass.get(cid) || []).map((e) => e.studentId);
   }
@@ -13822,6 +13883,64 @@ ${lines.join("\n")}`;
     }
   };
 
+  // src/js/pages/kidorder.js
+  var canOrder = (cid) => isSupervisor2() || get("classes", cid)?.teacherId === myTeacherId();
+  function openKidOrder(cid, kids, onDone) {
+    let list2 = [...kids];
+    const body = h(`<div class="stack" style="gap:10px"><p class="small muted" style="margin:0;line-height:1.7">拖曳或用箭頭調整；教學流程、課後紀錄和孩子任務單都會照這個順序，點名表不變。</p>
+    <div class="row wrap" style="gap:6px"><span class="small muted">快速排序：</span>
+      <button class="btn sm" data-sort="gradeUp">年級低到高</button><button class="btn sm" data-sort="gradeDown">年級高到低</button><button class="btn sm" data-sort="name">姓名</button></div>
+    <ol id="ko-list" style="list-style:none;margin:0;padding:0"></ol></div>`);
+    const ol = body.querySelector("#ko-list");
+    const draw = () => {
+      ol.innerHTML = list2.map((k, i) => `<li draggable="true" data-i="${i}" class="row" style="gap:8px;padding:8px 10px;margin-bottom:6px;border:1px solid var(--line);border-radius:10px;background:var(--card);cursor:grab">
+      <span class="small muted" style="width:20px;text-align:right">${i + 1}</span><b class="grow">${esc(k.name)}</b><span class="small muted">${k.grade ? esc(k.grade) + " 年級" : ""}</span>
+      <button class="btn sm ghost" data-up="${i}" ${i ? "" : "disabled"} title="往上">▲</button><button class="btn sm ghost" data-down="${i}" ${i < list2.length - 1 ? "" : "disabled"} title="往下">▼</button></li>`).join("");
+    };
+    draw();
+    const move = (from, to) => {
+      if (to < 0 || to >= list2.length || from === to) return;
+      const [x] = list2.splice(from, 1);
+      list2.splice(to, 0, x);
+      draw();
+    };
+    body.addEventListener("click", (e) => {
+      const up = e.target.closest("[data-up]"), dn = e.target.closest("[data-down]"), so = e.target.closest("[data-sort]");
+      if (up) move(+up.dataset.up, +up.dataset.up - 1);
+      if (dn) move(+dn.dataset.down, +dn.dataset.down + 1);
+      if (so) {
+        const g = (k) => Number(k.grade) || 0;
+        list2.sort(so.dataset.sort === "name" ? byName : so.dataset.sort === "gradeUp" ? (a, b) => g(a) - g(b) || byName(a, b) : (a, b) => g(b) - g(a) || byName(a, b));
+        draw();
+      }
+    });
+    let dragFrom = -1;
+    ol.addEventListener("dragstart", (e) => {
+      const li2 = e.target.closest("li");
+      if (li2) {
+        dragFrom = +li2.dataset.i;
+        e.dataTransfer.effectAllowed = "move";
+      }
+    });
+    ol.addEventListener("dragover", (e) => {
+      if (dragFrom >= 0) e.preventDefault();
+    });
+    ol.addEventListener("drop", (e) => {
+      e.preventDefault();
+      const li2 = e.target.closest("li");
+      if (li2 && dragFrom >= 0) move(dragFrom, +li2.dataset.i);
+      dragFrom = -1;
+    });
+    openModal({ title: `${esc(get("classes", cid)?.name || "")} 孩子順序`, body, buttons: [{ text: "取消", value: false }, { text: "儲存順序", value: true, primary: true }] }).then(async (ok) => {
+      if (!ok) return;
+      try {
+        await mutate("/api/kidorder/save", { classId: cid, ids: list2.map((k) => k.id) }, "孩子順序已儲存");
+        onDone?.(list2.map((k) => k.id));
+      } catch {
+      }
+    });
+  }
+
   // src/js/pages/flow.js
   var st4 = null;
   var auto6 = null;
@@ -13875,7 +13994,7 @@ ${lines.join("\n")}`;
     const def = S.idx.defaultSlot.get(slot?.weekday) || {};
     const start = session?.start || slot?.start || def.start || "16:00";
     const end = session?.end || slot?.end || def.end || "17:30";
-    const kids = roster(cid);
+    const kids = orderedRoster(cid);
     const recs = session ? recordMap(session.id) : /* @__PURE__ */ new Map();
     let blocks;
     let fromTemplate = false;
@@ -14018,7 +14137,7 @@ ${lines.join("\n")}`;
       <span class="no-print">時間 <input class="edit-inline" id="f-start" value="${esc(st4.start)}" style="min-width:56px;width:56px">–<input class="edit-inline" id="f-end" value="${esc(st4.end)}" style="min-width:56px;width:56px"></span>
       <span class="no-print">每個任務 <select class="edit-inline" id="f-taskmin" style="min-width:72px">${[10, 15, 20].map((m) => `<option value="${m}" ${m === taskMin() ? "selected" : ""}>${m} 分鐘</option>`).join("")}</select></span>
       <span class="sp"></span>
-      <span class="no-print row gap4"><button class="btn sm" id="f-add">${icon("plus", "sm")}新增區塊</button>
+      <span class="no-print row gap4">${canOrder(st4.cid) && st4.kids.length > 1 ? `<button class="btn sm" id="f-order" title="調整孩子在流程表、課後紀錄、任務單的順序">${icon("users", "sm")}孩子順序</button>` : ""}<button class="btn sm" id="f-add">${icon("plus", "sm")}新增區塊</button>
         <button class="btn sm" id="f-regen" title="依上方時間重新產生區塊（保留同名區塊的任務）">${icon("refresh", "sm")}依時間重排</button>
         ${st4.fromTemplate ? "" : `<button class="btn sm" id="f-copy">${icon("copy", "sm")}複製上一堂</button>`}</span></div>
     <div class="flow-grid-wrap" id="f-grid">${grid2()}</div>
@@ -14075,6 +14194,10 @@ ${lines.join("\n")}`;
       touch();
       rerenderGrid();
     };
+    $("#f-order", el)?.addEventListener("click", () => openKidOrder(st4.cid, st4.kids, () => {
+      st4.kids = orderedRoster(st4.cid, st4.kids);
+      rerenderGrid();
+    }));
     $("#f-regen", el).onclick = async () => {
       if (!await confirmBox("依目前的開始／結束時間重新產生區塊？同名區塊（例如「任務2」）的孩子任務會保留，備用任務不受影響。", { okText: "重排" })) return;
       regen();
@@ -14494,7 +14617,7 @@ ${lines.join("\n")}`;
   }
   function loadState4(cid, date) {
     const s = sessionFor(cid, date);
-    const kids = roster(cid);
+    const kids = orderedRoster(cid);
     const recs = s ? recordMap(s.id) : /* @__PURE__ */ new Map();
     const extra = [...recs.keys()].filter((id) => !kids.some((k) => k.id === id)).map((id) => get("students", id)).filter(Boolean);
     const all = [...kids, ...extra];
@@ -14707,7 +14830,7 @@ ${lines.join("\n")}`;
         <div class="field mt12"><span class="small ink2">今天的課堂氣氛（老師心情）</span><div class="mood-pick" id="r-mood">
           ${Object.entries(MOOD).map(([k, e]) => `<button type="button" data-mood="${k}" class="${rs.info.mood === k ? "on" : ""}"><span class="e">${e}</span>${k}</button>`).join("")}</div></div></div></div>
     <div class="card mt16"><div class="card-head"><h3>點名與學習紀錄</h3><span class="sub" id="r-count"></span><span class="sp"></span>
-      <button class="btn sm" id="r-allin">${icon("check", "sm")}全部出席</button><button class="btn sm" id="r-tidyall">${icon("sparkle", "sm")}全部整理文字</button></div>
+      ${canOrder(rs.cid) && rs.kids.length > 1 ? `<button class="btn sm" id="r-order">${icon("users", "sm")}孩子順序</button>` : ""}<button class="btn sm" id="r-allin">${icon("check", "sm")}全部出席</button><button class="btn sm" id="r-tidyall">${icon("sparkle", "sm")}全部整理文字</button></div>
       <div class="card-body" id="r-kids">${rs.kids.map(kidRow2).join("") || `<div class="empty">${icon("users")}<div>這個班還沒有孩子名單，請到「班級與課表」設定。</div></div>`}</div></div>
     <div class="card mt16"><div class="card-head"><h3>事件</h3><span class="sub">衝突、受傷、身體不適、情緒等需要社工知道的事</span><span class="sp"></span>
       <button class="btn sm" id="r-addinc">${icon("plus", "sm")}新增事件</button></div>
@@ -14825,6 +14948,10 @@ ${lines.join("\n")}`;
       $$("#r-mood button").forEach((b) => b.classList.toggle("on", b.dataset.mood === rs.info.mood));
       return touch2();
     }
+    if (t.closest("#r-order")) return openKidOrder(rs.cid, rs.kids, () => {
+      rs.kids = orderedRoster(rs.cid, rs.kids);
+      $("#r-kids").innerHTML = rs.kids.map(kidRow2).join("");
+    });
     if (t.closest("#r-allin")) {
       for (const k of rs.kids) if (!rs.recs[k.id].attendance) rs.recs[k.id].attendance = "出席";
       touch2();
