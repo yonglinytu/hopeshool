@@ -5699,9 +5699,9 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     DB.version = 0;
     await loadAll(true);
   }
-  async function createDatabase(backend, orgName) {
+  async function createDatabase(backend, orgName2) {
     const doc = emptyDoc(BASE_FILE);
-    doc.settings = { orgName: orgName || "永齡希望小學", currentSemester: "", dbId: Math.random().toString(36).slice(2, 12) };
+    doc.settings = { orgName: orgName2 || "永齡希望小學", currentSemester: "", dbId: Math.random().toString(36).slice(2, 12) };
     doc.tables.defaultSlots = [
       { id: "週一", start: "16:00", end: "17:30", note: "" },
       { id: "週二", start: "16:00", end: "17:30", note: "" },
@@ -7057,8 +7057,35 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   }
 
   // src/js/cloud.js
-  var CLOUD = typeof window !== "undefined" && window.YL_CLOUD && window.YL_CLOUD.api ? window.YL_CLOUD : null;
-  var CLOUD_UNSET = typeof window !== "undefined" && !!window.YL_CLOUD && !CLOUD;
+  var BRANCH_KEY = "yl-cloud-branch";
+  var CFG = typeof window !== "undefined" ? window.YL_CLOUD : null;
+  var BRANCHES = (CFG && CFG.branches || []).filter((b) => b && b.api && /^(https:\/\/|http:\/\/(127\.0\.0\.1|localhost)[:/])/.test(b.api)).map((b) => ({ id: String(b.id || b.name), name: String(b.name || b.id), api: String(b.api) }));
+  function pickBranch() {
+    if (!BRANCHES.length) return null;
+    let want = "";
+    try {
+      want = new URLSearchParams(location.search).get("b") || "";
+    } catch {
+    }
+    if (!want) try {
+      want = localStorage.getItem(BRANCH_KEY) || "";
+    } catch {
+    }
+    return BRANCHES.find((b) => b.id === want) || (BRANCHES.length === 1 ? BRANCHES[0] : null);
+  }
+  var B0 = pickBranch();
+  var CLOUD = CFG && (CFG.api || BRANCHES.length) ? { ...CFG, api: B0 ? B0.api : BRANCHES.length ? "" : CFG.api, branch: B0 } : null;
+  function chooseBranch(id) {
+    const b = BRANCHES.find((x) => x.id === id);
+    if (!b || !CLOUD) return;
+    CLOUD.api = b.api;
+    CLOUD.branch = b;
+    try {
+      localStorage.setItem(BRANCH_KEY, b.id);
+    } catch {
+    }
+  }
+  var CLOUD_UNSET = typeof window !== "undefined" && !!CFG && !CLOUD;
   var SESSION_KEY = "yl-cloud-session";
   var EMAIL_KEY = "yl-cloud-email";
   function loadSession() {
@@ -7191,6 +7218,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
         el.innerHTML = `<div class="boot"><div class="card boot-card"><div class="card-body stack" style="gap:14px">
         <div class="boot-icon">${icon("teacher")}</div>
         <h2 style="margin:0">永齡課輔系統</h2>
+        ${BRANCHES.length > 1 ? `<label class="field"><span>分校</span><select class="select" id="l-branch"><option value="">請選擇你的分校</option>${BRANCHES.map((b) => `<option value="${esc(b.id)}" ${CLOUD.branch?.id === b.id ? "selected" : ""}>${esc(b.name)}</option>`).join("")}</select></label>` : ""}
         <p class="ink2" style="margin:0;line-height:1.8">請輸入你在老師名冊上的 Email（通常是 Gmail），我們會寄驗證碼給你。</p>
         ${msg ? `<div class="callout warn small">${icon("alert", "sm")} ${esc(msg)}</div>` : ""}
         <form id="l-form1" class="stack" style="gap:10px">
@@ -7204,6 +7232,14 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
         $("#l-form1").onsubmit = async (e) => {
           e.preventDefault();
           email = inp.value.trim().toLowerCase();
+          const bsel = $("#l-branch");
+          if (bsel) {
+            if (!bsel.value) {
+              step1("請先選擇你的分校");
+              return;
+            }
+            chooseBranch(bsel.value);
+          }
           const btn = $("#l-send");
           btn.disabled = true;
           btn.textContent = "寄送中…";
@@ -8453,6 +8489,26 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
       total: rosterIds(cid).length
     };
   }
+  var orgName = () => String(S.settings?.orgName || S.meta?.org || "永齡希望小學").trim();
+  var FEATURES = [
+    ["math", "數學月檢測", "數學考卷選擇、登分與分期統計"],
+    ["english", "英語檢測", "英語考卷需求、檢測登錄"],
+    ["chinese", "國語評量", "國語評量排程與登錄"],
+    ["selfb", "SEL 活動回饋", "老師回報 SEL 活動與督導回應"],
+    ["selsurvey", "情緒課程問卷", "前測／中測／後測問卷"],
+    ["tvisits", "指導員訪視", "訪視提問單、老師自評"],
+    ["summer", "暑期班表", "暑期全天排班、午餐導師時間與時數表"],
+    ["forum", "課輔論壇", "老師之間的發文與回覆"],
+    ["resources", "據點資源", "教具、桌遊等資源清單"]
+  ];
+  var oldDraft = (kind, cid, date) => `draft:${kind}:${cid}:${date}`;
+  var draftKey = (kind, cid, date) => `draft:${S.settings?.dbId || "-"}:${kind}:${cid}:${date}`;
+  var readDraft = (kind, cid, date) => LS.get(draftKey(kind, cid, date)) ?? LS.get(oldDraft(kind, cid, date));
+  function dropDraft(kind, cid, date) {
+    LS.del(draftKey(kind, cid, date));
+    LS.del(oldDraft(kind, cid, date));
+  }
+  var featureOn = (id) => !(S.settings?.featuresOff || []).includes(id);
   function isSupervisor2() {
     return !S.who || S.who.role !== "teacher";
   }
@@ -9673,7 +9729,7 @@ ${lines.join("\n")}`;
   function formHtml(p, kind, data = null, form = null) {
     form = form || formOf(p, kind);
     const d = { ...defaults(p, kind), ...data || form?.data || {} };
-    const head = `<div class="vfp-title"><div>永齡希望小學雲科大分校</div><h1>${termCode(p.semesterId)} ${esc(p.subject)}指導員教學訪視－${kind === "pre" ? "訪視提問單" : "課輔老師自評與調整"}</h1></div>
+    const head = `<div class="vfp-title"><div>${esc(orgName())}</div><h1>${termCode(p.semesterId)} ${esc(p.subject)}指導員教學訪視－${kind === "pre" ? "訪視提問單" : "課輔老師自評與調整"}</h1></div>
     <table class="vfp vfp-head"><tr><th>課輔老師</th><td>${esc(tName(p))}</td><th>班級</th><td>${esc(clsName(p))}</td><th>訪視日期時間</th><td>${esc(p.date)} ${esc(timeText(p))}</td></tr>
       <tr><th>指導員</th><td>${esc(p.mentor || "")}</td><th>訪視方式</th><td>${esc(p.mode || "")}</td><th>${kind === "pre" ? "送出時間" : "第一段／隔週送出"}</th><td>${esc((form?.submitted1At || "").slice(0, 16))}${kind === "post" && form?.submitted2At ? "／" + esc(form.submitted2At.slice(0, 16)) : ""}</td></tr></table>`;
     if (kind === "pre") {
@@ -9902,12 +9958,53 @@ ${lines.join("\n")}`;
     }
   };
   function visitReminder() {
+    if (!featureOn("tvisits")) return "";
     const sup = isSupervisor2();
     const vt = sup ? visitOverdue() : visitTodo();
     if (!vt.length) return "";
     return `<div class="callout ${vt.some((x) => x.s.over) ? "warn" : "accent"} mb8 vrem">${icon("eye", "sm")} <b>${sup ? `指導員訪視表單逾期 ${vt.length} 份` : "指導員訪視表單要填"}</b>
     ${vt.slice(0, 6).map((x) => `<a class="chip ${x.s.over ? "warn" : "outline"}" style="margin:2px" href="#/tvisits/${encodeURIComponent(x.p.id)}/${x.s.key === "pre" ? "pre" : "post"}">${esc(x.p.subject)}・${esc(md2(x.p.date))} ${esc(x.s.label)}${x.s.over ? "（逾期）" : `・${esc(md2(x.s.due))} 前`}${sup ? `・${esc(clsName(x.p))}` : ""}</a>`).join("")}
     ${vt.length > 6 ? `<a href="#/tvisits?f=${sup ? "over" : "todo"}">…看全部</a>` : ""}</div>`;
+  }
+
+  // src/js/pages/setup.js
+  function setupSteps() {
+    const org = orgName();
+    const teachers = (S.data.teachers || []).filter((t) => t.status !== "離職");
+    const noEmail = teachers.filter((t) => !String(t.email || "").trim());
+    const cls = classes();
+    const noSlot = cls.filter((c) => !slotsOf(c.id).length && !(S.data.daySlots || []).some((d) => d.classId === c.id));
+    const hasRoster = (S.data.semesters || []).length && (S.data.students || []).length && cls.length;
+    return [
+      { done: /分校/.test(org), title: "填寫分校全名", text: `目前是「${org}」。會印在點名表、訪視單、考卷需求表的抬頭。`, href: "#/settings", btn: "系統設定" },
+      { done: !!hasRoster, title: "匯入永齡編班報表", text: "從總會系統匯出編班報表（CSV 或 Excel），系統會自動建立學期、科目、老師、班級與孩子。", href: "#/classes", btn: "班級與課表" },
+      { done: teachers.length > 0 && !noEmail.length, title: "填老師的登入 Email", text: noEmail.length ? `還有 ${noEmail.length} 位沒有 Email：${noEmail.slice(0, 6).map((t) => t.name).join("、")}${noEmail.length > 6 ? "…" : ""}。可以一筆筆填，或匯入帳號清單。` : "老師用名冊上的 Email 收驗證碼登入。", href: "#/teachers", btn: "老師名冊" },
+      { done: cls.length > 0 && !noSlot.length, title: "設定每班的上課時段", text: noSlot.length ? `還有 ${noSlot.length} 個班沒有上課時段：${noSlot.slice(0, 5).map((c) => c.name).join("、")}${noSlot.length > 5 ? "…" : ""}` : "有了上課時段，才會產生每天的教學流程與點名。", href: "#/classes", btn: "班級與課表" },
+      { done: !!S.settings?.featuresSet, title: "確認要用哪些功能", text: "關掉這個分校用不到的功能（例如沒有做國語評量），老師的選單會比較清爽。", href: "#/settings", btn: "功能開關" }
+    ];
+  }
+  function setupCard() {
+    if (!isSupervisor2() || S.settings?.setupHidden) return "";
+    const steps = setupSteps();
+    const left = steps.filter((s) => !s.done).length;
+    if (!left) return "";
+    return `<div class="card mb16" id="setup-card"><div class="card-head"><h3>${icon("check", "sm")}開站步驟</h3><span class="sub">完成 ${steps.length - left}／${steps.length}，全部完成後這張卡片會自動收起</span><span class="sp"></span>
+    <button class="btn sm ghost" id="setup-hide">不再顯示</button></div><div class="card-body"><ol style="list-style:none;margin:0;padding:0">
+    ${steps.map((s, i) => `<li class="row" style="gap:12px;align-items:flex-start;padding:10px 0;${i ? "border-top:1px solid var(--line-2);" : ""}${s.done ? "opacity:.55" : ""}">
+      <span class="chip ${s.done ? "good" : "outline"}" style="min-width:28px;justify-content:center">${s.done ? "✓" : i + 1}</span>
+      <div class="grow"><b>${esc(s.title)}</b><div class="small muted" style="line-height:1.7">${esc(s.text)}</div></div>
+      ${s.done ? "" : `<a class="btn sm" href="${s.href}">${esc(s.btn)}</a>`}</li>`).join("")}</ol></div></div>`;
+  }
+  function bindSetup(el) {
+    el.querySelector("#setup-hide")?.addEventListener("click", async () => {
+      try {
+        await post("/api/settings", { key: "setupHidden", value: true });
+        await sync();
+        toast("開站步驟已收起，之後可在「系統設定」重新打開");
+      } catch (e) {
+        toast(e.message, "err");
+      }
+    });
   }
 
   // src/js/pages/math.js
@@ -10248,7 +10345,7 @@ ${lines.join("\n")}`;
       const kids = roster(c.id);
       const title2 = `${semRow?.name || sem} ${c.name} 學童數學檢測月成績明細表`;
       const aoa = [
-        ["", "", "", "", "", "永齡希望小學雲科大分校"],
+        ["", "", "", "", "", orgName()],
         ["", "", "", "", "", title2],
         ["序號", "課輔班別", "就讀年級", "學生姓名", "檢測月份", ...ROUNDS.flatMap((r) => [`第${CN[r]}回`, "", "", "", ""])],
         ["", "", "", "", "", ...ROUNDS.flatMap(() => [1, 2, 3, 4, 5])]
@@ -11205,13 +11302,13 @@ ${lines.join("\n")}`;
     const mg = (r1, c1, r2, c2) => merges.push({ s: { r: r1, c: c1 }, e: { r: r2, c: c2 } });
     const semCode = termCode2(c?.semesterId || "");
     const [yy, tt] = semCode.split("-");
-    const branch = (/永齡希望小學\s*(.+?)分校/.exec(org || "") || [])[1] || "雲科";
+    const branch = (/永齡希望小學\s*(.+?)分校/.exec(org || "") || [])[1];
     for (let col = 0; col <= last; col++) {
       set(0, col, "", st3({ nb: true }));
       set(1, col, "", st3({ nb: true }));
       set(2, col, "", st3({ nb: true, h: "left" }));
     }
-    set(0, 0, `【永齡希望小學】 ${branch.trim()} 分校`, st3({ sz: 14, b: true, nb: true }));
+    set(0, 0, branch ? `【永齡希望小學】 ${branch.trim()} 分校` : String(org || "永齡希望小學"), st3({ sz: 14, b: true, nb: true }));
     mg(0, 0, 0, last);
     set(1, 0, `${yy}學年度${tt === "3" ? "暑期" : `第${tt || "1"}學期`} ${m}月學童出席點名表`, st3({ sz: 12, b: true, nb: true }));
     mg(1, 0, 1, last);
@@ -11787,7 +11884,10 @@ ${lines.join("\n")}`;
     const sem = semester();
     const own = classes().filter((c) => c.teacherId === tid);
     const out = [];
-    const add = (kind, lv, due, x) => out.push({ kind, level: lv, due, ...x });
+    const FEAT = { visit: "tvisits", survey: "selsurvey" };
+    const add = (kind, lv, due, x) => {
+      if (featureOn(FEAT[kind] || kind)) out.push({ kind, level: lv, due, ...x });
+    };
     const subbed = (cid, d) => {
       const s = subOf(cid, d);
       return s && s.teacherId !== tid;
@@ -12181,7 +12281,7 @@ ${lines.join("\n")}`;
       const todos = sup ? null : formTodos(myTeacherId(), today3);
       const allTodos = sup ? [...new Set(classes().map((c) => c.teacherId).filter(Boolean))].flatMap((t) => formTodos(t, today3)) : todos;
       const tNow = allTodos.filter((x) => x.level !== "later"), tOver = allTodos.filter((x) => x.level === "over");
-      ctx.el.innerHTML = `${visitBox}${closureNotice(sup ? classes() : myClasses())}
+      ctx.el.innerHTML = `${setupCard()}${visitBox}${closureNotice(sup ? classes() : myClasses())}
       ${sup ? "" : `<div class="mb16">${todoCard(todos)}</div>`}
       <div class="grid g5">
         <div class="card stat"><div class="label">${icon("calendar", "sm")}今日排課</div><div class="value">${list2.length}<small>班</small></div>
@@ -12233,6 +12333,7 @@ ${lines.join("\n")}`;
           ${!sup ? "" : `<div class="card"><div class="card-head"><h3>老師送出情況（近 7 天）</h3></div><div class="card-body">${hbars(teacherRates(today3))}</div></div>`}
         </div>
       </div>`;
+      bindSetup(ctx.el);
       ctx.el.querySelectorAll("[data-todo-t]").forEach((tr) => tr.onclick = () => {
         const tid = tr.dataset.todoT, name = get("teachers", tid)?.name || "";
         openModal({ title: `${name} 待完成的表單`, body: todoCard(formTodos(tid, today3), { title: "待完成的表單", who: name }), buttons: [{ text: "關閉", value: true, primary: true }] });
@@ -12240,6 +12341,7 @@ ${lines.join("\n")}`;
     }
   };
   function forumCard() {
+    if (!featureOn("forum")) return "";
     const open2 = S.data.posts.filter((p) => !["solved"].includes(postState(p).key) && p.category !== "公告").sort((a, b) => (b.urgent === "急") - (a.urgent === "急") || (postState(a).key === "open" ? 0 : 1) - (postState(b).key === "open" ? 0 : 1) || lastActivity(b).localeCompare(lastActivity(a)));
     return `<div class="card"><div class="card-head"><h3>論壇未解決</h3><span class="sub">孩子問題、設備回報</span><span class="sp"></span>
     <a class="btn sm ghost" href="#/forum">論壇 ${icon("right", "sm")}</a></div>
@@ -13958,7 +14060,7 @@ ${lines.join("\n")}`;
     return `<span class="tag" style="background:color-mix(in srgb, ${catColor(cat)} 18%, transparent)">${esc(label2)}</span>`;
   }
   var taskOf = (t) => ({ type: t.type || "", unit: t.unit || "", content: t.content || "", detail: t.detail || "", status: t.status || "" });
-  var draftKey = () => `draft:flow:${st4.cid}:${st4.date}`;
+  var draftKey2 = () => draftKey("flow", st4.cid, st4.date);
   var t2 = (m) => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
   var TASK_MIN_KEY = "flow:taskMinutes";
   var taskMin = () => [10, 15, 20].includes(Number(LS.get(TASK_MIN_KEY))) ? Number(LS.get(TASK_MIN_KEY)) : 15;
@@ -14031,7 +14133,7 @@ ${lines.join("\n")}`;
       updatedAt: session?.updatedAt || ""
     };
     if (!session && !s.mindful) s.mindful = mindfulNext(cid, date);
-    const draft2 = LS.get(`draft:flow:${cid}:${date}`);
+    const draft2 = readDraft("flow", cid, date);
     if (draft2 && (!session || (draft2.savedAt || "") > (session.updatedAt || ""))) {
       Object.assign(s, { mindful: draft2.mindful, start: draft2.start, end: draft2.end, blocks: withBackups(draft2.blocks || []), progress: { ...s.progress, ...draft2.progress } });
       s.dirty = true;
@@ -14044,7 +14146,7 @@ ${lines.join("\n")}`;
     st4.dirty = true;
     st4.rev = (st4.rev || 0) + 1;
     const now = /* @__PURE__ */ new Date();
-    LS.set(draftKey(), {
+    LS.set(draftKey2(), {
       mindful: st4.mindful,
       start: st4.start,
       end: st4.end,
@@ -14171,7 +14273,7 @@ ${lines.join("\n")}`;
       touch();
     };
     $("#f-discard", el)?.addEventListener("click", async () => {
-      LS.del(draftKey());
+      dropDraft("flow", st4.cid, st4.date);
       st4 = await loadState3(st4.cid, st4.date);
       renderAll3();
     });
@@ -14501,7 +14603,7 @@ ${lines.join("\n")}`;
     snap.fromTemplate = false;
     if ((snap.rev || 0) === rev) {
       snap.dirty = false;
-      LS.del(draftKey());
+      dropDraft("flow", st4.cid, st4.date);
     }
   }
   async function save() {
@@ -14511,7 +14613,7 @@ ${lines.join("\n")}`;
       await auto6?.wait();
       const payload = buildPayload();
       const res = await mutate("/api/session/save", payload, "教學流程已儲存");
-      LS.del(draftKey());
+      dropDraft("flow", st4.cid, st4.date);
       st4 = await loadState3(st4.cid, st4.date);
       st4.sessionId = res.session.id;
       renderAll3();
@@ -14605,7 +14707,7 @@ ${lines.join("\n")}`;
     const units = resolveUnits(ts, progress);
     return ts.map((t, i) => ({ id: t.id, status: t.status || "", label: `${i + 1}. ${taskText(t, subj, units[i]?.unit || "")}` }));
   }
-  var draftKey2 = () => `draft:record:${rs.cid}:${rs.date}`;
+  var draftKey3 = () => draftKey("record", rs.cid, rs.date);
   function pickDefaults2(ctx) {
     const today3 = todayISO();
     const pool = workClasses();
@@ -14675,7 +14777,7 @@ ${lines.join("\n")}`;
       restored: null,
       suggest: {}
     };
-    const d = LS.get(`draft:record:${cid}:${date}`);
+    const d = readDraft("record", cid, date);
     if (d && (!s || (d.savedAt || "") > (s.updatedAt || ""))) {
       Object.assign(state.info, d.info);
       for (const [k, v] of Object.entries(d.recs || {})) if (state.recs[k]) Object.assign(state.recs[k], v);
@@ -14691,7 +14793,7 @@ ${lines.join("\n")}`;
     rs.dirty = true;
     rs.rev = (rs.rev || 0) + 1;
     const n = /* @__PURE__ */ new Date();
-    LS.set(draftKey2(), {
+    LS.set(draftKey3(), {
       info: rs.info,
       recs: rs.recs,
       incidents: rs.incidents,
@@ -14999,7 +15101,7 @@ ${lines.join("\n")}`;
       return;
     }
     if (t.closest("#r-discard")) {
-      LS.del(draftKey2());
+      dropDraft("record", rs.cid, rs.date);
       rs = loadState4(rs.cid, rs.date);
       renderAll4();
       return;
@@ -15094,7 +15196,7 @@ ${lines.join("\n")}`;
     });
     try {
       await mutate("/api/session/save", payload, submit ? "課後紀錄已送出，社工會在每日日誌看到" : "草稿已儲存");
-      LS.del(draftKey2());
+      dropDraft("record", rs.cid, rs.date);
       rs = loadState4(rs.cid, rs.date);
       renderAll4();
     } catch {
@@ -15159,7 +15261,7 @@ ${lines.join("\n")}`;
     }
     if ((snap.rev || 0) === rev) {
       snap.dirty = false;
-      LS.del(draftKey2());
+      dropDraft("record", rs.cid, rs.date);
     }
   }
   async function leave5(fn) {
@@ -15537,7 +15639,7 @@ ${lines.join("\n")}`;
     }
     const d = needData(list2, term, from, to);
     const wb = X.utils.book_new();
-    const head = [["永齡希望小學雲科大分校"], [`${termLabel(term)} 英語考卷需求表${from || to ? `（${from || ""}～${to || ""}）` : ""}`], [], ["考卷", "階數", "版本", "張數", "各班"]];
+    const head = [[orgName()], [`${termLabel(term)} 英語考卷需求表${from || to ? `（${from || ""}～${to || ""}）` : ""}`], [], ["考卷", "階數", "版本", "張數", "各班"]];
     const ws = X.utils.aoa_to_sheet([...head, ...d.lines.map((x) => [x.paper, x.level ? x.level === "?" ? "未選" : `Level ${x.level}` : "", x.version === "?" ? "未選" : x.version, x.n, [...x.by].map(([n, v]) => `${n} ${v}`).join("、")]), [], ["合計", "", "", d.rs.length]]);
     ws["!cols"] = [{ wch: 20 }, { wch: 9 }, { wch: 6 }, { wch: 6 }, { wch: 40 }];
     X.utils.book_append_sheet(wb, ws, "需求表");
@@ -16796,11 +16898,13 @@ ${lines.join("\n")}`;
     <div class="callout small">${icon("info", "sm")} 舊的課堂與紀錄都會保留；離班只是不再出現在點名名單。</div></div>`;
     const ok = await openModal({ title: "匯入課輔編班報表", body, buttons: [{ text: "取消", value: false }, { text: "確認匯入", value: true, primary: true }] });
     if (!ok) return;
+    if (!DB.settings.currentSemester) plan.settingsSem = s.sem;
     await commitPlan(plan, "編班報表已匯入");
   }
   async function commitPlan(plan, msg) {
     try {
       await post("/api/import/base", { tables: plan.tables, deletes: plan.deletes });
+      if (plan.settingsSem) await post("/api/settings", { key: "currentSemester", value: plan.settingsSem });
       await sync();
       toast(msg);
     } catch (e) {
@@ -17579,9 +17683,9 @@ ${lines.join("\n")}`;
       ctx.el.innerHTML = `
       <div class="grid g2">
         <div class="card"><div class="card-head"><h3>基本設定</h3><span class="sub">${sup ? "存在 基本資料.json" : "由督導設定"}</span></div><div class="card-body stack">
-          <label class="field"><span>機構名稱</span><input class="input" id="set-org" value="${esc(S.settings.orgName || "")}" ${dis}></label>
+          <label class="field"><span>機構名稱（分校全名，會印在點名表、訪視單、考卷需求表的抬頭）</span><input class="input" id="set-org" value="${esc(S.settings.orgName || "")}" placeholder="例：永齡希望小學雲科大分校" ${dis}></label>
           <label class="field"><span>目前學期（大家開啟時預設的學期）</span><select class="select" id="set-sem" ${dis}>${sems.map((s) => `<option value="${esc(s.id)}" ${s.id === S.settings.currentSemester ? "selected" : ""}>${esc(s.id)}　${esc(s.name)}</option>`).join("")}</select></label>
-          ${sup ? `<div><button class="btn primary" id="set-save">${icon("save", "sm")}儲存設定</button></div>` : ""}</div></div>
+          ${sup ? `<div class="row wrap" style="gap:8px"><button class="btn primary" id="set-save">${icon("save", "sm")}儲存設定</button>${S.settings.setupHidden ? `<button class="btn" id="set-steps">${icon("check", "sm")}重新顯示開站步驟</button>` : ""}</div>` : ""}</div></div>
         ${sup ? `<div class="card"><div class="card-head"><h3>開新學期</h3><span class="sub">複製班級與上課時段，可選擇一併複製孩子名單</span></div><div class="card-body stack">
           <div class="grid g2" style="gap:10px"><label class="field"><span>從哪個學期複製</span><select class="select" id="ro-from">${sems.map((s) => `<option value="${esc(s.id)}">${esc(s.id)}</option>`).join("")}</select></label>
             <label class="field"><span>新學期ID（115上／115下／115暑）</span><input class="input" id="ro-id" placeholder="例：115下"></label>
@@ -17593,6 +17697,12 @@ ${lines.join("\n")}`;
           <div class="row"><span class="grow">目前身分：<b>${esc(S.who?.name || "未選擇")}</b>（課輔老師）</span><button class="btn sm" id="me-switch2">${icon(cloud ? "user" : "swap", "sm")}${cloud ? "我的帳號" : "切換身分"}</button></div>
           <div class="small muted" style="line-height:1.8">你填寫的教學流程、課後紀錄與論壇發文，都存在 <code>${esc(st6?.myFile || "")}</code>。基本資料（孩子、班級、課表）由督導維護。</div></div></div>`}
       </div>
+
+      ${sup ? `<div class="card mt16"><div class="card-head"><h3>功能開關</h3><span class="sub">關掉這個分校用不到的功能，選單和待辦提醒會一起隱藏；已經有的資料不會刪除，之後再打開就回來</span><span class="sp"></span>
+        <button class="btn sm primary" id="feat-save">${icon("save", "sm")}儲存功能開關</button></div>
+        <div class="card-body"><div class="grid g3" style="gap:10px 24px">${FEATURES.map(([id, name, note]) => `<label class="row" style="gap:8px;align-items:flex-start;cursor:pointer">
+          <input type="checkbox" data-feat="${id}" ${featureOn(id) ? "checked" : ""} style="margin-top:4px"><span><b>${esc(name)}</b><br><span class="small muted">${esc(note)}</span></span></label>`).join("")}</div>
+          <div class="small muted mt12">教學流程、課後紀錄、點名與月出席、學習檔案、社工紀錄是核心功能，不能關閉。</div></div></div>` : ""}
 
       <div class="card mt16"><div class="card-head"><h3>資料夾與檔案</h3><span class="sub">每個人只寫自己的檔，系統把所有人的檔合併顯示；同一筆資料以最後修改的為準</span><span class="sp"></span>
         <button class="btn sm" id="c-reload">${icon("refresh", "sm")}重新讀取</button><button class="btn sm" id="c-folder">${cloud ? icon("lock", "sm") + "登出" : icon("folder", "sm") + "更換資料夾"}</button></div>
@@ -17647,6 +17757,26 @@ ${lines.join("\n")}`;
           if ($("#set-sem").value !== S.settings.currentSemester) await post("/api/settings", { key: "currentSemester", value: $("#set-sem").value });
           await sync();
           toast("設定已儲存");
+        } catch (e) {
+          toast(e.message, "err");
+        }
+      });
+      $("#set-steps")?.addEventListener("click", async () => {
+        try {
+          await post("/api/settings", { key: "setupHidden", value: false });
+          await sync();
+          ctx.go("#/dashboard");
+        } catch (e) {
+          toast(e.message, "err");
+        }
+      });
+      $("#feat-save")?.addEventListener("click", async () => {
+        const off = [...ctx.el.querySelectorAll("[data-feat]")].filter((x) => !x.checked).map((x) => x.dataset.feat);
+        try {
+          await post("/api/settings", { key: "featuresOff", value: off });
+          await post("/api/settings", { key: "featuresSet", value: true });
+          await sync();
+          toast(off.length ? `已關閉 ${off.length} 項功能` : "全部功能都開啟");
         } catch (e) {
           toast(e.message, "err");
         }
@@ -18906,7 +19036,7 @@ ${lines.join("\n")}`;
     const raw = location.hash.replace(/^#\/?/, "");
     const [path, qs] = raw.split("?");
     const parts = path.split("/").filter(Boolean).map(decodeURIComponent);
-    const id = PAGE_IDS.includes(parts[0]) ? parts[0] : isSupervisor2() ? "dashboard" : "record";
+    const id = PAGE_IDS.includes(parts[0]) && featureOn(parts[0]) ? parts[0] : isSupervisor2() ? "dashboard" : "record";
     return { id, params: parts.slice(1), query: new URLSearchParams(qs || "") };
   }
   function go(hash) {
@@ -18972,6 +19102,11 @@ ${lines.join("\n")}`;
     else scrollTo(0, 0);
   }
   function onDataChanged() {
+    if (!S.semester && (S.data.semesters || []).length) {
+      const ids = S.data.semesters.map((s) => s.id).sort();
+      switchSemester(S.settings.currentSemester && ids.includes(S.settings.currentSemester) ? S.settings.currentSemester : ids[ids.length - 1]);
+      return;
+    }
     renderNav();
     if (!current.mod) return;
     if (Date.now() < (S.quietUntil || 0)) return;
@@ -19022,7 +19157,7 @@ ${lines.join("\n")}`;
   function renderNav() {
     const b = badges();
     $("#nav").innerHTML = PAGES.filter((g) => !g.social || isSocial2()).map((g) => `<div class="nav-group"><div class="nav-label">${g.group}</div>
-    ${g.items.filter((i) => (!i.sup || isSupervisor2()) && (!i.when || i.when())).map((i) => `<a href="#/${i.id}" data-id="${i.id}" title="${i.title}">${icon(i.icon)}<span>${i.title}</span>
+    ${g.items.filter((i) => (!i.sup || isSupervisor2()) && featureOn(i.id) && (!i.when || i.when())).map((i) => `<a href="#/${i.id}" data-id="${i.id}" title="${i.title}">${icon(i.icon)}<span>${i.title}</span>
       ${b[i.id] ? `<em class="badge ${b[i.id][1]}">${b[i.id][0]}</em>` : ""}</a>`).join("")}</div>`).join("");
     document.querySelectorAll(".nav a").forEach((a) => a.classList.toggle("active", a.dataset.id === current.id));
     const sel = $("#sem-select");
