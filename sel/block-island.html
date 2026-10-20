@@ -20,7 +20,7 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
 button:disabled{cursor:not-allowed;opacity:.4;transform:none}
 
 .back-btn{
-  position:fixed;top:16px;left:16px;z-index:9999;
+  position:fixed;top:16px;right:16px;z-index:9999;
   display:inline-flex;align-items:center;gap:6px;
   padding:8px 14px;border-radius:999px;
   background:rgba(255,253,248,.88);border:1px solid rgba(84,62,42,.16);
@@ -31,6 +31,19 @@ button:disabled{cursor:not-allowed;opacity:.4;transform:none}
   transition:background .18s,transform .18s;
 }
 .back-btn:hover{background:#fffdf8;transform:translateY(-1px)}
+.return-btn{
+  position:fixed;top:16px;left:16px;z-index:9999;
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 14px;border-radius:999px;
+  background:rgba(255,253,248,.88);border:1px solid rgba(84,62,42,.16);
+  color:var(--ink);font-size:.82rem;font-weight:600;
+  text-decoration:none;
+  box-shadow:0 4px 14px rgba(66,45,28,.10);
+  backdrop-filter:blur(8px);
+  transition:background .18s,transform .18s;
+  cursor:pointer;
+}
+.return-btn:hover{background:#fffdf8;transform:translateY(-1px)}
 
 header{max-width:1220px;margin:auto;padding:26px 28px 26px 130px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(84,62,42,.12)}
 .brand{text-decoration:none;color:var(--ink);font-weight:900;font-size:20px;font-family:'Noto Serif TC',serif}
@@ -172,6 +185,7 @@ dialog button{margin:5px}
 </style>
 </head>
 <body>
+<a class="return-btn" href="games.html">← SEL 遊戲站</a>
 
 <button class="back-btn" id="help" type="button">？ 怎麼玩</button>
 
