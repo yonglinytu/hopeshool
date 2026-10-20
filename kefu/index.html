@@ -7323,6 +7323,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   }
 
   // src/js/localapi.js
+  var aiOn = () => DB.backend?.kind === "cloud" && !!DB.backend.ai && DB.settings.aiEnabled === true;
   var pad6 = (n) => String(n).padStart(2, "0");
   var today = () => {
     const d = /* @__PURE__ */ new Date();
@@ -7424,7 +7425,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
             semesters: sems,
             demo: !!DB.settings.demo,
             needCode: false,
-            ai: { enabled: DB.backend?.kind === "cloud" && !!DB.backend.ai },
+            ai: { enabled: aiOn() },
             today: today(),
             version: DB.version,
             excel: DB.backend?.label || "",
@@ -7522,7 +7523,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
         case "/api/import/base":
           return { counts: await importBase(b.tables || {}, b.deletes || {}), version: DB.version };
       }
-      if (p === "/api/ai/polish" && DB.backend?.kind === "cloud" && DB.backend.ai) return aiPolish(b.text || "", b.context || {});
+      if (p === "/api/ai/polish" && aiOn()) return aiPolish(b.text || "", b.context || {});
       if (p.startsWith("/api/ai/")) throw new DbError("目前沒有啟用 AI，請使用「整理文字」（規則）");
     }
     throw new DbError("不支援的功能：" + p);
@@ -8499,7 +8500,8 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     ["tvisits", "指導員訪視", "訪視提問單、老師自評"],
     ["summer", "暑期班表", "暑期全天排班、午餐導師時間與時數表"],
     ["forum", "課輔論壇", "老師之間的發文與回覆"],
-    ["resources", "據點資源", "教具、桌遊等資源清單"]
+    ["resources", "據點資源", "教具、桌遊等資源清單"],
+    ["ai", "AI 潤稿（預設關閉）", "把老師紀錄送到 Google Gemini 潤飾；需完成付費設定與總會同意，雲端主機也要設定金鑰"]
   ];
   var oldDraft = (kind, cid, date) => `draft:${kind}:${cid}:${date}`;
   var draftKey = (kind, cid, date) => `draft:${S.settings?.dbId || "-"}:${kind}:${cid}:${date}`;
@@ -8508,7 +8510,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     LS.del(draftKey(kind, cid, date));
     LS.del(oldDraft(kind, cid, date));
   }
-  var featureOn = (id) => !(S.settings?.featuresOff || []).includes(id);
+  var featureOn = (id) => id === "ai" ? S.settings?.aiEnabled === true : !(S.settings?.featuresOff || []).includes(id);
   function isSupervisor2() {
     return !S.who || S.who.role !== "teacher";
   }
@@ -17771,9 +17773,12 @@ ${lines.join("\n")}`;
         }
       });
       $("#feat-save")?.addEventListener("click", async () => {
-        const off = [...ctx.el.querySelectorAll("[data-feat]")].filter((x) => !x.checked).map((x) => x.dataset.feat);
+        const off = [...ctx.el.querySelectorAll("[data-feat]")].filter((x) => !x.checked && x.dataset.feat !== "ai").map((x) => x.dataset.feat);
+        const ai = !!ctx.el.querySelector('[data-feat="ai"]')?.checked;
+        if (ai && S.settings.aiEnabled !== true && !await confirmBox("開啟 AI 潤稿後，老師按「AI 潤稿」時，紀錄內容會送到 Google Gemini。<br>請確認已完成 Gemini 付費設定，並已取得總會同意。", { okText: "確認開啟" })) return;
         try {
           await post("/api/settings", { key: "featuresOff", value: off });
+          await post("/api/settings", { key: "aiEnabled", value: ai });
           await post("/api/settings", { key: "featuresSet", value: true });
           await sync();
           toast(off.length ? `已關閉 ${off.length} 項功能` : "全部功能都開啟");
@@ -19102,6 +19107,7 @@ ${lines.join("\n")}`;
     else scrollTo(0, 0);
   }
   function onDataChanged() {
+    if (S.meta) S.meta.ai = { enabled: aiOn() };
     if (!S.semester && (S.data.semesters || []).length) {
       const ids = S.data.semesters.map((s) => s.id).sort();
       switchSemester(S.settings.currentSemester && ids.includes(S.settings.currentSemester) ? S.settings.currentSemester : ids[ids.length - 1]);
