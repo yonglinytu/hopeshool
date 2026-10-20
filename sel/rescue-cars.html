@@ -1,0 +1,1173 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>救援小車隊｜直覺操作修正版</title>
+<style>
+:root{
+  --ink:#2b2d42; --cream:#fff8e7; --paper:#fffdf6;
+  --red:#e63946; --red-d:#b5232f; --blue:#3a86ff; --blue-d:#1f5fc4; --yellow:#ffbe0b; --yellow-d:#d99a00;
+  --green:#52b788; --green-d:#2d8a5f; --orange:#fb8500; --sky:#cdeffd; --soft:#5c6078;
+  --wood:#d39b5f; --wood-d:#b07a43;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  color:var(--ink);
+  background-color:#d6a26a;
+  background-image:
+    repeating-linear-gradient(91deg, rgba(120,72,30,.10) 0 2px, transparent 2px 38px),
+    repeating-linear-gradient(89deg, rgba(255,235,200,.10) 0 1px, transparent 1px 23px),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='.012 .25' numOctaves='3' seed='4'/><feColorMatrix values='0 0 0 0 .45 0 0 0 0 .27 0 0 0 0 .12 0 0 0 .22 0'/></filter><rect width='100%' height='100%' filter='url(%23w)'/></svg>");
+  font-family:"jf-openhuninn-2.0","Iansui","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  font-size:18px;line-height:1.6;-webkit-tap-highlight-color:transparent;
+}
+button,input{font:inherit;color:inherit}
+.app{max-width:1060px;margin:0 auto;padding:12px 16px 48px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:900;font-size:1.15rem;letter-spacing:.08em;background:var(--cream);border:3px solid var(--ink);border-radius:999px;padding:4px 16px 4px 6px;box-shadow:0 4px 0 var(--ink)}
+.brand svg{width:40px;height:40px}
+.top-tools{display:flex;gap:8px}
+
+/* 玩具積木按鈕 */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4em;padding:.55em 1.2em;min-height:50px;cursor:pointer;font-weight:800;
+  background:#fff;border:3px solid var(--ink);border-radius:16px;box-shadow:0 5px 0 var(--ink);transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
+.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:0 2px 0 var(--ink);transform:translateY(3px)}
+.btn.red{background:var(--red);color:#fff}
+.btn.yellow{background:var(--yellow)}
+.btn.blue{background:var(--blue);color:#fff}
+.btn.green{background:var(--green);color:#fff}
+.btn.big{font-size:1.2rem;padding:.7em 1.8em;min-height:60px;border-radius:20px}
+.btn.small{font-size:.9rem;min-height:40px;padding:.3em .9em;box-shadow:0 4px 0 var(--ink)}
+.btn.pulse{animation:glowBtn 1.1s ease-in-out infinite}
+@keyframes glowBtn{0%,100%{box-shadow:0 5px 0 var(--ink),0 0 0 0 rgba(255,190,11,.9)}50%{box-shadow:0 5px 0 var(--ink),0 0 0 9px rgba(255,190,11,0)}}
+@keyframes pulseBtn{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.btn:focus-visible,.tool:focus-visible,.ticket:focus-visible,.deco-opt:focus-visible,.chip:focus-visible,.cellhit:focus-visible,input:focus-visible{outline:4px solid var(--blue);outline-offset:3px}
+
+.panel{background:var(--paper);border:4px solid var(--ink);border-radius:24px;padding:18px 20px;box-shadow:0 8px 0 var(--ink)}
+.soft{color:var(--soft);font-size:.92rem}
+h1,h2,h3{line-height:1.25;margin:.2em 0 .45em;font-weight:900}
+.screen{display:none}
+.screen.active{display:block;animation:hop .35s cubic-bezier(.3,1.5,.5,1)}
+@keyframes hop{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+
+/* 開場：無線電與隊員證 */
+.intro-grid{display:grid;grid-template-columns:240px 1fr;gap:20px;align-items:center;max-width:860px;margin:0 auto}
+@media (max-width:720px){.intro-grid{grid-template-columns:1fr}}
+.walkie{width:100%;max-width:220px;margin:0 auto;display:block}
+.walkie .led{animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.25}}
+.radio-lines{min-height:220px}
+.rline{background:#1f2338;color:#c8f7c5;border:3px solid var(--ink);border-radius:16px;padding:10px 14px;margin:0 0 10px;font-family:inherit;box-shadow:0 5px 0 var(--ink);animation:hop .3s ease}
+.rline .who{display:block;color:#ffd166;font-size:.85rem;font-weight:800;letter-spacing:.06em}
+.title-blocks{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:6px 0 14px}
+.title-blocks span{display:inline-grid;place-items:center;width:58px;height:58px;font-size:2rem;font-weight:900;color:#fff;border:3px solid var(--ink);border-radius:12px;box-shadow:0 5px 0 var(--ink);text-shadow:0 2px 0 rgba(0,0,0,.25)}
+.idcard{max-width:520px;margin:16px auto 0;background:var(--cream);border:4px solid var(--ink);border-radius:20px;box-shadow:0 8px 0 var(--ink);overflow:hidden}
+.idcard .bar{background:var(--red);color:#fff;font-weight:900;letter-spacing:.2em;padding:8px 16px;display:flex;justify-content:space-between;border-bottom:4px solid var(--ink)}
+.idcard .body{display:grid;grid-template-columns:110px 1fr;gap:14px;padding:14px 16px;align-items:center;position:relative}
+.idcard .photo{width:110px;height:110px;border:3px solid var(--ink);border-radius:14px;background:var(--sky)}
+.idcard label{font-weight:800;font-size:.9rem;color:var(--soft)}
+.idcard input{width:100%;padding:.4em .6em;border:3px solid var(--ink);border-radius:12px;background:#fff;font-weight:800;font-size:1.1rem}
+.idcard .stamp{position:absolute;right:12px;bottom:8px;transform:rotate(-14deg);color:var(--red);border:3px solid var(--red);border-radius:50%;width:76px;height:76px;display:grid;place-items:center;font-weight:900;font-size:.78rem;line-height:1.2;text-align:center;opacity:.85}
+
+/* 任務板 */
+.stages{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 14px}
+.stage-chip{flex:0 0 auto;padding:.3em .9em;border:3px dashed rgba(43,45,66,.45);border-radius:999px;font-size:.88rem;font-weight:700;color:var(--soft);background:rgba(255,248,231,.55)}
+.stage-chip.on{border:3px solid var(--ink);background:var(--yellow);color:var(--ink);box-shadow:0 4px 0 var(--ink)}
+.board-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:18px;align-items:start}
+@media (max-width:860px){.board-grid{grid-template-columns:1fr}}
+.head-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.meter{height:16px;border:3px solid var(--ink);border-radius:999px;background:#fff;overflow:hidden;margin:4px 0 10px}
+.meter span{display:block;height:100%;background:repeating-linear-gradient(45deg,var(--green) 0 10px,#6fcf97 10px 20px);border-right:3px solid var(--ink)}
+.tickets{display:grid;gap:10px;margin:8px 0 14px}
+.ticket{display:grid;grid-template-columns:58px 1fr auto;align-items:stretch;cursor:pointer;text-align:left;padding:0;background:#fff;border:3px solid var(--ink);border-radius:14px;box-shadow:0 4px 0 var(--ink);overflow:hidden}
+.ticket:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.ticket .stub{display:grid;place-items:center;background:var(--blue);color:#fff;font-weight:900;font-size:1.3rem;border-right:3px dashed var(--ink)}
+.ticket.done .stub{background:var(--green)}
+.ticket.next{background:#fff3c4}
+.ticket.next .stub{background:var(--red);animation:pulseBtn 1.4s ease-in-out infinite}
+.ticket .mid{padding:6px 10px;line-height:1.3}
+.ticket .mid b{display:block;font-size:1rem}
+.ticket .mid small{color:var(--soft);font-size:.8rem}
+.ticket .right{display:flex;align-items:center;padding:0 8px}
+.ticket:disabled{cursor:not-allowed;opacity:.5;box-shadow:none;border-style:dashed}
+.ticket:disabled .stub{background:#a8a8b8}
+.stk{display:inline-flex;gap:2px}
+.stk svg{width:22px;height:22px}
+
+/* 出任務畫面 */
+.play-head{display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
+.play-title{font-weight:900;font-size:1.1rem;background:var(--cream);border:3px solid var(--ink);border-radius:12px;padding:.2em .8em;box-shadow:0 4px 0 var(--ink)}
+.say{display:flex;gap:12px;align-items:center;margin-bottom:14px;border:3px solid var(--ink);border-radius:18px;padding:8px 12px;box-shadow:0 5px 0 var(--ink);min-height:76px;background:#fff}
+.say .av{flex:0 0 58px;width:58px;height:58px;border:3px solid var(--ink);border-radius:14px;overflow:hidden;background:var(--sky)}
+.say .av svg{width:100%;height:100%}
+.say .txt .who{display:block;font-size:.82rem;font-weight:900;letter-spacing:.06em}
+.say.radio{background:#1f2338;color:#c8f7c5}
+.say.radio .who{color:#ffd166}
+.say.car{background:#fff3c4}
+.say.car .who{color:var(--red-d)}
+.say.resident .who{color:var(--blue-d)}
+.say.warn{background:#ffe1e3}
+.say.warn .who{color:var(--red-d)}
+.play-grid{display:grid;grid-template-columns:minmax(0,540px) minmax(250px,1fr);gap:20px;align-items:start}
+@media (max-width:860px){.play-grid{grid-template-columns:1fr}}
+.board-wrap{position:relative;width:100%;max-width:540px;aspect-ratio:1/1;margin:0 auto}
+.board-wrap svg{position:absolute;inset:0;width:100%;height:100%}
+#carLayer,#popLayer{pointer-events:none}
+#popLayer{position:absolute;inset:0}
+.cellhit{cursor:pointer}
+.cellhit:hover{fill:rgba(255,255,255,.18)}
+.board-wrap.locked .cellhit{cursor:not-allowed}
+.pop{position:absolute;transform:translate(-50%,-50%);width:120px;height:72px;display:grid;place-items:center;animation:popIn 1.2s cubic-bezier(.3,1.7,.5,1) forwards}
+.pop svg{position:absolute;inset:0;width:100%;height:100%}
+.pop span{position:relative;font-weight:900;font-size:1.25rem;color:var(--ink);white-space:nowrap;text-shadow:0 2px 0 #fff}
+@keyframes popIn{0%{transform:translate(-50%,-50%) scale(.2) rotate(-12deg);opacity:0}25%{transform:translate(-50%,-80%) scale(1.08) rotate(4deg);opacity:1}75%{transform:translate(-50%,-90%) scale(1) rotate(0);opacity:1}100%{transform:translate(-50%,-110%) scale(.9);opacity:0}}
+.status{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
+.status span{display:inline-flex;align-items:center;gap:4px;padding:.15em .75em;border:3px solid var(--ink);border-radius:999px;background:#fff;font-size:.88rem;font-weight:700;box-shadow:0 3px 0 var(--ink)}
+.status span.on{background:#c7f0d8}
+.toolbox h3{display:flex;align-items:center;gap:8px;font-size:1.05rem}
+.toolbox h3::before{content:"";width:14px;height:14px;background:var(--orange);border:3px solid var(--ink);border-radius:4px}
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tool{cursor:pointer;display:flex;align-items:center;gap:8px;padding:6px 10px;min-height:58px;background:#fff;border:3px solid var(--ink);border-radius:14px;box-shadow:0 4px 0 var(--ink);text-align:left;font-size:.95rem;font-weight:800}
+.tool:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.tool svg{flex:0 0 42px;width:42px;height:42px}
+.tool.on{background:var(--yellow);transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.tool:disabled{opacity:.4;cursor:not-allowed}
+.row-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.row-btns .btn{flex:1 1 auto;min-height:46px;padding:.4em .8em;font-size:.95rem}
+.count{margin:12px 0 0;font-size:.9rem;font-weight:700}
+.count b{font-size:1.1rem}
+.thinkbox{margin:10px 0 0;padding:8px 10px;border:3px dashed var(--ink);border-radius:14px;background:#fff8d6;font-size:.95rem}
+.thinkbox b{color:var(--red-d)}
+.drive{border-top:3px dashed rgba(43,45,66,.35);margin-top:16px;padding-top:12px}
+.drive .row-btns .btn.red{flex:2 1 100%;font-size:1.25rem;min-height:62px}
+
+/* 彈出卡片 */
+.modal-bg{position:fixed;inset:0;background:rgba(31,35,56,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+.modal-bg[hidden]{display:none}
+.modal{max-width:660px;width:100%;max-height:92vh;overflow:auto;animation:hop .3s cubic-bezier(.3,1.5,.5,1)}
+.dispatch .dh{display:flex;align-items:center;gap:8px;background:#1f2338;color:#ffd166;margin:-18px -20px 14px;padding:10px 18px;border-bottom:4px solid var(--ink);border-radius:20px 20px 0 0;font-weight:900;letter-spacing:.12em}
+.dispatch .dh i{width:12px;height:12px;border-radius:50%;background:var(--red);border:2px solid #fff;animation:blink 1s steps(2) infinite}
+.caller{display:flex;gap:12px;align-items:center;background:#fff;border:3px solid var(--ink);border-radius:16px;padding:8px 12px;margin:8px 0}
+.caller .av{flex:0 0 58px;width:58px;height:58px;border:3px solid var(--ink);border-radius:14px;overflow:hidden;background:var(--sky)}
+.facts{list-style:none;padding:0;margin:10px 0;display:grid;gap:6px}
+.facts li{display:flex;gap:8px;align-items:flex-start;font-size:.95rem}
+.facts li b{flex:0 0 auto;background:var(--ink);color:#fff;border-radius:8px;padding:0 .5em;font-size:.82rem;line-height:1.7}
+.report{text-align:center;position:relative}
+.report .stampbig{position:absolute;right:6px;top:2px;transform:rotate(12deg);color:var(--red);border:4px solid var(--red);border-radius:12px;padding:2px 10px;font-weight:900;font-size:1.2rem;letter-spacing:.15em;animation:stampIn .5s cubic-bezier(.3,1.6,.5,1) .3s both}
+@keyframes stampIn{from{transform:rotate(12deg) scale(2.4);opacity:0}to{transform:rotate(12deg) scale(1);opacity:.9}}
+.stickers{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+.sticker{padding:8px 4px;border:3px dashed rgba(43,45,66,.35);border-radius:18px;background:#fff}
+.sticker .disc{width:64px;height:64px;margin:0 auto;border-radius:50%;border:3px solid var(--ink);display:grid;place-items:center;background:#eee;filter:grayscale(1);opacity:.45}
+.sticker .disc svg{width:40px;height:40px}
+.sticker.got{border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink)}
+.sticker.got .disc{filter:none;opacity:1}
+.sticker.new .disc{animation:stick .6s cubic-bezier(.3,1.8,.5,1) both}
+@keyframes stick{from{transform:scale(.2) rotate(-40deg)}to{transform:scale(1) rotate(0)}}
+.sticker b{display:block;font-size:.95rem;margin-top:4px}
+.sticker small{display:block;font-size:.78rem;color:var(--soft);line-height:1.35}
+.badge-row{display:flex;gap:10px;align-items:center;margin:6px auto;padding:8px 12px;border:3px dashed rgba(43,45,66,.35);border-radius:16px;max-width:560px;font-size:.92rem;text-align:left;background:#fff}
+.badge-row.got{border:3px solid var(--ink);background:#c7f0d8}
+.badge-row svg{flex:0 0 40px;width:40px;height:40px}
+.reflect{margin:10px auto;padding:10px;border:3px dashed var(--ink);border-radius:16px;background:#fff8d6}
+.reflect .q{margin:0 0 8px;font-weight:900}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chip{cursor:pointer;padding:.3em .85em;border:3px solid var(--ink);border-radius:999px;background:#fff;font-size:.9rem;font-weight:700;box-shadow:0 3px 0 var(--ink)}
+.chip.on{background:var(--green);color:#fff}
+.reply{min-height:1.5em;margin:8px 0 0;color:var(--soft)}
+.actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:14px}
+.party{max-width:800px;margin:0 auto;text-align:center}
+.party .story{text-align:left;max-width:660px;margin:12px auto}
+.reward{background:#fff3c4;border:3px dashed var(--ink);border-radius:14px;padding:8px 12px}
+.diorama{width:100%;height:auto;display:block;border:4px solid var(--ink);border-radius:18px;background:var(--sky)}
+.diorama .new-build{animation:dropIn .9s cubic-bezier(.3,1.6,.5,1) both;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes dropIn{0%{opacity:0;transform:translateY(-60px)}60%{opacity:1}100%{opacity:1;transform:none}}
+.diorama .spin{animation:spin 5s linear infinite;transform-box:fill-box;transform-origin:center}
+@keyframes spin{to{transform:rotate(360deg)}}
+.diorama .sway{animation:sway 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 0}
+@keyframes sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+.diorama .twinkle{animation:blink 1.2s steps(2) infinite}
+.diorama .conf{animation:fall 3s linear infinite;transform-box:fill-box;transform-origin:center}
+@keyframes fall{0%{transform:translateY(-60px) rotate(0)}100%{transform:translateY(330px) rotate(320deg)}}
+.diorama .bounce{animation:bounce 1s ease-in-out infinite;transform-box:fill-box}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.deco-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;align-items:start}
+@media (max-width:860px){.deco-grid{grid-template-columns:1fr}}
+.deco-opts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.deco-opt{cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px 8px;background:#fff;border:3px solid var(--ink);border-radius:14px;box-shadow:0 4px 0 var(--ink);font-size:.9rem;font-weight:700}
+.deco-opt svg{width:76px;height:58px}
+.deco-opt.on{background:var(--yellow);transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.row{display:flex;align-items:center;gap:10px;margin:8px 0}
+.row input[type=range]{flex:1}
+details{margin-top:14px;border-top:3px dashed rgba(43,45,66,.3);padding-top:8px}
+summary{cursor:pointer;font-weight:800}
+.log-table{width:100%;border-collapse:collapse;font-size:.78rem;margin:8px 0}
+.log-table th,.log-table td{border:1px solid #ccc;padding:3px 4px;text-align:center;white-space:nowrap}
+textarea{width:100%;height:90px;font-size:.75rem;font-family:monospace}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition:none!important}}
+
+/* v3：直接選方向，點原路旋轉；停車後可直接修路 */
+.easy-palette{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.easy-road{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:86px;padding:5px 3px;background:#fff;border:3px solid var(--ink);border-radius:14px;box-shadow:0 4px 0 var(--ink);font-size:15px;font-weight:800;cursor:pointer}
+.easy-road svg{width:52px;height:48px}.easy-road.on{background:#fff0bc;box-shadow:inset 0 0 0 3px var(--yellow),0 4px 0 var(--ink)}
+.easy-road.erase{grid-column:span 3;min-height:43px;flex-direction:row;background:#fff0f3}
+.easy-road.erase.on{background:#ffcad4;box-shadow:inset 0 0 0 2px #e63946,0 4px 0 var(--ink)}
+.easy-road:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}.easy-road:focus-visible{outline:4px solid var(--blue);outline-offset:3px}
+.easy-help{font-size:14px;line-height:1.75;margin:13px 0 8px;background:#fff3c9;border:2px dashed #d99a00;border-radius:12px;padding:9px 11px;min-height:64px}
+.legacy-tools{display:none!important}.cellhit{touch-action:manipulation}#roadPreview{pointer-events:none}
+@media(max-width:820px){.easy-palette{grid-template-columns:repeat(3,minmax(0,1fr))}.play-grid>div:last-child{margin-top:4px}}
+
+
+#mobileControls{display:none}
+@media(max-width:860px){
+ #s-play{padding-bottom:170px}.legacy-tools,#roadPalette,#editHelp{display:none!important}
+ #mobileControls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:700px;padding:9px 10px calc(10px + env(safe-area-inset-bottom));background:#fff8e7f5;border:3px solid var(--ink);border-bottom:0;border-radius:18px 18px 0 0;box-shadow:0 -4px 18px #2b2d4230;z-index:25}
+ #mobileControls .easy-road{min-height:58px;font-size:12px;gap:0;padding:2px;box-shadow:0 2px 0 var(--ink)}
+ #mobileControls .easy-road svg{width:35px;height:30px}#mobileControls .easy-road.erase{grid-column:auto;font-size:12px;flex-direction:column}
+ #mobileControls .mobile-drive{background:#e63946;color:#fff;font-size:16px;line-height:1.3;font-weight:900}
+ #mobileControls .easy-road.on{background:#ffdf72;box-shadow:inset 0 0 0 2px #d99a00}
+ .modal-bg{z-index:50}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <pattern id="felt" width="12" height="12" patternUnits="userSpaceOnUse"><rect width="12" height="12" fill="#74c477"/><circle cx="3" cy="4" r="1" fill="#63b267"/><circle cx="9" cy="9" r="1" fill="#86d088"/><circle cx="8" cy="2" r=".8" fill="#63b267"/></pattern>
+  <pattern id="water" width="40" height="20" patternUnits="userSpaceOnUse"><rect width="40" height="20" fill="#4cc9f0"/><path d="M2 12 q8 -6 16 0 t16 0" fill="none" stroke="#bdeefc" stroke-width="3" stroke-linecap="round"/></pattern>
+</defs></svg>
+
+<div class="app">
+  <header class="topbar">
+    <div class="brand" id="brandLogo"></div>
+    <div class="top-tools">
+      <button class="btn small" id="quickSound" type="button"></button>
+      <button class="btn small" id="btnSettings" type="button">設定</button>
+    </div>
+  </header>
+
+  <!-- 開場：無線電 -->
+  <section id="s-intro" class="screen">
+    <div class="panel">
+      <div class="title-blocks" aria-label="救援小車隊"><span style="background:var(--red)">救</span><span style="background:var(--blue)">援</span><span style="background:var(--yellow);color:var(--ink);text-shadow:none">小</span><span style="background:var(--green)">車</span><span style="background:var(--orange)">隊</span></div>
+      <div class="intro-grid">
+        <div id="walkie"></div>
+        <div>
+          <div class="radio-lines" id="radioLines" aria-live="polite"></div>
+          <div class="actions" style="justify-content:flex-start"><button class="btn small" id="btnSkip" type="button">跳過無線電</button></div>
+        </div>
+      </div>
+      <div id="idArea"></div>
+    </div>
+  </section>
+
+  <!-- 任務板 -->
+  <section id="s-map" class="screen">
+    <div class="stages" id="stages"></div>
+    <div class="board-grid">
+      <div class="panel">
+        <div class="head-row"><h2>草地救援站</h2><span id="mapProgress" class="soft"></span></div>
+        <div class="meter" aria-hidden="true"><span id="mapBar"></span></div>
+        <div id="mapScene"></div>
+        <p id="mapNote" style="margin:.7em 0 0;font-weight:700"></p>
+      </div>
+      <div class="panel">
+        <div class="head-row"><h2>出勤單</h2><span class="soft" id="memberName"></span></div>
+        <div class="tickets" id="tickets"></div>
+        <button class="btn yellow" data-go="deco" id="btnDeco" type="button">布置基地和小輪</button>
+        <p class="soft" id="decoHint"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 出任務 -->
+  <section id="s-play" class="screen">
+    <div class="play-head">
+      <button class="btn small" data-go="map" type="button">← 任務板</button>
+      <div class="play-title" id="lvlTitle"></div>
+      <div style="display:flex;gap:8px"><button class="btn small" id="btnBrief" type="button">出勤單</button><button class="btn small blue" id="btnHint" type="button">路線提示</button></div>
+    </div>
+    <div class="say" id="say" aria-live="polite"><div class="av" id="sayAv"></div><div class="txt" id="sayTxt"></div></div>
+    <div class="play-grid">
+      <div>
+        <div class="board-wrap" id="boardWrap">
+          <svg id="board" viewBox="-18 -18 536 536" role="group" aria-label="救援地圖"></svg>
+          <svg id="carLayer" viewBox="-18 -18 536 536" aria-hidden="true"></svg>
+          <div id="popLayer" aria-hidden="true"></div>
+        </div>
+        <div class="status" id="status"></div>
+      </div>
+      <div class="panel toolbox">
+        <h3>工具箱：排道路</h3>
+        <div id="roadPalette" class="easy-palette" role="group" aria-label="選擇道路方向"></div><p id="editHelp" class="easy-help" role="status"></p><div class="tools legacy-tools" role="group" aria-label="舊道路工具" hidden>
+          <button class="tool" data-tool="s" type="button"></button>
+          <button class="tool" data-tool="c" type="button"></button>
+          <button class="tool" data-act="turnSel" type="button" id="btnTurnSel"></button>
+          <button class="tool" data-tool="rot" type="button"></button>
+          <button class="tool" data-tool="erase" type="button"></button>
+        </div>
+        <div class="row-btns">
+          <button class="btn small" data-act="undo" type="button">上一步</button>
+          <button class="btn small" data-act="clear" type="button">清空道路</button>
+        </div>
+        <p class="count" id="roadCount"></p>
+        <div class="thinkbox" id="thinkLine"></div>
+        <div class="drive">
+          <div class="row-btns">
+            <button class="btn red" data-act="go" type="button" id="btnGo">叭叭！出發</button>
+            <button class="btn" data-act="pause" type="button" id="btnPause">暫停</button>
+            <button class="btn" data-act="workshop" type="button" id="btnWorkshop">回工坊</button>
+            <button class="btn" data-act="replay" type="button" id="btnReplay">重播</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  <div id="mobileControls" role="group" aria-label="觸控快捷工具"></div>
+</section>
+
+  <section id="s-party" class="screen"><div class="panel party" id="partyBox"></div></section>
+
+  <section id="s-deco" class="screen">
+    <div class="deco-grid">
+      <div class="panel"><h2>布置草地救援站</h2><div id="decoScene"></div><p class="soft">每一類選一款，隨時可以回來換，不用花任何東西。</p></div>
+      <div class="panel" id="decoPanel"></div>
+    </div>
+    <div class="actions"><button class="btn yellow big" data-go="map" type="button">布置好了</button></div>
+  </section>
+</div>
+
+<div class="modal-bg" id="modal" hidden><div class="modal panel" id="modalBox" role="dialog" aria-modal="true"></div></div>
+<input type="file" id="importFile" accept="application/json,.json" hidden>
+
+<script>
+(function(){
+'use strict';
+const $=s=>document.querySelector(s);
+const SPD=()=>window.__fast?0.08:1;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms*SPD()));
+const I='#2b2d42';
+const f1=n=>(+n).toFixed(1);
+
+/* =========================================================
+   方向與道路
+   ========================================================= */
+const DIRS={N:[-1,0],E:[0,1],S:[1,0],W:[0,-1]};
+const OPP={N:'S',S:'N',E:'W',W:'E'};
+const EDGE={N:[50,0],E:[100,50],S:[50,100],W:[0,50]};
+const DNAME={N:'上',E:'右',S:'下',W:'左'};
+function conns(t){if(t.k==='s')return t.r%2===0?['W','E']:['N','S'];return [['N','E'],['E','S'],['S','W'],['W','N']][t.r%4];}
+const MAXROAD=18,N=5;
+
+/* =========================================================
+   角色：隊長、小輪、居民（木偶造型）
+   ========================================================= */
+const PEOPLE={
+  lun:{name:'阿輪隊長',body:'#e63946',skin:'#f6d5b0',hair:'#3d2c20',hat:'cap',hatc:'#e63946'},
+  tian:{name:'田伯',body:'#52b788',skin:'#f0c9a0',hair:'#7a6650',hat:'straw',beard:1},
+  sui:{name:'小穗',body:'#ffbe0b',skin:'#f6d5b0',hair:'#6b4a32',pony:1,clip:'#e63946'},
+  mei:{name:'莓莓奶奶',body:'#9b7fc0',skin:'#f6d5b0',hair:'#e8e4da',bun:1,glasses:1}
+};
+
+/* =========================================================
+   第一級：草地救援站十關
+   地圖代號：. 草地  R 石頭  W 河  F 花田  T 工具站  P 包裹
+            B 橫向斷橋  b 直向斷橋  S 車庫（起點）  G 居民家（終點）
+   ========================================================= */
+const LV=[
+ {name:'第一份救援任務',who:'tian',cargo:'種子',sug:3,sDir:'E',gEntry:'W',
+  say:'暴風雨把田裡的種子吹走了。可以幫我送一袋種子來嗎？',thanks:'田伯收到種子，可以重新播種了！',
+  q:'小輪會從車庫往哪個方向開出去？',map:['.....','..P..','S...G','.....','.....']},
+ {name:'繞過大石頭',who:'sui',cargo:'食物',sug:5,sDir:'E',gEntry:'W',
+  say:'路中間滾來一顆大石頭！我們家的米快吃完了，可以繞過去送來嗎？',thanks:'小穗一家有晚餐了！',
+  q:'石頭擋在中間，你想從上面繞，還是從下面繞？',map:['.....','.....','S.R.G','..P..','.....']},
+ {name:'先到工具站',who:'tian',cargo:'木板',sug:5,sDir:'E',gEntry:'W',needPlank:true,
+  say:'我的柵欄被吹壞了，需要一塊木板。先去工具站拿木板，再送過來！',thanks:'柵欄修好了，小羊不會跑出去了！',
+  q:'木板在哪裡？小輪要先去哪裡、再去哪裡？',map:['.....','..T..','S...G','...P.','.....']},
+ {name:'小橋修好了再過',who:'mei',cargo:'生活物資',sug:5,sDir:'N',gEntry:'W',
+  say:'河上的小橋斷了，我在對岸等你。記得帶木板去修橋喔。',thanks:'莓莓奶奶收到物資，還說橋修得好穩！',
+  q:'小輪開到橋邊之前，身上要先有什麼？',map:['.PW..','.TW..','S.B.G','..W..','..W..']},
+ {name:'花田的兩條路',who:'sui',cargo:'花苗',sug:5,sDir:'E',gEntry:'W',
+  say:'花田不能踩。從上面走、從下面走，哪一條比較好呢？',thanks:'花苗送到了，小穗說要種一整排！',
+  q:'上面和下面兩條路，哪一條可以順便拿到包裹？',map:['..F..','S..P.','..F..','....G','..F..']},
+ {name:'工具站在下面',who:'mei',cargo:'生活物資',sug:5,sDir:'S',gEntry:'W',
+  say:'這次工具站在南邊。先往下拿木板，再去修橋吧。',thanks:'奶奶家的物資補齊了！',
+  q:'拿完木板以後，要怎麼回到橋頭？',map:['...W.','...W.','S..BG','.T.W.','.P.W.']},
+ {name:'繞路也能救援',who:'tian',cargo:'種子',sug:5,sDir:'E',gEntry:'W',
+  say:'石頭擋了兩個地方。繞一點路也沒關係，只要送得到就好。',thanks:'種子送到了，田伯說繞路的風景也很好！',
+  q:'兩顆石頭在哪裡？哪一邊比較好繞？',map:['....W','...R.','S.R.G','.....','..P..']},
+ {name:'河邊的小幫手',who:'sui',cargo:'小羊飼料',sug:5,sDir:'S',gEntry:'W',
+  say:'河對岸的小羊肚子餓了！要先拿木板修橋，路上還有一個包裹可以順便送。',thanks:'小羊吃得好開心，咩咩咩！',
+  q:'拿木板、修橋、拿包裹，哪一件事要先做？',map:['.S...','.T...','WWbWW','....G','...P.']},
+ {name:'自己的新路線',who:'lun',cargo:'生活物資',sug:5,sDir:'E',gEntry:'W',
+  say:'這次地圖很空曠，你可以設計自己的路線。成功以後，試試看再找一條不一樣的！',thanks:'物資送到了，這是你自己設計的路線！',
+  q:'如果不能走上次的路，你會從哪裡開始改？',map:['..P..','....G','.R...','S....','....W']},
+ {name:'救援站落成任務',who:'all',cargo:'派對物資',sug:5,sDir:'E',gEntry:'W',
+  say:'大家要來救援站開派對！這裡有兩個工具站，拿木板修橋，把最後一批物資送到吧！',thanks:'物資都送到了，救援站要開派對囉！',
+  q:'有兩個工具站，你想去哪一個？為什麼？',map:['.P.W.','.T.W.','S..BG','.T.W.','F..W.']}
+];
+const LEVEL_NAMES=['草地救援站','森林修橋隊','山谷運輸隊','小鎮合作隊','海島救援隊'];
+const BASE_STEPS=['車庫立起來了','車庫蓋上屋頂，掛上招牌','小輪開進車庫','工具倉庫堆滿木板','信號塔亮起燈','花田開花了','風車轉起來了','居民的小屋蓋好了','廣場放上長椅','掛上旗子，救援站落成！'];
+const STRATS=[
+ ['goal','我先看終點在哪裡','從終點往回想，是很聰明的方法！'],
+ ['block','我先找出障礙物','先知道哪裡不能走，路就好排了。'],
+ ['tool','我先想木板要去哪裡拿','先想好順序，事情就不會漏掉。'],
+ ['try','我一邊試車一邊修','試試看、再修一修，就是工程師的做法。'],
+ ['finger','我先用手指走一遍','用手指走一遍，可以先發現斷掉的地方。'],
+ ['own','我有自己的方法','太好了！可以說給隊長或同學聽聽看。']
+];
+const DECO={
+  car:{title:'小輪的車色',opts:[['red','番茄紅'],['gold','金黃'],['sky','晴空藍']]},
+  roof:{title:'基地屋頂',opts:[['coral','珊瑚紅'],['ocean','海洋藍'],['forest','森林綠']]},
+  pet:{title:'基地夥伴',opts:[['dog','小狗'],['cat','小貓'],['rabbit','小兔']]}
+};
+const CARC={red:'#e63946',gold:'#ffbe0b',sky:'#3a86ff'};
+const ROOFC={coral:'#ff6b6b',ocean:'#3a86ff',forest:'#2d8a5f'};
+
+function parseLevel(i){const L=LV[i],t=[];let s=null,g=null;
+  for(let r=0;r<N;r++)for(let c=0;c<N;c++){const ch=L.map[r][c];t.push(ch);if(ch==='S')s=r*N+c;if(ch==='G')g=r*N+c;}
+  return {t,s,g};}
+const buildable=ch=>'.TPBb'.includes(ch);
+
+/* =========================================================
+   進度保存（與第一版不同的保存位置，兩版可並存）
+   ========================================================= */
+const KEY='rescueCars.v2';
+function freshLv(){return{rescue:false,parcel:false,strategy:false,routes:[],roads:{}};}
+function defaults(){return{lv:LV.map(()=>freshLv()),cur:0,name:'',memberNo:Math.floor(Math.random()*90+10),introSeen:false,deco:{car:'red',roof:'coral',pet:'dog'},unlockedDeco:false,log:[],sound:true,vol:0.7};}
+function normalize(o){
+ const d=defaults();if(!o||typeof o!=='object'||Array.isArray(o))return d;
+ if(Array.isArray(o.lv))d.lv=d.lv.map((f,i)=>{const a=o.lv[i];if(!a||typeof a!=='object')return f;
+  f.rescue=a.rescue===true;f.parcel=f.rescue&&a.parcel===true;f.strategy=f.rescue&&a.strategy===true;
+  f.routes=Array.isArray(a.routes)?[...new Set(a.routes.filter(x=>typeof x==='string'&&/^\d+(?:-\d+)*$/.test(x)&&x.split('-').every(v=>+v<25)))].slice(0,500):[];
+  const terrain=parseLevel(i).t,roads=a.roads;
+  if(roads&&typeof roads==='object'&&!Array.isArray(roads))for(const [k,t]of Object.entries(roads)){
+   const c=Number(k);if(!/^\d+$/.test(k)||!Number.isInteger(c)||c<0||c>=25||!buildable(terrain[c])||!t||!['s','c'].includes(t.k)||!Number.isInteger(t.r)||t.r<0||t.r>3)continue;
+   if(Object.keys(f.roads).length>=MAXROAD)continue;if('Bb'.includes(terrain[c]))f.roads[c]={k:'s',r:terrain[c]==='B'?0:1};else f.roads[c]={k:t.k,r:t.r%(t.k==='s'?2:4)};
+  }return f;});
+ let unlocked=true;d.lv.forEach(l=>{if(!unlocked){l.rescue=l.parcel=l.strategy=false;l.routes=[];}unlocked=unlocked&&l.rescue;});
+ d.cur=Number.isInteger(o.cur)&&o.cur>=0&&o.cur<LV.length&&(o.cur===0||d.lv[o.cur-1].rescue)?o.cur:0;
+ d.name=typeof o.name==='string'?o.name.trim().slice(0,8):'';
+ d.memberNo=Number.isInteger(o.memberNo)&&o.memberNo>=10&&o.memberNo<=99?o.memberNo:d.memberNo;
+ d.introSeen=o.introSeen===true;d.sound=typeof o.sound==='boolean'?o.sound:d.sound;
+ d.vol=Number.isFinite(o.vol)?Math.min(1,Math.max(0,o.vol)):d.vol;
+ if(o.deco&&typeof o.deco==='object')for(const k of Object.keys(DECO))if(DECO[k].opts.some(x=>x[0]===o.deco[k]))d.deco[k]=o.deco[k];
+ d.unlockedDeco=d.lv.every(x=>x.rescue);
+ if(Array.isArray(o.log))d.log=o.log.filter(l=>l&&typeof l==='object').slice(-500).map(l=>({time:typeof l.time==='string'?l.time.slice(0,40):'',lvl:Number.isInteger(l.lvl)&&l.lvl>=1&&l.lvl<=10?l.lvl:1,result:typeof l.result==='string'?l.result.slice(0,40):'',roads:Number.isInteger(l.roads)?Math.max(0,Math.min(25,l.roads)):0,parcel:l.parcel===1?1:0,newRoute:l.newRoute==='是'?'是':l.newRoute==='否'?'否':'',hints:Number.isInteger(l.hints)?Math.max(0,l.hints):0,strategy:STRATS.some(x=>x[0]===l.strategy)?l.strategy:''}));
+ return d;
+}
+function esc(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function load(){try{const s=localStorage.getItem(KEY);if(s)return normalize(JSON.parse(s));}catch(e){}return defaults();}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(P));}catch(e){}}
+let P=load();
+const allDone=()=>P.lv.every(x=>x.rescue);
+const callName=()=>P.name?`隊員${esc(P.name)}`:'新隊員';
+
+/* =========================================================
+   音效（程式合成：無線電、喇叭、木頭玩具聲）
+   ========================================================= */
+const Snd={
+ ctx:null,master:null,nb:null,
+ init(){try{if(!this.ctx){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;this.ctx=new AC();this.master=this.ctx.createGain();this.master.connect(this.ctx.destination);
+   const len=this.ctx.sampleRate*2,b=this.ctx.createBuffer(1,len,this.ctx.sampleRate),d=b.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;this.nb=b;}
+   if(this.ctx.state==='suspended')this.ctx.resume();this.apply();}catch(e){}},
+ apply(){if(this.master)this.master.gain.value=P.sound?P.vol*0.9:0;},
+ play(fn){if(!this.ctx||!P.sound||P.vol<=0)return;try{fn(this.ctx.currentTime+0.02);}catch(e){}},
+ osc(f,t,dur,o={}){const c=this.ctx,os=c.createOscillator(),v=c.createGain();os.type=o.type||'sine';os.frequency.setValueAtTime(f,t);if(o.glide)os.frequency.exponentialRampToValueAtTime(o.glide,t+dur*0.7);
+   const g=o.g||0.2,a=o.a||0.005;v.gain.setValueAtTime(0.0001,t);v.gain.exponentialRampToValueAtTime(g,t+a);v.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+   if(o.lp){const fl=c.createBiquadFilter();fl.type='lowpass';fl.frequency.value=o.lp;os.connect(fl);fl.connect(v);}else os.connect(v);v.connect(this.master);os.start(t);os.stop(t+dur+0.05);},
+ noise(t,dur,o={}){const c=this.ctx,s=c.createBufferSource();s.buffer=this.nb;s.loop=true;const fl=c.createBiquadFilter();fl.type=o.type||'bandpass';fl.frequency.setValueAtTime(o.f||1200,t);
+   if(o.f2)fl.frequency.exponentialRampToValueAtTime(o.f2,t+dur);fl.Q.value=o.q||1;const v=c.createGain(),g=o.g||0.12;v.gain.setValueAtTime(0.0001,t);v.gain.exponentialRampToValueAtTime(g,t+(o.a||0.005));
+   v.gain.exponentialRampToValueAtTime(0.0001,t+dur);s.connect(fl);fl.connect(v);v.connect(this.master);s.start(t,Math.random());s.stop(t+dur+0.05);},
+ mar(f,t,g=0.2,dur=0.5){this.osc(f,t,dur,{g});this.osc(f*4,t,0.08,{g:g*0.22});this.osc(f*2.01,t,0.18,{g:g*0.12});},
+ wood(f,t,g=0.3){this.osc(f,t,0.12,{type:'triangle',g});this.osc(f*3.1,t,0.04,{g:g*0.4});this.noise(t,0.025,{g:g*0.5,f:2600,q:2.5});},
+ radio(){this.play(t=>{this.noise(t,0.22,{g:0.07,f:2200,q:0.8});this.osc(1320,t+0.24,0.07,{type:'square',g:0.04});this.osc(1320,t+0.36,0.07,{type:'square',g:0.04});});},
+ select(){this.play(t=>this.wood(880,t,0.18));},
+ place(){this.play(t=>{this.wood(420,t,0.32);this.wood(620,t+0.05,0.15);});},
+ rotate(){this.play(t=>{this.wood(700,t,0.16);this.wood(820,t+0.07,0.14);});},
+ erase(){this.play(t=>this.wood(230,t,0.26));},
+ deny(){this.play(t=>{this.osc(260,t,0.12,{type:'square',g:0.05,lp:900});this.osc(200,t+0.12,0.18,{type:'square',g:0.05,lp:900});});},
+ horn(){this.play(t=>{[0,0.2].forEach(d=>{this.osc(440,t+d,0.14,{type:'square',g:0.06,lp:1800});this.osc(554,t+d,0.14,{type:'square',g:0.05,lp:1800});});this.osc(90,t+0.4,0.7,{type:'sawtooth',g:0.07,glide:150,lp:500,a:0.06});});},
+ tick(){this.play(t=>this.osc(180,t,0.06,{type:'triangle',g:0.03}));},
+ plank(){this.play(t=>{this.mar(784,t,0.17,0.3);this.mar(1175,t+0.1,0.17,0.45);});},
+ knock(){this.play(t=>{[0,0.22,0.44].forEach(d=>{this.wood(300,t+d,0.4);this.noise(t+d,0.05,{g:0.2,f:1800,q:1.5});});});},
+ parcel(){this.play(t=>{this.mar(1319,t,0.16,0.3);this.mar(1568,t+0.09,0.16,0.3);this.mar(2093,t+0.18,0.12,0.5);});},
+ brake(){this.play(t=>{this.osc(1500,t,0.4,{type:'sawtooth',g:0.03,glide:900,lp:2500});this.noise(t,0.4,{g:0.06,f:2500,f2:900,q:3});this.osc(160,t+0.35,0.4,{type:'triangle',g:0.12});});},
+ hint(){this.play(t=>{[1047,1319,1568].forEach((f,i)=>this.osc(f,t+i*0.08,0.4,{g:0.06}));});},
+ success(){this.play(t=>{[0,0.14].forEach(d=>this.osc(523,t+d,0.1,{type:'square',g:0.05,lp:2000}));[523,659,784,1047].forEach((f,i)=>this.mar(f,t+0.35+i*0.11,0.2,i===3?0.9:0.4));});},
+ star(i){this.play(t=>{const f=[1047,1175,1319][i]||1319;this.mar(f,t,0.2,0.6);this.wood(500,t,0.15);});},
+ stamp(){this.play(t=>{this.osc(110,t,0.18,{type:'triangle',g:0.3});this.noise(t,0.08,{g:0.2,type:'lowpass',f:700});});},
+ deco(){this.play(t=>{this.wood(660,t,0.2);this.mar(990,t+0.08,0.14,0.3);});},
+ celebrate(){this.play(t=>{[0,0.2].forEach(d=>this.osc(523,t+d,0.12,{type:'square',g:0.05,lp:2000}));const mel=[523,659,784,659,784,880,1047,0,880,1047,1175,1319];let tt=t+0.45;
+   mel.forEach((f,i)=>{if(f){this.mar(f,tt,0.18,0.4);if(i%2===0)this.mar(f/2,tt,0.08,0.5);this.wood(i%2?800:500,tt,0.08);}tt+=0.16;});
+   this.mar(1047,tt,0.18,1.3);this.mar(1319,tt,0.11,1.3);this.mar(1568,tt,0.09,1.3);
+   this.noise(tt-0.25,1.5,{g:0.05,f:1400,q:0.7,a:0.3});for(let k=0;k<8;k++){const s=tt-0.2+Math.random()*1.1;this.osc(430+Math.random()*260,s,0.26,{type:'triangle',g:0.04,glide:720+Math.random()*320});}});}
+};
+document.addEventListener('pointerdown',()=>Snd.init(),true);
+document.addEventListener('keydown',()=>Snd.init(),true);
+
+/* =========================================================
+   圖像：木偶居民、小輪、任務章
+   ========================================================= */
+function pegFace(o){
+  let s=`<path d="M10 60 Q10 44 30 42 Q50 44 50 60Z" fill="${o.body}"/>`;
+  if(o.pony)s+=`<circle cx="45" cy="18" r="6" fill="${o.hair}"/>`;
+  if(o.bun)s+=`<circle cx="30" cy="7" r="6.5" fill="${o.hair}"/>`;
+  s+=`<circle cx="30" cy="26" r="16" fill="${o.skin}"/>`;
+  if(!o.hat)s+=`<path d="M14 25 Q14 9 30 9 Q46 9 46 25 Q40 16 30 16 Q20 16 14 25Z" fill="${o.hair}"/>`;
+  if(o.hat==='cap')s+=`<path d="M14 20 Q15 6 30 6 Q45 6 46 20Z" fill="${o.hatc}"/><path d="M38 19 H55" stroke-width="4"/><path d="M27 11 h6 M30 8 v6" stroke="#fff" stroke-width="2.4"/>`;
+  if(o.hat==='straw')s+=`<path d="M17 17 Q30 0 43 17Z" fill="#ffd166"/><path d="M7 18 H53" stroke-width="3.5"/><path d="M20 15 H40" stroke="#e63946" stroke-width="3"/>`;
+  s+=`<ellipse cx="24" cy="27" rx="2.2" ry="2.8" fill="${I}" stroke="none"/><ellipse cx="36" cy="27" rx="2.2" ry="2.8" fill="${I}" stroke="none"/>`;
+  if(o.glasses)s+=`<circle cx="24" cy="27" r="5" fill="none" stroke-width="2"/><circle cx="36" cy="27" r="5" fill="none" stroke-width="2"/><path d="M29 27 H31" stroke-width="2"/>`;
+  s+=o.beard?`<path d="M20 33 Q30 42 40 33" fill="#fff" stroke-width="2.4"/>`:`<path d="M25 33 Q30 37 35 33" fill="none" stroke-width="2.6"/>`;
+  s+=`<circle cx="19" cy="32" r="2.6" fill="#ff8fa3" stroke="none"/><circle cx="41" cy="32" r="2.6" fill="#ff8fa3" stroke="none"/>`;
+  if(o.clip)s+=`<circle cx="40" cy="12" r="3.6" fill="${o.clip}" stroke-width="2"/>`;
+  return s;
+}
+function avatarSVG(key){
+  const wrap=inner=>`<g stroke="${I}" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round">${inner}</g>`;
+  if(key==='car')return carFaceSVG(CARC[P.deco.car]);
+  if(key==='all')return `<svg viewBox="0 0 60 60" aria-hidden="true"><rect width="60" height="60" fill="#cdeffd"/><g transform="translate(-6 8) scale(.7)">${wrap(pegFace(PEOPLE.lun))}</g><g transform="translate(22 12) scale(.7)">${wrap(pegFace(PEOPLE.mei))}</g></svg>`;
+  return `<svg viewBox="0 0 60 60" aria-hidden="true"><rect width="60" height="60" fill="#cdeffd"/>${wrap(pegFace(PEOPLE[key]))}</svg>`;
+}
+function carFaceSVG(col){
+  return `<svg viewBox="0 0 60 60" aria-hidden="true"><rect width="60" height="60" fill="#fff3c4"/><g stroke="${I}" stroke-width="2.8" stroke-linejoin="round">
+    <rect x="25" y="4" width="10" height="8" rx="3" fill="#e63946"/><rect x="30" y="4" width="5" height="8" rx="2" fill="#3a86ff"/>
+    <path d="M10 30 Q12 12 30 12 Q48 12 50 30Z" fill="${col}"/>
+    <rect x="6" y="28" width="48" height="20" rx="8" fill="${col}"/>
+    <path d="M15 28 Q17 17 30 17 Q43 17 45 28Z" fill="#cdeffd"/>
+    <circle cx="23" cy="24" r="5" fill="#fff"/><circle cx="37" cy="24" r="5" fill="#fff"/>
+    <circle cx="24" cy="25" r="2.4" fill="${I}" stroke="none"/><circle cx="38" cy="25" r="2.4" fill="${I}" stroke="none"/>
+    <path d="M22 38 Q30 44 38 38" fill="none" stroke-width="3"/>
+    <circle cx="12" cy="37" r="3.6" fill="#ffd166"/><circle cx="48" cy="37" r="3.6" fill="#ffd166"/>
+    <rect x="8" y="46" width="12" height="9" rx="3" fill="${I}"/><rect x="40" y="46" width="12" height="9" rx="3" fill="${I}"/>
+  </g></svg>`;
+}
+// 俯視的小輪（車頭朝右）
+function carTop(col,plank,parcel,happy){
+  return `<g stroke="${I}" stroke-width="3" stroke-linejoin="round">
+    <rect x="-20" y="-20" width="13" height="8" rx="3" fill="${I}"/><rect x="9" y="-20" width="13" height="8" rx="3" fill="${I}"/>
+    <rect x="-20" y="12" width="13" height="8" rx="3" fill="${I}"/><rect x="9" y="12" width="13" height="8" rx="3" fill="${I}"/>
+    <rect x="-27" y="-16" width="54" height="32" rx="12" fill="${col}"/>
+    <rect x="-8" y="-11" width="16" height="22" rx="6" fill="#cdeffd"/>
+    <rect x="-5" y="-6" width="6" height="12" rx="2" fill="#e63946" stroke-width="2"/><rect x="1" y="-6" width="4" height="12" rx="2" fill="#3a86ff" stroke-width="2"/>
+    <circle cx="17" cy="-7" r="5.5" fill="#fff" stroke-width="2.4"/><circle cx="17" cy="7" r="5.5" fill="#fff" stroke-width="2.4"/>
+    <circle cx="19.5" cy="${happy?-8:-7}" r="2.6" fill="${I}" stroke="none"/><circle cx="19.5" cy="${happy?6:7}" r="2.6" fill="${I}" stroke="none"/>
+    ${plank?'<rect x="-25" y="-12" width="15" height="7" rx="2" fill="#d39b5f" stroke-width="2"/><rect x="-25" y="-3" width="15" height="7" rx="2" fill="#b07a43" stroke-width="2"/>':''}
+    ${parcel?'<rect x="-25" y="4" width="13" height="10" rx="2" fill="#e63946" stroke-width="2"/><path d="M-18.5 4 V14" stroke="#ffd166" stroke-width="2.4"/>':''}
+  </g>`;
+}
+function stickerIcon(k){
+  if(k==='rescue')return `<svg viewBox="0 0 40 40"><g stroke="${I}" stroke-width="2.6" stroke-linejoin="round"><rect x="4" y="14" width="30" height="14" rx="5" fill="#e63946"/><rect x="20" y="8" width="12" height="10" rx="3" fill="#cdeffd"/><circle cx="12" cy="30" r="4" fill="${I}"/><circle cx="28" cy="30" r="4" fill="${I}"/><path d="M10 20 h6 M13 17 v6" stroke="#fff"/></g></svg>`;
+  if(k==='parcel')return `<svg viewBox="0 0 40 40"><g stroke="${I}" stroke-width="2.6" stroke-linejoin="round"><rect x="7" y="10" width="26" height="22" rx="3" fill="#e63946"/><path d="M20 10 V32 M7 19 H33" stroke="#ffd166" stroke-width="4"/><path d="M20 10 q-8 -8 -8 0 M20 10 q8 -8 8 0" fill="none" stroke="#ffd166" stroke-width="3"/></g></svg>`;
+  return `<svg viewBox="0 0 40 40"><g stroke="${I}" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"><circle cx="20" cy="20" r="15" fill="#52b788"/><path d="M11 26 Q14 12 20 20 T29 14" fill="none" stroke="#fff" stroke-width="4"/><circle cx="11" cy="26" r="3" fill="#ffd166"/><circle cx="29" cy="14" r="3" fill="#ffd166"/></g></svg>`;
+}
+function stickerMini(k,on){const col={rescue:'#e63946',parcel:'#fb8500',strategy:'#52b788',badge:'#3a86ff'}[k];
+  const glyph={rescue:'救',parcel:'包',strategy:'省',badge:'雙'}[k];
+  return `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="${on?col:'#fff'}" stroke="${on?I:'#b8b8c8'}" stroke-width="2" stroke-dasharray="${on?'':'3 2'}"/><text x="12" y="16" font-size="11" font-weight="900" text-anchor="middle" fill="${on?'#fff':'#b8b8c8'}">${glyph}</text></svg>`;}
+function badgeSVG(on){return `<svg viewBox="0 0 40 40" aria-hidden="true"><g stroke="${on?I:'#b8b8c8'}" stroke-width="2.6" stroke-linejoin="round"><path d="M12 26 L9 38 L20 33 L31 38 L28 26" fill="${on?'#e63946':'#fff'}"/><circle cx="20" cy="17" r="13" fill="${on?'#3a86ff':'#fff'}"/><path d="M12 19 Q16 9 20 17 Q24 25 28 15" fill="none" stroke="${on?'#fff':'#b8b8c8'}" stroke-width="3"/></g></svg>`;}
+function walkieSVG(){return `<svg class="walkie" viewBox="0 0 160 260" aria-hidden="true"><g stroke="${I}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+  <rect x="104" y="6" width="16" height="70" rx="7" fill="${I}"/>
+  <rect x="22" y="56" width="116" height="194" rx="26" fill="#ffbe0b"/>
+  <rect x="38" y="76" width="84" height="56" rx="12" fill="#1f2338"/>
+  <path d="M48 104 q8 -12 16 0 t16 0 t16 0 t16 0" fill="none" stroke="#7ee081" stroke-width="4"/>
+  <circle class="led" cx="118" cy="70" r="7" fill="#e63946" stroke-width="3"/>
+  <g stroke-width="4">${[0,1,2,3,4].map(k=>`<path d="M48 ${156+k*14} H112"/>`).join('')}</g>
+  <rect x="10" y="120" width="16" height="44" rx="6" fill="#e63946"/>
+  <circle cx="80" cy="228" r="9" fill="#3a86ff"/>
+</g></svg>`;}
+
+/* =========================================================
+   玩具地圖：毛氈墊＋木頭道路片
+   ========================================================= */
+let G=null,D=null,newBase=undefined;
+function cellXY(i){return [(i%N)*100,Math.floor(i/N)*100];}
+function hash(i,k){return ((i*73+k*37)%17)/17;}
+function trackPath(d){return `<path d="${d}" fill="none" stroke="${I}" stroke-width="38" stroke-linecap="butt"/><path d="${d}" fill="none" stroke="#5c6378" stroke-width="31" stroke-linecap="butt"/><path d="${d}" fill="none" stroke="#ffd166" stroke-width="4" stroke-dasharray="10 9" stroke-linecap="butt"/>`;}
+function roadPath(k,r){const [a,b]=conns({k,r});const A=EDGE[a],B=EDGE[b];return k==='s'?`M${A[0]} ${A[1]} L${B[0]} ${B[1]}`:`M${A[0]} ${A[1]} Q50 50 ${B[0]} ${B[1]}`;}
+function woodTile(i,k,r){
+  let s=`<rect x="3" y="7" width="94" height="92" rx="13" fill="#a8703a"/><rect x="3" y="3" width="94" height="92" rx="13" fill="#e9b872" stroke="${I}" stroke-width="3"/>`;
+  s+=`<path d="M12 ${18+hash(i,1)*8} Q40 ${12+hash(i,2)*6} 74 ${20+hash(i,3)*6} M18 ${72+hash(i,4)*8} Q50 ${66+hash(i,5)*6} 88 ${74+hash(i,6)*6}" fill="none" stroke="#d49a55" stroke-width="2.4" stroke-linecap="round"/>`;
+  // 玩舊的木頭：邊角掉漆
+  const cx=hash(i,7)>.5?12:86,cy=hash(i,8)>.5?12:84;s+=`<path d="M${cx-5} ${cy} q3 -5 8 -2 q2 4 -3 6 q-4 1 -5 -4Z" fill="#f7d7a3" stroke="none"/>`;
+  return s+trackPath(roadPath(k,r));
+}
+function terrainSVG(ch,i,st){
+  const [x,y]=cellXY(i);let s=`<g transform="translate(${x} ${y})">`;
+  if('WBb'.includes(ch))s+=`<rect width="100" height="100" fill="url(#water)"/>`;
+  if(ch==='.'&&hash(i,9)>.75)s+=`<g fill="#5aa95f" stroke="none"><circle cx="24" cy="74" r="4"/><circle cx="30" cy="70" r="4"/><circle cx="72" cy="28" r="3.4"/></g>`;
+  if(ch==='R')s+=`<ellipse cx="50" cy="86" rx="36" ry="8" fill="rgba(0,0,0,.18)"/><rect x="14" y="20" width="72" height="66" rx="22" fill="#8d99ae" stroke="${I}" stroke-width="3.5"/><path d="M26 34 Q50 24 74 34" fill="none" stroke="#d3d9e2" stroke-width="7" stroke-linecap="round"/><circle cx="64" cy="64" r="5" fill="#6c7891" stroke="none"/><circle cx="36" cy="58" r="3" fill="#6c7891" stroke="none"/>`;
+  if(ch==='F'){s+=`<rect x="8" y="10" width="84" height="84" rx="16" fill="#c98a4a" stroke="${I}" stroke-width="3"/>`;const cols=['#ff6b6b','#ffbe0b','#9b7fc0','#ff8fa3'];
+    [[28,34],[66,30],[46,58],[26,76],[72,72]].forEach(([fx,fy],k)=>{s+=`<path d="M${fx} ${fy+12} V${fy}" stroke="#2d8a5f" stroke-width="3"/>`;for(let p=0;p<5;p++){const a=p*Math.PI*2/5;s+=`<circle cx="${f1(fx+Math.cos(a)*6)}" cy="${f1(fy+Math.sin(a)*6)}" r="4.6" fill="${cols[k%4]}" stroke="${I}" stroke-width="1.6"/>`;}s+=`<circle cx="${fx}" cy="${fy}" r="3.6" fill="#fff3c4" stroke="${I}" stroke-width="1.6"/>`;});}
+  if(ch==='B'||ch==='b'){
+    const fixed=st&&st.bridgeFixed&&st.bridgeFixed[i];
+    s+=`<g transform="${ch==='b'?'rotate(90 50 50)':''}">`;
+    const plank=k=>`<rect x="${4+k*11.6}" y="28" width="10" height="44" rx="2" fill="${k%2?'#e9b872':'#d39b5f'}" stroke="${I}" stroke-width="2.2"/>`;
+    s+=`<rect x="2" y="24" width="96" height="6" rx="3" fill="#a8703a" stroke="${I}" stroke-width="2"/><rect x="2" y="70" width="96" height="6" rx="3" fill="#a8703a" stroke="${I}" stroke-width="2"/>`;
+    if(fixed){for(let k=0;k<8;k++)s+=plank(k);}
+    else{[0,1,2,5,6,7].forEach(k=>s+=plank(k));s+=`<rect x="44" y="62" width="11" height="22" rx="2" fill="#d39b5f" stroke="${I}" stroke-width="2.2" transform="rotate(32 50 72)"/><text x="50" y="22" font-size="13" font-weight="900" text-anchor="middle" fill="#e63946" stroke="#fff" stroke-width="3" paint-order="stroke">斷</text>`;}
+    s+=`</g>`;
+  }
+  return s+'</g>';
+}
+function overlaySVG(ch,i,st){
+  const [x,y]=cellXY(i);let s=`<g transform="translate(${x} ${y})">`;
+  if(ch==='T')s+=`<g transform="translate(5 5)" stroke="${I}" stroke-width="2.6" stroke-linejoin="round"><rect x="0" y="12" width="34" height="24" rx="3" fill="#e63946"/><path d="M-3 14 L17 0 L37 14Z" fill="#ffbe0b"/><rect x="6" y="20" width="22" height="5" rx="1.5" fill="#e9b872" stroke-width="1.8"/><rect x="6" y="27" width="22" height="5" rx="1.5" fill="#d39b5f" stroke-width="1.8"/></g><g transform="translate(46 4)"><rect width="40" height="20" rx="6" fill="#fff" stroke="${I}" stroke-width="2.4"/><text x="20" y="15" font-size="13" font-weight="900" text-anchor="middle" fill="${I}">工具</text></g>`;
+  if(ch==='P'&&!(st&&st.parcel))s+=`<g transform="translate(62 4)" stroke="${I}" stroke-width="2.6" stroke-linejoin="round"><rect x="0" y="8" width="32" height="26" rx="3" fill="#fb8500"/><path d="M16 8 V34 M0 19 H32" stroke="#ffd166" stroke-width="4"/><path d="M16 8 q-9 -9 -9 0 M16 8 q9 -9 9 0" fill="none" stroke="#ffd166" stroke-width="3"/></g>`;
+  return s+'</g>';
+}
+function stubSVG(i,dir){const [x,y]=cellXY(i),A=EDGE[dir];return `<g transform="translate(${x} ${y})"><rect x="3" y="3" width="94" height="94" rx="13" fill="#e9b872" stroke="${I}" stroke-width="3"/>${trackPath(`M50 50 L${A[0]} ${A[1]}`)}</g>`;}
+function garageSVG(i,dir){const [x,y]=cellXY(i);const roof=ROOFC[P.deco.roof];
+  const pos={N:[8,56],S:[8,6],E:[6,8],W:[54,8]}[dir]||[6,8];
+  return `<g transform="translate(${x+pos[0]} ${y+pos[1]})" stroke="${I}" stroke-width="2.6" stroke-linejoin="round"><rect x="2" y="12" width="36" height="24" rx="3" fill="#3a86ff"/><path d="M-2 14 L20 0 L42 14Z" fill="${roof}"/><rect x="9" y="19" width="22" height="17" rx="2" fill="#fff"/><path d="M9 25 H31 M9 30 H31" stroke-width="1.6"/></g>`;}
+function homeSVG(i,dir,who){const [x,y]=cellXY(i);
+  const pos={W:[50,6],E:[6,6],N:[6,54],S:[6,6]}[dir]||[50,6];
+  const key=who==='all'?'lun':who;
+  return `<g transform="translate(${x+pos[0]} ${y+pos[1]})" stroke="${I}" stroke-width="2.6" stroke-linejoin="round"><rect x="2" y="14" width="38" height="26" rx="3" fill="#ffd166"/><path d="M-3 16 L21 0 L45 16Z" fill="#e63946"/><rect x="16" y="24" width="10" height="16" rx="2" fill="#a8703a"/><rect x="5" y="20" width="8" height="7" fill="#cdeffd" stroke-width="1.8"/></g><g transform="translate(${x+(dir==='W'?8:56)} ${y+54}) scale(.62)" stroke="${I}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">${pegFace(PEOPLE[key])}</g>`;}
+function renderBoard(){
+  const L=LV[G.i],st=D,svg=$('#board');let s='';
+  s+=`<rect x="-18" y="-18" width="536" height="536" rx="28" fill="#c98b4f" stroke="${I}" stroke-width="4"/>`;
+  s+=`<rect x="-9" y="-9" width="518" height="518" rx="22" fill="#a8703a"/>`;
+  s+=`<rect x="0" y="0" width="500" height="500" rx="14" fill="url(#felt)" stroke="${I}" stroke-width="3"/>`;
+  s+=`<rect x="7" y="7" width="486" height="486" rx="10" fill="none" stroke="#c8f0c8" stroke-width="2.4" stroke-dasharray="7 6"/>`;
+  let grid='';for(let k=1;k<N;k++)grid+=`M${k*100} 4 V496 M4 ${k*100} H496 `;
+  s+=`<path d="${grid}" fill="none" stroke="#5aa95f" stroke-width="2" stroke-dasharray="4 8"/>`;
+  for(let i=0;i<N*N;i++)s+=terrainSVG(G.t[i],i,st);
+  s+=stubSVG(G.s,L.sDir)+stubSVG(G.g,L.gEntry);
+  for(const k in G.roads){const r=G.roads[k],[x,y]=cellXY(+k);
+    if(G.t[+k]==='B'||G.t[+k]==='b'){const fixed=st&&st.bridgeFixed&&st.bridgeFixed[+k];s+=`<g transform="translate(${x} ${y})"><path d="${roadPath('s',r.r)}" fill="none" stroke="${fixed?'#ffd166':'#5c6378'}" stroke-width="5" stroke-dasharray="10 8"/></g>`;}
+    else s+=`<g transform="translate(${x} ${y})">${woodTile(+k,r.k,r.r)}</g>`;}
+  for(let i=0;i<N*N;i++)s+=overlaySVG(G.t[i],i,st);
+  s+=garageSVG(G.s,L.sDir)+homeSVG(G.g,L.gEntry,L.who);
+  if(G.problem!==null&&G.problem!==undefined){const [x,y]=cellXY(G.problem);s+=`<rect x="${x+3}" y="${y+3}" width="94" height="94" rx="14" fill="rgba(230,57,70,.18)" stroke="#e63946" stroke-width="6" stroke-dasharray="14 9"><animate attributeName="stroke-dashoffset" values="0;46" dur="1.2s" repeatCount="indefinite"/></rect><g transform="translate(${x+82} ${y+18})"><circle r="15" fill="#e63946" stroke="${I}" stroke-width="3"/><text y="7" font-size="20" font-weight="900" text-anchor="middle" fill="#fff">!</text></g>`;}
+  if(G.hintRoute){G.hintRoute.forEach((c,k)=>{const [x,y]=cellXY(c);s+=`<g transform="translate(${x+50} ${y+50})"><circle r="17" fill="#3a86ff" stroke="${I}" stroke-width="3"/><text y="6" font-size="17" text-anchor="middle" font-weight="900" fill="#fff">${k+1}</text></g>`;});}
+  if(G.selected!==null&&G.selected!==undefined&&G.roads[G.selected]){const [x,y]=cellXY(G.selected);s+=`<rect x="${x+3}" y="${y+3}" width="94" height="94" rx="14" fill="none" stroke="#3a86ff" stroke-width="4"/><circle cx="${x+82}" cy="${y+18}" r="13" fill="#fff" stroke="${I}" stroke-width="2"/><text x="${x+82}" y="${y+24}" font-size="20" text-anchor="middle" fill="${I}">↻</text>`;}
+  for(const [c,txt,dir] of [[G.s,'起點',L.sDir],[G.g,'終點',OPP[L.gEntry]]]){const [x,y]=cellXY(c);s+=`<text x="${x+50}" y="${y+94}" font-size="14" font-weight="900" text-anchor="middle" fill="${I}" stroke="#fff" stroke-width="4" paint-order="stroke">${txt} ${ {N:'↑',E:'→',S:'↓',W:'←'}[dir]}</text>`;}
+  s+='<g id="roadPreview" aria-hidden="true"></g>';
+  for(let i=0;i<N*N;i++){const [x,y]=cellXY(i);s+=`<rect class="cellhit" data-cell="${i}" x="${x}" y="${y}" width="100" height="100" fill="transparent" tabindex="0" role="button" aria-label="${cellLabel(i)}"/>`;}
+  svg.innerHTML=s;
+  $('#boardWrap').classList.toggle('locked',!!D&&['driving','paused'].includes(D.state));
+}
+function cellLabel(i){
+  const ch=G.t[i],r=Math.floor(i/N)+1,c=i%N+1;
+  const name={'.':'草地','R':'石頭','W':'河','F':'花田','T':'工具站','P':'包裹','B':'斷橋','b':'斷橋','S':'救援車庫，出發點','G':'居民家，終點'}[ch];
+  let road='';const rd=G.roads[i];if(rd){const cs=conns(rd);road=`，${rd.k==='s'?'直路':'彎路'}連接${DNAME[cs[0]]}和${DNAME[cs[1]]}`;}
+  return `第${r}排第${c}格，${name}${road}`;
+}
+function burstPath(w,h,n){let p='';for(let k=0;k<n*2;k++){const a=k*Math.PI/n,rr=k%2?.72:1;p+=(k?'L':'M')+f1(w/2+Math.cos(a)*w/2*rr)+' '+f1(h/2+Math.sin(a)*h/2*rr)+' ';}return p+'Z';}
+function pop(text,color,x,y){
+  const lay=$('#popLayer');if(!lay)return;
+  const px=x===undefined?50:((x+18)/536*100),py=y===undefined?50:((y+18)/536*100);
+  const el=document.createElement('div');el.className='pop';el.style.left=px+'%';el.style.top=py+'%';
+  el.innerHTML=`<svg viewBox="0 0 120 72"><path d="${burstPath(116,68,11)}" transform="translate(2 2)" fill="${color}" stroke="${I}" stroke-width="3.5" stroke-linejoin="round"/></svg><span>${text}</span>`;
+  lay.appendChild(el);setTimeout(()=>el.remove(),1300);
+}
+
+/* =========================================================
+   說話：隊長（無線電）、小輪、居民
+   ========================================================= */
+function speak(text,who,warn){
+  const kind=who==='lun'?'radio':(who==='car'?'car':'resident');
+  const el=$('#say');el.className='say '+kind+(warn?' warn':'');
+  $('#sayAv').innerHTML=avatarSVG(who);
+  const name=who==='car'?'小輪':(who==='all'?'草地村的居民':PEOPLE[who].name)+(who==='lun'?'（無線電）':'');
+  $('#sayTxt').innerHTML=`<span class="who">${name}</span>${text}`;
+}
+
+/* =========================================================
+   關卡流程與工坊操作
+   ========================================================= */
+function startLevel(i,skipBrief){
+  endDrive(true);
+  const pl=parseLevel(i),saved=P.lv[i].roads||{};
+  G={i,t:pl.t,s:pl.s,g:pl.g,roads:JSON.parse(JSON.stringify(saved)),tool:'s',rotS:0,rotC:0,undo:[],problem:null,hintRoute:null,hints:0,sugP:parcelLimit(i)};
+  P.cur=i;save();
+  show('play');speak(LV[i].say,LV[i].who);renderAll();
+  if(!skipBrief)showBrief();
+}
+function showBrief(){
+  const L=LV[G.i],S=P.lv[G.i],hasB=G.t.some(c=>c==='B'||c==='b'),hasP=G.t.includes('P');
+  const notes=[];
+  if(L.needPlank)notes.push('居民需要木板，要先經過工具站。');
+  if(hasB)notes.push('路上有斷橋，要帶著木板才能修好再過。');
+  if(hasP)notes.push('附近有一個包裹，可以順路帶上（額外挑戰）。');
+  notes.push(`道路 ${L.sug} 塊以內可以拿到「省路章」${G.sugP>L.sug?`；順路拿包裹時 ${G.sugP} 塊以內`:''}。`);
+  const whoName=L.who==='all'?'草地村的居民':PEOPLE[L.who].name;
+  Snd.radio();
+  openModal(`<div class="dispatch"><div class="dh"><i></i>出勤單 No.${String(G.i+1).padStart(2,'0')}　呼叫${callName()}</div>
+    <h2>${L.name}</h2><p class="soft" style="margin:-.3em 0 .2em">任務代號 GR-${String(G.i+1).padStart(2,'0')}｜第一站 草地救援站</p>
+    <div class="caller"><div class="av">${avatarSVG(L.who)}</div><div><b>${whoName}</b><br>${L.say}</div></div>
+    <ul class="facts"><li><b>送貨</b>${L.cargo}</li><li><b>目的地</b>${whoName}家</li>${notes.map(n=>`<li><b>注意</b>${n}</li>`).join('')}${S.rescue?`<li><b>紀錄</b>這關已完成，找到 ${S.routes.length} 條路線。</li>`:''}</ul>
+    <p class="easy-help">選方向 → 點空格放路 → 再點原路旋轉。<br>要換形狀先選另一種；不要的路用橡皮擦。</p><div class="thinkbox"><b>出發前想一想：</b>${L.q}</div>
+    <div class="actions"><button class="btn red big" data-m="close" type="button">收到！開始規劃路線</button></div></div>`);
+}
+function roadCount(){return Object.keys(G.roads).length;}
+function iconSVG(inner){return `<svg viewBox="0 0 100 100" aria-hidden="true">${inner}</svg>`;}
+function renderTools(){
+  document.querySelectorAll('.tool[data-tool]').forEach(b=>{const t=b.dataset.tool;b.classList.toggle('on',G.tool===t);b.setAttribute('aria-pressed',G.tool===t);b.disabled=!!D;});
+  $('.tool[data-tool="s"]').innerHTML=iconSVG(woodTile(1,'s',G.rotS))+'<span>直路</span>';
+  $('.tool[data-tool="c"]').innerHTML=iconSVG(woodTile(2,'c',G.rotC))+'<span>彎路</span>';
+  $('#btnTurnSel').innerHTML=iconSVG(`<circle cx="50" cy="50" r="30" fill="none" stroke="${I}" stroke-width="9" stroke-dasharray="150 40"/><path d="M74 18 L82 46 L54 40Z" fill="${I}"/>`)+'<span>轉選取道路</span>';
+  $('#btnTurnSel').disabled=!!D||!(G.tool==='s'||G.tool==='c');
+  $('.tool[data-tool="rot"]').innerHTML=iconSVG(`<rect x="10" y="10" width="80" height="80" rx="14" fill="#e9b872" stroke="${I}" stroke-width="5"/><path d="M50 10 Q50 50 90 50" fill="none" stroke="${I}" stroke-width="22"/><path d="M50 10 Q50 50 90 50" fill="none" stroke="#5c6378" stroke-width="15"/><circle cx="70" cy="74" r="18" fill="#ffbe0b" stroke="${I}" stroke-width="5"/><path d="M61 74 a9 9 0 1 1 9 9" fill="none" stroke="${I}" stroke-width="5"/>`)+'<span>旋轉格子</span>';
+  $('.tool[data-tool="erase"]').innerHTML=iconSVG(`<g transform="rotate(-35 50 50)"><rect x="20" y="32" width="60" height="36" rx="8" fill="#ff8fa3" stroke="${I}" stroke-width="6"/><rect x="20" y="32" width="22" height="36" rx="8" fill="#3a86ff" stroke="${I}" stroke-width="6"/></g>`)+'<span>橡皮擦</span>';
+  $('[data-act="clear"]').disabled=!!D;
+  $('[data-act="undo"]').disabled=!!D||!G.undo.length;
+  renderEasy();
+}
+function renderCount(){
+  const n=roadCount(),L=LV[G.i];
+  $('#roadCount').innerHTML=`已鋪道路 <b>${n}</b> / ${MAXROAD} 塊<br><span class="soft">「省路章」：${L.sug} 塊以內${G.sugP>L.sug?`；順路拿包裹時 ${G.sugP} 塊以內`:''}</span>`;
+  $('#thinkLine').innerHTML=D?'<b>看著小輪：</b>它在哪裡轉彎？有沒有拿到需要的東西？':`<b>出發前：</b>先用手指沿著路走一遍。${LV[G.i].q}`;
+}
+function renderDrive(){
+  const driving=D&&(D.state==='driving'||D.state==='paused');
+  $('#btnGo').disabled=!!D&&['driving','paused'].includes(D.state);$('#btnGo').textContent=D&&D.state==='stopped'?'修好再出發！':D&&D.state==='done'?'再試一次':'叭叭！出發';
+  $('#btnPause').disabled=!driving;
+  $('#btnPause').textContent=D&&D.state==='paused'?'繼續':'暫停';
+  $('#btnWorkshop').disabled=!D;
+  $('#btnWorkshop').classList.toggle('pulse',!!D&&D.state==='stopped');
+  $('#btnWorkshop').classList.toggle('yellow',!!D&&D.state==='stopped');
+  $('#btnReplay').disabled=!D||driving;
+  $('#btnHint').disabled=!!D;$('#btnBrief').disabled=!!D;renderEasy();
+}
+function renderStatus(){
+  const L=LV[G.i],st=D||{},hasT=G.t.includes('T'),hasB=G.t.some(c=>c==='B'||c==='b'),hasP=G.t.includes('P');
+  let h=`<span>送貨：${L.cargo}</span>`;
+  if(hasT)h+=`<span class="${st.plank||st.usedPlank?'on':''}">木板：${st.plank?'在車上':(st.usedPlank?'用來修橋了':'還沒拿')}</span>`;
+  if(hasB)h+=`<span class="${st.fixedAny?'on':''}">小橋：${st.fixedAny?'修好了':'斷掉'}</span>`;
+  if(hasP)h+=`<span class="${st.parcel?'on':''}">包裹：${st.parcel?'拿到了':'可以順路拿'}</span>`;
+  $('#status').innerHTML=h;
+}
+function renderAll(){
+  $('#lvlTitle').textContent=`任務 ${G.i+1}｜${LV[G.i].name}`;
+  renderBoard();renderTools();renderCount();renderDrive();renderStatus();drawCarAtStart();
+}
+function pushUndo(){G.undo.push(JSON.stringify(G.roads));if(G.undo.length>60)G.undo.shift();}
+function saveRoads(){P.lv[G.i].roads=JSON.parse(JSON.stringify(G.roads));save();}
+const EASY_ROADS=[['s',0,'左右'],['s',1,'上下'],['c',0,'上右'],['c',1,'右下'],['c',2,'下左'],['c',3,'左上']];
+function renderEasy(){
+ if(!G)return;$('#roadPalette').innerHTML=EASY_ROADS.map(([k,r,label])=>`<button type="button" class="easy-road ${G.tool===k&&(k==='s'?G.rotS:G.rotC)===r?'on':''}" data-easy="${k}:${r}" ${D&&['driving','paused'].includes(D.state)?'disabled':''} aria-pressed="${G.tool===k&&(k==='s'?G.rotS:G.rotC)===r}" aria-label="${k==='s'?'直路':'彎路'} 連接${label[0]}和${label[1]}">${iconSVG(woodTile(1,k,r))}<span>${label[0]} ↔ ${label[1]}</span></button>`).join('')+`<button type="button" class="easy-road erase ${G.tool==='erase'?'on':''}" data-easy="erase" ${D&&['driving','paused'].includes(D.state)?'disabled':''}>⌫ 擦掉道路</button>`;
+ $('#mobileControls').innerHTML=$('#roadPalette').innerHTML+`<button type="button" class="easy-road mobile-drive" data-mobile-drive>${D&&D.state==='driving'?'Ⅱ 暫停':D&&D.state==='paused'?'▶ 繼續':'▶ 出發'}</button>`;
+ $('#editHelp').textContent=G.tool==='erase'?'點不要的道路就能擦掉；按「上一步」可復原。':'選一種方向 → 點空格放路。再點同形狀的路就能轉彎；換形狀時，先選另一種再點原格。';
+}
+function afterEdit(){const active=document.activeElement,focusCell=active&&active.dataset&&active.dataset.cell;saveRoads();renderBoard();renderTools();renderCount();drawCarAtStart();if(focusCell!==undefined){const next=$('#board [data-cell="'+focusCell+'"]');if(next)next.focus({preventScroll:true});}}
+function onCell(i){
+ if(!G||!Number.isInteger(i)||i<0||i>=25)return;
+ if(D){if(['done','stopped'].includes(D.state)){backToWorkshop();}else{speak('小輪正在行駛。按「回工坊」就能調整道路。','car');Snd.deny();return;}}
+ const ch=G.t[i];G.problem=null;G.hintRoute=null;G.selected=null;
+ if(ch==='S'||ch==='G'){speak(ch==='S'?`起點箭頭朝${DNAME[LV[G.i].sDir]}，從箭頭前面接第一塊路。`:`這是終點，要從${DNAME[LV[G.i].gEntry]}邊的入口接過來。`,'lun');Snd.select();renderBoard();return;}
+ if(!buildable(ch)){speak({R:'這裡有石頭，往旁邊繞吧。',W:'這裡是河流，要從小橋通過。',F:'花田要保護，換一個格子鋪路。'}[ch],'lun');Snd.deny();renderBoard();return;}
+ const bridge=ch==='B'||ch==='b',has=G.roads[i];
+ if(G.tool==='erase'){
+  if(!has){speak('這一格沒有道路，不用擦喔。','lun');return;}
+  pushUndo();delete G.roads[i];Snd.erase();speak('道路收回來了。按「上一步」也能放回去。','lun');afterEdit();return;
+ }
+ if(!has&&roadCount()>=MAXROAD){speak(`道路盒已用完 ${MAXROAD} 塊，擦掉多餘道路再放。`,'lun');Snd.deny();return;}
+ if(bridge){if(has){speak('橋上已經有路了，方向會自動對齊。','lun');Snd.select();return;}pushUndo();G.roads[i]={k:'s',r:ch==='B'?0:1};Snd.place();speak('橋上自動放好直路了！先拿木板，小輪才能修橋。','lun');}
+ else if(has&&has.k===G.tool){pushUndo();has.r=(has.r+1)%(has.k==='s'?2:4);G.selected=i;Snd.rotate();speak('轉好方向了！再點一次可以繼續轉。','lun');}
+ else{pushUndo();G.roads[i]={k:G.tool==='c'?'c':'s',r:G.tool==='c'?G.rotC:G.rotS};G.selected=i;Snd.place();speak(has?'已換成新的道路形狀。':'放好了！再點這塊路，可以直接轉方向。','lun');}
+ afterEdit();
+}
+function setTool(t){if(!G||D&&['driving','paused'].includes(D.state))return;G.tool=t;Snd.select();renderTools();}
+function turnSel(){if(!G||D)return;if(G.selected!==null&&G.selected!==undefined&&G.roads[G.selected]){const old=G.tool;G.tool=G.roads[G.selected].k;onCell(G.selected);G.tool=old;renderTools();return;}if(G.tool==='s')G.rotS=(G.rotS+1)%2;else if(G.tool==='c')G.rotC=(G.rotC+1)%4;Snd.rotate();renderTools();}
+function undo(){if(D||!G.undo.length)return;G.roads=JSON.parse(G.undo.pop());G.problem=null;Snd.erase();saveRoads();renderBoard();renderTools();renderCount();}
+function clearRoads(){if(D||!roadCount())return;pushUndo();G.roads={};G.problem=null;Snd.erase();saveRoads();renderBoard();renderTools();renderCount();speak('道路都收回工具箱了。按「上一步」可以找回來。','lun');}
+
+/* =========================================================
+   試車：先模擬整趟行程，再逐格播放
+   ========================================================= */
+function simulate(){
+  const L=LV[G.i];let pos=G.s,dir=L.sDir,plank=false,parcel=false,usedPlank=false;
+  const visited=new Set([G.s]),steps=[];
+  while(true){
+    const r=Math.floor(pos/N),c=pos%N,nr=r+DIRS[dir][0],nc=c+DIRS[dir][1];
+    if(nr<0||nr>=N||nc<0||nc>=N)return {steps,ok:false,reason:'edge',at:pos,dir};
+    const nx=nr*N+nc,ch=G.t[nx];
+    if(ch==='G'){
+      if(dir!==OPP[L.gEntry])return {steps,ok:false,reason:'goalside',at:nx,dir};
+      if(L.needPlank&&!plank)return {steps,ok:false,reason:'needplank',at:nx,dir};
+      steps.push({cell:nx,entry:OPP[dir],exit:null,goal:true});
+      return {steps,ok:true,parcel,plank,usedPlank};
+    }
+    if(visited.has(nx))return {steps,ok:false,reason:'loop',at:nx,dir};
+    if(!buildable(ch))return {steps,ok:false,reason:'obstacle',at:nx,dir,ch};
+    const rd=G.roads[nx];
+    if(!rd)return {steps,ok:false,reason:'noroad',at:nx,dir};
+    if((ch==='B'||ch==='b')&&(rd.k!=='s'||(ch==='B'?rd.r%2!==0:rd.r%2!==1)))return {steps,ok:false,reason:'bridgeside',at:nx,dir};
+    const cs=conns(rd),entry=OPP[dir];
+    if(!cs.includes(entry))return {steps,ok:false,reason:(ch==='B'||ch==='b')?'bridgeside':'mismatch',at:nx,dir};
+    const exit=cs[0]===entry?cs[1]:cs[0];
+    const step={cell:nx,entry,exit,ev:[]};
+    if(ch==='B'||ch==='b'){if(!plank)return {steps,ok:false,reason:'bridge',at:nx,dir};plank=false;usedPlank=true;step.ev.push('repair');}
+    if(ch==='T'&&!plank){plank=true;step.ev.push('plank');}
+    if(ch==='P'&&!parcel){parcel=true;step.ev.push('parcel');}
+    steps.push(step);visited.add(nx);pos=nx;dir=exit;
+  }
+}
+// 小輪自己說出停車原因
+const REASON={
+  edge:'嘰——！緊急停車。再往前就開出地圖了，這裡需要轉彎。',
+  goalside:'咦？居民家的門口不在這一邊耶，要從有路的那一側過去。',
+  needplank:'報告，居民要的是木板，可是我車上沒有。路線要先經過工具站。',
+  loop:'這裡我剛剛才開過。再繞下去，我們會一直在原地打轉。',
+  noroad:'嘰——！緊急停車。前面這一格沒有道路。',
+  mismatch:'報告，這兩段路的接口沒有對齊，我開不過去。檢查一下方向？',
+  bridgeside:'橋只能從橋頭上去，這個方向接不上。',
+  bridge:'橋斷了，而且我車上沒有木板，修不了。路線要先經過工具站。'
+};
+const OBST={R:'前面是大石頭，正面撞上去可不行。',W:'前面是河。我是救援車，不是救援船。',F:'前面是花田，開進去會被田伯念一整天。'};
+let driveTok=0,reportTimer=null,reportSeq=0,modalReturn=null,modalPausedDrive=null;
+const carEl=()=>$('#carLayer');
+function carSVG(x,y,ang,happy){return `<g transform="translate(${f1(x)} ${f1(y)}) rotate(${f1(ang)})">${carTop(CARC[P.deco.car],D&&D.plank,D&&D.parcel,happy)}</g>`;}
+function setCar(x,y,ang){carEl().innerHTML=carSVG(x,y,ang);D.cx=x;D.cy=y;D.ang=ang;}
+function drawCarAtStart(){if(D)return;const [x,y]=cellXY(G.s);const ang={E:0,S:90,W:180,N:-90}[LV[G.i].sDir];carEl().innerHTML=carSVG(x+50,y+50,ang,true);}
+function segPoint(seg,t){if(seg.c){const u=1-t;return [u*u*seg.a[0]+2*u*t*seg.c[0]+t*t*seg.b[0],u*u*seg.a[1]+2*u*t*seg.c[1]+t*t*seg.b[1]];}
+  return [seg.a[0]+(seg.b[0]-seg.a[0])*t,seg.a[1]+(seg.b[1]-seg.a[1])*t];}
+function segAngle(seg,t){let dx,dy;
+  if(seg.c){const u=1-t;dx=2*u*(seg.c[0]-seg.a[0])+2*t*(seg.b[0]-seg.c[0]);dy=2*u*(seg.c[1]-seg.a[1])+2*t*(seg.b[1]-seg.c[1]);}
+  else{dx=seg.b[0]-seg.a[0];dy=seg.b[1]-seg.a[1];}
+  return Math.atan2(dy,dx)*180/Math.PI;}
+function moveSeg(seg,t0,t1,dur,tok){
+  return new Promise(res=>{let el=0,last=null;const D0=dur*SPD();
+    function fr(ts){if(tok!==driveTok)return res(false);
+      if(D.state==='paused'){last=null;return requestAnimationFrame(fr);}
+      if(last===null)last=ts;el+=ts-last;last=ts;const k=Math.min(1,el/Math.max(1,D0)),t=t0+(t1-t0)*k;
+      const [x,y]=segPoint(seg,t);setCar(x,y,segAngle(seg,Math.min(.999,Math.max(.001,t))));
+      if(k<1)requestAnimationFrame(fr);else res(true);}
+    requestAnimationFrame(fr);});
+}
+function pwait(ms,tok){return new Promise(res=>{let el=0,last=null;const T=ms*SPD();function fr(ts){if(tok!==driveTok)return res(false);if(D.state==='paused'){last=null;return requestAnimationFrame(fr);}if(last===null)last=ts;el+=ts-last;last=ts;if(el>=T)res(true);else requestAnimationFrame(fr);}requestAnimationFrame(fr);});}
+function abs(cell,p){const [x,y]=cellXY(cell);return [x+p[0],y+p[1]];}
+async function startDrive(){
+  if(!G)return;
+  if(D){if(D.state==='stopped'||D.state==='done')endDrive();else return;}
+  G.problem=null;G.hintRoute=null;
+  const sim=simulate();
+  D={state:'driving',sim,plank:false,parcel:false,usedPlank:false,bridgeFixed:{},fixedAny:false,cx:0,cy:0,ang:0};
+  const tok=++driveTok;
+  renderBoard();renderTools();renderDrive();renderStatus();renderCount();
+  const L=LV[G.i],[sx,sy]=abs(G.s,[50,50]);
+  speak('叭叭！小輪出勤！','car');Snd.horn();pop('叭叭！','#ffd166',sx,sy-30);
+  await pwait(600,tok);if(tok!==driveTok)return;
+  if(!await moveSeg({a:abs(G.s,[50,50]),b:abs(G.s,EDGE[L.sDir])},0,1,420,tok))return;
+  for(const st of sim.steps){
+    const a=abs(st.cell,EDGE[st.entry]);
+    if(st.goal){if(!await moveSeg({a,b:abs(st.cell,[50,50])},0,1,450,tok))return;break;}
+    const b=abs(st.cell,EDGE[st.exit]),curve=st.exit!==OPP[st.entry],seg=curve?{a,b,c:abs(st.cell,[50,50])}:{a,b};
+    if(st.ev.includes('repair')){
+      speak('到橋邊了！我來用木板修橋——','car');Snd.knock();const [bx,by]=abs(st.cell,[50,50]);pop('叩叩叩！','#ffbe0b',bx,by-34);
+      if(!await pwait(1200,tok))return;
+      D.plank=false;D.usedPlank=true;D.bridgeFixed[st.cell]=1;D.fixedAny=true;renderBoard();renderStatus();setCar(D.cx,D.cy,D.ang);
+      speak('橋修好囉！繼續前進！','car');
+    }
+    Snd.tick();
+    if(!await moveSeg(seg,0,.5,300,tok))return;
+    if(st.ev.includes('plank')){D.plank=true;Snd.plank();speak('嘿咻！木板上車了！','car');pop('嘿咻！','#52b788',D.cx,D.cy-34);renderStatus();setCar(D.cx,D.cy,D.ang);if(!await pwait(400,tok))return;}
+    if(st.ev.includes('parcel')){D.parcel=true;Snd.parcel();speak('叮！包裹拿到了！','car');pop('叮！','#fb8500',D.cx,D.cy-34);renderBoard();renderStatus();setCar(D.cx,D.cy,D.ang);if(!await pwait(400,tok))return;}
+    if(!await moveSeg(seg,.5,1,300,tok))return;
+  }
+  if(tok!==driveTok)return;
+  if(sim.ok){D.state='done';renderDrive();carEl().innerHTML=carSVG(D.cx,D.cy,D.ang,true);pop('到囉！','#52b788',D.cx,D.cy-36);onSuccess(sim);}
+  else{
+    if(sim.reason!=='edge'){const st={a:[D.cx,D.cy],b:[D.cx+DIRS[sim.dir][1]*12,D.cy+DIRS[sim.dir][0]*12]};if(!await moveSeg(st,0,1,200,tok))return;}
+    if(tok!==driveTok||!D)return;D.state='stopped';G.problem=sim.at;Snd.brake();pop('嘰——！','#ff8fa3',D.cx,D.cy-34);
+    const msg=sim.reason==='obstacle'?(OBST[sim.ch]||REASON.noroad):REASON[sim.reason];
+    speak(msg+'<br>直接點地圖就能修路，也可以按「回工坊」。鋪好的路都會留著。','car',true);
+    logRun(sim,false);renderBoard();renderDrive();renderCount();
+  }
+}
+function endDrive(){driveTok++;reportSeq++;clearTimeout(reportTimer);reportTimer=null;D=null;modalPausedDrive=null;}
+function togglePause(){if(!D)return;if(D.state==='driving'){D.state='paused';speak('原地待命。你先預測看看：我接下來會往哪裡開？','car');}else if(D.state==='paused'){D.state='driving';speak('繼續出發！','car');}renderDrive();}
+function backToWorkshop(){if(!D)return;const keep=G.problem;endDrive();G.problem=keep;renderAll();
+  speak(keep!==null&&keep!==undefined?'回到工坊了。紅色框起來的地方，就是要修的位置。':'回到工坊了，道路都還在。','lun');}
+function replay(){if(!D||D.state==='driving'||D.state==='paused')return;endDrive();G.problem=null;renderAll();startDrive();}
+
+/* =========================================================
+   任務完成報告與成就
+   ========================================================= */
+function logRun(sim,ok,extra){
+  P.log.push(Object.assign({time:new Date().toLocaleString('zh-TW',{hour12:false}),lvl:G.i+1,result:ok?'成功':({edge:'開到邊緣',goalside:'終點方向不對',needplank:'沒帶木板',loop:'繞回原路',obstacle:'撞到障礙',noroad:'缺路',mismatch:'接口沒接好',bridgeside:'橋頭方向不對',bridge:'沒木板就到斷橋'}[sim.reason]||sim.reason),
+    roads:roadCount(),parcel:(ok?sim.parcel:D&&D.parcel)?1:0,newRoute:'',hints:G.hints,strategy:''},extra||{}));
+  if(P.log.length>500)P.log=P.log.slice(-500);save();
+}
+function onSuccess(sim){
+  const S=P.lv[G.i],L=LV[G.i],firstRescue=!S.rescue;
+  const key=sim.steps.map(s=>s.cell).join('-'),newRoute=!S.routes.includes(key);
+  const had={rescue:S.rescue,parcel:S.parcel,strategy:S.strategy,badge:S.routes.length>=2};
+  if(newRoute)S.routes.push(key);
+  S.rescue=true;if(sim.parcel)S.parcel=true;
+  const n=roadCount(),lim=sim.parcel?Math.max(L.sug,G.sugP):L.sug,stratNow=n<=lim;if(stratNow)S.strategy=true;
+  const badgeNow=S.routes.length>=2,lastLevelFirst=G.i===9&&firstRescue;
+  if(allDone())P.unlockedDeco=true;
+  if(firstRescue)newBase=P.lv.filter(x=>x.rescue).length-1;
+  save();logRun(sim,true,{newRoute:newRoute?'是':'否'});
+  Snd.success();speak(L.thanks,L.who);
+  const seq=++reportSeq,owner=G,tok=driveTok;clearTimeout(reportTimer);reportTimer=setTimeout(()=>{if(seq===reportSeq&&G===owner&&tok===driveTok&&D&&D.state==='done'&&$('#s-play').classList.contains('active'))showReport({sim,had,newRoute,badgeNow,n,lim,stratNow,lastLevelFirst});},700*SPD());
+}
+function abilityLine(sim){
+  const parts=[`你接好了 ${sim.steps.length-1} 段路`];
+  if(sim.steps.some(s=>s.ev&&s.ev.includes('plank')))parts.push('先去工具站拿木板');
+  if(sim.usedPlank)parts.push('用木板修好小橋');
+  if(sim.parcel)parts.push('還順路帶上了包裹');
+  return parts.join('，')+'，把'+LV[G.i].cargo+'送到了！';
+}
+function showReport(r){
+  const S=P.lv[G.i],L=LV[G.i];
+  const card=(k,on,isNew,title,desc)=>`<div class="sticker ${on?'got':''} ${isNew?'new':''}"><div class="disc" style="background:${on?'#fff':''}">${stickerIcon(k)}</div><b>${title}</b><small>${desc}</small></div>`;
+  const pDesc=S.parcel?(r.sim.parcel&&!r.had.parcel?'這次順路拿到包裹！':'已經拿到了'):'下次試試順路經過包裹';
+  const sDesc=S.strategy?(r.stratNow&&!r.had.strategy?`只用 ${r.n} 塊道路${r.sim.parcel&&r.lim>L.sug?'，還順路拿了包裹':''}！`:'已經拿到了'):`這次用了 ${r.n} 塊，${r.lim} 塊以內就能拿到`;
+  const badgeTxt=r.badgeNow?(!r.had.badge?'<b>拿到雙路線徽章！</b>你用兩條不同的路完成了救援。':`雙路線徽章已經拿到了。你在這一關找到 ${S.routes.length} 條不同的路。`)
+    :(r.newRoute?'這是你在這一關找到的第 1 條路。換一條不一樣的路線再救援一次，就能拿到雙路線徽章。':'這條路之前走過了。換一條不一樣的路線，才能拿到雙路線徽章。');
+  let acts='';
+  if(r.lastLevelFirst)acts+=`<button class="btn red big" data-r="party" type="button">參加救援站落成派對</button>`;
+  else if(G.i<9)acts+=`<button class="btn red big" data-r="next" type="button">接下一張出勤單</button>`;
+  acts+=`<button class="btn" data-r="again" type="button">回工坊，換一條路試試</button><button class="btn" data-r="map" type="button">回任務板</button>`;
+  openModal(`<div class="report"><div class="stampbig">任務完成</div><p class="soft" style="margin:0">任務完成報告｜出勤單 No.${String(G.i+1).padStart(2,'0')}</p><h2>${L.name}</h2><p>${abilityLine(r.sim)}</p>
+    <div class="stickers">
+      ${card('rescue',true,!r.had.rescue,'救援章',r.had.rescue?'已經拿到了':'把物資送到了！')}
+      ${card('parcel',S.parcel,r.sim.parcel&&!r.had.parcel,'包裹章',pDesc)}
+      ${card('strategy',S.strategy,r.stratNow&&!r.had.strategy,'省路章',sDesc)}
+    </div>
+    <div class="badge-row ${r.badgeNow?'got':''}">${badgeSVG(r.badgeNow)}<span>${badgeTxt}</span></div>
+    <div class="reflect"><p class="q">任務回報：你是怎麼規劃出這條路線的？</p><div class="chips">${STRATS.map(([k,t])=>`<button class="chip" data-strat="${k}" type="button">${t}</button>`).join('')}</div><p class="reply" id="reply" aria-live="polite"></p></div>
+    <p class="soft">三枚任務章可以分開拿，不用一次全部完成。</p>
+    <div class="actions">${acts}</div></div>`);
+  const owner=G,report=reportSeq;const reportSound=fn=>{if(G===owner&&report===reportSeq&&!$('#modal').hidden&&$('#modalBox .report'))fn();};setTimeout(()=>reportSound(()=>Snd.stamp()),350*SPD());
+  const news=[!r.had.rescue,r.sim.parcel&&!r.had.parcel,r.stratNow&&!r.had.strategy];
+  let d=700;news.forEach((v,k)=>{if(v){setTimeout(()=>reportSound(()=>Snd.star(k)),d*SPD());d+=380;}});
+}
+function openModal(html){modalReturn=document.activeElement;$('#modalBox').innerHTML=html;$('#modal').hidden=false;const f=$('#modalBox').querySelector('button:not([disabled]),input');if(f)f.focus();}
+function closeModal(){$('#modal').hidden=true;if(modalReturn&&modalReturn.isConnected)modalReturn.focus();if(modalPausedDrive&&D===modalPausedDrive&&D.state==='paused'){D.state='driving';renderDrive();}modalPausedDrive=null;}
+
+/* =========================================================
+   路線提示（自動求解，顯示一條參考路線 6 秒）
+   ========================================================= */
+function solveAll(i,limit){
+  const pl=parseLevel(i),L=LV[i],res=[];limit=limit||4000;
+  const sr=Math.floor(pl.s/N),sc=pl.s%N;
+  function dfs(r,c,dir,plank,parcel,visited,path){
+    if(res.length>=limit)return;
+    const nr=r+DIRS[dir][0],nc=c+DIRS[dir][1];if(nr<0||nr>=N||nc<0||nc>=N)return;
+    const idx=nr*N+nc,ch=pl.t[idx];
+    if(ch==='G'){if(dir===OPP[L.gEntry]&&(!L.needPlank||plank))res.push({path:path.slice(),parcel});return;}
+    if(!buildable(ch)||visited.has(idx)||path.length>=MAXROAD)return;
+    let pk=plank,pa=parcel;
+    if(ch==='B'||ch==='b'){if(!pk)return;if((ch==='B')!==(dir==='E'||dir==='W'))return;pk=false;visited.add(idx);path.push({cell:idx,entry:OPP[dir],exit:dir});dfs(nr,nc,dir,pk,pa,visited,path);path.pop();visited.delete(idx);return;}
+    if(ch==='T')pk=true;if(ch==='P')pa=true;
+    visited.add(idx);
+    for(const d of ['N','E','S','W'])if(d!==OPP[dir]){path.push({cell:idx,entry:OPP[dir],exit:d});dfs(nr,nc,d,pk,pa,visited,path);path.pop();}
+    visited.delete(idx);
+  }
+  dfs(sr,sc,L.sDir,false,false,new Set([pl.s]),[]);
+  return res;
+}
+const _plim={};
+function parcelLimit(i){if(_plim[i]===undefined){const s=solveAll(i,4000).filter(x=>x.parcel);_plim[i]=s.length?Math.min(...s.map(x=>x.path.length)):LV[i].sug;}return _plim[i];}
+function routeToRoads(path){const roads={};path.forEach(p=>{if(p.exit===OPP[p.entry])roads[p.cell]={k:'s',r:(p.entry==='W'||p.entry==='E')?0:1};else{const opts=[['N','E'],['E','S'],['S','W'],['W','N']];roads[p.cell]={k:'c',r:opts.findIndex(o=>o.includes(p.entry)&&o.includes(p.exit))};}});return roads;}
+function showHint(){
+  if(!G||D)return;
+  const sols=solveAll(G.i,4000);if(!sols.length)return;
+  sols.sort((a,b)=>a.path.length-b.path.length);
+  const done=P.lv[G.i].routes;
+  const pick=sols.find(s=>!done.includes(s.path.map(p=>p.cell).concat([G.g]).join('-')))||sols[0];
+  G.hintRoute=pick.path.map(p=>p.cell);G.hints++;Snd.radio();renderBoard();
+  speak('指揮中心傳送參考路線：藍色號碼是一條走得通的路。選一塊接口對得上的道路，放下後再點它就能轉方向。完畢。','lun');
+  const myG=G;setTimeout(()=>{if(G===myG&&G.hintRoute){G.hintRoute=null;if(!D)renderBoard();}},6000*SPD());
+}
+
+/* =========================================================
+   基地模型（玩具積木搭的救援站，隨任務數逐步搭起）
+   ========================================================= */
+function peg(x,fy,o){const h=o.h||30,col=o.body,hy=fy-h;
+  return `<rect x="${x-8}" y="${hy+8}" width="16" height="${h-8}" rx="7" fill="${col}"/><circle cx="${x}" cy="${hy}" r="9" fill="${o.skin||'#f6d5b0'}"/>${o.hat==='cap'?`<path d="M${x-9} ${hy-2} Q${x} ${hy-14} ${x+9} ${hy-2}Z" fill="${o.hatc}"/>`:''}${o.hat==='straw'?`<path d="M${x-13} ${hy-4} H${x+13} M${x-7} ${hy-4} Q${x} ${hy-15} ${x+7} ${hy-4}" fill="#ffd166"/>`:''}${o.bun?`<circle cx="${x}" cy="${hy-10}" r="4" fill="${o.hair}"/>`:''}${o.pony?`<circle cx="${x+9}" cy="${hy-4}" r="4" fill="${o.hair}"/>`:''}<circle cx="${x-3}" cy="${hy}" r="1.4" fill="${I}" stroke="none"/><circle cx="${x+3}" cy="${hy}" r="1.4" fill="${I}" stroke="none"/>${o.wave?`<path class="sway" d="M${x-8} ${hy+12} L${x-16} ${hy}" fill="none" stroke-width="3"/>`:''}`;}
+function block(x,y,w,h,col,side){return `<path d="M${x+w} ${y} l10 -8 v${h} l-10 8Z" fill="${side||'rgba(0,0,0,.25)'}"/><path d="M${x} ${y} l10 -8 h${w} l-10 8Z" fill="rgba(255,255,255,.35)"/><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="${col}"/>`;}
+function pet(type,x,y){
+  if(type==='cat')return `<path d="M${x+18} ${y-2} q14 -2 10 -16" fill="none" stroke="#fb8500" stroke-width="5"/><ellipse cx="${x+3}" cy="${y}" rx="16" ry="10" fill="#fb8500"/><path d="M${x-22} ${y-14} l3 -11 l7 8Z M${x-12} ${y-17} l6 -8 l4 11Z" fill="#fb8500"/><circle cx="${x-14}" cy="${y-10}" r="9.5" fill="#fb8500"/><circle cx="${x-17}" cy="${y-12}" r="1.6" fill="${I}" stroke="none"/><circle cx="${x-11}" cy="${y-12}" r="1.6" fill="${I}" stroke="none"/>`;
+  if(type==='rabbit')return `<circle cx="${x+20}" cy="${y-2}" r="5" fill="#fff"/><ellipse cx="${x+3}" cy="${y}" rx="16" ry="11" fill="#fff"/><ellipse cx="${x-17}" cy="${y-30}" rx="4" ry="11" fill="#fff"/><ellipse cx="${x-8}" cy="${y-30}" rx="4" ry="11" fill="#fff"/><circle cx="${x-12}" cy="${y-10}" r="9.5" fill="#fff"/><circle cx="${x-15}" cy="${y-12}" r="1.6" fill="${I}" stroke="none"/><circle cx="${x-9}" cy="${y-12}" r="1.6" fill="${I}" stroke="none"/><circle cx="${x-12}" cy="${y-7}" r="1.8" fill="#ff8fa3" stroke="none"/>`;
+  return `<path d="M${x+20} ${y-6} q9 -8 6 -15" fill="none" stroke-width="3"/><ellipse cx="${x+4}" cy="${y}" rx="17" ry="10" fill="#d39b5f"/><path d="M${x-6} ${y+8} v7 M${x+12} ${y+8} v7" fill="none" stroke-width="3"/><circle cx="${x-14}" cy="${y-10}" r="10" fill="#d39b5f"/><ellipse cx="${x-23}" cy="${y-7}" rx="4" ry="8" fill="#8f5f3c"/><ellipse cx="${x-5}" cy="${y-7}" rx="4" ry="8" fill="#8f5f3c"/><circle cx="${x-17}" cy="${y-12}" r="1.6" fill="${I}" stroke="none"/><circle cx="${x-11}" cy="${y-12}" r="1.6" fill="${I}" stroke="none"/><ellipse cx="${x-14}" cy="${y-6}" rx="2.6" ry="2" fill="${I}" stroke="none"/>`;
+}
+function sideCar(x,y,col){return `<g class="bounce"><rect x="${x}" y="${y}" width="66" height="24" rx="10" fill="${col}"/><rect x="${x+38}" y="${y-16}" width="26" height="20" rx="7" fill="${col}"/><rect x="${x+42}" y="${y-12}" width="18" height="12" rx="3" fill="#cdeffd" stroke-width="2"/><circle cx="${x+50}" cy="${y-6}" r="3" fill="#fff" stroke-width="1.6"/><circle cx="${x+51}" cy="${y-6}" r="1.4" fill="${I}" stroke="none"/><rect x="${x+44}" y="${y-23}" width="12" height="6" rx="2" fill="#e63946" stroke-width="2"/><rect x="${x+6}" y="${y-7}" width="28" height="7" rx="2" fill="#d39b5f" stroke-width="2"/><circle cx="${x+15}" cy="${y+24}" r="8" fill="${I}"/><circle cx="${x+51}" cy="${y+24}" r="8" fill="${I}"/><circle cx="${x+15}" cy="${y+24}" r="3" fill="#ccc" stroke="none"/><circle cx="${x+51}" cy="${y+24}" r="3" fill="#ccc" stroke="none"/></g>`;}
+function baseSVG(o={}){
+  const done=o.all?10:P.lv.filter(x=>x.rescue).length,nb=o.newIdx===undefined?-1:o.newIdx,d=Object.assign({},P.deco,o.deco||{});
+  const roof=ROOFC[d.roof],carc=CARC[d.car]||CARC.red;
+  const g=(k,inner)=>done>k?`<g class="${k===nb?'new-build':''}">${inner}</g>`:'';
+  let s=o.viewBox?`<svg class="diorama" viewBox="${o.viewBox}" preserveAspectRatio="xMidYMid meet" aria-hidden="true">`:`<svg class="diorama" viewBox="0 0 480 290" role="img" aria-label="草地救援站，完成 ${done} 項建設">`;
+  s+=`<rect width="480" height="290" fill="#cdeffd"/><g stroke="${I}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">`;
+  s+=`<circle cx="420" cy="46" r="22" fill="#ffd166"/>`;
+  [[70,50],[250,34]].forEach(([cx,cy])=>{s+=`<rect x="${cx-34}" y="${cy-12}" width="68" height="26" rx="13" fill="#fff"/><circle cx="${cx-8}" cy="${cy-12}" r="14" fill="#fff" stroke="none"/><path d="M${cx-22} ${cy-14} a14 14 0 0 1 28 0" fill="none"/>`;});
+  s+=`<path d="M0 190 Q120 150 240 176 Q360 146 480 178 L480 290 L0 290Z" fill="#9fdc8f"/>`;
+  s+=g(6,`<path d="M290 196 L295 120 L307 120 L312 196Z" fill="#fff"/><path d="M289 124 L301 104 L313 124Z" fill="#e63946"/><g class="spin">${[0,90,180,270].map(a=>`<path d="M301 114 L301 76 L311 78 L303 114Z" fill="${['#ffbe0b','#3a86ff','#52b788','#ff8fa3'][a/90]}" transform="rotate(${a} 301 114)" stroke-width="2.4"/>`).join('')}<circle cx="301" cy="114" r="5" fill="${I}"/></g>`);
+  s+=`<rect x="0" y="204" width="480" height="86" fill="url(#felt)"/><path d="M0 204 H480" stroke-width="3"/>`;
+  s+=`<rect x="0" y="238" width="480" height="30" fill="#5c6378"/><path d="M0 238 H480 M0 268 H480" stroke-width="3"/><path d="M0 253 H480" stroke="#ffd166" stroke-width="4" stroke-dasharray="12 10"/><path d="M80 238 V268 M200 238 V268 M320 238 V268 M440 238 V268" stroke-width="1.6" opacity=".5"/>`;
+  if(done<1)s+=`<rect x="70" y="194" width="44" height="9" rx="2" fill="#d39b5f" transform="rotate(-10 92 200)"/><rect x="88" y="188" width="38" height="9" rx="2" fill="#e9b872" transform="rotate(14 107 194)"/><rect x="112" y="196" width="14" height="14" rx="2" fill="#e63946"/>`;
+  s+=g(4,`<path d="M440 206 L452 104 L464 206 M444 172 H460 M447 140 H457 M442 188 L462 152 M445 156 L459 124" fill="none" stroke-width="3"/><circle class="twinkle" cx="452" cy="100" r="7" fill="#e63946"/>`);
+  s+=g(7,block(330,152,88,54,'#ffd166','#d99a00')+`<path d="M322 154 L374 116 L426 154Z" fill="#e63946"/><rect x="364" y="174" width="20" height="32" rx="2" fill="#a8703a"/><rect x="338" y="166" width="18" height="15" rx="2" fill="#cdeffd"/><rect x="394" y="166" width="16" height="15" rx="2" fill="#cdeffd"/>`);
+  s+=g(5,(()=>{let f='';const cols=['#ff6b6b','#ffbe0b','#9b7fc0','#ff8fa3'];for(let r=0;r<2;r++)for(let x=312+r*8;x<430-r*8;x+=18)f+=`<path d="M${x} ${226+r*8} v-10" stroke="#2d8a5f" stroke-width="3"/><circle cx="${x}" cy="${214+r*8}" r="6" fill="${cols[(x/18+r)%4|0]}" stroke-width="2.2"/>`;return f;})());
+  s+=g(0,block(40,140,150,66,'#3a86ff','#1f5fc4')+`<rect x="70" y="158" width="72" height="48" rx="3" fill="#fff"/><path d="M70 170 H142 M70 182 H142 M70 194 H142" fill="none" stroke-width="2"/><rect x="154" y="156" width="24" height="18" rx="2" fill="#cdeffd"/>`);
+  s+=g(1,`<path d="M30 142 L115 100 L210 142Z" fill="${roof}"/><rect x="78" y="118" width="62" height="18" rx="4" fill="#ffbe0b"/><text x="109" y="132" font-size="12" text-anchor="middle" font-weight="900" fill="${I}" stroke="none" letter-spacing="1">救援站</text>`);
+  s+=g(3,block(214,170,50,36,'#e63946','#b5232f')+`<path d="M208 172 L239 150 L270 172Z" fill="#ffbe0b"/><rect x="222" y="182" width="34" height="8" rx="2" fill="#e9b872" stroke-width="2"/><rect x="222" y="192" width="34" height="8" rx="2" fill="#d39b5f" stroke-width="2"/>`);
+  s+=g(8,`<ellipse cx="240" cy="224" rx="40" ry="9" fill="#fff3c4"/><rect x="222" y="206" width="36" height="5" rx="2" fill="#d39b5f"/><rect x="222" y="214" width="36" height="6" rx="2" fill="#d39b5f"/><path d="M226 220 V228 M254 220 V228" fill="none"/>`);
+  s+=g(2,sideCar(84,222,carc));
+  if(done>=10){let fl=`<path d="M115 100 Q245 160 374 116" fill="none" stroke-width="2.4"/>`;const cols=['#e63946','#ffbe0b','#3a86ff','#52b788','#fb8500'];
+    for(let k=1;k<11;k++){const t=k/11,u=1-t,x=u*u*115+2*u*t*245+t*t*374,y=u*u*100+2*u*t*160+t*t*116;fl+=`<path class="sway" d="M${f1(x-8)} ${f1(y)} L${f1(x+8)} ${f1(y+1)} L${f1(x)} ${f1(y+17)}Z" fill="${cols[k%5]}" stroke-width="2" style="animation-delay:${k*.15}s"/>`;}
+    s+=g(9,fl+peg(178,262,{body:'#e63946',hat:'cap',hatc:'#e63946',wave:o.party})+peg(206,262,{body:'#52b788',hat:'straw'})+peg(292,262,{body:'#ffbe0b',pony:1,hair:'#6b4a32',h:26,wave:o.party})+peg(320,262,{body:'#9b7fc0',bun:1,hair:'#e8e4da'}));}
+  if(P.unlockedDeco||o.all)s+=pet(d.pet,432,280);
+  s+='</g>';
+  if(o.party){const cols=['#e63946','#ffbe0b','#3a86ff','#52b788','#fb8500'];for(let k=0;k<28;k++){const x=(Math.random()*470+5).toFixed(0),w=(5+Math.random()*4).toFixed(1);s+=`<rect class="conf" x="${x}" y="-10" width="${w}" height="${(w*1.6).toFixed(1)}" fill="${cols[k%5]}" stroke="${I}" stroke-width="1" style="animation-delay:${(Math.random()*3).toFixed(2)}s;animation-duration:${(2.4+Math.random()*1.6).toFixed(2)}s"/>`;}}
+  return s+'</svg>';
+}
+
+/* =========================================================
+   畫面：開場、任務板、派對、布置、設定
+   ========================================================= */
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$('#s-'+id).classList.add('active');window.scrollTo(0,0);}
+function setQuick(){$('#quickSound').textContent=P.sound?'音效：開':'音效：關';$('#quickSound').setAttribute('aria-pressed',P.sound?'true':'false');}
+function brand(){$('#brandLogo').innerHTML=carFaceSVG(CARC[P.deco.car])+'<span>救援小車隊</span>';}
+let introTok=0;
+async function runIntro(){
+  const tok=++introTok,box=$('#radioLines');box.innerHTML='';$('#idArea').innerHTML='';
+  $('#walkie').innerHTML=walkieSVG();$('#btnSkip').hidden=false;
+  const back=P.introSeen;
+  const lines=back?[['阿輪隊長',`滋滋……${callName()}，歡迎歸隊。`],['阿輪隊長','小輪已經加滿油，出勤單在任務板上。完畢。']]
+    :[['阿輪隊長','滋滋……呼叫、呼叫！這裡是草地救援站指揮中心。'],['阿輪隊長','暴風雨把村莊的路吹斷了，田伯、小穗和莓莓奶奶都在等物資。'],['阿輪隊長','指揮中心需要一位路線規劃員，和救援車「小輪」搭檔出勤。完畢。'],['小輪','叭叭！我是小輪。路線交給你規劃，我負責開。走不通的話，我會自己安全停車，等你修好再出發。']];
+  for(const [who,t] of lines){if(tok!==introTok)return;Snd.radio();const el=document.createElement('p');el.className='rline';el.innerHTML=`<span class="who">${who}</span>${t}`;box.appendChild(el);await sleep(1400);}
+  if(tok!==introTok)return;showId();
+}
+function skipIntro(){introTok++;const box=$('#radioLines');box.innerHTML=`<p class="rline"><span class="who">阿輪隊長</span>呼叫、呼叫！指揮中心需要一位路線規劃員，和救援車「小輪」搭檔出勤。完畢。</p>`;showId();}
+function showId(){
+  $('#btnSkip').hidden=true;
+  $('#idArea').innerHTML=`<div class="idcard"><div class="bar"><span>救援隊員證</span><span>No.${P.memberNo}</span></div>
+    <div class="body"><div class="photo">${carFaceSVG(CARC[P.deco.car]).replace('<svg','<svg style="width:100%;height:100%"')}</div>
+    <div><label for="memberInput">隊員名字（可以不填）</label><input id="memberInput" maxlength="8" value="${esc(P.name||'')}" placeholder="寫上你的名字" autocomplete="off">
+    <p class="soft" style="margin:.4em 0 0">搭檔：小輪｜所屬：草地救援站</p></div><div class="stamp">草地<br>救援站</div></div></div>
+    <div class="actions"><button class="btn red big" data-go="start" type="button">${P.introSeen?'回到任務板':'領取隊員證，報到！'}</button></div>`;
+}
+function stickersRow(S){return `<span class="stk" aria-label="救援${S.rescue?'有':'沒有'}、包裹${S.parcel?'有':'沒有'}、省路${S.strategy?'有':'沒有'}、雙路線${S.routes.length>=2?'有':'沒有'}">${stickerMini('rescue',S.rescue)}${stickerMini('parcel',S.parcel)}${stickerMini('strategy',S.strategy)}${stickerMini('badge',S.routes.length>=2)}</span>`;}
+function renderMap(){
+  const done=P.lv.filter(x=>x.rescue).length;
+  $('#stages').innerHTML=LEVEL_NAMES.map((n,k)=>`<span class="stage-chip ${k===0?'on':''}">第${['一','二','三','四','五'][k]}站．${n}${k?'（籌備中）':''}</span>`).join('');
+  $('#mapProgress').textContent=`救援進度 ${done} / 10`;$('#mapBar').style.width=(done*10)+'%';
+  $('#mapScene').innerHTML=baseSVG({newIdx:newBase});newBase=undefined;
+  $('#memberName').textContent=`${P.name?'隊員'+P.name:'新隊員'}｜搭檔：小輪`;
+  const nextI=P.lv.findIndex(x=>!x.rescue);
+  $('#mapNote').textContent=done===0?'暴風雨過後，救援站只剩一堆木板。完成出勤單，基地就會一塊一塊搭起來！'
+    :(nextI>=0?`基地新增：${BASE_STEPS[done-1]}。下一張出勤單：${LV[nextI].name}`:'草地救援站落成了！每張出勤單都可以再接一次，挑戰包裹章、省路章和第二條路線。');
+  $('#tickets').innerHTML=LV.map((L,k)=>{const S=P.lv[k],unlocked=k===0||P.lv[k-1].rescue,isNext=k===nextI;
+    const whoName=L.who==='all'?'全村居民':PEOPLE[L.who].name;
+    return `<button class="ticket ${S.rescue?'done':''} ${isNext?'next':''}" data-lvl="${k}" type="button" ${unlocked?'':'disabled'} aria-label="出勤單 ${k+1}，${L.name}${unlocked?'':'，待命中'}"><span class="stub">${String(k+1).padStart(2,'0')}</span><span class="mid"><b>${L.name}</b><small>${unlocked?`${whoName}｜送${L.cargo}`:'待命中'}</small></span><span class="right">${unlocked?stickersRow(S):''}</span></button>`;}).join('');
+  $('#btnDeco').disabled=!P.unlockedDeco;
+  $('#decoHint').textContent=P.unlockedDeco?'選小輪的車色、基地屋頂和基地夥伴，免費隨時更換。':'完成十張出勤單後，就能布置基地和小輪。';
+}
+function showParty(){
+  $('#partyBox').innerHTML=`<p class="soft" style="margin:0;font-weight:800;letter-spacing:.12em">第一站完成</p><h2>草地救援站落成派對！</h2>${baseSVG({party:true})}
+    <div class="story"><p>田伯、小穗和莓莓奶奶都來到救援站。小輪按了好大一聲喇叭：「叭叭——！」</p>
+    <p>阿輪隊長拍拍小輪說：「我們鋪的路有的彎、有的繞，可是每一條都把東西送到了大家手上。能幫上忙的路，就是好路。」</p>
+    <p class="reward">你可以自由布置了：<b>小輪的車色、基地屋頂、基地夥伴</b>。<br>每張出勤單也都可以再接一次，挑戰包裹章、省路章和第二條路線。</p></div>
+    <div class="actions"><button class="btn yellow big" data-go="deco" type="button">開始布置</button><button class="btn" data-go="map" type="button">回任務板</button></div>`;
+  show('party');setTimeout(()=>Snd.celebrate(),350);
+}
+function decoIcon(k,v){
+  if(k==='car')return carFaceSVG(CARC[v]);
+  if(k==='roof')return baseSVG({all:true,deco:{roof:v},viewBox:'26 94 196 116'});
+  return baseSVG({all:true,deco:{pet:v},viewBox:'392 236 74 58'});
+}
+function renderDeco(){
+  $('#decoScene').innerHTML=baseSVG();
+  $('#decoPanel').innerHTML=Object.entries(DECO).map(([k,D0])=>`<h3>${D0.title}</h3><div class="deco-opts" role="group" aria-label="${D0.title}">${D0.opts.map(([v,l])=>`<button class="deco-opt ${P.deco[k]===v?'on':''}" data-deco="${k}:${v}" type="button" aria-pressed="${P.deco[k]===v}">${decoIcon(k,v)}<span>${l}</span></button>`).join('')}</div>`).join('');
+}
+function openSettings(){
+  clearTimeout(reportTimer);reportSeq++;if(D&&D.state==='driving'){D.state='paused';modalPausedDrive=D;renderDrive();}
+  const sname=k=>(STRATS.find(s=>s[0]===k)||['',''])[1];
+  const rows=P.log.slice(-60).reverse().map(l=>`<tr><td>${esc(l.time)}</td><td>${l.lvl}</td><td>${esc(l.result)}</td><td>${l.roads}</td><td>${l.parcel?'有':''}</td><td>${l.newRoute}</td><td>${l.hints}</td><td>${sname(l.strategy)}</td></tr>`).join('');
+  const tsv=['時間\t關卡\t試車結果\t已鋪道路\t包裹\t新路線\t提示次數\t找路方法'].concat(P.log.map(l=>[l.time,l.lvl,l.result,l.roads,l.parcel?'有':'',l.newRoute,l.hints,sname(l.strategy)].join('\t'))).join('\n');
+  openModal(`<h3>設定</h3>
+    <label class="row"><input type="checkbox" id="setSound" ${P.sound?'checked':''}> 開啟音效</label>
+    <label class="row">音量 <input type="range" id="setVol" min="0" max="1" step="0.05" value="${P.vol}"></label>
+    <button class="btn small" data-m="test" type="button">試聽音效</button>
+    <label class="row">隊員名字 <input id="setName" maxlength="8" value="${esc(P.name||'')}" style="flex:1;padding:.3em .5em;border:3px solid ${I};border-radius:10px"></label>
+    <p class="soft">所有重要回饋也有文字、圖示或動畫，關掉聲音一樣能玩。名字只存在這台裝置的瀏覽器裡。</p>
+    <details><summary>進度備份</summary>
+      <p class="soft">進度自動存在這台裝置的瀏覽器裡，不會跨裝置同步。可以匯出備份檔，換電腦時再匯入。</p>
+      <div class="row-btns"><button class="btn small" data-m="export" type="button">匯出進度</button><button class="btn small" data-m="import" type="button">匯入進度</button></div>
+    </details>
+    <details><summary>老師區：試車紀錄</summary>
+      <p class="soft">每次按「出發」都會記錄一筆，包含停車原因。任務章與徽章用來看見孩子的規劃與修正過程，不作為注意力診斷或療效判定。</p>
+      ${P.log.length?`<div style="overflow-x:auto"><table class="log-table"><thead><tr><th>時間</th><th>關</th><th>結果</th><th>道路</th><th>包裹</th><th>新路線</th><th>提示</th><th>找路方法</th></tr></thead><tbody>${rows}</tbody></table></div><p class="soft">可複製到試算表（Tab 分隔）：</p><textarea readonly>${esc(tsv)}</textarea>`:'<p>還沒有試車紀錄。</p>'}
+      <button class="btn small" data-m="reset" type="button">清除全部進度與紀錄</button>
+    </details>
+    <div class="actions"><button class="btn yellow" data-m="close" type="button">完成</button></div>`);
+  $('#setSound').addEventListener('change',e=>{P.sound=e.target.checked;Snd.init();Snd.apply();save();setQuick();});
+  $('#setVol').addEventListener('input',e=>{P.vol=+e.target.value;Snd.apply();save();});
+  $('#setName').addEventListener('change',e=>{P.name=e.target.value.trim().slice(0,8);save();if($('#s-map').classList.contains('active'))renderMap();});
+}
+function exportProgress(){
+  try{const blob=new Blob([JSON.stringify({app:'rescue-cars-v2',version:2,data:P},null,1)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='救援小車隊進度.json';document.body.appendChild(a);a.click();
+    setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);}catch(e){alert('這個瀏覽器無法匯出檔案。');}
+}
+$('#importFile').addEventListener('change',e=>{
+  const f=e.target.files&&e.target.files[0];if(!f)return;const rd=new FileReader();
+  rd.onload=()=>{try{const o=JSON.parse(rd.result);if(!o||!/^rescue-cars/.test(o.app)||!o.data||!Array.isArray(o.data.lv)||o.data.lv.length!==LV.length)throw 0;const s=P.sound,v=P.vol;endDrive();G=null;introTok++;P=normalize(o.data);P.sound=s;P.vol=v;save();closeModal();Snd.apply();setQuick();brand();renderMap();show('map');alert('進度匯入完成！');}
+    catch(err){alert('這個檔案不是救援小車隊的進度備份。');}e.target.value='';};
+  rd.readAsText(f);
+});
+
+/* =========================================================
+   事件
+   ========================================================= */
+$('#board').addEventListener('click',e=>{const c=e.target.closest('[data-cell]');if(c)onCell(+c.dataset.cell);});
+$('#board').addEventListener('keydown',e=>{const c=e.target.closest('[data-cell]');if(c&&(e.key==='Enter'||e.key===' ')){e.preventDefault();onCell(+c.dataset.cell);}});
+document.querySelectorAll('.tool[data-tool]').forEach(b=>b.addEventListener('click',()=>setTool(b.dataset.tool)));
+$('#s-play').addEventListener('click',e=>{const a=e.target.closest('[data-act]');if(!a||a.disabled)return;
+  ({turnSel,undo,clear:clearRoads,go:startDrive,pause:togglePause,workshop:backToWorkshop,replay})[a.dataset.act]();});
+function chooseEasy(e){if(e.target.closest('[data-mobile-drive]')){if(D&&['driving','paused'].includes(D.state))togglePause();else startDrive();return;}const b=e.target.closest('[data-easy]');if(!b||b.disabled||!G)return;const [k,r]=b.dataset.easy.split(':');G.tool=k;if(k==='s')G.rotS=+r;if(k==='c')G.rotC=+r;G.selected=null;Snd.select();renderTools();renderBoard();}
+$('#roadPalette').addEventListener('click',chooseEasy);$('#mobileControls').addEventListener('click',chooseEasy);
+function showPreview(i){if(!G||D||G.roads[i]||!buildable(G.t[i])||G.tool==='erase')return;const [x,y]=cellXY(i),ch=G.t[i],k='Bb'.includes(ch)?'s':G.tool,r='Bb'.includes(ch)?(ch==='B'?0:1):(k==='s'?G.rotS:G.rotC),p=$('#roadPreview');if(p)p.innerHTML=`<g transform="translate(${x} ${y})" opacity=".5">${woodTile(i,k,r)}</g>`;}
+$('#board').addEventListener('pointerover',e=>{if(e.pointerType==='touch')return;const c=e.target.closest('[data-cell]');if(c)showPreview(+c.dataset.cell);});
+$('#board').addEventListener('pointerout',()=>{const p=$('#roadPreview');if(p)p.innerHTML='';});
+$('#board').addEventListener('focusin',e=>{const c=e.target.closest('[data-cell]');if(c)showPreview(+c.dataset.cell);});
+$('#board').addEventListener('focusout',()=>{const p=$('#roadPreview');if(p)p.innerHTML='';});
+$('#btnHint').addEventListener('click',showHint);
+$('#btnBrief').addEventListener('click',()=>{if(G&&!D)showBrief();});
+$('#btnSkip').addEventListener('click',skipIntro);
+$('#modalBox').addEventListener('click',e=>{
+  const st=e.target.closest('[data-strat]');
+  if(st){document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c===st));const s=STRATS.find(x=>x[0]===st.dataset.strat);$('#reply').textContent=s[2];Snd.deco();if(P.log.length){P.log[P.log.length-1].strategy=s[0];save();}return;}
+  const r=e.target.closest('[data-r]');
+  if(r){const k=r.dataset.r,i=G.i;closeModal();
+    if(k==='next'){startLevel(i+1);}
+    else if(k==='again'){backToWorkshop();speak('回到工坊了。試試看用不一樣的路線完成救援？','lun');}
+    else if(k==='party'){endDrive();showParty();}
+    else{endDrive();G=null;renderMap();show('map');}
+    return;}
+  const b=e.target.closest('[data-m]');if(!b)return;const m=b.dataset.m;
+  if(m==='close'){closeModal();if(G&&!D)speak('收到。先看地圖：車庫在哪裡、目的地在哪裡、哪裡過不去？完畢。','lun');}
+  else if(m==='test'){Snd.init();Snd.horn();}
+  else if(m==='export')exportProgress();
+  else if(m==='import')$('#importFile').click();
+  else if(m==='reset'){if(confirm('確定要清除所有進度與紀錄嗎？')){const s=P.sound,v=P.vol;endDrive();G=null;introTok++;P=defaults();P.sound=s;P.vol=v;save();closeModal();brand();show('intro');runIntro();}}
+});
+$('#modal').addEventListener('click',e=>{if(e.target.id==='modal'&&!$('#modalBox .report'))closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Tab'&&!$('#modal').hidden){const items=Array.from($('#modalBox').querySelectorAll('button:not([disabled]),input:not([disabled]),textarea,summary')).filter(el=>el.getClientRects().length);if(items.length){const first=items[0],last=items[items.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}}if(e.key==='Escape'&&!$('#modal').hidden&&!$('#modalBox .report'))closeModal();});
+document.addEventListener('click',e=>{
+  const go=e.target.closest('[data-go]'),lv=e.target.closest('[data-lvl]'),dc=e.target.closest('[data-deco]');
+  if(lv&&!lv.disabled){startLevel(+lv.dataset.lvl);return;}
+  if(dc){const [k,v]=dc.dataset.deco.split(':');P.deco[k]=v;save();Snd.deco();brand();renderDeco();return;}
+  if(!go)return;const g=go.dataset.go;
+  if(g==='start'){Snd.init();const inp=$('#memberInput');if(inp)P.name=inp.value.trim().slice(0,8);P.introSeen=true;save();introTok++;renderMap();show('map');}
+  else if(g==='map'){endDrive();G=null;renderMap();show('map');}
+  else if(g==='deco'){if(P.unlockedDeco){renderDeco();show('deco');}}
+});
+$('#quickSound').addEventListener('click',()=>{P.sound=!P.sound;Snd.init();Snd.apply();save();setQuick();if(P.sound)Snd.deco();});
+$('#btnSettings').addEventListener('click',openSettings);
+
+// 測試用：唯讀查詢與求解，不影響遊戲
+window.__rescueDebug={inspect:()=>({level:G&&G.i,roads:G&&JSON.parse(JSON.stringify(G.roads)),drive:D&&D.state,progress:JSON.parse(JSON.stringify(P))}),simulate:()=>G&&simulate(),solve:(i,lim)=>solveAll(i,lim).map(s=>({cells:s.path.map(p=>p.cell),parcel:s.parcel,len:s.path.length})),
+  roadsFor:(i,k)=>{const s=solveAll(i,4000);return routeToRoads(s[k].path);},state:()=>D&&D.state,cur:()=>G&&G.i};
+
+setQuick();brand();show('intro');runIntro();
+})();
+</script>
+</body>
+</html>

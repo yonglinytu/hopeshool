@@ -1,0 +1,400 @@
+<title>SEL 遊戲站</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+<style>
+/* ── tokens ── warm cream, four game accents, two-face type */
+:root {
+  --bg:        #f6efe4;
+  --paper:     #fffdf8;
+  --ink:       #2d261f;
+  --muted:     #7a6a58;
+  --line:      rgba(96,72,48,.13);
+  --shadow:    0 4px 24px rgba(60,40,20,.10);
+
+  --g1: #4a7fa5; --g1-soft: #ddeef8; --g1-deep: #2a5070;  /* 積木島 blue */
+  --g2: #438a6a; --g2-soft: #e0f2e8; --g2-deep: #275440;  /* 森林店長 green */
+  --g3: #8b67c0; --g3-soft: #ede5f8; --g3-deep: #523980;  /* 記憶建築師 purple */
+  --g4: #c05040; --g4-soft: #f8e5e2; --g4-deep: #7a2a1e;  /* 救援小車隊 red */
+
+  --ff-serif: 'Noto Serif TC', 'Songti TC', Georgia, serif;
+  --ff-sans:  'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:    #1e1a15;
+    --paper: #28231c;
+    --ink:   #f0e8da;
+    --muted: #a89880;
+    --line:  rgba(200,170,130,.12);
+    --shadow: 0 4px 24px rgba(0,0,0,.35);
+    --g1-soft: #1a3047; --g2-soft: #183328; --g3-soft: #2a1e40; --g4-soft: #3a1812;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:    #1e1a15;
+  --paper: #28231c;
+  --ink:   #f0e8da;
+  --muted: #a89880;
+  --line:  rgba(200,170,130,.12);
+  --shadow: 0 4px 24px rgba(0,0,0,.35);
+  --g1-soft: #1a3047; --g2-soft: #183328; --g3-soft: #2a1e40; --g4-soft: #3a1812;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--ff-sans);
+  font-size: 15px;
+  line-height: 1.65;
+  padding-left:  max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+}
+
+/* ── back button ── */
+.back-btn {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 14px);
+  left: max(16px, env(safe-area-inset-left, 0px));
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: var(--paper);
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-family: var(--ff-sans);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  box-shadow: var(--shadow);
+  transition: color .15s, border-color .15s;
+}
+.back-btn:hover { color: var(--ink); border-color: var(--muted); }
+.back-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+/* ── header ── */
+.site-header {
+  max-width: 720px;
+  margin: 0 auto;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 80px);
+  padding-bottom: 16px;
+  text-align: center;
+}
+.site-eyebrow {
+  font-family: var(--ff-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.site-title {
+  font-family: var(--ff-serif);
+  font-size: clamp(1.7rem, 5vw, 2.4rem);
+  font-weight: 700;
+  line-height: 1.2;
+  text-wrap: balance;
+  margin: 0 0 12px;
+}
+.site-desc {
+  color: var(--muted);
+  font-size: 14px;
+  max-width: 440px;
+  margin: 0 auto 0;
+  text-wrap: balance;
+}
+
+/* ── divider ── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 28px auto;
+  max-width: 720px;
+}
+
+/* ── game grid ── */
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  max-width: 720px;
+  margin: 0 auto;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 48px);
+}
+@media (max-width: 540px) {
+  .game-grid { grid-template-columns: 1fr; }
+}
+
+/* ── game card ── */
+.game-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  border-radius: 20px;
+  border: 1.5px solid var(--line);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: var(--shadow);
+  transition: transform .18s, box-shadow .18s;
+}
+.game-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 36px rgba(60,40,20,.16);
+}
+.game-card:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.card-banner {
+  height: 112px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-soft);
+  position: relative;
+  overflow: hidden;
+}
+.card-banner svg {
+  width: 56px;
+  height: 56px;
+  color: var(--accent);
+  opacity: .9;
+}
+/* subtle dot pattern on banner */
+.card-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, var(--accent) 1px, transparent 1px);
+  background-size: 18px 18px;
+  opacity: .08;
+}
+
+.card-body {
+  padding: 18px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.card-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-soft);
+  padding: 3px 9px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+.card-name {
+  font-family: var(--ff-serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 0 0 6px;
+}
+.card-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0 0 14px;
+  flex: 1;
+}
+.card-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.chip {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent-deep);
+  background: var(--accent-soft);
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card-audience {
+  font-size: 11px;
+  color: var(--muted);
+}
+.card-cta {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* ── per-game accent overrides ── */
+.g1 { --accent: var(--g1); --accent-soft: var(--g1-soft); --accent-deep: var(--g1-deep); }
+.g2 { --accent: var(--g2); --accent-soft: var(--g2-soft); --accent-deep: var(--g2-deep); }
+.g3 { --accent: var(--g3); --accent-soft: var(--g3-soft); --accent-deep: var(--g3-deep); }
+.g4 { --accent: var(--g4); --accent-soft: var(--g4-soft); --accent-deep: var(--g4-deep); }
+
+/* ── footer ── */
+.site-footer {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 24px);
+  opacity: .6;
+}
+</style>
+
+<!-- back button -->
+<a class="back-btn" href="index.html">
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M10 3L5 8l5 5"/>
+  </svg>
+  返回資源中心
+</a>
+
+<!-- header -->
+<header class="site-header">
+  <p class="site-eyebrow">✦ SEL 遊戲站 · HOPE GAMES</p>
+  <h1 class="site-title">四款思維遊戲，<br>讓學習悄悄發生</h1>
+  <p class="site-desc">每一款遊戲都藏著一種能力的練習：空間推理、工作記憶、邏輯規劃、順序安排。適合課前暖身、自由時間，或讓孩子安靜專注的片刻。</p>
+</header>
+
+<hr class="divider">
+
+<!-- game grid -->
+<main class="game-grid">
+
+  <!-- 希望積木島 -->
+  <a class="game-card g1" href="block-island.html">
+    <div class="card-banner">
+      <svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="6" y="6" width="16" height="16" rx="3"/>
+        <rect x="26" y="6" width="16" height="16" rx="3"/>
+        <rect x="6" y="26" width="16" height="16" rx="3"/>
+        <rect x="26" y="26" width="8" height="8" rx="2"/>
+        <rect x="36" y="26" width="8" height="8" rx="2"/>
+        <rect x="26" y="36" width="8" height="8" rx="2"/>
+      </svg>
+    </div>
+    <div class="card-body">
+      <span class="card-tag">空間思維</span>
+      <h2 class="card-name">希望積木島｜拼圖冒險</h2>
+      <p class="card-desc">用 10 種彩色積木拼滿整座小島，50 道關卡橫跨 5 座主題島嶼。過關後有 SEL 小語陪你反思。</p>
+      <div class="card-chips">
+        <span class="chip">50 關</span>
+        <span class="chip">5 座島嶼</span>
+        <span class="chip">進度儲存</span>
+      </div>
+      <div class="card-footer">
+        <span class="card-audience">學生 · 教師</span>
+        <span class="card-cta">開始玩 →</span>
+      </div>
+    </div>
+  </a>
+
+  <!-- 小小森林店長 -->
+  <a class="game-card g2" href="forest-shop.html">
+    <div class="card-banner">
+      <svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 34 Q28 14 46 34"/>
+        <rect x="16" y="34" width="24" height="16" rx="2"/>
+        <rect x="23" y="38" width="10" height="12" rx="1"/>
+        <path d="M20 34v-4M36 34v-4"/>
+        <circle cx="28" cy="26" r="3"/>
+      </svg>
+    </div>
+    <div class="card-body">
+      <span class="card-tag">工作記憶</span>
+      <h2 class="card-name">小小森林店長｜餐車冒險</h2>
+      <p class="card-desc">在森林小餐車幫動物朋友做吐司、果汁和蛋糕。記住訂單、安排順序，讓每位客人都滿意離開。</p>
+      <div class="card-chips">
+        <span class="chip">50 個營業日</span>
+        <span class="chip">5 個成長階段</span>
+        <span class="chip">進度儲存</span>
+      </div>
+      <div class="card-footer">
+        <span class="card-audience">學生 · 教師</span>
+        <span class="card-cta">開始玩 →</span>
+      </div>
+    </div>
+  </a>
+
+  <!-- 記憶建築師 -->
+  <a class="game-card g3" href="memory-architect.html">
+    <div class="card-banner">
+      <svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="8" y="20" width="12" height="12" rx="2"/>
+        <rect x="22" y="12" width="12" height="12" rx="2"/>
+        <rect x="36" y="20" width="12" height="12" rx="2"/>
+        <rect x="15" y="34" width="12" height="12" rx="2"/>
+        <rect x="29" y="34" width="12" height="12" rx="2"/>
+        <path d="M14 20l8-8M42 20l-8-8M21 34l8-10M35 34l-8-10" stroke-width="1.4" stroke-dasharray="2 2"/>
+      </svg>
+    </div>
+    <div class="card-body">
+      <span class="card-tag">視覺記憶</span>
+      <h2 class="card-name">記憶建築師｜積木記憶</h2>
+      <p class="card-desc">看一眼積木的排列方式，然後憑記憶把它還原。關卡越深，積木越多，記憶越需要專注。</p>
+      <div class="card-chips">
+        <span class="chip">50 關</span>
+        <span class="chip">5 座島嶼</span>
+        <span class="chip">進度儲存</span>
+      </div>
+      <div class="card-footer">
+        <span class="card-audience">學生 · 教師</span>
+        <span class="card-cta">開始玩 →</span>
+      </div>
+    </div>
+  </a>
+
+  <!-- 救援小車隊 -->
+  <a class="game-card g4" href="rescue-cars.html">
+    <div class="card-banner">
+      <svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="10" y="22" width="20" height="13" rx="3"/>
+        <path d="M30 29h8l4 6H10"/>
+        <circle cx="17" cy="38" r="4"/>
+        <circle cx="37" cy="38" r="4"/>
+        <path d="M10 29V22M14 22v-4h8v4"/>
+        <path d="M36 18l6 6"/>
+        <path d="M42 18l-6 6"/>
+      </svg>
+    </div>
+    <div class="card-body">
+      <span class="card-tag">邏輯規劃</span>
+      <h2 class="card-name">救援小車隊｜路線挑戰</h2>
+      <p class="card-desc">規劃救援小車的行進路線，避開障礙、抵達目的地。每一關都需要提前思考，找出最好的路。</p>
+      <div class="card-chips">
+        <span class="chip">50 關</span>
+        <span class="chip">5 個難度</span>
+        <span class="chip">進度儲存</span>
+      </div>
+      <div class="card-footer">
+        <span class="card-audience">學生 · 教師</span>
+        <span class="card-cta">開始玩 →</span>
+      </div>
+    </div>
+  </a>
+
+</main>
+
+<footer class="site-footer">
+  永齡希望小學雲科大分校 · SEL 資源中心
+</footer>
