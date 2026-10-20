@@ -541,6 +541,66 @@
     transition: background .2s ease, color .2s ease;
   }
 
+
+  /* ===== 積起改變的力量：繪本 × 積木系列 ===== */
+  .series {
+    position: relative;
+    margin: 6px 0 70px;
+    padding: 34px 30px 32px;
+    border-radius: 36px;
+    background:
+      radial-gradient(circle at 8% 0%, rgba(213,171,85,.20), transparent 38%),
+      radial-gradient(circle at 100% 100%, rgba(110,159,114,.18), transparent 40%),
+      rgba(255,253,248,.72);
+    border: 1px solid rgba(255,255,255,.8);
+    box-shadow: var(--shadow-soft);
+    scroll-margin-top: 92px;
+  }
+  .series .section-head { margin-top: 0; }
+  .series-blocks { display: inline-flex; gap: 4px; margin-right: 8px; vertical-align: middle; }
+  .series-blocks i { width: 11px; height: 11px; border-radius: 3px; background: var(--b); box-shadow: inset 0 -2px 0 rgba(0,0,0,.14); }
+  .series-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+  .lesson-card {
+    display: flex; flex-direction: column; overflow: hidden;
+    border-radius: 26px; background: #fffdf8; text-decoration: none; color: inherit;
+    border: 1px solid rgba(84,62,42,.08);
+    box-shadow: 0 10px 30px rgba(66,45,28,.08);
+    transition: transform .25s ease, box-shadow .25s ease;
+  }
+  .lesson-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(66,45,28,.16); }
+  .lesson-card:focus-visible { outline: 3px solid var(--l); outline-offset: 3px; }
+  .lesson-cover { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: var(--ls); }
+  .lesson-cover img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .5s ease; }
+  .lesson-card:hover .lesson-cover img { transform: scale(1.04); }
+  .lesson-no {
+    position: absolute; left: 14px; top: 14px; padding: 5px 12px; border-radius: 999px;
+    background: rgba(255,253,248,.92); color: var(--ld); font-size: .74rem; font-weight: 700; letter-spacing: .08em;
+    box-shadow: 0 4px 12px rgba(0,0,0,.12);
+  }
+  .lesson-body { padding: 20px 22px 22px; display: flex; flex-direction: column; flex: 1; }
+  .lesson-sdg { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .lesson-sdg span { font-size: .68rem; font-weight: 700; letter-spacing: .04em; color: var(--ld); background: var(--ls); padding: 3px 9px; border-radius: 999px; }
+  .lesson-title { font-family: 'Noto Serif TC', serif; font-size: 1.22rem; font-weight: 700; color: var(--ink); line-height: 1.45; }
+  .lesson-sub { color: var(--ld); font-size: .84rem; font-weight: 700; margin-top: 4px; }
+  .lesson-desc { color: var(--muted); font-size: .84rem; line-height: 1.8; margin: 12px 0 14px; flex: 1; }
+  .lesson-flow { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: .72rem; color: var(--muted); margin-bottom: 16px; }
+  .lesson-flow b { font-weight: 500; padding: 3px 8px; border-radius: 8px; background: rgba(84,62,42,.05); }
+  .lesson-flow em { font-style: normal; color: var(--l); font-weight: 700; }
+  .lesson-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 14px; border-top: 1px solid rgba(84,62,42,.10); }
+  .lesson-meta { color: var(--light); font-size: .76rem; line-height: 1.5; }
+  .lesson-cta { flex-shrink: 0; padding: 9px 15px; border-radius: 999px; background: var(--l); color: #fff; font-size: .8rem; font-weight: 700; }
+  .series-note { margin-top: 18px; color: var(--light); font-size: .78rem; line-height: 1.8; text-align: center; }
+  @media (max-width: 960px) {
+    .series-grid { grid-template-columns: 1fr; }
+    .lesson-card { flex-direction: row; }
+    .lesson-cover { width: 42%; flex-shrink: 0; aspect-ratio: auto; min-height: 100%; }
+  }
+  @media (max-width: 720px) { .series { padding: 24px 16px; border-radius: 28px; } }
+  @media (max-width: 600px) {
+    .lesson-card { flex-direction: column; }
+    .lesson-cover { width: 100%; aspect-ratio: 16 / 10; min-height: 0; }
+  }
+
   @keyframes card-pulse {
     0% { box-shadow: var(--shadow-soft); }
     30% { box-shadow: 0 0 0 5px rgba(157,191,136,.38), 0 18px 50px rgba(66,45,28,.18); }
@@ -605,6 +665,7 @@
     <div class="nav-pills">
       <a href="#flower-tree">資源中心</a>
       <a href="#resources">資源工具包</a>
+      <a href="#block-series">積木繪本課</a>
       <a href="#license">授權說明</a>
     </div>
   </nav>
@@ -831,6 +892,54 @@
             <div class="card-footer"><span class="card-audience">學生 · 教師</span><span class="card-cta">前往 →</span></div>
           </div>
         </a>
+      </div>
+    </section>
+
+    <section class="container" id="block-series">
+      <div class="series fade-in">
+        <div class="section-head">
+          <div>
+            <div class="section-kicker"><span class="series-blocks" aria-hidden="true"><i style="--b:#e5b77d"></i><i style="--b:#ef7d57"></i><i style="--b:#9dbf88"></i></span>PICTURE BOOK × BLOCKS × SDGs</div>
+            <h2 class="section-title">「積」起改變的力量</h2>
+          </div>
+          <p class="section-desc">繪本故事 × 積木建構 × SDGs 的系列課程。每一堂都是一頁課堂投影：故事、討論、計時器、抽卡與教師小抄都在裡面，打開就能帶全班上課。</p>
+        </div>
+        <div class="series-grid">
+        <a class="lesson-card fade-in" href="hope-city-energy.html" style="--l:#d5973f;--ls:#faefe1;--ld:#83542b">
+          <div class="lesson-cover"><img src="block-series/hope-city.jpg" alt="停電了！拯救希望城市繪本封面" loading="lazy" width="720"><span class="lesson-no">第 1 堂</span></div>
+          <div class="lesson-body">
+            <div class="lesson-sdg"><span>SDG 7 潔淨能源</span><span>SDG 11 永續城市</span><span>SDG 13 氣候行動</span></div>
+            <div class="lesson-title">停電了！拯救希望城市</div>
+            <div class="lesson-sub">20 格能源的城市任務挑戰</div>
+            <p class="lesson-desc">城市需要 28 格能源，卻只剩 20 格。孩子用積木分配能源、遇見怕冷的奶奶後重新調整，再打造會自己發電的未來能源城。</p>
+            <div class="lesson-flow" aria-label="課程流程"><b>分配能源</b><em>→</em><b>奶奶事件</b><em>→</em><b>蓋能源城</b><em>→</em><b>節能行動</b></div>
+            <div class="lesson-foot"><span class="lesson-meta">國小 2～6 年級・50 分鐘</span><span class="lesson-cta">開始上課 →</span></div>
+          </div>
+        </a>
+        <a class="lesson-card fade-in" href="playground-for-all.html" style="--l:#e0703f;--ls:#fdebe2;--ld:#8a3b1c">
+          <div class="lesson-cover"><img src="block-series/playground.jpg" alt="誰都可以玩的遊樂場繪本封面" loading="lazy" width="720"><span class="lesson-no">第 2 堂</span></div>
+          <div class="lesson-body">
+            <div class="lesson-sdg"><span>SDG 10 減少不平等</span><span>SDG 11 永續城市</span></div>
+            <div class="lesson-title">誰都可以玩的遊樂場</div>
+            <div class="lesson-sub">如果不是我，他也玩得到嗎？</div>
+            <p class="lesson-desc">先蓋一座自己最想玩的遊樂場，再讓樂樂、安安、豆豆、米米和爺爺奶奶走進來。從「如果我是他，我需要什麼？」出發，重新設計讓大家一起玩。</p>
+            <div class="lesson-flow" aria-label="課程流程"><b>我想玩</b><em>→</em><b>他玩得到嗎</b><em>→</em><b>如果我是他</b><em>→</em><b>友善改造</b></div>
+            <div class="lesson-foot"><span class="lesson-meta">國小 2～6 年級・50 分鐘</span><span class="lesson-cta">開始上課 →</span></div>
+          </div>
+        </a>
+        <a class="lesson-card fade-in" href="speed-town.html" style="--l:#4f9a6a;--ls:#e5f2e8;--ld:#2f6a45">
+          <div class="lesson-cover"><img src="block-series/speed-town.jpg" alt="慢慢村與快快城繪本封面" loading="lazy" width="720"><span class="lesson-no">第 3 堂</span></div>
+          <div class="lesson-body">
+            <div class="lesson-sdg"><span>SDG 3 健康與福祉</span><span>SDG 11 永續城市</span></div>
+            <div class="lesson-title">慢慢村與快快城</div>
+            <div class="lesson-sub">找到自己的速度</div>
+            <p class="lesson-desc">什麼都快的小凱、什麼都慢的小悠，一起修好被沖壞的橋。孩子判斷不同情境需要的速度，再用積木打造一座同時有快空間與慢空間、會呼吸的城市。</p>
+            <div class="lesson-flow" aria-label="課程流程"><b>速度報到</b><em>→</em><b>四個停格</b><em>→</em><b>快還是慢</b><em>→</em><b>會呼吸的城市</b></div>
+            <div class="lesson-foot"><span class="lesson-meta">國小 2～6 年級・50～60 分鐘</span><span class="lesson-cta">開始上課 →</span></div>
+          </div>
+        </a>
+        </div>
+        <p class="series-note">建議用電腦接投影機開啟・鍵盤 ← → 翻頁・按 T 打開教師小抄・右上角可切換低／高年級</p>
       </div>
     </section>
   </main>
