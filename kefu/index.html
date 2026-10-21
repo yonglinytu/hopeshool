@@ -19095,7 +19095,7 @@ ${lines.join("\n")}`;
       reasons[e.reason] = reasons[e.reason] || {};
       reasons[e.reason][s] = (reasons[e.reason][s] || 0) + 1;
     }
-    return { month, first, last, upto, sites: list2, exits, reasons, early: exitsOf().filter((e) => e.phase === "期初").sort((a, b) => a.date.localeCompare(b.date)) };
+    return { month, first, last, upto, sites: list2, exits, reasons };
   }
   var thin2 = { style: "thin", color: { rgb: "000000" } };
   var BORDER2 = { top: thin2, bottom: thin2, left: thin2, right: thin2 };
@@ -19177,7 +19177,7 @@ ${lines.join("\n")}`;
     set(rt, 11, { f: `IFERROR(K${nt}/J${nt},0)` }, st6({ b: true }), "0.0%");
     const note = `說明（課輔系統依課後紀錄與結案紀錄產生，${todayISO()}）：
 1. 學童應到／實到人次：同點名表，以課輔班級為單位，一位孩子一天算一次；出席、遲到、早退都算實到；只算到 ${R.upto.slice(5).replace("-", "/")} 為止，停課日不算。
-2. 結案數：這個月登記的期中、期末結案（期初結案另列 B41 期初結案名單）；學童數含本月結案的孩子。
+2. 結案數：這個月登記的期中、期末結案；期初結案（還沒課輔就結案）的孩子不列入月會報表。學童數含本月結案的孩子。
 3. 老師應到人次：每個科目班每堂課算一次；實到＝原班老師上課（沒有安排代課）。`;
     set(rt + 1, 0, note, st6({ nb: true, h: "left", sz: 11 }));
     mg(rt + 1, 0, rt + 1, last);
@@ -19286,6 +19286,15 @@ ${lines.join("\n")}`;
     mg(r + 1, 0, r + 1, last);
     return done([{ wch: 5 }, { wch: 7 }, { wch: 9 }, { wch: 6 }, { wch: 9 }, { wch: 9 }, { wch: 5 }, { wch: 10 }, { wch: 12 }, { wch: 46 }, { wch: 11 }, { wch: 8 }]);
   }
+  function downloadEarlyList() {
+    const XS = window.XLSXS;
+    if (!XS) throw new Error("Excel 元件沒有載入");
+    const list2 = exitsOf().filter((e) => e.phase === "期初").sort((a, b) => a.date.localeCompare(b.date));
+    const wb = XS.utils.book_new();
+    XS.utils.book_append_sheet(wb, b41Sheet(list2, "期初結案名單(回覆開案但未課輔即結案者)"), "B41-期初結案名單");
+    saveFitted(XS, wb, `${termCode2(S.semester).replace("-", "")}-B41期初結案名單.xlsx`);
+    return list2;
+  }
   function downloadMonthReport(month) {
     const XS = window.XLSXS;
     if (!XS) throw new Error("Excel 元件沒有載入");
@@ -19294,7 +19303,6 @@ ${lines.join("\n")}`;
     XS.utils.book_append_sheet(wb, g10Sheet(R), "G10-學童出席結案總表");
     XS.utils.book_append_sheet(wb, g11Sheet(R), "G11-學童結案原因統計表");
     XS.utils.book_append_sheet(wb, b41Sheet(R.exits, `${M}月份 結案名單(實際課輔學童)`), `B41-${M}月份結案`);
-    XS.utils.book_append_sheet(wb, b41Sheet(R.early, "期初結案名單(回覆開案但未課輔即結案者)"), "B41-期初結案名單");
     saveFitted(XS, wb, `${termCode2(S.semester).replace("-", "")}-${pad9(M)}月出席、結案表及原因分析表.xlsx`);
     return R;
   }
@@ -19399,7 +19407,7 @@ ${lines.join("\n")}`;
   }
   function reportFlow(ctx) {
     const body = h(`<div class="stack" style="gap:12px"><label class="field"><span>月份</span><input class="input" type="month" id="mr-m" value="${thisMonth()}"></label>
-    <div class="small muted" style="line-height:1.8">一個檔案四張表，格式和永齡的月會報表相同：<br>G10 學童出席結案總表（依合作小學）・G11 學童結案原因統計表・B41 當月結案名單（含統計區）・B41 期初結案名單</div></div>`);
+    <div class="small muted" style="line-height:1.8">一個檔案三張表，格式和永齡的月會報表相同：<br>G10 學童出席結案總表（依合作小學）・G11 學童結案原因統計表・B41 當月結案名單（含統計區）<br>期初結案的孩子不列入月會報表，請用「期初結案名單」另外下載。</div></div>`);
     openModal({ title: "下載月會報表", body, buttons: [{ text: "取消", value: null }, { text: "下載", value: () => $("#mr-m", body).value, primary: true }] }).then((m) => {
       if (!m) return;
       try {
@@ -19418,10 +19426,19 @@ ${lines.join("\n")}`;
         ctx.el.innerHTML = `<div class="card"><div class="empty">${icon("lock")}<div>這一頁只有社工和督導可以使用。</div></div></div>`;
         return;
       }
-      const a = ctx.actions(`<button class="btn" id="ex-report">${icon("download", "sm")}月會報表</button><button class="btn primary" id="ex-add">${icon("plus", "sm")}登記結案</button>`);
+      const a = ctx.actions(`<button class="btn" id="ex-early">${icon("download", "sm")}期初結案名單</button><button class="btn" id="ex-report">${icon("download", "sm")}月會報表</button><button class="btn primary" id="ex-add">${icon("plus", "sm")}登記結案</button>`);
       const refresh = () => ctx.go(location.hash.replace(/[?&]kid=[^&]*/, ""));
       $("#ex-add", a).onclick = () => exitForm(null, refresh);
       $("#ex-report", a).onclick = () => reportFlow(ctx);
+      $("#ex-early", a).onclick = () => {
+        try {
+          const n = downloadEarlyList().length;
+          toast(`已下載期初結案名單（${n} 位）`);
+        } catch (e) {
+          console.error(e);
+          toast("下載失敗：" + e.message, "err");
+        }
+      };
       const list2 = exitsOf().sort((x, y) => (y.date || "").localeCompare(x.date || ""));
       const R = monthReport(thisMonth());
       const byGroup = Object.fromEntries(EXIT_GROUPS.map((g) => [g.key, list2.filter((e) => e.phase !== "期初" && String(e.reason).startsWith(g.key)).length]));
