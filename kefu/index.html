@@ -2062,7 +2062,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
             "key": "emoHard",
             "label": "情緒觀察・困難時刻",
             "kind": "text",
-            "hint": "生氣、不服、緊張、怕失敗、委屈、失望、沮喪、厭煩、拒絕、興奮過頭，可複選（用、分隔）"
+            "hint": "悶悶、生氣、緊張、害怕、怕被罵、委屈、失望、低落、厭煩、拒絕、興奮過頭，可複選（用、分隔）"
           },
           {
             "key": "emoGood",
@@ -8189,9 +8189,9 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   };
   var VISIT_GOAL_AREAS = ["教材內容掌握", "備課充實度（含流程及預備任務）", "評量方式（及時檢核）", "指導語適切性", "教具使用", "多元化教學方式", "情境佈題", "班級經營", "其他"];
   var LEARN_TAGS = ["專注不足", "觀念不清", "粗心", "進度落後", "學習意願低", "需要個別指導"];
-  var EMO_FAMILY = { 生氣: "#d64545", 害怕: "#7a5cc4", 難過: "#3a7bd5", 討厭: "#4c9a3a", 快樂: "#e0a000" };
-  var EMO_HARD = [["生氣", "生氣"], ["不服", "生氣"], ["緊張", "害怕"], ["怕失敗", "害怕"], ["委屈", "難過"], ["失望", "難過"], ["沮喪", "難過"], ["厭煩", "討厭"], ["拒絕", "討厭"], ["興奮過頭", "快樂"]];
-  var EMO_GOOD = [["開心", "快樂"], ["自豪", "快樂"], ["放鬆", "快樂"], ["好奇", "快樂"]];
+  var EMO_FAMILY = { 紅: "#d64545", 紫: "#7a5cc4", 藍: "#3a7bd5", 綠: "#4c9a3a", 黃: "#e0a000", 橘: "#e07a1f" };
+  var EMO_HARD = [["悶悶", "紅"], ["生氣", "紅"], ["緊張", "紫"], ["害怕", "紫"], ["怕被罵", "紫"], ["委屈", "藍"], ["失望", "藍"], ["低落", "藍"], ["厭煩", "綠"], ["拒絕", "綠"], ["興奮過頭", "黃"]];
+  var EMO_GOOD = [["開心", "黃"], ["自豪", "黃"], ["放鬆", "黃"], ["好奇", "橘"]];
   var BEHAV_TAGS = ["干擾他人", "情緒起伏大", "與同儕衝突", "不聽從指令", "擅自離座", "不當言語"];
   var SOCIAL_OPTS = {
     eventTypes: ["暴力衝突", "言語霸凌", "自傷風險", "家庭因素", "性別議題", "急難救助", "其他"],
@@ -15369,7 +15369,8 @@ ${lines.join("\n")}`;
     }).join("");
     const box2 = (f) => {
       const [label2, list2] = EMO_KIND[f], sel = new Set(splitList(r[f]));
-      return `<div class="emo-box" data-emo="${f}"><div class="t">${label2}：孩子看起來像是…（可複選，再點一次取消）</div><div class="opts">${list2.map(([w, fam]) => `<button type="button" data-v="${esc(w)}" class="${sel.has(w) ? "on" : ""}" title="${esc(fam)}家族"><i style="background:${EMO_FAMILY[fam]}"></i>${esc(w)}</button>`).join("")}</div></div>`;
+      const old = [...sel].filter((w) => !list2.some(([x]) => x === w)).map((w) => [w, ""]);
+      return `<div class="emo-box" data-emo="${f}"><div class="t">${label2}：孩子看起來像是…（可複選，再點一次取消）</div><div class="opts">${[...list2, ...old].map(([w, fam]) => `<button type="button" data-v="${esc(w)}" class="${sel.has(w) ? "on" : ""}" title="${fam ? esc(fam) + "色家族" : ""}"><i style="background:${EMO_FAMILY[fam] || "var(--muted)"}"></i>${esc(w)}</button>`).join("")}</div></div>`;
     };
     const sum = [r.emoHard ? `困難時刻：${esc(r.emoHard)}` : "", r.emoGood ? `好時刻：${esc(r.emoGood)}` : ""].filter(Boolean).join("　｜　");
     return line2("情緒觀察", `<div class="emo-tg">${tg}</div>${open2.emoHard ? box2("emoHard") : ""}${open2.emoGood ? box2("emoGood") : ""}
@@ -15591,7 +15592,8 @@ ${lines.join("\n")}`;
       const r = rs.recs[id], sel = new Set(splitList(r[f])), w = emoBtn.dataset.v;
       if (sel.has(w)) sel.delete(w);
       else sel.add(w);
-      r[f] = EMO_KIND[f][1].map(([x]) => x).filter((x) => sel.has(x)).join("、");
+      const order = EMO_KIND[f][1].map(([x]) => x);
+      r[f] = [...order.filter((x) => sel.has(x)), ...[...sel].filter((x) => !order.includes(x))].join("、");
       touch2();
       rerenderKid3(id);
       return;
