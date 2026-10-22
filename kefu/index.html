@@ -914,6 +914,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     isSocial: () => isSocial,
     isSupervisor: () => isSupervisor,
     kidOrderReady: () => kidOrderReady,
+    leaveReady: () => leaveReady,
     loadAll: () => loadAll,
     mergeStudents: () => mergeStudents,
     myFile: () => myFile,
@@ -922,6 +923,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     references: () => references,
     remove: () => remove,
     removeExit: () => removeExit,
+    removeLeave: () => removeLeave,
     rollover: () => rollover,
     rows: () => rows,
     saveChinese: () => saveChinese,
@@ -929,6 +931,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     saveEnglish: () => saveEnglish,
     saveExit: () => saveExit,
     saveKidOrder: () => saveKidOrder,
+    saveLeave: () => saveLeave,
     saveMath: () => saveMath,
     saveSchedule: () => saveSchedule,
     saveSelSurvey: () => saveSelSurvey,
@@ -1972,6 +1975,16 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
               "早退",
               "請假",
               "缺席"
+            ]
+          },
+          {
+            "key": "leaveType",
+            "label": "假別",
+            "kind": "enum",
+            "options": [
+              "事假",
+              "病假",
+              "其他"
             ]
           },
           {
@@ -3281,6 +3294,61 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
           {
             "key": "enrollIds",
             "label": "當時離班的分班ID",
+            "kind": "text"
+          }
+        ]
+      },
+      "kidLeaves": {
+        "key": "kidLeaves",
+        "sheet": "事先請假",
+        "label": "事先請假",
+        "idKey": "id",
+        "idPrefix": "",
+        "scope": "semester",
+        "group": "record",
+        "note": "id：LV-日期-孩子ID；這位孩子那一天的所有課都算請假",
+        "cols": [
+          {
+            "key": "id",
+            "label": "請假ID",
+            "kind": "text"
+          },
+          {
+            "key": "studentId",
+            "label": "孩子ID",
+            "kind": "text",
+            "required": true
+          },
+          {
+            "key": "date",
+            "label": "日期",
+            "kind": "date",
+            "required": true
+          },
+          {
+            "key": "type",
+            "label": "假別",
+            "kind": "enum",
+            "options": [
+              "事假",
+              "病假",
+              "其他"
+            ],
+            "required": true
+          },
+          {
+            "key": "note",
+            "label": "說明",
+            "kind": "text"
+          },
+          {
+            "key": "classId",
+            "label": "登記的班級",
+            "kind": "text"
+          },
+          {
+            "key": "by",
+            "label": "登記人",
             "kind": "text"
           }
         ]
@@ -5648,7 +5716,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   var TDEF = SCHEMA.tables;
   var LIST_TABLES = ["units", "selActivities", "backupOptions", "readingList"];
   var BASE_TABLES = ["semesters", "defaultSlots", "holidays", "closures", "subjects", "taskTypes", "teachers", "students", "classes", "classSlots", "enrollments", "resources", ...LIST_TABLES, "substitutes", "daySlots", "lunchDuty", "schedEvents"];
-  var TX_TABLES = ["sessions", "blocks", "tasks", "records", "incidents", "evaluations", "feedback", "posts", "replies", "submissions", "mathScores", "enTests", "visitPlans", "visitForms", "zhTests", "selSurveys", "kidOrders"];
+  var TX_TABLES = ["sessions", "blocks", "tasks", "records", "incidents", "evaluations", "feedback", "posts", "replies", "submissions", "mathScores", "enTests", "visitPlans", "visitForms", "zhTests", "selSurveys", "kidOrders", "kidLeaves"];
   var SOCIAL_TABLES = ["visits", "cases", "specialEvents", "exits"];
   var ALL_TABLES = [...BASE_TABLES, ...TX_TABLES, ...SOCIAL_TABLES];
   var BASE_FILE = "基本資料.json";
@@ -6188,7 +6256,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
       }
     }
     if (parts.has("record") && payload.records) {
-      const keys = ["attendance", "homework", "taskDone", "undone", "learning", "learningTags", "behavior", "behaviorTags", "progress", "score", "note", "polished", "summary", "tags"];
+      const keys = ["attendance", "leaveType", "homework", "taskDone", "undone", "learning", "learningTags", "behavior", "behaviorTags", "progress", "score", "note", "polished", "summary", "tags"];
       for (const ri of payload.records) {
         if (!ri.studentId) continue;
         const rid2 = `R-${sin.classId}-${sin.date}-${ri.studentId}`;
@@ -6932,6 +7000,33 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     await commit(ops);
     return { ...u.base, version: DB.version };
   }
+  var leaveReady = () => DB.backend?.kind !== "cloud" || (DB.backend.caps || []).includes("kidLeave");
+  function canLeave(classId, date) {
+    if (isSocial()) return true;
+    const c = getRow("classes", classId);
+    if (c && c.teacherId === DB.me?.teacherId) return true;
+    const sub = getRow("substitutes", `SUB-${classId}-${date}`);
+    return !!(sub && sub.teacherId === DB.me?.teacherId);
+  }
+  async function saveLeave(it) {
+    const sid2 = String(it.studentId || ""), date = String(it.date || ""), cid = String(it.classId || "");
+    if (!getRow("students", sid2)) throw new DbError("找不到這位孩子");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new DbError("日期不正確");
+    if (!["事假", "病假", "其他"].includes(it.type)) throw new DbError("請選假別");
+    if (!canLeave(cid, date)) throw new DbError("只有這個班的老師、當天的代課老師、社工或督導可以登記請假");
+    if (!leaveReady()) throw new DbError("雲端主機還沒更新，暫時不能登記請假，請通知督導重新部署 Apps Script");
+    const row = { id: `LV-${date}-${sid2}`, studentId: sid2, date, type: it.type, note: String(it.note || "").trim(), classId: cid, by: DB.me?.name || "" };
+    await commit([{ table: "kidLeaves", row }]);
+    return { row, version: DB.version };
+  }
+  async function removeLeave(id, classId) {
+    const r = getRow("kidLeaves", id);
+    if (!r) throw new DbError("找不到這筆請假");
+    if (!canLeave(String(classId || r.classId || ""), r.date)) throw new DbError("只有這個班的老師、當天的代課老師、社工或督導可以取消請假");
+    if (!leaveReady()) throw new DbError("雲端主機還沒更新，請通知督導重新部署 Apps Script");
+    await commit([{ table: "kidLeaves", id: String(id), delete: true }]);
+    return { ok: true, version: DB.version };
+  }
 
   // src/js/ui.js
   var $ = (sel, el = document) => el.querySelector(sel);
@@ -7579,6 +7674,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
       zhTests: rows("zhTests"),
       selSurveys: rows("selSurveys"),
       kidOrders: rows("kidOrders").filter((o) => cids.has(o.classId)),
+      kidLeaves: rows("kidLeaves"),
       substitutes: rows("substitutes").filter((s) => cids.has(s.classId)),
       daySlots: rows("daySlots").filter((s) => cids.has(s.classId)),
       lunchDuty: rows("lunchDuty").filter((s) => s.semesterId === sem)
@@ -7697,6 +7793,10 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
         case "/api/attendance/orphans":
         case "/api/attendance/tidy":
           return tidyAttendance();
+        case "/api/leave/save":
+          return saveLeave(b);
+        case "/api/leave/delete":
+          return removeLeave(String(b.id || ""), String(b.classId || ""));
         case "/api/classes/info":
           return saveClassInfo(b.list || []);
         case "/api/exit/save":
@@ -8432,7 +8532,8 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     "lunchDuty",
     "schedEvents",
     "kidOrders",
-    "exits"
+    "exits",
+    "kidLeaves"
   ];
   var WEEKDAYS2 = ["週一", "週二", "週三", "週四", "週五", "週六", "週日"];
   var ATTENDED2 = ["出席", "遲到", "早退"];
@@ -8552,6 +8653,8 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   function tasksOf(bid) {
     return S.idx.tasksByBlock.get(bid) || [];
   }
+  var leaveOf = (sid2, date) => get("kidLeaves", `LV-${date}-${sid2}`);
+  var canLeave2 = (cid, date) => isSocial2() || get("classes", cid)?.teacherId === myTeacherId() || !!myTeacherId() && subOf(cid, date)?.teacherId === myTeacherId();
   function flowStatus(cid, date) {
     const s = sessionFor(cid, date);
     const bs = s ? blocksOf(s.id).filter((b) => b.mode !== "備用") : [];
@@ -8559,7 +8662,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     if (!bs.length) return { key: "none", label: "未排", session: s, blocks: [], kids, missing: kids };
     const ind = bs.filter((b) => b.mode === "個別");
     const has = (b, k) => tasksOf(b.id).some((t) => t.studentId === k.id && (String(t.type || "").trim() || String(t.content || "").trim() || String(t.unit || "").trim()));
-    const missing = ind.length ? kids.filter((k) => !kidOff(k.id, date) && ind.some((b) => !has(b, k))) : [];
+    const missing = ind.length ? kids.filter((k) => !kidOff(k.id, date) && !leaveOf(k.id, date) && ind.some((b) => !has(b, k))) : [];
     return { key: missing.length ? "partial" : "done", label: missing.length ? "部分" : "已排", session: s, blocks: bs, ind, kids, missing };
   }
   function recordsOf(sid2) {
@@ -13917,7 +14020,7 @@ ${lines.join("\n")}`;
       const r = recs.get(k.id);
       const ts = taskStat.get(k.id);
       return `<tr><td class="nowrap"><a href="#/kids/${k.id}"><b>${esc(k.name)}</b></a><div class="small muted">${k.grade ? k.grade + " 年級" : ""}</div></td>
-          <td>${r?.attendance ? attChip(r.attendance) : '<span class="chip outline">未點名</span>'}</td>
+          <td>${r?.attendance ? attChip(r.attendance) + (r.attendance === "請假" && r.leaveType ? `<div class="small muted">${esc(r.leaveType)}</div>` : "") : leaveOf(k.id, s.date) ? `<span class="chip warn">事先請假・${esc(leaveOf(k.id, s.date).type)}</span>` : '<span class="chip outline">未點名</span>'}</td>
           <td style="min-width:220px">${recordChips(r, { taskStat: ts }) || '<span class="muted">—</span>'}${r?.progress ? `<div class="small muted mt8">進度：${esc(r.progress)}</div>` : ""}</td>
           <td class="small">${esc(r?.polished || r?.note || "")}${r?.tags ? `<div class="mt8">${r.tags.split(/[、,]/).filter(Boolean).map((t) => `<span class="chip outline" style="margin:1px">${esc(t)}</span>`).join("")}</div>` : ""}</td></tr>`;
     }).join("")}</tbody></table></div>
@@ -14384,6 +14487,7 @@ ${lines.join("\n")}`;
 
   // src/js/pages/flow.js
   var st4 = null;
+  var LEAVE_BG = "background:rgba(127,127,127,.13);color:var(--ink-3, #888)";
   var auto6 = null;
   var ctxRef = null;
   var SERIES = ["--s1", "--s2", "--s3", "--s4", "--s5"];
@@ -14520,6 +14624,7 @@ ${lines.join("\n")}`;
         const no = backupNo(b);
         const head2 = i === firstBackup ? `<tr class="backup-head"><td colspan="${n + 1}"><b>備用任務</b>　孩子提早完成時使用；第 1 項須為${esc(subjectOfClass(st4.cls))}學習任務並優先執行，第 2、3 項可選其他類，執行方式請與社工討論。</td></tr>` : "";
         return `${head2}<tr class="backup"><td class="time nolink"><b>備用 ${no}</b><span>${no === 1 ? esc(subjectOfClass(st4.cls)) + "學習任務" : "可選其他類"}</span></td>${kids.map((k) => {
+          if (leaveOf(k.id, st4.date)) return `<td style="${LEAVE_BG}"></td>`;
           const c = b.tasks[k.id]?.content || "";
           return `<td class="cell" data-b="${i}" data-k="${k.id}">${c ? `<div class="task"><span>${esc(c)}</span></div>` : '<span class="none">—</span>'}</td>`;
         }).join("")}</tr>`;
@@ -14533,6 +14638,7 @@ ${lines.join("\n")}`;
         ${b.content ? `<div class="small mt8">${esc(b.content)}</div>` : ""}</td></tr>`;
       }
       return `<tr>${time}${kids.map((k) => {
+        if (leaveOf(k.id, st4.date)) return `<td style="${LEAVE_BG};text-align:center"><span class="small">請假</span></td>`;
         const t = b.tasks[k.id];
         if (!t || !(t.type || t.content || t.unit)) return `<td class="cell" data-b="${i}" data-k="${k.id}"><span class="none">—</span></td>`;
         const u = units[k.id][i];
@@ -14543,8 +14649,11 @@ ${lines.join("\n")}`;
       }).join("")}</tr>`;
     }).join("");
     return `<table class="flow"><colgroup><col style="width:150px">${kids.map(() => '<col style="min-width:130px">').join("")}</colgroup>
-    <thead><tr><th class="time">時間</th>${kids.map((k) => `<th class="kid">${esc(k.name)}<small>${k.grade ? k.grade + " 年級" : ""}</small></th>`).join("") || "<th>（尚未建立孩子名單）</th>"}</tr></thead>
-    <tbody><tr class="progress"><td class="time"><b>今日進度</b><span>選${esc(subj)}單元</span></td>${kids.map((k) => `<td>${progField(k.id, st4.progress[k.id] || "", prevProg[k.id]?.progress || "")}</td>`).join("")}</tr>
+    <thead><tr><th class="time">時間</th>${kids.map((k) => {
+      const lv = leaveOf(k.id, st4.date);
+      return `<th class="kid" data-kidh="${k.id}" style="cursor:pointer;${lv ? LEAVE_BG : ""}" title="點名字可以登記或取消請假">${esc(k.name)}<small>${k.grade ? k.grade + " 年級" : ""}</small>${lv ? `<small><span class="chip warn" style="margin-top:4px">請假・${esc(lv.type)}</span></small>` : ""}</th>`;
+    }).join("") || "<th>（尚未建立孩子名單）</th>"}</tr></thead>
+    <tbody><tr class="progress"><td class="time"><b>今日進度</b><span>選${esc(subj)}單元</span></td>${kids.map((k) => leaveOf(k.id, st4.date) ? `<td style="${LEAVE_BG}"><span class="small">請假，不用排</span></td>` : `<td>${progField(k.id, st4.progress[k.id] || "", prevProg[k.id]?.progress || "")}</td>`).join("")}</tr>
     ${rows2}</tbody></table>`;
   }
   function renderAll3() {
@@ -14564,9 +14673,10 @@ ${lines.join("\n")}`;
     $("#f-date", a).onchange = (e) => leave4(() => ctx.go(`#/flow?class=${st4.cid}&date=${e.target.value}`));
     $("#f-prev", a).onclick = () => leave4(() => ctx.go(`#/flow?class=${st4.cid}&date=${dates[idx2 - 1]}`));
     $("#f-next", a).onclick = () => leave4(() => ctx.go(`#/flow?class=${st4.cid}&date=${dates[idx2 + 1]}`));
-    $("#f-print", a).onclick = () => printFlow(st4);
-    $("#f-xlsx", a).onclick = () => downloadFlowXlsx(st4);
-    $("#f-sheets", a).onclick = () => openTaskSheets(st4);
+    const present = () => ({ ...st4, kids: st4.kids.filter((k) => !leaveOf(k.id, st4.date)) });
+    $("#f-print", a).onclick = () => printFlow(present());
+    $("#f-xlsx", a).onclick = () => downloadFlowXlsx(present());
+    $("#f-sheets", a).onclick = () => openTaskSheets(present());
     ctx.title("教學流程", `${esc(c.name)}・${mdw(st4.date)}${st4.sessionId ? "" : "・尚未建立"}`);
     ctx.el.innerHTML = `
     ${st4.restored ? `<div class="callout accent mb8 no-print">${icon("info", "sm")} 已還原 ${esc(st4.restored)} 未儲存的草稿。<button class="btn sm ghost" id="f-discard">捨棄草稿</button></div>` : ""}
@@ -14677,6 +14787,8 @@ ${lines.join("\n")}`;
     });
     $("#f-save", el).onclick = save;
     $("#f-grid", el).addEventListener("click", (e) => {
+      const kh = e.target.closest("th[data-kidh]");
+      if (kh) return leavePop(kh, kh.dataset.kidh);
       const cell2 = e.target.closest("td.cell");
       if (cell2) return isBackup2(st4.blocks[+cell2.dataset.b]) ? editBackup(cell2, +cell2.dataset.b, cell2.dataset.k) : editTask(cell2, +cell2.dataset.b, cell2.dataset.k);
       const blk = e.target.closest("[data-block]");
@@ -15011,6 +15123,41 @@ ${lines.join("\n")}`;
       if (st4 && !st4.dirty) st4 = null;
     }
   };
+  function leavePop(anchor, kid) {
+    const k = get("students", kid), lv = leaveOf(kid, st4.date), ok2 = canLeave2(st4.cid, st4.date);
+    const body = h(lv ? `<div class="stack" style="gap:8px"><b>${esc(k?.name || "")}　${mdw(st4.date)} 請假</b>
+      <div class="small">假別：${esc(lv.type)}${lv.note ? `・${esc(lv.note)}` : ""}<div class="muted">登記人：${esc(lv.by || "")}</div></div>
+      <div class="small muted">這一天的所有課都算請假，課後紀錄會自動帶入「請假」。</div>
+      ${ok2 ? '<div class="row"><span class="sp"></span><button class="btn sm danger" data-lv="del">取消請假</button></div>' : '<div class="small muted">只有這個班的老師、當天的代課老師、社工或督導可以修改。</div>'}</div>` : ok2 ? `<div class="stack" style="gap:8px"><b>${esc(k?.name || "")}　${mdw(st4.date)} 請假</b>
+      <div class="seg pick" data-lvt>${["事假", "病假", "其他"].map((t) => `<button type="button" data-v="${t}">${t}</button>`).join("")}</div>
+      <input class="input" data-lv-note placeholder="說明（選填），例：家長來電，回診">
+      <div class="small muted">只登記這一天；這一天的所有課都算請假，課後紀錄會自動帶入。</div>
+      <div class="row"><span class="sp"></span><button class="btn sm primary" data-lv="save">登記請假</button></div></div>` : `<div class="small muted">只有這個班的老師、當天的代課老師、社工或督導可以登記請假。</div>`);
+    const pop = popover(anchor, body, { width: 300 });
+    let type = "";
+    body.addEventListener("click", async (e) => {
+      const tb = e.target.closest("[data-lvt] button");
+      if (tb) {
+        type = tb.dataset.v;
+        body.querySelectorAll("[data-lvt] button").forEach((b) => b.classList.toggle("on", b === tb));
+        return;
+      }
+      const act = e.target.closest("[data-lv]")?.dataset.lv;
+      if (!act) return;
+      try {
+        if (act === "save") {
+          if (!type) {
+            toast("請選假別", "err");
+            return;
+          }
+          await mutate("/api/leave/save", { studentId: kid, date: st4.date, type, note: body.querySelector("[data-lv-note]").value, classId: st4.cid }, `${k?.name || ""} ${md2(st4.date)} 已登記請假`);
+        } else await mutate("/api/leave/delete", { id: lv.id, classId: st4.cid }, "已取消請假");
+        pop.close();
+        rerenderGrid();
+      } catch {
+      }
+    });
+  }
 
   // src/js/pages/record.js
   var rs = null;
@@ -15084,6 +15231,7 @@ ${lines.join("\n")}`;
         const r = recs.get(k.id) || {};
         const rec = {
           attendance: r.attendance || "",
+          leaveType: r.leaveType || "",
           homework: r.homework || "",
           taskDone: r.taskDone || "",
           undone: r.undone || "",
@@ -15102,6 +15250,12 @@ ${lines.join("\n")}`;
         if (off) {
           rec.attendance = "請假";
           rec.note = `學校放假（${off.name}）`;
+        }
+        const lv = !recs.get(k.id)?.attendance && leaveOf(k.id, date);
+        if (lv) {
+          rec.attendance = "請假";
+          rec.leaveType = lv.type;
+          if (!rec.note) rec.note = `事先請假${lv.note ? "：" + lv.note : ""}`;
         }
         const ts = tasks[k.id];
         if (!rec.taskDone && ts.length && ts.every((t) => t.status)) {
@@ -15194,6 +15348,7 @@ ${lines.join("\n")}`;
     ${lp ? `<div class="small muted">上次進度（${md2(lp.date)}）：${esc(lp.progress)}</div>` : ""}
     <div class="kc-body">
       ${line2("出席", segHtml(ATT2, r.attendance, { cls: "att pick", name: "attendance" }))}
+      ${r.attendance === "請假" ? line2("假別", pick("leaveType", ["事假", "病假", "其他"], r.leaveType)) : ""}
       ${here ? `
       ${line2("學校作業", pick("homework", HW2, r.homework))}
       ${line2("今日任務", taskBody)}
@@ -15561,7 +15716,7 @@ ${lines.join("\n")}`;
         const r = rs.recs[k.id];
         const here = !r.attendance || isHere(r.attendance);
         const clear = here ? {} : { homework: "", taskDone: "", undone: "", learning: "", learningTags: "", behavior: "", behaviorTags: "", score: "" };
-        const o = { studentId: k.id, ...r, ...clear };
+        const o = { studentId: k.id, ...r, ...clear, leaveType: r.attendance === "請假" ? r.leaveType || "" : "" };
         o.score = o.score === "" ? null : o.score;
         return o;
       }),
