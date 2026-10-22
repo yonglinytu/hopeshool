@@ -963,6 +963,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     studentLinks: () => studentLinks,
     surveyReady: () => surveyReady,
     tidyAttendance: () => tidyAttendance,
+    unsubmitSession: () => unsubmitSession,
     upsert: () => upsert
   });
 
@@ -6729,6 +6730,19 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     await commit([{ table: "visitForms", row }]);
     return { form: getRow("visitForms", id), version: DB.version };
   }
+  async function unsubmitSession(sessionId) {
+    if (!isSupervisor()) throw new DbError("只有社工／督導可以改回未送出");
+    const old = getRow("sessions", sessionId);
+    if (!old) throw new DbError("課堂不存在");
+    if (old.submit !== "已送出") return { session: old, version: DB.version };
+    const s = { ...old };
+    for (const k of ["feedback", "feedbackStatus", "feedbackBy", "feedbackAt", "feedbackVersion", "feedbackHistory"]) delete s[k];
+    Object.assign(s, { submit: "草稿", submittedAt: "", pendingEdit: "", note: String(s.note || "").replace(/（由點名表匯入，只有出席）/g, "").trim(), updatedAt: nowStr() });
+    const ops = [{ table: "sessions", row: s }];
+    if (getRow("feedback", `F-${sessionId}`)) ops.push({ table: "feedback", id: `F-${sessionId}`, delete: true });
+    await commit(ops);
+    return { session: getRow("sessions", sessionId), version: DB.version };
+  }
   async function feedback(sessionId, text, status2, user) {
     const s = getRow("sessions", sessionId);
     if (!s) throw new DbError("課堂不存在");
@@ -7841,6 +7855,8 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
           return saveSchedule(b.ops || []);
         case "/api/students/merge":
           return mergeStudents(String(b.keep || ""), String(b.drop || ""));
+        case "/api/session/unsubmit":
+          return unsubmitSession(String(b.sessionId || ""));
         case "/api/session/feedback": {
           const st9 = b.status || "已看過";
           if (!["已看過", "已回饋"].includes(st9)) throw new DbError("回饋狀態不正確");
@@ -8891,6 +8907,18 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     const tid = myTeacherId();
     return classes().filter((c) => !tid || c.teacherId === tid);
   }
+  function classEnded(cid, date, session = null) {
+    const today3 = todayISO();
+    if (date < today3) return true;
+    if (date > today3) return false;
+    const end = session?.end || slotFor(cid, date)?.end;
+    if (!end) return false;
+    const [hh, mm] = end.split(":").map(Number);
+    const t = parseISO(date);
+    t.setHours(hh, mm, 0, 0);
+    return Date.now() >= t.getTime();
+  }
+  var autoSeen = (s) => !!s && s.submit === "已送出" && s.feedbackStatus === "已看過" && !s.feedback && !!s.submittedAt && (s.feedbackAt || "").slice(0, 16) === String(s.submittedAt).slice(0, 16);
   var LATE_HOURS = 2;
   function lateUnsent(cid, date, session = null, slot = null) {
     const s = session || sessionFor(cid, date);
@@ -13892,7 +13920,7 @@ ${lines.join("\n")}`;
         }
         const classId = guessClass(r.sheets);
         const today3 = todayISO();
-        books2.push({ file: f.name, ...r, classId, kidMap: {}, on: r.sheets.map((p) => !p.date || p.date <= today3) });
+        books2.push({ file: f.name, ...r, classId, kidMap: {}, on: r.sheets.map((p) => !p.date || p.date < today3 || p.date === today3 && (!classId || classEnded(classId, today3))) });
       } catch (e) {
         toast(`「${f.name}」讀取失敗：${e.message}`, "err");
       }
@@ -13926,7 +13954,7 @@ ${lines.join("\n")}`;
           return `<tr><td><input type="checkbox" data-x="on" data-i="${i}" ${b.on[i] ? "checked" : ""}></td><td>${esc(p.name)}</td>
               <td><input class="input sm" type="date" data-x="date" data-i="${i}" value="${p.date}" style="width:140px">${p.date ? `<span class="small muted"> ${mdw(p.date).replace(/^\d+\/\d+/, "")}</span>` : ""}</td>
               <td class="c num">${p.slots.filter((s) => Object.values(s.cells).some(Boolean)).length}</td><td class="c num">${nRec ? `${nRec} 位` : '<span class="muted">只有流程</span>'}</td>
-              <td>${!p.date ? '<span class="chip critical small">缺日期</span>' : [p.date > todayISO() ? '<span class="chip outline small">還沒到的日期</span>' : "", hit[i] ? '<span class="chip warn small">會覆蓋系統裡的紀錄</span>' : ""].join(" ")}</td></tr>`;
+              <td>${!p.date ? '<span class="chip critical small">缺日期</span>' : [p.date > todayISO() ? '<span class="chip outline small">還沒到的日期</span>' : p.date === todayISO() && !(b.classId && classEnded(b.classId, p.date)) ? '<span class="chip outline small">今天還沒下課</span>' : "", hit[i] ? '<span class="chip warn small">會覆蓋系統裡的紀錄</span>' : ""].join(" ")}</td></tr>`;
         }).join("")}</tbody></table></div>
         </div></div>`;
       }).join("")}`;
@@ -14087,7 +14115,8 @@ ${lines.join("\n")}`;
       ${st9.key === "draft" ? `<span class="chip warn">草稿 ${esc((x.session.updatedAt || "").slice(11, 16))}</span>` : ""}${lateUnsent(x.cls.id, x.date, x.session, x.slot) ? `<span class="chip critical">下課超過 ${LATE_HOURS} 小時還沒送出</span>` : ""}
       <a href="#/record?class=${x.cls.id}&date=${x.date}" onclick="event.stopPropagation()">${isSupervisor2() ? "查看" : "前往填寫"} ›</a></div>`;
     } else {
-      meta = `<div class="jcard-meta">${x.session.pendingEdit === "是" ? '<span class="chip warn">送出後有修改</span>' : ""}${selAsk(x.session) ? '<span class="chip warn">SEL 提問待回覆</span>' : x.session.selActivity ? '<span class="chip outline">SEL</span>' : ""}<span>出席 ${att.attended}/${att.total || att.marked}</span><span>・事件 ${incs}</span>
+      const early = isSupervisor2() && !classEnded(x.cls.id, x.date, x.session);
+      meta = `<div class="jcard-meta">${early ? `<span class="chip critical">還沒下課就已${autoSeen(x.session) ? "匯入成「已送出・已看過」" : "送出"}</span><button class="btn sm" data-unsub="${x.session.id}">${icon("refresh", "sm")}改回未送出</button>` : ""}${x.session.pendingEdit === "是" ? '<span class="chip warn">送出後有修改</span>' : ""}${selAsk(x.session) ? '<span class="chip warn">SEL 提問待回覆</span>' : x.session.selActivity ? '<span class="chip outline">SEL</span>' : ""}<span>出席 ${att.attended}/${att.total || att.marked}</span><span>・事件 ${incs}</span>
       <span>・老師：${moodText(x.session.mood)}</span><span class="muted">${open.has(x.cls.id) ? "▾ 收合" : "▸ 展開"}</span></div>`;
     }
     const cls = { pending: "pending", done: "done", unsent: st9.key === "draft" ? "unsent draft" : "unsent" }[b] + (b === "unsent" && lateUnsent(x.cls.id, x.date, x.session, x.slot) ? " late" : "");
@@ -14140,6 +14169,17 @@ ${lines.join("\n")}`;
         if (open.has(cid)) open.delete(cid);
         else open.add(cid);
         this.render(ctx);
+      });
+      ctx.el.querySelectorAll("[data-unsub]").forEach((b) => b.onclick = async (e) => {
+        e.stopPropagation();
+        if (!await confirmBox("這堂課還沒上完，卻已經是「已送出」。改回未送出後：已經點的出席（例如先登記的請假）會保留，「已看過」會拿掉，等老師上完課自己填寫、送出。確定要改回？", { okText: "改回未送出" })) return;
+        b.disabled = true;
+        try {
+          await mutate("/api/session/unsubmit", { sessionId: b.dataset.unsub }, "已改回未送出");
+          this.render(ctx);
+        } catch {
+          b.disabled = false;
+        }
       });
       ctx.el.querySelectorAll(".fb-text").forEach((t) => t.oninput = () => {
         dirtyFb = true;
@@ -14277,6 +14317,10 @@ ${lines.join("\n")}`;
             st9.nocls++;
             continue;
           }
+          if (!classEnded(cid, d)) {
+            st9.future++;
+            continue;
+          }
           const ses = sessionFor(cid, d);
           const cur = ses ? recordsOf(ses.id).find((r) => r.studentId === sid2)?.attendance : "";
           if (!cur) st9.add++;
@@ -14301,7 +14345,7 @@ ${lines.join("\n")}`;
             ${miss2.length ? `<div class="small"><span class="chip warn small">${miss2.length} 位對不到名單</span></div>` : ""}
             <div class="row wrap" style="gap:6px 14px">${names(b).map((n) => `<label class="row small" style="gap:4px"><span>${esc(n)} →</span><select class="select sm" data-x="kid" data-n="${esc(n)}" style="width:auto"><option value="">不匯入</option>
               ${[...ros, ...b.kidMap[n] && !ros.some((r) => r.id === b.kidMap[n]) ? [get("students", b.kidMap[n])] : []].filter(Boolean).map((s) => `<option value="${s.id}" ${b.kidMap[n] === s.id ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></label>`).join("")}</div>` : ""}
-          ${st9.future ? `<div class="small muted">還沒到的日期有 ${st9.future} 格（例如先登記的請假），不會匯入；到那天由老師在課後紀錄點名。</div>` : ""}
+          ${st9.future ? `<div class="small muted">還沒到的日期或今天還沒下課的有 ${st9.future} 格（例如先登記的請假），不會匯入；到那天由老師在課後紀錄點名。</div>` : ""}
           ${st9.bad.length ? `<div class="small muted">看不懂、不會匯入的格子：${esc(st9.bad.slice(0, 8).join("、"))}${st9.bad.length > 8 ? `…共 ${st9.bad.length} 格` : ""}</div>` : ""}
         </div></div>`;
       }).join("")}`;
@@ -14343,7 +14387,7 @@ ${lines.join("\n")}`;
         for (const [d, m] of Object.entries(k.marks)) {
           if (d > today3) continue;
           const cid = target(b, sid2, d);
-          if (!cid) continue;
+          if (!cid || !classEnded(cid, d)) continue;
           const key = `${cid}|${d}`;
           if (!byDay.has(key)) {
             const sl = slotFor(cid, d);
