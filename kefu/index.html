@@ -428,6 +428,10 @@ table.flow { border-collapse: collapse; width: 100%; min-width: 760px; table-lay
 .emo-box button i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
 .emo-box button.on { border: 2px solid var(--ink); font-weight: 700; padding: 0 11px; }
 .emo-sum { margin-top: 6px; font-size: 13px; color: var(--ink-2); }
+.emo-tg button.done { border-color: #2e6b3f; }
+.emo-box button.none { color: var(--ink-2); border-style: dashed; }
+.emo-box button.none.on { border: 2px solid var(--ink-2); border-style: solid; color: var(--ink); }
+.emo-need { margin-top: 6px; font-size: 12.5px; color: var(--serious); }
 .emo-remind { margin-top: 6px; font-size: 12.5px; color: var(--warn); }
 .chip.emo-hard { background: var(--serious-soft); color: var(--serious); border-color: transparent; }
 .chip.emo-good { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
@@ -2062,13 +2066,13 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
             "key": "emoHard",
             "label": "情緒觀察・困難時刻",
             "kind": "text",
-            "hint": "悶悶、生氣、緊張、害怕、怕被罵、委屈、失望、低落、厭煩、拒絕、興奮過頭，可複選（用、分隔）"
+            "hint": "悶悶、生氣、緊張、害怕、怕被罵、委屈、失望、低落、厭煩、拒絕、興奮過頭，可複選（用、分隔）；沒看到填「沒有觀察到」"
           },
           {
             "key": "emoGood",
             "label": "情緒觀察・好時刻",
             "kind": "text",
-            "hint": "開心、自豪、放鬆、好奇，可複選（用、分隔）"
+            "hint": "開心、自豪、放鬆、好奇，可複選（用、分隔）；沒看到填「沒有觀察到」"
           },
           {
             "key": "progress",
@@ -7192,8 +7196,8 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
       task ? `<span class="chip ${R_TONE[task] || "outline"}" style="margin:1px">任務 ${esc(task)}</span>` : "",
       chip2("學習 ", learning, r.learningTags),
       chip2("行為 ", r.behavior, r.behaviorTags),
-      r.emoHard ? `<span class="chip emo-hard" style="margin:1px">困難時刻：${esc(r.emoHard)}</span>` : "",
-      r.emoGood ? `<span class="chip emo-good" style="margin:1px">好時刻：${esc(r.emoGood)}</span>` : ""
+      r.emoHard && r.emoHard !== "沒有觀察到" ? `<span class="chip emo-hard" style="margin:1px">困難時刻：${esc(r.emoHard)}</span>` : "",
+      r.emoGood && r.emoGood !== "沒有觀察到" ? `<span class="chip emo-good" style="margin:1px">好時刻：${esc(r.emoGood)}</span>` : ""
     ].join("") + (r.undone ? `<div class="small muted mt8">沒完成：${esc(String(r.undone).split("；").map((x) => x.replace(/^\d+\. /, "")).join("、"))}</div>` : "");
   }
   function attChip(a) {
@@ -8191,6 +8195,8 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   var LEARN_TAGS = ["專注不足", "觀念不清", "粗心", "進度落後", "學習意願低", "需要個別指導"];
   var EMO_FAMILY = { 紅: "#d64545", 紫: "#7a5cc4", 藍: "#3a7bd5", 綠: "#4c9a3a", 黃: "#e0a000", 橘: "#e07a1f" };
   var EMO_HARD = [["悶悶", "紅"], ["生氣", "紅"], ["緊張", "紫"], ["害怕", "紫"], ["怕被罵", "紫"], ["委屈", "藍"], ["失望", "藍"], ["低落", "藍"], ["厭煩", "綠"], ["拒絕", "綠"], ["興奮過頭", "黃"]];
+  var EMO_NONE = "沒有觀察到";
+  var EMO_SINCE = "2026-10-22";
   var EMO_GOOD = [["開心", "黃"], ["自豪", "黃"], ["放鬆", "黃"], ["好奇", "橘"]];
   var BEHAV_TAGS = ["干擾他人", "情緒起伏大", "與同儕衝突", "不聽從指令", "擅自離座", "不當言語"];
   var SOCIAL_OPTS = {
@@ -15351,8 +15357,9 @@ ${lines.join("\n")}`;
   function kidDone(r) {
     if (!r.attendance) return false;
     if (!isHere(r.attendance)) return true;
-    return !!(r.homework && r.taskDone && r.learning && r.behavior);
+    return !!(r.homework && r.taskDone && r.learning && r.behavior && (!emoNeeded() || r.emoHard && r.emoGood));
   }
+  var emoNeeded = () => (rs?.date || "") >= EMO_SINCE;
   function pick(field, opts2, v, cls = "") {
     return `<div class="seg pick ${cls}" data-seg="${field}">${opts2.map((o) => `<button type="button" data-v="${esc(o)}" class="${TONE[o] || ""}${o === v ? " on" : ""}">${esc(o)}</button>`).join("")}</div>`;
   }
@@ -15364,19 +15371,23 @@ ${lines.join("\n")}`;
   function emoLine(k, r) {
     const open2 = rs.emoOpen[k.id] || {};
     const tg = Object.entries(EMO_KIND).map(([f, [label2]]) => {
-      const n = splitList(r[f]).length;
-      return `<button type="button" data-emotg="${f}" class="${open2[f] ? "open" : ""}" aria-expanded="${!!open2[f]}">${icon(f === "emoHard" ? "alert" : "sparkle", "sm")}${label2}${n ? `<span class="n">${n}</span>` : ""}</button>`;
+      const n = r[f] === EMO_NONE ? "沒有" : splitList(r[f]).length;
+      return `<button type="button" data-emotg="${f}" class="${open2[f] ? "open" : ""}${r[f] ? " done" : ""}" aria-expanded="${!!open2[f]}">${icon(f === "emoHard" ? "alert" : "sparkle", "sm")}${label2}${n ? `<span class="n">${n}</span>` : ""}</button>`;
     }).join("");
     const box2 = (f) => {
       const [label2, list2] = EMO_KIND[f], sel = new Set(splitList(r[f]));
-      const old = [...sel].filter((w) => !list2.some(([x]) => x === w)).map((w) => [w, ""]);
-      return `<div class="emo-box" data-emo="${f}"><div class="t">${label2}：孩子看起來像是…（可複選，再點一次取消）</div><div class="opts">${[...list2, ...old].map(([w, fam]) => `<button type="button" data-v="${esc(w)}" class="${sel.has(w) ? "on" : ""}" title="${fam ? esc(fam) + "色家族" : ""}"><i style="background:${EMO_FAMILY[fam] || "var(--muted)"}"></i>${esc(w)}</button>`).join("")}</div></div>`;
+      const old = [...sel].filter((w) => w !== EMO_NONE && !list2.some(([x]) => x === w)).map((w) => [w, ""]);
+      return `<div class="emo-box" data-emo="${f}"><div class="t">${label2}：孩子看起來像是…（可複選，再點一次取消）</div><div class="opts">${[...list2, ...old].map(([w, fam]) => `<button type="button" data-v="${esc(w)}" class="${sel.has(w) ? "on" : ""}" title="${fam ? esc(fam) + "色家族" : ""}"><i style="background:${EMO_FAMILY[fam] || "var(--muted)"}"></i>${esc(w)}</button>`).join("")}
+      <button type="button" data-v="${EMO_NONE}" class="none${sel.has(EMO_NONE) ? " on" : ""}">${EMO_NONE}</button></div></div>`;
     };
     const sum = [r.emoHard ? `困難時刻：${esc(r.emoHard)}` : "", r.emoGood ? `好時刻：${esc(r.emoGood)}` : ""].filter(Boolean).join("　｜　");
+    const miss = Object.entries(EMO_KIND).filter(([f]) => !r[f]).map(([, [label2]]) => `「${label2}」`);
     return line2("情緒觀察", `<div class="emo-tg">${tg}</div>${open2.emoHard ? box2("emoHard") : ""}${open2.emoGood ? box2("emoGood") : ""}
-    ${sum ? `<div class="emo-sum">${sum}</div>` : '<div class="small muted" style="margin-top:4px">選填，有看到再記</div>'}`);
+    ${sum ? `<div class="emo-sum">${sum}</div>` : ""}
+    ${miss.length && emoNeeded() ? `<div class="emo-need">必填：${miss.join("、")}還沒點，沒看到就選「${EMO_NONE}」</div>` : ""}`);
   }
-  var emoHint = (r) => r.emoHard ? "例：訂正錯題時說「我一定又錯」，先換簡單題後願意繼續做" : r.emoGood ? "例：自己解出應用題，主動拿給同學看" : "選填：亮點、進步、想記下的事";
+  var emoHint = (r) => r.emoHard && r.emoHard !== EMO_NONE ? "例：訂正錯題時說「我一定又錯」，先換簡單題後願意繼續做" : r.emoGood && r.emoGood !== EMO_NONE ? "例：自己解出應用題，主動拿給同學看" : "選填：亮點、進步、想記下的事";
+  var emoSeen = (r) => [r.emoHard, r.emoGood].some((v) => v && v !== EMO_NONE);
   var line2 = (label2, body) => `<div class="kc-line"><span class="kc-lbl">${label2}</span><div class="kc-val">${body}</div></div>`;
   function kidRow2(k) {
     const r = rs.recs[k.id];
@@ -15407,7 +15418,7 @@ ${lines.join("\n")}`;
       ${line2("行為表現", pick("behavior", LEVEL, r.behavior) + (r.behavior === "需要關注" ? multi("behaviorTags", BEHAV_TAGS, r.behaviorTags) : ""))}
       ${emoLine(k, r)}` : ""}
       ${line2("今日觀察", `<textarea class="textarea" data-f="note" rows="2" placeholder="${esc(emoHint(r))}">${esc(r.note)}</textarea>
-        ${here && (r.emoHard || r.emoGood) ? `<div class="emo-remind"${r.note.trim() ? " hidden" : ""}>${icon("info", "sm")} 選了情緒，記得寫一句當時發生了什麼（不寫也能存）</div>` : ""}
+        ${here && emoSeen(r) ? `<div class="emo-remind"${r.note.trim() ? " hidden" : ""}>${icon("info", "sm")} 選了情緒，記得寫一句當時發生了什麼（不寫也能存）</div>` : ""}
         ${r.note.trim() ? `<div class="row wrap gap4 mt8"><button class="btn sm" data-tidy="${k.id}">${icon("sparkle", "sm")}整理文字</button>
           ${S.meta?.ai?.enabled ? `<button class="btn sm" data-ai="${k.id}">${icon("sparkle", "sm")}AI 潤稿</button>` : ""}
           ${r.tags ? r.tags.split(/[、,]/).filter(Boolean).map((t) => `<span class="chip outline">${esc(t)}</span>`).join("") : ""}</div>` : ""}
@@ -15591,7 +15602,14 @@ ${lines.join("\n")}`;
       const id = emoBtn.closest(".kid-row").dataset.kid, f = emoBtn.closest("[data-emo]").dataset.emo;
       const r = rs.recs[id], sel = new Set(splitList(r[f])), w = emoBtn.dataset.v;
       if (sel.has(w)) sel.delete(w);
-      else sel.add(w);
+      else if (w === EMO_NONE) {
+        sel.clear();
+        sel.add(w);
+        rs.emoOpen[id][f] = false;
+      } else {
+        sel.delete(EMO_NONE);
+        sel.add(w);
+      }
       const order = EMO_KIND[f][1].map(([x]) => x);
       r[f] = [...order.filter((x) => sel.has(x)), ...[...sel].filter((x) => !order.includes(x))].join("、");
       touch2();
@@ -15771,7 +15789,7 @@ ${lines.join("\n")}`;
       await mutate("/api/session/save", payload, submit ? "課後紀錄已送出，社工會在每日日誌看到" : "草稿已儲存");
       const noNote = rs.kids.filter((k) => {
         const r = rs.recs[k.id];
-        return isHere(r.attendance || "出席") && (r.emoHard || r.emoGood) && !r.note.trim();
+        return isHere(r.attendance || "出席") && emoSeen(r) && !r.note.trim();
       });
       if (noNote.length) setTimeout(() => toast(`已儲存。提醒：${noNote.map((k) => k.name).join("、")} 選了情緒，今日觀察還沒寫發生了什麼`), 1600);
       dropDraft("record", rs.cid, rs.date);
