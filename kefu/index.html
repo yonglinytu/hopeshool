@@ -902,6 +902,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     commit: () => commit,
     connect: () => connect,
     createDatabase: () => createDatabase,
+    deleteSemester: () => deleteSemester,
     feedback: () => feedback,
     getRow: () => getRow,
     importAttendance: () => importAttendance,
@@ -934,6 +935,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     saveSession: () => saveSession,
     saveVisitForm: () => saveVisitForm,
     saveVisitPlans: () => saveVisitPlans,
+    semesterUsage: () => semesterUsage,
     setRoster: () => setRoster,
     setRules: () => setRules,
     setSetting: () => setSetting,
@@ -6903,6 +6905,33 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     if (ops.length) await commit(ops);
     return { count: ops.length, version: DB.version };
   }
+  function semesterUsage(id) {
+    const cids = new Set(rows("classes").filter((c) => c.semesterId === id).map((c) => c.id));
+    const base = { classes: cids.size, classSlots: 0, enrollments: 0, substitutes: 0, daySlots: 0, lunchDuty: 0 };
+    for (const t of ["classSlots", "enrollments", "substitutes", "daySlots"]) base[t] = rows(t).filter((r) => cids.has(r.classId)).length;
+    base.lunchDuty = rows("lunchDuty").filter((r) => r.semesterId === id).length;
+    const used = {};
+    for (const t of [...TX_TABLES, ...SOCIAL_TABLES]) {
+      const n = rows(t).filter((r) => r && !r.deleted && (cids.has(r.classId) || r.semesterId === id)).length;
+      if (n) used[t] = n;
+    }
+    return { cids: [...cids], base, used };
+  }
+  async function deleteSemester(id) {
+    if (!isSupervisor()) throw new DbError("只有社工／督導可以刪除學期");
+    if (!getRow("semesters", id)) throw new DbError("學期不存在");
+    if (DB.settings.currentSemester === id) throw new DbError("這是「目前學期」，請先在基本設定把目前學期改成別的學期再刪除");
+    const u = semesterUsage(id);
+    const names = Object.entries(u.used).map(([t, n]) => `${TDEF[t]?.sheet || t} ${n} 筆`);
+    if (names.length) throw new DbError(`這個學期已經有紀錄（${names.join("、")}），為了保護資料不能刪除`);
+    const cids = new Set(u.cids), ops = [];
+    for (const t of ["enrollments", "classSlots", "substitutes", "daySlots"]) for (const r of rows(t)) if (cids.has(r.classId)) ops.push({ table: t, id: String(r.id), delete: true });
+    for (const r of rows("lunchDuty")) if (r.semesterId === id) ops.push({ table: "lunchDuty", id: String(r.id), delete: true });
+    for (const c of cids) ops.push({ table: "classes", id: String(c), delete: true });
+    ops.push({ table: "semesters", id: String(id), delete: true });
+    await commit(ops);
+    return { ...u.base, version: DB.version };
+  }
 
   // src/js/ui.js
   var $ = (sel, el = document) => el.querySelector(sel);
@@ -7687,6 +7716,8 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
         }
         case "/api/class/roster":
           return setRoster(b.classId || "", b.studentIds || []);
+        case "/api/semester/delete":
+          return deleteSemester(String(b.id || ""));
         case "/api/semester/rollover":
           return rollover(b.from || "", b, !!b.copyRoster);
         case "/api/tidy": {
@@ -18176,7 +18207,10 @@ ${parts[0][1]}` : parts.map(([d, t]) => `${d} ${t}`).join("\n");
             <label class="field"><span>開始日期</span><input class="input" id="ro-start" type="date"></label>
             <label class="field"><span>結束日期</span><input class="input" id="ro-end" type="date"></label>
             <label class="row small" style="gap:6px;align-self:end;padding-bottom:8px"><input type="checkbox" id="ro-roster" checked>一併複製孩子名單</label></div>
-          <div><button class="btn" id="ro-go">${icon("copy", "sm")}建立新學期</button></div></div></div>` : `<div class="card"><div class="card-head"><h3>這台電腦</h3></div><div class="card-body stack">
+          <div><button class="btn" id="ro-go">${icon("copy", "sm")}建立新學期</button></div>
+          ${sems.length > 1 ? `<div class="row wrap" style="gap:8px;align-items:flex-end;border-top:1px solid var(--line-2);padding-top:12px">
+            <label class="field"><span>刪除開錯或開太早的學期（只限還沒有任何紀錄的學期）</span><select class="select" id="del-sem">${sems.filter((s) => s.id !== S.settings.currentSemester).map((s) => `<option value="${esc(s.id)}">${esc(s.id)}　${esc(s.name)}</option>`).join("")}</select></label>
+            <button class="btn danger" id="del-go">${icon("trash", "sm")}刪除學期</button></div>` : ""}</div></div>` : `<div class="card"><div class="card-head"><h3>這台電腦</h3></div><div class="card-body stack">
           <div class="row"><span class="grow">目前身分：<b>${esc(S.who?.name || "未選擇")}</b>（課輔老師）</span><button class="btn sm" id="me-switch2">${icon(cloud ? "user" : "swap", "sm")}${cloud ? "我的帳號" : "切換身分"}</button></div>
           <div class="small muted" style="line-height:1.8">你填寫的教學流程、課後紀錄與論壇發文，都存在 <code>${esc(st9?.myFile || "")}</code>。基本資料（孩子、班級、課表）由督導維護。</div></div></div>`}
       </div>
@@ -18265,6 +18299,23 @@ ${parts[0][1]}` : parts.map(([d, t]) => `${d} ${t}`).join("\n");
           toast(off.length ? `已關閉 ${off.length} 項功能` : "全部功能都開啟");
         } catch (e) {
           toast(e.message, "err");
+        }
+      });
+      $("#del-go")?.addEventListener("click", async () => {
+        const id = $("#del-sem").value;
+        if (!id) return;
+        const u = semesterUsage(id);
+        const used = Object.entries(u.used);
+        if (used.length) {
+          toast(`${id} 已經有紀錄（${used.map(([t, n]) => `${n} 筆`).join("、")}），不能刪除`, "err");
+          return;
+        }
+        if (!await confirmBox(`刪除「${esc(id)}」？會一起刪掉這個學期的 ${u.base.classes} 個班、${u.base.classSlots} 個上課時段、${u.base.enrollments} 筆分班名單${u.base.substitutes ? `、${u.base.substitutes} 筆代課` : ""}。<br>孩子與老師的資料不受影響。刪除後無法復原，之後要用再重新開學期即可。`, { okText: "刪除學期", danger: true })) return;
+        try {
+          await mutate("/api/semester/delete", { id }, `已刪除 ${id}`);
+          if (S.semester === id) location.reload();
+          else ctx.go("#/settings");
+        } catch {
         }
       });
       $("#ro-go")?.addEventListener("click", async () => {
