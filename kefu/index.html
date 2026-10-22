@@ -3348,6 +3348,14 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
             "kind": "int",
             "min": 0,
             "max": 100
+          },
+          {
+            "key": "absent",
+            "label": "缺考",
+            "kind": "enum",
+            "options": [
+              "V"
+            ]
           }
         ]
       },
@@ -6425,12 +6433,13 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
         if (getRow("mathScores", id)) ops.push({ table: "mathScores", id, delete: true });
         continue;
       }
-      const score = it.score === "" || it.score == null ? null : Math.round(Number(it.score));
+      const absent = it.absent === "V" || it.absent === true ? "V" : "";
+      const score = absent || it.score === "" || it.score == null ? null : Math.round(Number(it.score));
       if (score != null && (isNaN(score) || score < 0 || score > 100)) throw new DbError("分數要是 0～100");
-      const row = { id, semesterId: it.semesterId, classId: it.classId || "", studentId: it.studentId, period: it.period, code: it.code, planned: "V", score };
+      const row = { id, semesterId: it.semesterId, classId: it.classId || "", studentId: it.studentId, period: it.period, code: it.code, planned: "V", score, absent };
       if (!row.semesterId || !row.studentId || !row.code) throw new DbError("成績資料不完整");
       const old = getRow("mathScores", id);
-      if (old && (old.score ?? null) === score && old.planned === "V") continue;
+      if (old && (old.score ?? null) === score && (old.absent || "") === absent && old.planned === "V") continue;
       ops.push({ table: "mathScores", row });
     }
     if (ops.length) await commit(ops);
@@ -9746,13 +9755,14 @@ ${lines.join("\n")}`;
     bindForm(ctx, p, kind);
   }
   var ta = (k, v, rows2 = 3, ph = "") => `<textarea class="textarea" data-f="${k}" rows="${rows2}" placeholder="${esc(ph)}">${esc(v || "")}</textarea>`;
+  var MODES = ["一對一教學", "分組教學", "板書教學", "團體上課", "其他"];
   var pills = (k, opts2, sel, multi2 = false) => `<div class="seg pick" data-pk="${k}" data-multi="${multi2 ? 1 : ""}">${opts2.map((o) => `<button type="button" data-v="${esc(o)}" class="${(multi2 ? (sel || []).includes(o) : sel === o) ? "on" : ""}">${esc(o)}</button>`).join("")}</div>`;
   var fld = (label2, inner, hint = "") => `<div class="field vf-f"><span>${label2}${hint ? ` <small class="muted">${hint}</small>` : ""}</span>${inner}</div>`;
   function preBody(p, d) {
     const s = p.subject;
     return `<div class="card"><div class="card-body stack" style="gap:14px">
     ${fld("教學資歷", `<div class="row wrap" style="gap:8px">${pills("exp", ["新進", "續任"], d.exp)}<span class="small">續任：教學 <input class="input" style="width:60px" data-f="expTerms" value="${esc(d.expTerms)}"> 學期（不含本學期）</span></div>`, "系統依老師以前帶過的班自動帶入")}
-    ${fld("教學狀況", pills("modes", ["一對一教學", "分組教學", "板書教學"], d.modes, true), "可複選")}
+    ${fld("教學狀況", `${pills("modes", MODES, d.modes, true)}<input class="input mt4" data-f="modeOther" value="${esc(d.modeOther || "")}" placeholder="其他教學狀況，請說明" ${(d.modes || []).includes("其他") ? "" : "hidden"}>`, "可複選")}
     ${s === "國語" ? `<div class="grid g3" style="gap:10px">${fld("使用冊數", `<input class="input" data-f="book" value="${esc(d.book)}">`)}${fld("課次", `<input class="input" data-f="lesson" value="${esc(d.lesson)}" placeholder="第＿課">`)}
       ${fld("上課進度", pills("progress", ["與期初規劃一致", "落後期初規劃", "超前期初規劃"], d.progress))}</div>` : ""}
     ${s === "數學" ? fld("教學單元", `<input class="input" data-f="unit" value="${esc(d.unit)}" placeholder="例：玩魔數5-2 分數（一）">`) : ""}
@@ -9853,6 +9863,13 @@ ${lines.join("\n")}`;
           else cur.add(v);
           d[k] = [...cur];
           b.classList.toggle("on");
+          if (k === "modes") {
+            const o = $("[data-f=modeOther]", root);
+            if (o) {
+              o.hidden = !cur.has("其他");
+              if (!o.hidden) o.focus();
+            }
+          }
         } else if (k.startsWith("r.")) {
           d.r = d.r || {};
           const c = k.slice(2);
@@ -9925,7 +9942,7 @@ ${lines.join("\n")}`;
       const s = p.subject;
       return `<div class="vfp-page">${head2}<table class="vfp">
       <tr><th>教學資歷</th><td>${box(["新進"], d.exp)}課輔老師　${box(["續任"], d.exp)}課輔老師，教學 ${esc(d.expTerms || "＿")} 學期（不含本學期）</td></tr>
-      <tr><th>教學狀況</th><td>${box(["一對一教學", "分組教學", "板書教學"], d.modes)}</td></tr>
+      <tr><th>教學狀況</th><td>${box(MODES, d.modes)}${(d.modes || []).includes("其他") && d.modeOther ? `：${esc(d.modeOther)}` : ""}</td></tr>
       ${s === "國語" ? `<tr><th>使用冊數／課次</th><td>${esc(d.book)}　第 ${esc(d.lesson || "＿")} 課　上課進度：${box(["與期初規劃一致", "落後期初規劃", "超前期初規劃"], d.progress)}</td></tr>` : ""}
       ${s === "英語" ? `<tr><th>使用冊數／單元</th><td>${esc(d.book)}　${esc(d.unit)}</td></tr>` : ""}${s === "數學" ? `<tr><th>教學單元</th><td>${esc(d.unit)}</td></tr>` : ""}
       <tr><th>${s === "國語" ? "預計觀課成分" : "觀課之教學成分"}</th><td>${box(VISIT_FOCUS[s] || [], d.focus)}</td></tr>
@@ -10252,6 +10269,7 @@ ${lines.join("\n")}`;
     const out = /* @__PURE__ */ new Map();
     for (const r of history2(studentId)) {
       if (upto && upto(r) === false) continue;
+      if (r.absent === "V") continue;
       const cur = out.get(r.code) || { best: null, last: null, tries: 0, plan: false };
       if (r.score == null || r.score === "") cur.plan = true;
       else {
@@ -10297,7 +10315,7 @@ ${lines.join("\n")}`;
     const kids = roster(cid);
     const plan = {};
     for (const k of kids) {
-      plan[k.id] = new Map(S.data.mathScores.filter((r) => r.semesterId === sem && r.period === period && r.studentId === k.id && r.planned === "V").sort((a, b) => idx(a.code) - idx(b.code)).map((r) => [r.code, { id: r.id, score: r.score ?? "" }]));
+      plan[k.id] = new Map(S.data.mathScores.filter((r) => r.semesterId === sem && r.period === period && r.studentId === k.id && r.planned === "V").sort((a, b) => idx(a.code) - idx(b.code)).map((r) => [r.code, { id: r.id, score: r.score ?? "", absent: r.absent === "V" }]));
     }
     return { cid, sem, period, kids, plan, orig: JSON.stringify(Object.entries(plan).map(([k, m]) => [k, [...m]])), dirty: false };
   }
@@ -10313,10 +10331,14 @@ ${lines.join("\n")}`;
       <div class="mk-papers">${[...m].map(([c, v]) => {
       const sc = v.score === "" || v.score == null ? null : Number(v.score);
       const prev = all.get(c);
+      if (v.absent) return `<div class="mk-paper absent" data-code="${c}" style="border-style:dashed;opacity:.8">
+          <div class="mk-p-h"><b>${c}</b><span>${esc(info().get(c)?.unit || "")}</span><button type="button" class="mk-x" data-rm="${c}" title="不考這張">×</button></div>
+          <div class="row" style="gap:6px"><span class="chip warn">缺考</span><span class="sp"></span><button type="button" class="btn sm ghost" data-absent="${c}">取消缺考</button></div></div>`;
       return `<div class="mk-paper ${sc == null ? "" : pass(sc) ? "pass" : "fail"}" data-code="${c}">
           <div class="mk-p-h"><b>${c}</b><span>${esc(info().get(c)?.unit || "")}</span><button type="button" class="mk-x" data-rm="${c}" title="不考這張">×</button></div>
           <div class="row" style="gap:6px"><input class="input mk-score" inputmode="numeric" maxlength="3" data-score="${c}" value="${esc(v.score ?? "")}" placeholder="分數">
-            <span class="small ${sc == null ? "muted" : pass(sc) ? "ok-text" : "bad-text"}">${sc == null ? "考完再填" : pass(sc) ? "通過" : "待複測"}</span></div>
+            <span class="small ${sc == null ? "muted" : pass(sc) ? "ok-text" : "bad-text"}">${sc == null ? "考完再填" : pass(sc) ? "通過" : "待複測"}</span>
+            <span class="sp"></span><button type="button" class="btn sm ghost" data-absent="${c}" title="這次沒有考這張">缺考</button></div>
           ${prev?.tries ? `<div class="small muted">之前考過 ${prev.tries} 次，最高 ${prev.best} 分</div>` : ""}</div>`;
     }).join("") || '<div class="small muted mk-empty">這次還沒選考卷</div>'}</div>
       <div class="row wrap mt8" style="gap:6px"><button type="button" class="btn sm" data-pick="${k.id}">${icon("plus", "sm")}選考卷</button>
@@ -10347,9 +10369,10 @@ ${lines.join("\n")}`;
   }
   function foot() {
     const planned = Object.values(st.plan).reduce((n, m) => n + m.size, 0);
-    const scored = Object.values(st.plan).reduce((n, m) => n + [...m.values()].filter((v) => v.score !== "" && v.score != null).length, 0);
+    const scored = Object.values(st.plan).reduce((n, m) => n + [...m.values()].filter((v) => !v.absent && v.score !== "" && v.score != null).length, 0);
+    const absent = Object.values(st.plan).reduce((n, m) => n + [...m.values()].filter((v) => v.absent).length, 0);
     const cnt = $("#m-count");
-    if (cnt) cnt.textContent = `已選 ${planned} 張・已填分數 ${scored} 張`;
+    if (cnt) cnt.textContent = `已選 ${planned} 張・已填分數 ${scored} 張${absent ? `・缺考 ${absent} 張` : ""}`;
     const f = $("#m-foot");
     if (f) f.innerHTML = isDirty() ? '<span class="chip warn">尚未儲存</span>' : '<span class="small muted">已儲存</span>';
     if (isDirty()) auto2?.touch();
@@ -10364,7 +10387,7 @@ ${lines.join("\n")}`;
     const m = st.plan[kid];
     if (m.has(code2)) return;
     const existing = S.data.mathScores.find((r) => r.semesterId === st.sem && r.period === st.period && r.studentId === kid && r.code === code2);
-    m.set(code2, { id: existing?.id || msId(st.cid, kid, st.period, code2), score: existing?.score ?? "" });
+    m.set(code2, { id: existing?.id || msId(st.cid, kid, st.period, code2), score: existing?.score ?? "", absent: existing?.absent === "V" });
     st.plan[kid] = new Map([...m].sort((a, b) => idx(a[0]) - idx(b[0])));
   }
   function openPicker(anchor, kid) {
@@ -10423,10 +10446,10 @@ ${lines.join("\n")}`;
     const rowsOut = [];
     const before = new Map(S.data.mathScores.filter((r) => r.semesterId === st.sem && r.period === st.period && st.kids.some((k) => k.id === r.studentId)).map((r) => [r.id, r]));
     for (const k of st.kids) for (const [c, v] of st.plan[k.id]) {
-      const s = String(v.score ?? "").trim();
+      const s = v.absent ? "" : String(v.score ?? "").trim();
       if (s !== "" && !/^\d{1,3}$/.test(s)) throw new Skip(`${k.name} ${c} 的分數要是數字`);
       if (s !== "" && Number(s) > 100) throw new Skip(`${k.name} ${c} 的分數超過 100`);
-      rowsOut.push({ id: v.id, semesterId: st.sem, classId: st.cid, studentId: k.id, period: st.period, code: c, score: s === "" ? null : Number(s) });
+      rowsOut.push({ id: v.id, semesterId: st.sem, classId: st.cid, studentId: k.id, period: st.period, code: c, score: s === "" ? null : Number(s), absent: v.absent ? "V" : "" });
       before.delete(v.id);
     }
     for (const id of before.keys()) rowsOut.push({ id, delete: true });
@@ -10491,7 +10514,8 @@ ${lines.join("\n")}`;
         n.total++;
         n.byClass.set(c.name, (n.byClass.get(c.name) || 0) + 1);
       }
-      const scored = rs2.filter((r) => r.score != null && r.score !== "");
+      const scored = rs2.filter((r) => r.absent !== "V" && r.score != null && r.score !== "");
+      const absentN = rs2.filter((r) => r.absent === "V").length;
       const kidsWith = new Set(rs2.map((r) => r.studentId)).size;
       const failTwice = kids.filter((k) => {
         const h2 = history2(k.id).filter((r) => r.score != null && r.score !== "");
@@ -10502,14 +10526,14 @@ ${lines.join("\n")}`;
         }
         return [...byCode.values()].some((v) => v.length >= 2 && v.slice(-2).every((x) => x < MATH_RULE.pass));
       });
-      return { c, kids, rs: rs2, scored, kidsWith, passN: scored.filter((r) => pass(r.score)).length, failTwice };
+      return { c, kids, rs: rs2, scored, absentN, kidsWith, passN: scored.filter((r) => pass(r.score)).length, failTwice };
     });
     const codes2 = [...need2.keys()].sort((x, y) => idx(x) - idx(y));
     const total = codes2.reduce((n, c) => n + need2.get(c).total, 0);
     ctx.el.innerHTML = `<div class="card no-print"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>班級</th><th>課輔老師</th><th class="c">孩子</th><th class="c">已選考卷</th><th class="c">已填分數</th><th class="c">通過</th><th>連續兩次沒通過</th></tr></thead><tbody>
     ${perClass.map((x) => `<tr class="click" data-href="#/math?class=${x.c.id}&period=${encodeURIComponent(period)}"><td><b>${esc(x.c.name)}</b></td><td>${esc(teacherOfClass(x.c))}</td>
       <td class="c num">${x.kids.length}</td><td class="c num">${x.rs.length ? `${x.rs.length} 張・${x.kidsWith} 人` : '<span class="chip warn">還沒選</span>'}</td>
-      <td class="c num">${x.scored.length}／${x.rs.length}</td><td class="c num">${x.scored.length ? `${x.passN}／${x.scored.length}` : "—"}</td>
+      <td class="c num">${x.scored.length}／${x.rs.length}${x.absentN ? `<div class="small muted">缺考 ${x.absentN}</div>` : ""}</td><td class="c num">${x.scored.length ? `${x.passN}／${x.scored.length}` : "—"}</td>
       <td class="small">${x.failTwice.map((k) => esc(k.name)).join("、") || '<span class="muted">—</span>'}</td></tr>`).join("") || '<tr><td colspan="7"><div class="empty">這學期沒有數學班</div></div></td></tr>'}</tbody></table></div></div>
     <div class="card mt16 m-need"><div class="card-head"><h3>考卷需求表</h3><span class="sub">${esc(S.semester)}・${esc(periodLabel(period, sem))}・共 ${total} 張</span></div>
       <div class="tbl-wrap"><table class="tbl"><thead><tr><th>考卷</th><th>單元</th><th>年級</th><th class="c">張數</th><th>各班</th></tr></thead><tbody>
@@ -10553,7 +10577,7 @@ ${lines.join("\n")}`;
         for (const p of PERIODS) {
           const cells = /* @__PURE__ */ new Map();
           const mine = S.data.mathScores.filter((r) => r.studentId === k.id && r.planned === "V" && r.semesterId === sem && r.period === p);
-          for (const r of mine) cells.set(r.code, r.score == null || r.score === "" ? "V" : Number(r.score));
+          for (const r of mine) cells.set(r.code, r.absent === "V" ? "缺" : r.score == null || r.score === "" ? "V" : Number(r.score));
           if (p === "前測") {
             for (const r of S.data.mathScores.filter((x) => x.studentId === k.id && x.planned === "V" && order.indexOf(x.semesterId) >= 0 && order.indexOf(x.semesterId) < order.indexOf(sem) && x.score != null && x.score !== "")) {
               const v = cells.get(r.code);
@@ -10631,6 +10655,16 @@ ${lines.join("\n")}`;
         const add = t.closest("[data-add]");
         if (add) {
           addPaper(kid, add.dataset.add);
+          rerenderKid(kid);
+          return;
+        }
+        const ab = t.closest("[data-absent]");
+        if (ab) {
+          const v = st.plan[kid].get(ab.dataset.absent);
+          if (v) {
+            v.absent = !v.absent;
+            if (v.absent) v.score = "";
+          }
           rerenderKid(kid);
           return;
         }
@@ -12120,7 +12154,7 @@ ${lines.join("\n")}`;
       add("flow", d === today3 ? "over" : "soon", d, { date: d, cls: c, text: `${mdw(d)}${d === today3 ? "（今天上課）" : ""}${fsx.key === "partial" ? `・${fsx.missing.length} 位孩子還沒有個別任務` : ""}${sub ? `・代課 ${get("teachers", sub.teacherId)?.name || ""}` : ""}`, href: `#/flow?class=${c.id}&date=${d}` });
     }
     for (const c of own) {
-      const rs2 = (S.data.mathScores || []).filter((r) => r.classId === c.id && r.semesterId === S.semester && r.planned === "V" && (r.score == null || r.score === "") && r.period !== "前測");
+      const rs2 = (S.data.mathScores || []).filter((r) => r.classId === c.id && r.semesterId === S.semester && r.planned === "V" && r.absent !== "V" && (r.score == null || r.score === "") && r.period !== "前測");
       const by = /* @__PURE__ */ new Map();
       for (const r of rs2) {
         const k = r.period;
