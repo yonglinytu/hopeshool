@@ -417,6 +417,20 @@ table.flow { border-collapse: collapse; width: 100%; min-width: 760px; table-lay
 .pick-more > .opts:first-child { margin-top: 0; }
 .pick-more button { height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 13.5px; cursor: pointer; text-align: left; }
 .pick-more button.on { background: #a8401f; border-color: #a8401f; color: #fff; font-weight: 600; }
+.emo-tg { display: flex; flex-wrap: wrap; gap: 6px; }
+.emo-tg button { height: 34px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface-2, var(--surface)); color: var(--ink); font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.emo-tg button.open { border-color: var(--ink-2); background: var(--surface-3); }
+.emo-tg button .n { font-size: 12px; min-width: 18px; height: 18px; border-radius: 9px; background: var(--ink-2); color: var(--surface); display: inline-flex; align-items: center; justify-content: center; padding: 0 5px; }
+.emo-box { margin-top: 8px; padding: 10px 12px; border-radius: 10px; background: var(--surface-3); }
+.emo-box .t { font-size: 12px; color: var(--ink-2); margin-bottom: 6px; }
+.emo-box .opts { display: flex; flex-wrap: wrap; gap: 6px; }
+.emo-box button { height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 13.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.emo-box button i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.emo-box button.on { border: 2px solid var(--ink); font-weight: 700; padding: 0 11px; }
+.emo-sum { margin-top: 6px; font-size: 13px; color: var(--ink-2); }
+.emo-remind { margin-top: 6px; font-size: 12.5px; color: var(--warn); }
+.chip.emo-hard { background: var(--serious-soft); color: var(--serious); border-color: transparent; }
+.chip.emo-good { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
 .btn.dashed { border-style: dashed; background: transparent; color: var(--ink-2); }
 .kid-row:last-child { border-bottom: 0; }
 .kid-name b { font-size: 15px; }
@@ -2043,6 +2057,18 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
             "key": "behaviorTags",
             "label": "行為需要關注",
             "kind": "text"
+          },
+          {
+            "key": "emoHard",
+            "label": "情緒觀察・困難時刻",
+            "kind": "text",
+            "hint": "生氣、不服、緊張、怕失敗、委屈、失望、沮喪、厭煩、拒絕、興奮過頭，可複選（用、分隔）"
+          },
+          {
+            "key": "emoGood",
+            "label": "情緒觀察・好時刻",
+            "kind": "text",
+            "hint": "開心、自豪、放鬆、好奇，可複選（用、分隔）"
           },
           {
             "key": "progress",
@@ -6256,7 +6282,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
       }
     }
     if (parts.has("record") && payload.records) {
-      const keys = ["attendance", "leaveType", "homework", "taskDone", "undone", "learning", "learningTags", "behavior", "behaviorTags", "progress", "score", "note", "polished", "summary", "tags"];
+      const keys = ["attendance", "leaveType", "homework", "taskDone", "undone", "learning", "learningTags", "behavior", "behaviorTags", "emoHard", "emoGood", "progress", "score", "note", "polished", "summary", "tags"];
       for (const ri of payload.records) {
         if (!ri.studentId) continue;
         const rid2 = `R-${sin.classId}-${sin.date}-${ri.studentId}`;
@@ -7165,7 +7191,9 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
       chip2("作業 ", r.homework),
       task ? `<span class="chip ${R_TONE[task] || "outline"}" style="margin:1px">任務 ${esc(task)}</span>` : "",
       chip2("學習 ", learning, r.learningTags),
-      chip2("行為 ", r.behavior, r.behaviorTags)
+      chip2("行為 ", r.behavior, r.behaviorTags),
+      r.emoHard ? `<span class="chip emo-hard" style="margin:1px">困難時刻：${esc(r.emoHard)}</span>` : "",
+      r.emoGood ? `<span class="chip emo-good" style="margin:1px">好時刻：${esc(r.emoGood)}</span>` : ""
     ].join("") + (r.undone ? `<div class="small muted mt8">沒完成：${esc(String(r.undone).split("；").map((x) => x.replace(/^\d+\. /, "")).join("、"))}</div>` : "");
   }
   function attChip(a) {
@@ -8161,6 +8189,9 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   };
   var VISIT_GOAL_AREAS = ["教材內容掌握", "備課充實度（含流程及預備任務）", "評量方式（及時檢核）", "指導語適切性", "教具使用", "多元化教學方式", "情境佈題", "班級經營", "其他"];
   var LEARN_TAGS = ["專注不足", "觀念不清", "粗心", "進度落後", "學習意願低", "需要個別指導"];
+  var EMO_FAMILY = { 生氣: "#d64545", 害怕: "#7a5cc4", 難過: "#3a7bd5", 討厭: "#4c9a3a", 快樂: "#e0a000" };
+  var EMO_HARD = [["生氣", "生氣"], ["不服", "生氣"], ["緊張", "害怕"], ["怕失敗", "害怕"], ["委屈", "難過"], ["失望", "難過"], ["沮喪", "難過"], ["厭煩", "討厭"], ["拒絕", "討厭"], ["興奮過頭", "快樂"]];
+  var EMO_GOOD = [["開心", "快樂"], ["自豪", "快樂"], ["放鬆", "快樂"], ["好奇", "快樂"]];
   var BEHAV_TAGS = ["干擾他人", "情緒起伏大", "與同儕衝突", "不聽從指令", "擅自離座", "不當言語"];
   var SOCIAL_OPTS = {
     eventTypes: ["暴力衝突", "言語霸凌", "自傷風險", "家庭因素", "性別議題", "急難救助", "其他"],
@@ -15239,6 +15270,8 @@ ${lines.join("\n")}`;
           learningTags: r.learningTags || "",
           behavior: r.behavior || "",
           behaviorTags: r.behaviorTags || "",
+          emoHard: r.emoHard || "",
+          emoGood: r.emoGood || "",
           progress: r.progress || "",
           score: r.score ?? "",
           note: r.note || "",
@@ -15268,7 +15301,8 @@ ${lines.join("\n")}`;
       incidents: (s ? incidentsOf(s.id) : []).map((i) => ({ ...i })),
       dirty: false,
       restored: null,
-      suggest: {}
+      suggest: {},
+      emoOpen: {}
     };
     const d = readDraft("record", cid, date);
     if (d && (!s || (d.savedAt || "") > (s.updatedAt || ""))) {
@@ -15326,6 +15360,22 @@ ${lines.join("\n")}`;
     const set = new Set(field === "undone" ? String(sel || "").split(UNDONE_SEP) : splitList(sel));
     return `<div class="pick-more" data-multi="${field}">${title ? `<div class="small ink2">${esc(title)}</div>` : ""}<div class="opts">${opts2.map((o) => `<button type="button" data-v="${esc(o)}" class="${set.has(o) ? "on" : ""}">${esc(o)}</button>`).join("")}</div></div>`;
   }
+  var EMO_KIND = { emoHard: ["困難時刻", EMO_HARD], emoGood: ["好時刻", EMO_GOOD] };
+  function emoLine(k, r) {
+    const open2 = rs.emoOpen[k.id] || {};
+    const tg = Object.entries(EMO_KIND).map(([f, [label2]]) => {
+      const n = splitList(r[f]).length;
+      return `<button type="button" data-emotg="${f}" class="${open2[f] ? "open" : ""}" aria-expanded="${!!open2[f]}">${icon(f === "emoHard" ? "alert" : "sparkle", "sm")}${label2}${n ? `<span class="n">${n}</span>` : ""}</button>`;
+    }).join("");
+    const box2 = (f) => {
+      const [label2, list2] = EMO_KIND[f], sel = new Set(splitList(r[f]));
+      return `<div class="emo-box" data-emo="${f}"><div class="t">${label2}：孩子看起來像是…（可複選，再點一次取消）</div><div class="opts">${list2.map(([w, fam]) => `<button type="button" data-v="${esc(w)}" class="${sel.has(w) ? "on" : ""}" title="${esc(fam)}家族"><i style="background:${EMO_FAMILY[fam]}"></i>${esc(w)}</button>`).join("")}</div></div>`;
+    };
+    const sum = [r.emoHard ? `困難時刻：${esc(r.emoHard)}` : "", r.emoGood ? `好時刻：${esc(r.emoGood)}` : ""].filter(Boolean).join("　｜　");
+    return line2("情緒觀察", `<div class="emo-tg">${tg}</div>${open2.emoHard ? box2("emoHard") : ""}${open2.emoGood ? box2("emoGood") : ""}
+    ${sum ? `<div class="emo-sum">${sum}</div>` : '<div class="small muted" style="margin-top:4px">選填，有看到再記</div>'}`);
+  }
+  var emoHint = (r) => r.emoHard ? "例：訂正錯題時說「我一定又錯」，先換簡單題後願意繼續做" : r.emoGood ? "例：自己解出應用題，主動拿給同學看" : "選填：亮點、進步、想記下的事";
   var line2 = (label2, body) => `<div class="kc-line"><span class="kc-lbl">${label2}</span><div class="kc-val">${body}</div></div>`;
   function kidRow2(k) {
     const r = rs.recs[k.id];
@@ -15353,8 +15403,10 @@ ${lines.join("\n")}`;
       ${line2("學校作業", pick("homework", HW2, r.homework))}
       ${line2("今日任務", taskBody)}
       ${line2("學習表現", pick("learning", LEVEL, r.learning) + (r.learning === "需要關注" ? multi("learningTags", LEARN_TAGS, r.learningTags) : ""))}
-      ${line2("行為表現", pick("behavior", LEVEL, r.behavior) + (r.behavior === "需要關注" ? multi("behaviorTags", BEHAV_TAGS, r.behaviorTags) : ""))}` : ""}
-      ${line2("今日觀察", `<textarea class="textarea" data-f="note" rows="2" placeholder="選填：亮點、進步、想記下的事">${esc(r.note)}</textarea>
+      ${line2("行為表現", pick("behavior", LEVEL, r.behavior) + (r.behavior === "需要關注" ? multi("behaviorTags", BEHAV_TAGS, r.behaviorTags) : ""))}
+      ${emoLine(k, r)}` : ""}
+      ${line2("今日觀察", `<textarea class="textarea" data-f="note" rows="2" placeholder="${esc(emoHint(r))}">${esc(r.note)}</textarea>
+        ${here && (r.emoHard || r.emoGood) ? `<div class="emo-remind"${r.note.trim() ? " hidden" : ""}>${icon("info", "sm")} 選了情緒，記得寫一句當時發生了什麼（不寫也能存）</div>` : ""}
         ${r.note.trim() ? `<div class="row wrap gap4 mt8"><button class="btn sm" data-tidy="${k.id}">${icon("sparkle", "sm")}整理文字</button>
           ${S.meta?.ai?.enabled ? `<button class="btn sm" data-ai="${k.id}">${icon("sparkle", "sm")}AI 潤稿</button>` : ""}
           ${r.tags ? r.tags.split(/[、,]/).filter(Boolean).map((t) => `<span class="chip outline">${esc(t)}</span>`).join("") : ""}</div>` : ""}
@@ -15446,7 +15498,10 @@ ${lines.join("\n")}`;
   function rerenderKid3(id) {
     const k = rs.kids.find((x) => x.id === id);
     const old = $(`.kid-row[data-kid="${id}"]`);
-    if (k && old) old.replaceWith(h(kidRow2(k)));
+    if (k && old?.parentNode) try {
+      old.replaceWith(h(kidRow2(k)));
+    } catch {
+    }
   }
   function bind3() {
     const el = ctxRef2.el;
@@ -15469,10 +15524,13 @@ ${lines.join("\n")}`;
     const row = t.closest(".kid-row");
     if (row && t.dataset.f) {
       const r = rs.recs[row.dataset.kid];
-      const had = !!r.note.trim();
       r[t.dataset.f] = t.value;
       touch2();
-      if (e.type === "change" && t.dataset.f === "note" && had !== !!r.note.trim()) rerenderKid3(row.dataset.kid);
+      if (t.dataset.f === "note") {
+        const rm = row.querySelector(".emo-remind");
+        if (rm) rm.hidden = !!r.note.trim();
+        if (e.type === "change" && !!row.querySelector("[data-tidy]") !== !!r.note.trim()) rerenderKid3(row.dataset.kid);
+      }
       return;
     }
     const inc2 = t.closest("[data-inc]");
@@ -15517,6 +15575,25 @@ ${lines.join("\n")}`;
       if (field === "taskDone" && (!v || v === "全部完成")) r.undone = "";
       touch2();
       rerenderKid3(row.dataset.kid);
+      return;
+    }
+    const emoTg = t.closest("[data-emotg]");
+    if (emoTg) {
+      const id = emoTg.closest(".kid-row").dataset.kid, f = emoTg.dataset.emotg;
+      const o = rs.emoOpen[id] || (rs.emoOpen[id] = {});
+      o[f] = !o[f];
+      rerenderKid3(id);
+      return;
+    }
+    const emoBtn = t.closest("[data-emo] button");
+    if (emoBtn) {
+      const id = emoBtn.closest(".kid-row").dataset.kid, f = emoBtn.closest("[data-emo]").dataset.emo;
+      const r = rs.recs[id], sel = new Set(splitList(r[f])), w = emoBtn.dataset.v;
+      if (sel.has(w)) sel.delete(w);
+      else sel.add(w);
+      r[f] = EMO_KIND[f][1].map(([x]) => x).filter((x) => sel.has(x)).join("、");
+      touch2();
+      rerenderKid3(id);
       return;
     }
     const mBtn = t.closest("[data-multi] button");
@@ -15690,6 +15767,11 @@ ${lines.join("\n")}`;
     });
     try {
       await mutate("/api/session/save", payload, submit ? "課後紀錄已送出，社工會在每日日誌看到" : "草稿已儲存");
+      const noNote = rs.kids.filter((k) => {
+        const r = rs.recs[k.id];
+        return isHere(r.attendance || "出席") && (r.emoHard || r.emoGood) && !r.note.trim();
+      });
+      if (noNote.length) setTimeout(() => toast(`已儲存。提醒：${noNote.map((k) => k.name).join("、")} 選了情緒，今日觀察還沒寫發生了什麼`), 1600);
       dropDraft("record", rs.cid, rs.date);
       rs = loadState4(rs.cid, rs.date);
       renderAll4();
@@ -15715,7 +15797,7 @@ ${lines.join("\n")}`;
       records: rs.kids.map((k) => {
         const r = rs.recs[k.id];
         const here = !r.attendance || isHere(r.attendance);
-        const clear = here ? {} : { homework: "", taskDone: "", undone: "", learning: "", learningTags: "", behavior: "", behaviorTags: "", score: "" };
+        const clear = here ? {} : { homework: "", taskDone: "", undone: "", learning: "", learningTags: "", behavior: "", behaviorTags: "", emoHard: "", emoGood: "", score: "" };
         const o = { studentId: k.id, ...r, ...clear, leaveType: r.attendance === "請假" ? r.leaveType || "" : "" };
         o.score = o.score === "" ? null : o.score;
         return o;
