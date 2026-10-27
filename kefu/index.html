@@ -676,6 +676,12 @@ table.flow { border-collapse: collapse; width: 100%; min-width: 760px; table-lay
 .ev-note { padding: 8px 0; border-bottom: 1px solid var(--line-2); } .ev-note:last-child { border-bottom: 0; }
 .ok-text { color: var(--good); } .bad-text { color: var(--critical); }
 .social-card { border-color: var(--serious-soft); }
+.kid-recent { margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--line-2); }
+.kid-recent-tbl th:first-child { width: 72px; white-space: nowrap; }
+.kid-recent-tbl td { font-size: 13px; line-height: 1.7; }
+.emo-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; vertical-align: 1px; }
+.kid-quote { margin-top: 6px; padding: 6px 10px; border-left: 3px solid var(--line); background: var(--surface-2); font-size: 13px; }
+
 
 /* ───────── 數學月檢測 ───────── */
 .mk-row { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line-2); }
@@ -13815,6 +13821,70 @@ ${lines.join("\n")}`;
       });
     }
   };
+  var EMO_LEGACY = { 不服: "紅", 怕失敗: "紫", 沮喪: "藍" };
+  var famOf = (w) => (EMO_HARD.find(([x]) => x === w) || [])[1] || EMO_LEGACY[w] || "";
+  var emoWords = (v) => String(v || "").split("、").map((x) => x.trim()).filter((x) => x && x !== EMO_NONE);
+  function kidWindow(sid2, from, to) {
+    const out = { marked: 0, leave: 0, absent: 0, hard: /* @__PURE__ */ new Map(), good: /* @__PURE__ */ new Map(), fam: /* @__PURE__ */ new Map(), incidents: 0, events: 0, quotes: [], emoDays: 0 };
+    for (const r of S.idx.recordsByStudent.get(sid2) || []) {
+      const s = get("sessions", r.sessionId);
+      if (!s || s.date < from || s.date > to) continue;
+      if (r.attendance) out.marked++;
+      if (r.attendance === "請假") out.leave++;
+      if (r.attendance === "缺席") out.absent++;
+      if (r.emoHard || r.emoGood) out.emoDays++;
+      const hard = emoWords(r.emoHard);
+      for (const w of hard) {
+        out.hard.set(w, (out.hard.get(w) || 0) + 1);
+        const f = famOf(w);
+        if (f) out.fam.set(f, (out.fam.get(f) || 0) + 1);
+      }
+      for (const w of emoWords(r.emoGood)) out.good.set(w, (out.good.get(w) || 0) + 1);
+      const text = (r.polished || r.note || "").trim();
+      if (hard.length && text) out.quotes.push({ date: s.date, cls: get("classes", s.classId)?.name || "", words: hard.join("、"), text });
+      out.incidents += incidentsOf(s.id).filter((i) => i.studentId === sid2).length;
+    }
+    out.events = S.data.specialEvents.filter((e) => split(e.studentIds).includes(sid2) && e.date >= from && e.date <= to).length;
+    out.quotes.sort((a, b) => b.date.localeCompare(a.date));
+    return out;
+  }
+  function recentBlock(sid2) {
+    const today3 = todayISO(), from = addDays2(today3, -27), pTo = addDays2(from, -1), pFrom = addDays2(pTo, -27);
+    const now = kidWindow(sid2, from, today3), prev = kidWindow(sid2, pFrom, pTo);
+    const prevEmo = pTo >= EMO_SINCE;
+    const dot = (f) => `<i class="emo-dot" style="background:${EMO_FAMILY[f] || "var(--muted)"}"></i>`;
+    const hardText = (w) => {
+      if (!w.hard.size) return '<span class="muted">沒有記到</span>';
+      const byFam = /* @__PURE__ */ new Map();
+      for (const [x, n] of w.hard) {
+        const f = famOf(x);
+        if (!byFam.has(f)) byFam.set(f, []);
+        byFam.get(f).push(`${esc(x)} ×${n}`);
+      }
+      return [...byFam].sort((a, b) => (w.fam.get(b[0]) || 0) - (w.fam.get(a[0]) || 0)).map(([f, xs]) => `<span class="nowrap">${dot(f)}${xs.join("、")}</span>`).join("　");
+    };
+    const goodText = (w) => w.good.size ? [...w.good].map(([x, n]) => `<span class="nowrap">${dot((EMO_GOOD.find(([g]) => g === x) || [])[1])}${esc(x)} ×${n}</span>`).join("　") : '<span class="muted">沒有記到</span>';
+    const attText = (w) => w.marked ? `點名 ${w.marked} 堂・請假 ${w.leave}・缺席 ${w.absent}` : '<span class="muted">沒有上課紀錄</span>';
+    const evText = (w) => `課堂事件 ${w.incidents}・特殊事件 ${w.events}`;
+    const noPrev = '<span class="muted">10/22 起才記錄</span>';
+    const flags = [];
+    const famHit = [...now.fam].filter(([, n]) => n >= 3).sort((a, b) => b[1] - a[1]).map(([f]) => f);
+    const offUp = now.leave + now.absent - (prev.leave + prev.absent) >= 2;
+    if (offUp && now.hard.size) flags.push(`近四週請假／缺席變多，也有困難時刻${famHit.length ? `（較常是${famHit.map((f) => f + "色家族").join("、")}）` : ""}`);
+    else if (famHit.length) flags.push(`近四週較常出現${famHit.map((f) => `${dot(f)}${f}色家族`).join("、")}的情緒`);
+    else if (offUp) flags.push("近四週請假／缺席比前四週多");
+    const row = (label2, a, b) => `<tr><th>${label2}</th><td>${a}</td><td>${b}</td></tr>`;
+    return `<div class="kid-recent">
+    <div class="row wrap" style="gap:6px;margin-bottom:6px"><b>近四週</b><span class="small muted">${md2(from)}–${md2(today3)}，和前四週（${md2(pFrom)}–${md2(pTo)}）比較</span></div>
+    ${flags.map((f) => `<div class="callout warn mb8">${icon("eye", "sm")} ${f}</div>`).join("")}
+    <div class="tbl-wrap"><table class="tbl kid-recent-tbl"><thead><tr><th></th><th>近四週</th><th>前四週</th></tr></thead><tbody>
+      ${row("出席", attText(now), attText(prev))}
+      ${row("困難時刻", hardText(now), prevEmo ? hardText(prev) : noPrev)}
+      ${row("好時刻", goodText(now), prevEmo ? goodText(prev) : noPrev)}
+      ${row("事件", evText(now), evText(prev))}</tbody></table></div>
+    ${now.quotes.length ? `<div class="small ink2 mt8">有困難時刻那幾堂，老師寫的觀察：</div>${now.quotes.slice(0, 5).map((q) => `<div class="kid-quote"><span class="small muted">${md2(q.date)} ${esc(q.cls)}・${esc(q.words)}</span><div>${esc(q.text)}</div></div>`).join("")}` : ""}
+    <div class="small muted mt8">只是老師在課堂上看到的樣子，不是診斷；用「近四週看到較多…」來討論，不給孩子貼標籤。</div></div>`;
+  }
   function kidSocialCard(sid2) {
     if (!isSocial2()) return "";
     const has = (v) => split(v).includes(sid2);
@@ -13826,7 +13896,7 @@ ${lines.join("\n")}`;
     ].sort((a, b) => (b.date || "").localeCompare(a.date || ""));
     return `<div class="card social-card"><div class="card-head"><h3>${icon("lock", "sm")} 社工紀錄</h3><span class="sub">只有社工和督導看得到</span><span class="sp"></span>
       <a class="btn sm" href="#/cases/new?kid=${esc(sid2)}">${icon("plus", "sm")}個案工作</a><a class="btn sm" href="#/events/new?kid=${esc(sid2)}">${icon("plus", "sm")}特殊事件</a>${get("students", sid2)?.status !== "結案" ? `<a class="btn sm" href="#/exits?kid=${esc(sid2)}">${icon("plus", "sm")}登記結案</a>` : ""}</div>
-    <div class="card-body">${items.length ? `<div class="timeline">${items.map((x) => `<div class="tl-item"><div class="tl-date">${md2(x.date)}</div><div>${x.html}</div></div>`).join("")}</div>` : '<div class="small muted">還沒有個案工作或特殊事件紀錄</div>'}</div></div>`;
+    <div class="card-body">${recentBlock(sid2)}${items.length ? `<div class="timeline">${items.map((x) => `<div class="tl-item"><div class="tl-date">${md2(x.date)}</div><div>${x.html}</div></div>`).join("")}</div>` : '<div class="small muted">還沒有個案工作或特殊事件紀錄</div>'}</div></div>`;
   }
   function incidentSocialLink(inc2) {
     if (!isSocial2() || !inc2?.id) return "";
