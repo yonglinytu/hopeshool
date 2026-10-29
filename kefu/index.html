@@ -8960,6 +8960,7 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     }
     for (const s of S.idx.sessionsByDate.get(date) || []) {
       if (seen.has(s.classId)) continue;
+      if (s.submit !== "已送出" && closedFor(s.classId, date) && !makeupOf(s.classId, date)) continue;
       const c = get("classes", s.classId);
       if (c && !c.limited) {
         seen.add(c.id);
@@ -12523,6 +12524,9 @@ ${lines.join("\n")}`;
       if (c && c.semesterId === S.semester) days0.push([c, r.date]);
     }
     for (const [c, d] of days0) {
+      if (closedFor(c.id, d) && !makeupOf(c.id, d)) continue;
+      const ros = roster(c.id);
+      if (ros.length && ros.every((k) => kidOff(k.id, d) || joinedAfter(c.id, k.id, d))) continue;
       const s = sessionFor(c.id, d);
       if (s?.note?.includes("由點名表匯入") && !blocksOf(s.id).length) continue;
       const href = `#/record?class=${c.id}&date=${d}`;
