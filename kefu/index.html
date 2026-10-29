@@ -329,6 +329,11 @@ table.tbl { width: 100%; border-collapse: separate; border-spacing: 0; font-size
 .risk.low { background: var(--warn-soft); color: var(--warn); }
 .risk.stable { background: var(--good-soft); color: var(--good); }
 .risk.insufficient { background: var(--neutral-soft); color: var(--muted); }
+.risk.off { background: var(--neutral-soft); color: var(--muted); font-weight: 600; }
+.risk.off::before { background: transparent; border: 1.5px solid currentColor; box-sizing: border-box; }
+tr.kid-closed td { color: var(--muted); }
+tr.kid-closed .meter i { filter: grayscale(1); opacity: .5; }
+.card-body.kid-closed .gauge, .card-body.kid-closed .factor, .card-body.kid-closed .risk-strip { filter: grayscale(1); opacity: .55; }
 .factor { display: flex; gap: 10px; align-items: flex-start; padding: 9px 0; border-bottom: 1px dashed var(--line-2); }
 .factor:last-child { border-bottom: 0; }
 .factor .pts { margin-left: auto; font-weight: 700; color: var(--serious); font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -8898,6 +8903,11 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
   function tasksOf(bid) {
     return S.idx.tasksByBlock.get(bid) || [];
   }
+  var isClosedKid = (sid2) => get("students", sid2)?.status === "結案";
+  function closedChip(sid2) {
+    const x = (S.data.exits || []).filter((e) => e.studentId === sid2).sort((a, b) => (b.date || "").localeCompare(a.date || ""))[0];
+    return `<span class="risk off" title="已結案，不再評估風險">已結案${x?.date ? ` ${Number(x.date.slice(5, 7))}/${Number(x.date.slice(8, 10))}` : ""}</span>`;
+  }
   var leaveOf = (sid2, date) => get("kidLeaves", `LV-${date}-${sid2}`);
   var canLeave2 = (cid, date) => isSocial2() || get("classes", cid)?.teacherId === myTeacherId() || !!myTeacherId() && subOf(cid, date)?.teacherId === myTeacherId();
   function flowStatus(cid, date) {
@@ -12867,7 +12877,7 @@ ${lines.join("\n")}`;
       const states = list3.map((x) => sessionState(x.session).key);
       const sent = states.filter((k) => ["pending", "seen", "replied"].includes(k)).length;
       const pendingFb = S.data.sessions.filter((s) => sessionState(s).key === "pending" && (sup || mine.has(s.classId)));
-      const students = Object.values(ins?.students || {}).filter((s) => sup || (s.classes || []).some((n) => classes().some((c) => c.name === n && mine.has(c.id))));
+      const students = Object.values(ins?.students || {}).filter((s) => !isClosedKid(s.studentId)).filter((s) => sup || (s.classes || []).some((n) => classes().some((c) => c.name === n && mine.has(c.id))));
       const high = students.filter((s) => s.levelLabel === "高風險");
       const mid = students.filter((s) => s.levelLabel === "中風險");
       const openInc = S.data.incidents.filter((i) => i.status !== "已結案" && (sup || mine.has(get("sessions", i.sessionId)?.classId)));
@@ -17294,7 +17304,7 @@ ${lines.join("\n")}`;
   var reportEnFiles = () => downloadFile(classes().filter(isEnClass));
 
   // src/js/pages/kids.js
-  var LEVELS = [["all", "全部"], ["risk", "需關注"], ["高風險", "高風險"], ["中風險", "中風險"], ["低風險", "低風險"], ["穩定", "穩定"], ["資料不足", "資料不足"]];
+  var LEVELS = [["all", "全部"], ["risk", "需關注"], ["高風險", "高風險"], ["中風險", "中風險"], ["低風險", "低風險"], ["穩定", "穩定"], ["資料不足", "資料不足"], ["closed", "已結案"]];
   var evalDirty = false;
   function trendArrow(t) {
     if (t == null) return "";
@@ -17317,14 +17327,20 @@ ${lines.join("\n")}`;
     if (cls) rows2 = rows2.filter((r) => r.cl.some((c) => c.id === cls));
     if (q) rows2 = rows2.filter((r) => r.s.name.includes(q) || r.s.id.includes(q));
     const counts = Object.fromEntries(LEVELS.map(([k]) => [k, 0]));
+    for (const r of rows2) r.closed = r.s.status === "結案";
     for (const r of rows2) {
       counts.all++;
+      if (r.closed) {
+        counts.closed++;
+        continue;
+      }
       const l = r.ins?.levelLabel || "資料不足";
       counts[l] = (counts[l] || 0) + 1;
       if (l === "高風險" || l === "中風險") counts.risk++;
     }
-    if (level2 === "risk") rows2 = rows2.filter((r) => ["高風險", "中風險"].includes(r.ins?.levelLabel));
-    else if (level2 !== "all") rows2 = rows2.filter((r) => (r.ins?.levelLabel || "資料不足") === level2);
+    if (level2 === "closed") rows2 = rows2.filter((r) => r.closed);
+    else if (level2 === "risk") rows2 = rows2.filter((r) => !r.closed && ["高風險", "中風險"].includes(r.ins?.levelLabel));
+    else if (level2 !== "all") rows2 = rows2.filter((r) => !r.closed && (r.ins?.levelLabel || "資料不足") === level2);
     const key = {
       risk: (r) => -(r.ins?.score ?? -1),
       name: (r) => r.s.name,
@@ -17333,6 +17349,7 @@ ${lines.join("\n")}`;
       task: (r) => r.ins?.metrics?.taskRate ?? 9
     }[sort] || ((r) => 0);
     rows2.sort((a, b) => {
+      if (a.closed !== b.closed) return a.closed ? 1 : -1;
       const x = key(a), y = key(b);
       return typeof x === "string" ? byName({ name: x }, { name: y }) : x - y || byName(a.s, b.s);
     });
@@ -17351,13 +17368,13 @@ ${lines.join("\n")}`;
     <div class="pills" style="margin-bottom:14px">${LEVELS.map(([k, l]) => `<button class="pill ${level2 === k ? "on" : ""}" data-level="${k}">${l} <b>${counts[k] || 0}</b></button>`).join("")}</div>
     <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr>${th("name", "孩子")}<th>班級</th>${th("risk", "風險")}<th>主要因素</th><th>學習狀態</th>
       ${th("att", "出席率")}${th("score", "學習表現")}${th("task", "任務完成率")}<th class="num">事件</th><th>最近上課</th></tr></thead><tbody>
-      ${rows2.map(({ s, cl, ins }) => {
+      ${rows2.map(({ s, cl, ins, closed }) => {
       const m = ins?.metrics || {};
-      return `<tr class="click" data-id="${s.id}"><td class="nowrap"><b>${esc(s.name)}</b> <span class="small muted">${s.grade ? s.grade + " 年級" : ""}</span>
+      return `<tr class="click${closed ? " kid-closed" : ""}" data-id="${s.id}"><td class="nowrap"><b>${esc(s.name)}</b> <span class="small muted">${s.grade ? s.grade + " 年級" : ""}</span>
             ${s.needs ? `<span title="${esc(s.needs)}" style="color:var(--serious)">${icon("alert", "sm")}</span>` : ""}</td>
           <td class="small">${cl.map((c) => esc(c.name)).join("、") || '<span class="chip outline">未分班</span>'}</td>
-          <td>${riskChip(ins?.levelLabel || "資料不足", ins?.score)}</td>
-          <td class="small">${(ins?.factors || []).slice(0, 2).map((f) => `<span class="chip outline" style="margin:1px">${esc(f.label)}</span>`).join("") || '<span class="muted">—</span>'}</td>
+          <td>${closed ? closedChip(s.id) : riskChip(ins?.levelLabel || "資料不足", ins?.score)}</td>
+          <td class="small">${closed ? '<span class="muted">—</span>' : ""}${closed ? "" : (ins?.factors || []).slice(0, 2).map((f) => `<span class="chip outline" style="margin:1px">${esc(f.label)}</span>`).join("") || '<span class="muted">—</span>'}</td>
           <td class="small">${esc(ins?.status || "—")}</td>
           <td style="min-width:120px">${meter(m.attendanceRate)}</td>
           <td class="num nowrap">${m.avgScore != null ? `${num(m.recentAvg ?? m.avgScore)} ${trendArrow(m.trend)}` : '<span class="muted">—</span>'}</td>
@@ -17421,7 +17438,7 @@ ${lines.join("\n")}`;
     const typeDone = Object.entries(m.typeDone || {}).sort((a, b) => b[1] - a[1]);
     ctx.el.innerHTML = `
     <div class="card card-pad"><div class="profile-head"><div class="profile-avatar">${esc(s.name.slice(-2, -1) || s.name[0])}</div>
-      <div class="grow"><div class="row wrap"><h2 style="font-size:20px">${esc(s.name)}</h2>${riskChip(ins?.levelLabel || "資料不足", ins?.score)}
+      <div class="grow"><div class="row wrap"><h2 style="font-size:20px">${esc(s.name)}</h2>${isClosedKid(sid2) ? closedChip(sid2) : riskChip(ins?.levelLabel || "資料不足", ins?.score)}
         <span class="chip outline">學習狀態：${esc(ins?.status || "資料不足")}</span><span class="chip outline">${esc(s.status || "")}</span></div>
         <div class="small muted mt8">孩子ID ${esc(s.id)}${s.joined ? `・入班 ${esc(s.joined)}` : ""}${s.note ? `・${esc(s.note)}` : ""}</div></div></div>
       ${s.needs ? `<div class="callout warn mt12">${icon("alert", "sm")} <b>注意事項：</b>${esc(s.needs)}</div>` : ""}</div>
@@ -17447,8 +17464,8 @@ ${lines.join("\n")}`;
         ${kidSocialCard(sid2)}
       </div>
       <div class="stack gap16">
-        <div class="card"><div class="card-head"><h3>${icon("shield", "sm")} 風險評估</h3><span class="sp"></span>${riskChip(ins?.levelLabel || "資料不足", ins?.score)}</div>
-          <div class="card-body">
+        <div class="card"><div class="card-head"><h3>${icon("shield", "sm")} 風險評估</h3><span class="sp"></span>${isClosedKid(sid2) ? closedChip(sid2) : riskChip(ins?.levelLabel || "資料不足", ins?.score)}</div>
+          <div class="card-body${isClosedKid(sid2) ? " kid-closed" : ""}">${isClosedKid(sid2) ? '<div class="small muted mb8">已結案，不再評估風險；下面是結案前的紀錄。</div>' : ""}
             <div class="gauge" title="風險分數 ${ins?.score ?? 0}（0–100）"><i style="left:${Math.min(100, ins?.score || 0)}%"></i></div>
             <div class="row small muted mt8"><span>穩定</span><span class="sp"></span><span>低</span><span class="sp"></span><span>中</span><span class="sp"></span><span>高</span></div>
             <div class="mt12">${(ins?.factors || []).map((f) => `<div class="factor"><span class="chip outline">${esc(f.category)}</span>
@@ -17762,7 +17779,7 @@ ${lines.join("\n")}`;
       ${kid ? `<div class="card"><div class="card-head"><h3>${esc(kid.name)}</h3><a class="btn sm ghost" href="#/kids/${esc(kid.id)}">學習檔案 ${icon("right", "sm")}</a></div>
         <div class="card-body small ink2" style="line-height:1.8">${(() => {
       const ins = S.insights?.students?.[kid.id];
-      return ins ? `<div class="mb8">${riskChip(ins.levelLabel, ins.score)} <span class="chip outline">${esc(ins.status)}</span></div>${esc(ins.summary || "")}` : "本學期還沒有足夠的紀錄";
+      return ins ? `<div class="mb8">${isClosedKid(kid.id) ? closedChip(kid.id) : riskChip(ins.levelLabel, ins.score)} <span class="chip outline">${esc(ins.status)}</span></div>${esc(ins.summary || "")}` : "本學期還沒有足夠的紀錄";
     })()}</div></div>` : ""}
       <div class="card"><div class="card-head"><h3>同類別其他主題</h3></div><div class="card-body small">
         ${S.data.posts.filter((x) => x.category === p.category && x.id !== p.id).sort((x, y) => lastActivity(y).localeCompare(lastActivity(x))).slice(0, 6).map((x) => `<a class="row" style="padding:5px 0;color:var(--ink)" href="#/forum/${encodeURIComponent(x.id)}"><span class="grow">${esc(x.title)}</span><span class="chip ${postState(x).chip}">${postState(x).label}</span></a>`).join("") || '<span class="muted">沒有</span>'}</div></div>
@@ -21438,7 +21455,7 @@ ${parts[0][1]}` : parts.map(([d, t]) => `${d} ${t}`).join("\n");
     }
     const fa = flowAlerts();
     if (fa.length) out.flowmon = [fa.length, fa.includes("over") ? "" : "soft"];
-    const high = Object.values(S.insights?.students || {}).filter((s) => s.levelLabel === "高風險").length;
+    const high = Object.values(S.insights?.students || {}).filter((s) => s.levelLabel === "高風險" && !isClosedKid(s.studentId)).length;
     if (high) out.kids = [high, ""];
     const open2 = openPosts();
     if (open2.length) out.forum = [open2.length, open2.some((p) => p.urgent === "急") ? "" : "soft"];
