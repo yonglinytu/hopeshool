@@ -2250,13 +2250,14 @@ function viewPeople() {
       <label class="field"><span>新課堂的預設評分維度</span><input class="input" id="st-dims" value="${esc(st.defaultDims || "")}"></label>
       <div><button class="btn primary" id="st-save">${icon("check", "sm")}儲存設定</button></div>
     </div></div></div>
-    <div class="card mt16"><div class="card-head"><h3>人員</h3><span class="sub">老師只看得到自己據點的孩子；社工、督導看得到全部，也能管理名冊</span><span class="sp"></span><button class="btn sm primary" id="p-add">${icon("plus", "sm")}新增人員</button></div>
+    <div class="card mt16"><div class="card-head"><h3>人員</h3><span class="sub">老師只看得到自己據點的孩子；社工、督導看得到全部，也能管理名冊</span><span class="sp"></span><button class="btn sm" id="p-import">${icon("upload", "sm")}從 Excel 匯入人員</button><button class="btn sm primary" id="p-add">${icon("plus", "sm")}新增人員</button></div>
       <div class="card-body tbl-wrap"><table class="tbl"><thead><tr><th>姓名</th><th>Email</th><th>角色</th><th>據點</th><th>狀態</th><th></th></tr></thead><tbody>
       ${people.map((p) => `<tr><td><b>${esc(p.name)}</b></td><td>${esc(p.email)}</td><td><span class="chip ${p.role !== "老師" ? "brand" : ""}">${esc(p.role)}</span></td><td>${esc(p.sites || "全部")}</td><td>${/^(false|否|0|停用|no)$/i.test(String(p.active)) ? '<span class="chip">停用</span>' : '<span class="chip good">啟用</span>'}</td><td class="num"><button class="btn sm ghost" data-p="${esc(p.email)}">${icon("edit", "sm")}編輯</button></td></tr>`).join("")}
       </tbody></table></div></div>`;
   $("#site-add").onclick = () => editSite(null);
   $$("[data-site]", c).forEach((b) => (b.onclick = () => editSite(siteById(b.dataset.site))));
   $("#p-add").onclick = () => editPerson(null);
+  $("#p-import").onclick = importPeople;
   $$("[data-p]", c).forEach((b) => (b.onclick = () => editPerson(people.find((p) => p.email === b.dataset.p))));
   $("#st-save").onclick = async () => {
     try {
@@ -2264,6 +2265,61 @@ function viewPeople() {
       D().settings = r.settings; toast("已儲存設定"); renderNav();
     } catch (e) { toast(e.message, true); }
   };
+}
+/* 從 Excel 匯入人員：欄位要有 Email，姓名、角色、據點可有可無 */
+function importPeople() {
+  const inp = document.createElement("input");
+  inp.type = "file"; inp.accept = ".xlsx,.xls,.csv";
+  inp.onchange = async () => {
+    const f = inp.files[0];
+    if (!f) return;
+    let rows = [], hasSites = false;
+    try {
+      const XLSX = await loadXLSX();
+      const wb = XLSX.read(await f.arrayBuffer(), { type: "array" });
+      wb.SheetNames.forEach((n) => {
+        const a = XLSX.utils.sheet_to_json(wb.Sheets[n], { header: 1, defval: "" });
+        const hi = a.findIndex((r) => r.some((c) => /e-?mail|信箱/i.test(String(c))));
+        if (hi < 0) return;
+        const head = a[hi].map((c) => String(c).trim());
+        const ci = (re) => head.findIndex((c) => re.test(c));
+        const cE = ci(/e-?mail|信箱/i), cN = ci(/姓名|名字/), cR = ci(/角色|身分|職稱/), cS = ci(/據點/);
+        if (cS >= 0) hasSites = true;
+        a.slice(hi + 1).forEach((r) => {
+          const email = String(r[cE] || "").trim().toLowerCase();
+          if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || rows.some((x) => x.email === email)) return;
+          const rr = String(cR >= 0 ? r[cR] : "").trim();
+          const role = /督導/.test(rr) ? "督導" : /社工/.test(rr) ? "社工" : "老師";
+          rows.push({ email, name: String(cN >= 0 ? r[cN] : "").trim() || email, role, sites: cS >= 0 ? String(r[cS] || "").trim() : null });
+        });
+      });
+    } catch (e) { return toast("讀不到這個檔案：" + e.message, true); }
+    if (!rows.length) return toast("檔案裡找不到 Email 欄位或有效的 Email", true);
+    const people = D().people || [];
+    const exist = (e) => people.find((p) => String(p.email).toLowerCase() === e);
+    const v = await modal({
+      title: `匯入 ${rows.length} 位人員`, wide: true,
+      body: `<p class="small ink2" style="margin-top:0">已經在名單上的人會更新姓名和角色；「課輔老師」會當成「老師」。${hasSites ? "" : "檔案沒有據點欄，新增的人預設看得到全部據點。"}</p>
+        <table class="tbl"><thead><tr><th>姓名</th><th>Email</th><th>角色</th><th></th></tr></thead><tbody>
+        ${rows.map((r) => `<tr><td><b>${esc(r.name)}</b></td><td>${esc(r.email)}</td><td><span class="chip ${r.role !== "老師" ? "brand" : ""}">${esc(r.role)}</span></td><td>${exist(r.email) ? '<span class="chip">更新</span>' : '<span class="chip good">新增</span>'}</td></tr>`).join("")}
+        </tbody></table>`,
+      buttons: [{ label: "取消", value: null }, { label: "匯入", value: "ok", cls: "primary" }]
+    });
+    if (v !== "ok") return;
+    const fails = [];
+    for (const r of rows) {
+      const old = exist(r.email);
+      const isMe = r.email === S.me.email;
+      const person = { origEmail: old ? old.email : "", email: r.email, name: r.name, role: isMe ? S.me.role : r.role,
+        sites: r.sites != null ? r.sites : (old ? old.sites : ""), active: old ? !/^(false|否|0|停用|no)$/i.test(String(old.active)) : true, note: old && !/執行 setup/.test(old.note) ? old.note : "" };
+      try { await api("person.save", { person }); } catch (e) { fails.push(`${r.name}：${e.message}`); }
+    }
+    await reload();
+    route();
+    if (fails.length) modal({ title: "有幾位沒有匯入成功", body: `<div class="small prewrap">${esc(fails.join("\n"))}</div>` });
+    else toast(`已匯入 ${rows.length} 位人員，他們現在可以用自己的 Email 登入了`);
+  };
+  inp.click();
 }
 async function editSite(s) {
   const isNew = !s;
