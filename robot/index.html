@@ -1,0 +1,2597 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>永齡機器人課務系統</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23138a68'/%3E%3Crect x='8' y='11' width='16' height='12' rx='3' fill='none' stroke='white' stroke-width='2.4'/%3E%3Ccircle cx='13' cy='17' r='1.8' fill='white'/%3E%3Ccircle cx='19' cy='17' r='1.8' fill='white'/%3E%3Cpath d='M16 11V7' stroke='white' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+/* 永齡機器人課務系統 — 介面樣式（沿用永齡課輔系統的設計語言） */
+:root {
+  color-scheme: light;
+  --page: #f6f5f2; --surface: #ffffff; --surface-2: #faf9f7; --surface-3: #f1efea;
+  --ink: #1b2027; --ink-2: #4f5762; --muted: #6f7680; --line: #e4e1da; --line-2: #eeebe5;
+  --accent: #2563c9; --accent-ink: #ffffff; --accent-soft: #e8f0fc; --accent-line: #b9cff2;
+  --brand: #138a68; --brand-soft: #e1f3ec;
+  --side: #17212c; --side-2: #1f2b38; --side-ink: #e8edf3; --side-muted: #94a3b4;
+  --good: #0f7a0f; --good-soft: #e3f4e3; --warn: #8a5a00; --warn-soft: #fdf1d6;
+  --serious: #b04a1b; --serious-soft: #fbe6da; --critical: #c22f2f; --critical-soft: #f9e0e0; --neutral-soft: #ecebe7;
+  --mark-good: #0ca30c; --mark-warn: #fab219; --mark-serious: #ec835a; --mark-critical: #d03b3b;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #c98500; --s5: #e87ba4; --s6: #4a3aa7; --s7: #008300; --s8: #e34948;
+  --grid: #e3e0d9;
+  --shadow: 0 1px 2px rgba(20,24,31,.06), 0 2px 8px rgba(20,24,31,.04); --shadow-lg: 0 10px 40px rgba(20,24,31,.18);
+  --radius: 10px;
+  --font: "Segoe UI", "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0f1215; --surface: #181c21; --surface-2: #1d2228; --surface-3: #232930;
+    --ink: #eef1f4; --ink-2: #c0c7cf; --muted: #929aa3; --line: #2c333b; --line-2: #262c33;
+    --accent: #5b93ea; --accent-ink: #0d1116; --accent-soft: #1b2a41; --accent-line: #2e4a73;
+    --brand: #3cc497; --brand-soft: #15302a; --side: #0b1016; --side-2: #141b23;
+    --good: #4cc44c; --good-soft: #15301a; --warn: #f2bf4f; --warn-soft: #33290f;
+    --serious: #f0956b; --serious-soft: #3a2218; --critical: #f07676; --critical-soft: #3c1a1c; --neutral-soft: #2a2f35;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #9085e9; --s7: #2aa52a; --s8: #e66767;
+    --grid: #2a3037; --shadow: 0 1px 2px rgba(0,0,0,.4); --shadow-lg: 0 10px 40px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0f1215; --surface: #181c21; --surface-2: #1d2228; --surface-3: #232930;
+  --ink: #eef1f4; --ink-2: #c0c7cf; --muted: #929aa3; --line: #2c333b; --line-2: #262c33;
+  --accent: #5b93ea; --accent-ink: #0d1116; --accent-soft: #1b2a41; --accent-line: #2e4a73;
+  --brand: #3cc497; --brand-soft: #15302a; --side: #0b1016; --side-2: #141b23;
+  --good: #4cc44c; --good-soft: #15301a; --warn: #f2bf4f; --warn-soft: #33290f;
+  --serious: #f0956b; --serious-soft: #3a2218; --critical: #f07676; --critical-soft: #3c1a1c; --neutral-soft: #2a2f35;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #9085e9; --s7: #2aa52a; --s8: #e66767;
+  --grid: #2a3037; --shadow: 0 1px 2px rgba(0,0,0,.4); --shadow-lg: 0 10px 40px rgba(0,0,0,.6);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body { background: var(--page); color: var(--ink); font: 14px/1.6 var(--font); -webkit-font-smoothing: antialiased; }
+button, input, select, textarea { font: inherit; color: inherit; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1, h2, h3, h4 { margin: 0; line-height: 1.3; }
+.muted { color: var(--muted); } .ink2 { color: var(--ink-2); } .small { font-size: 12.5px; }
+.num { font-variant-numeric: tabular-nums; }
+.hidden { display: none !important; }
+.row { display: flex; align-items: center; gap: 8px; } .row.wrap { flex-wrap: wrap; } .row.top { align-items: flex-start; }
+.stack { display: flex; flex-direction: column; gap: 12px; }
+.sp { flex: 1; }
+.mt8 { margin-top: 8px; } .mt12 { margin-top: 12px; } .mt16 { margin-top: 16px; } .mb8 { margin-bottom: 8px; } .mb12 { margin-bottom: 12px; }
+svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+svg.i.sm { width: 15px; height: 15px; }
+
+/* 版面 */
+.app { display: grid; grid-template-columns: 240px minmax(0, 1fr); min-height: 100vh; }
+.side { position: sticky; top: 0; height: 100vh; background: var(--side); color: var(--side-ink); display: flex; flex-direction: column; z-index: 30; }
+.side-head { padding: 18px 16px 12px; border-bottom: 1px solid rgba(255,255,255,.07); }
+.brand { display: flex; gap: 10px; align-items: center; }
+.brand-mark { width: 34px; height: 34px; border-radius: 9px; flex: none; display: grid; place-items: center; background: linear-gradient(135deg, #1fb487, #0f7a5c); color: #fff; }
+.brand-mark svg.i { width: 20px; height: 20px; }
+.brand-text b { display: block; font-size: 15px; letter-spacing: .5px; }
+.brand-text span { display: block; font-size: 11.5px; color: var(--side-muted); }
+.term-select { margin-top: 12px; width: 100%; background: var(--side-2); color: var(--side-ink); border: 1px solid rgba(255,255,255,.09); border-radius: 8px; padding: 7px 10px; font-size: 13px; }
+.nav { flex: 1; overflow-y: auto; padding: 10px 10px 16px; }
+.nav-label { font-size: 11px; color: var(--side-muted); letter-spacing: 1px; padding: 14px 10px 6px; }
+.nav a { display: flex; align-items: center; gap: 11px; padding: 9px 10px; border-radius: 8px; color: var(--side-ink); font-size: 14px; position: relative; }
+.nav a:hover { background: rgba(255,255,255,.06); text-decoration: none; }
+.nav a.active { background: rgba(60,196,151,.16); color: #fff; }
+.nav a.active::before { content: ""; position: absolute; left: -10px; top: 8px; bottom: 8px; width: 3px; border-radius: 2px; background: #3cc497; }
+.nav a .badge { margin-left: auto; background: #e0612a; color: #fff; border-radius: 999px; font-size: 11px; padding: 0 7px; line-height: 18px; font-weight: 700; }
+.nav a .badge.soft { background: rgba(255,255,255,.14); color: var(--side-ink); }
+.side-foot { padding: 10px 12px 14px; border-top: 1px solid rgba(255,255,255,.07); display: flex; flex-direction: column; gap: 6px; }
+.who { display: flex; align-items: center; gap: 10px; padding: 6px 8px; }
+.avatar { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: #34465a; font-weight: 700; font-size: 13px; flex: none; }
+.who-text { min-width: 0; line-height: 1.3; flex: 1; }
+.who-text b { display: block; font-size: 13px; }
+.who-text span { font-size: 11.5px; color: var(--side-muted); }
+.sync { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--side-muted); padding: 2px 8px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mark-good); flex: none; }
+.dot.busy { background: #5b93ea; animation: pulse 1.2s infinite; } .dot.err { background: var(--mark-critical); }
+@keyframes pulse { 50% { opacity: .35; } }
+.icon-btn { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 8px; border: 0; background: transparent; color: inherit; cursor: pointer; }
+.icon-btn:hover { background: rgba(127,127,127,.16); }
+.side .icon-btn { color: var(--side-muted); }
+.main { min-width: 0; display: flex; flex-direction: column; }
+.topbar { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--page) 90%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line-2); padding: 12px 28px; display: flex; align-items: center; gap: 12px; min-height: 62px; }
+.topbar .burger { display: none; }
+.page-title { min-width: 0; }
+.page-title h1 { font-size: 19px; font-weight: 700; }
+.page-title .sub { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+.top-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.content { padding: 20px 28px 96px; max-width: 1280px; width: 100%; }
+.demo-banner { background: var(--warn-soft); color: var(--ink); font-size: 12.5px; padding: 7px 28px; border-bottom: 1px solid var(--line-2); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+/* 元件 */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+.card-head { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; padding: 14px 18px 0; }
+.card-head h3 { font-size: 15px; font-weight: 700; }
+.card-head .sub { font-size: 12px; color: var(--muted); }
+.card-body { padding: 12px 18px 16px; }
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } .g4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.span2 { grid-column: span 2; }
+.section-title { font-size: 13px; font-weight: 700; color: var(--ink-2); margin: 24px 0 10px; display: flex; align-items: center; gap: 8px; }
+.section-title .n { width: 22px; height: 22px; border-radius: 50%; background: var(--brand-soft); color: var(--brand); display: grid; place-items: center; font-size: 12px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 34px; padding: 0 13px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; font-size: 13.5px; white-space: nowrap; }
+.btn:hover { background: var(--surface-3); text-decoration: none; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.btn.primary:hover { filter: brightness(1.06); }
+.btn.ghost { background: transparent; border-color: transparent; color: var(--ink-2); }
+.btn.ghost:hover { background: var(--surface-3); }
+.btn.danger { color: var(--critical); border-color: color-mix(in srgb, var(--critical) 35%, var(--line)); }
+.btn.sm { height: 28px; padding: 0 10px; font-size: 12.5px; border-radius: 7px; }
+.btn.lg { height: 42px; font-size: 15px; }
+.input, .select, .textarea { height: 34px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); padding: 0 10px; outline: none; min-width: 0; width: 100%; }
+.textarea { height: auto; min-height: 70px; padding: 8px 10px; resize: vertical; line-height: 1.65; }
+.input:focus, .select:focus, .textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.input.sm, .select.sm { height: 28px; font-size: 12.5px; padding: 0 6px; }
+label.field { display: flex; flex-direction: column; gap: 5px; font-size: 12.5px; color: var(--ink-2); min-width: 0; }
+label.field > span { font-weight: 600; }
+.field .hint { font-size: 11.5px; color: var(--muted); font-weight: 400; }
+.chip { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px; border-radius: 999px; font-size: 12px; font-weight: 600; background: var(--neutral-soft); color: var(--ink-2); white-space: nowrap; }
+.chip.good { background: var(--good-soft); color: var(--good); } .chip.warn { background: var(--warn-soft); color: var(--warn); }
+.chip.serious { background: var(--serious-soft); color: var(--serious); } .chip.accent { background: var(--accent-soft); color: var(--accent); }
+.chip.brand { background: var(--brand-soft); color: var(--brand); }
+.chip.outline { background: transparent; border: 1px solid var(--line); font-weight: 500; }
+.pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.pill { height: 32px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
+.pill.on { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.seg button { white-space: nowrap; border: 0; background: transparent; padding: 0 12px; height: 32px; cursor: pointer; font-size: 13px; color: var(--ink-2); border-left: 1px solid var(--line-2); }
+.seg button:first-child { border-left: 0; }
+.seg button.on { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.stat { padding: 14px 16px; }
+.stat .label { font-size: 12.5px; color: var(--ink-2); }
+.stat .value { font-size: 24px; font-weight: 700; margin-top: 2px; line-height: 1.25; }
+.stat .value small { font-size: 13px; color: var(--muted); font-weight: 500; margin-left: 4px; }
+.stat .foot { font-size: 12px; color: var(--muted); margin-top: 2px; }
+table.tbl { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13.5px; }
+.tbl th { text-align: left; font-weight: 600; color: var(--ink-2); font-size: 12.5px; background: var(--surface-2); border-bottom: 1px solid var(--line); padding: 9px 10px; white-space: nowrap; }
+.tbl td { padding: 9px 10px; border-bottom: 1px solid var(--line-2); vertical-align: middle; }
+.tbl tr:last-child td { border-bottom: 0; }
+.tbl tr.click { cursor: pointer; } .tbl tr.click:hover td { background: var(--surface-2); }
+.tbl .num { text-align: right; } .tbl .c { text-align: center; }
+.tbl-wrap { overflow: auto; max-width: 100%; }
+.empty { text-align: center; padding: 34px 16px; color: var(--muted); }
+.callout { border-radius: 8px; padding: 10px 12px; background: var(--surface-2); border: 1px solid var(--line-2); font-size: 13px; line-height: 1.7; }
+.callout.warn { background: var(--warn-soft); border-color: transparent; }
+.callout.accent { background: var(--accent-soft); border-color: transparent; }
+.callout.good { background: var(--good-soft); border-color: transparent; }
+.divider { height: 1px; background: var(--line-2); margin: 12px 0; }
+.scrim { position: fixed; inset: 0; background: rgba(15,18,22,.38); z-index: 60; }
+.modal { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(520px, calc(100vw - 32px)); max-height: calc(100vh - 48px); overflow: auto; background: var(--surface); border-radius: 14px; z-index: 62; box-shadow: var(--shadow-lg); }
+.modal.wide { width: min(760px, calc(100vw - 32px)); }
+.modal-body { padding: 20px 22px; }
+.modal-body h3 { font-size: 17px; margin-bottom: 10px; }
+.modal-foot { padding: 0 22px 18px; display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+.toasts { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 80; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; }
+.toast { background: var(--ink); color: var(--surface); padding: 10px 16px; border-radius: 10px; font-size: 13.5px; box-shadow: var(--shadow-lg); max-width: min(560px, calc(100vw - 32px)); animation: toast-in .18s ease; }
+.toast.err { background: var(--critical); color: #fff; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px); } }
+
+/* 登入 */
+.boot { min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; }
+.boot-card { width: min(420px, 100%); }
+.boot-icon { width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center; background: linear-gradient(135deg, #1fb487, #0f7a5c); color: #fff; }
+.boot-icon svg.i { width: 26px; height: 26px; }
+.role-pick { display: grid; gap: 10px; }
+.role-pick button { text-align: left; border: 1px solid var(--line); background: var(--surface-2); border-radius: 12px; padding: 14px 16px; cursor: pointer; display: flex; gap: 12px; align-items: center; }
+.role-pick button:hover { border-color: var(--accent); background: var(--accent-soft); }
+.role-pick b { display: block; font-size: 15px; }
+
+/* 課堂卡片 */
+.jcard { display: block; color: inherit; background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--line); border-radius: var(--radius); margin-bottom: 10px; box-shadow: var(--shadow); padding: 12px 16px; }
+.jcard:hover { text-decoration: none; border-color: var(--accent-line); }
+.jcard.done { border-left-color: var(--mark-good); }
+.jcard.todo { border-left-color: var(--mark-serious); }
+.jcard.prepared { border-left-color: var(--s1); }
+.jcard.off { border-left-color: var(--line); background: var(--surface-2); box-shadow: none; border-style: dashed; border-left-style: solid; }
+.jcard h4 { font-size: 15.5px; font-weight: 700; }
+.jcard h4 small { font-size: 12.5px; font-weight: 500; color: var(--ink-2); margin-left: 6px; }
+.jmeta { font-size: 12.5px; color: var(--ink-2); margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; }
+.jexcerpt { font-size: 13px; color: var(--ink-2); margin-top: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-line; }
+
+/* 課堂編輯 */
+.kchips { display: flex; flex-wrap: wrap; gap: 6px; }
+.kchip { height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface-2); cursor: pointer; font-size: 13.5px; display: inline-flex; align-items: center; gap: 4px; }
+.kchip.on { background: var(--brand); border-color: var(--brand); color: #fff; font-weight: 600; }
+.kchip.taken { opacity: .45; }
+.kchip.dashed { border-style: dashed; background: transparent; color: var(--ink-2); }
+.gcard { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--surface-2); }
+.gcard + .gcard { margin-top: 10px; }
+.dimchip { display: inline-flex; align-items: center; gap: 2px; height: 30px; padding: 0 4px 0 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 600; font-size: 13px; }
+.dimchip button { border: 0; background: transparent; color: inherit; cursor: pointer; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; }
+.dimchip button:hover { background: rgba(127,127,127,.18); }
+.radar-tbl td { vertical-align: top; }
+.radar-tbl td.nm { font-weight: 700; white-space: nowrap; padding-top: 14px; }
+.radar-tbl select { width: 64px; }
+.radar-tbl .prev { font-size: 11px; color: var(--muted); margin-top: 2px; white-space: nowrap; }
+.radar-tbl .prev.up { color: var(--good); } .radar-tbl .prev.down { color: var(--serious); }
+.radar-tbl tr.cm td { padding-top: 0; }
+.radar-tbl tr.sep td { border-bottom: 1px solid var(--line); }
+.savebar { position: fixed; bottom: 0; left: 240px; right: 0; background: var(--surface); border-top: 1px solid var(--line); padding: 10px 28px; display: flex; gap: 10px; align-items: center; z-index: 25; box-shadow: 0 -4px 16px rgba(20,24,31,.06); }
+.savebar .state { font-size: 13px; color: var(--muted); }
+.savebar .state.dirty { color: var(--warn); font-weight: 600; }
+.cmt { border: 1px solid var(--line-2); border-radius: 10px; padding: 10px 12px; background: var(--surface-2); }
+.cmt.sw { background: var(--brand-soft); border-color: transparent; }
+.cmt + .cmt { margin-top: 8px; }
+.cmt-b { white-space: pre-wrap; margin-top: 4px; line-height: 1.7; }
+.prewrap { white-space: pre-wrap; line-height: 1.7; }
+
+/* 學生 */
+.story { border-left: 2px solid var(--line); margin-left: 6px; padding-left: 16px; }
+.story-item { position: relative; padding-bottom: 16px; }
+.story-item::before { content: ""; position: absolute; left: -22px; top: 6px; width: 10px; height: 10px; border-radius: 50%; background: var(--brand); border: 2px solid var(--surface); }
+.story-item .when { font-size: 12.5px; color: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+svg.chart text { fill: var(--muted); font-size: 11px; font-family: var(--font); }
+svg.chart .lbl { fill: var(--ink-2); font-size: 12px; font-weight: 600; }
+.trend-up { color: var(--good); font-weight: 700; } .trend-down { color: var(--serious); font-weight: 700; }
+
+@media (max-width: 900px) {
+  .app { grid-template-columns: 1fr; }
+  .side { position: fixed; left: 0; top: 0; bottom: 0; width: 260px; transform: translateX(-100%); transition: transform .2s ease; }
+  .app.nav-open .side { transform: none; box-shadow: var(--shadow-lg); }
+  .topbar { padding: 10px 16px; }
+  .topbar .burger { display: inline-grid; }
+  .content { padding: 16px 16px 110px; }
+  .demo-banner { padding: 7px 16px; }
+  .g2, .g3, .g4 { grid-template-columns: 1fr; }
+  .span2 { grid-column: auto; }
+  .savebar { left: 0; padding: 10px 16px; }
+  .page-title h1 { font-size: 17px; }
+}
+@media (max-width: 900px) and (min-width: 560px) { .g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .g4 .span2 { grid-column: span 2; } }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div class="toasts" id="toasts"></div>
+<script src="config.js"></script>
+<script>window.DemoServer = (function () {
+var DEMO_MODE = true;
+/* 模擬 Google Apps Script 環境（試用模式與自動測試用）。正式上線時不會用到。 */
+var __DB = { sheets: {}, props: {} };
+var __mail = [];
+var __cache = {};
+
+function __Sheet(name) { this.name = name; }
+__Sheet.prototype._g = function () { return __DB.sheets[this.name]; };
+__Sheet.prototype.getDataRange = function () {
+  var g = this._g();
+  return { getValues: function () { return g.length ? g.map(function (r) { return r.slice(); }) : [['']]; } };
+};
+__Sheet.prototype.clearContents = function () { __DB.sheets[this.name] = []; return this; };
+__Sheet.prototype.setFrozenRows = function () { return this; };
+__Sheet.prototype.getLastRow = function () { return this._g().length; };
+__Sheet.prototype.getRange = function (r, c, nr, nc) {
+  var self = this;
+  nr = nr || 1; nc = nc || 1;
+  return {
+    setNumberFormat: function () { return this; },
+    setValues: function (vals) {
+      var g = self._g();
+      for (var i = 0; i < nr; i++) {
+        var row = g[r - 1 + i] || (g[r - 1 + i] = []);
+        for (var j = 0; j < nc; j++) {
+          var v = vals[i][j];
+          if (typeof v === 'string' && v.charAt(0) === "'") v = v.slice(1);
+          row[c - 1 + j] = v == null ? '' : v;
+        }
+      }
+      var w = 0;
+      g.forEach(function (x) { if (x) w = Math.max(w, x.length); });
+      for (var k = 0; k < g.length; k++) {
+        if (!g[k]) g[k] = [];
+        for (var q = 0; q < w; q++) if (g[k][q] == null) g[k][q] = '';
+      }
+      return this;
+    },
+    getValues: function () {
+      var g = self._g(), out = [];
+      for (var i = 0; i < nr; i++) { var row = []; for (var j = 0; j < nc; j++) row.push(((g[r - 1 + i] || [])[c - 1 + j]) ?? ''); out.push(row); }
+      return out;
+    }
+  };
+};
+var __SS = {
+  getSheetByName: function (n) { return __DB.sheets[n] ? new __Sheet(n) : null; },
+  insertSheet: function (n) { __DB.sheets[n] = []; return new __Sheet(n); }
+};
+var SpreadsheetApp = { getActiveSpreadsheet: function () { return __SS; }, openById: function () { return __SS; } };
+var CacheService = {
+  getScriptCache: function () {
+    return {
+      get: function (k) { var o = __cache[k]; if (!o) return null; if (o.exp < Date.now()) { delete __cache[k]; return null; } return o.v; },
+      put: function (k, v, ttl) { __cache[k] = { v: String(v), exp: Date.now() + (ttl || 600) * 1000 }; },
+      remove: function (k) { delete __cache[k]; }
+    };
+  }
+};
+var PropertiesService = {
+  getScriptProperties: function () {
+    return {
+      getProperty: function (k) { return Object.prototype.hasOwnProperty.call(__DB.props, k) ? __DB.props[k] : null; },
+      setProperty: function (k, v) { __DB.props[k] = String(v); return this; },
+      deleteProperty: function (k) { delete __DB.props[k]; return this; },
+      getProperties: function () { return Object.assign({}, __DB.props); }
+    };
+  }
+};
+var LockService = { getScriptLock: function () { return { waitLock: function () {}, releaseLock: function () {} }; } };
+var Utilities = {
+  getUuid: function () {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) { var r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); });
+  }
+};
+var MailApp = { sendEmail: function (o) { __mail.push(o); } };
+var Session = { getEffectiveUser: function () { return { getEmail: function () { return __DB.owner || ''; } }; } };
+var ContentService = {
+  MimeType: { JSON: 'json' },
+  createTextOutput: function (s) { return { setMimeType: function () { return this; }, getContent: function () { return s; } }; }
+};
+
+/**
+ * 永齡機器人課務系統 — 雲端主機（Google Apps Script）
+ *
+ * 用法（詳見「部署說明.md」）：
+ *   1. 開一份新的 Google 試算表 → 擴充功能 → Apps Script，把這整份貼進 Code.gs
+ *   2. 在編輯器上方選 setup → 執行（第一次會要求授權），會建立所有工作表，並把你設成督導
+ *   3. 部署 → 新增部署作業 → 類型「網頁應用程式」：執行身分「我」、存取權「所有人」
+ *   4. 把部署網址（結尾 /exec）填進網頁旁邊的 config.js
+ *
+ * 資料都存在這份試算表裡，社工／督導也可以直接打開試算表查看。
+ * 「雷達分數」工作表是系統自動產生的長表（一位學生一個維度一列），方便做樞紐分析；請不要手動修改它。
+ */
+
+var APP = { name: '永齡機器人課務系統', version: '1.0.0' };
+var SHEET_ID = ''; // 留空：使用綁定的試算表；若是獨立專案，填入試算表 ID
+
+var ROLES = ['老師', '社工', '督導'];
+var TOKEN_DAYS = 30;
+var SHARED_HOURS = 12;
+
+/* ───────── 資料表定義：[程式欄位, 試算表標題] ───────── */
+var TABLES = {
+  people: { sheet: '人員', cols: [['email', 'Email'], ['name', '姓名'], ['role', '角色（老師／社工／督導）'], ['sites', '據點（逗號分隔，空白＝全部）'], ['active', '啟用'], ['note', '備註']] },
+  sites: { sheet: '據點', cols: [['id', 'id'], ['name', '名稱'], ['day', '上課日'], ['order', '排序'], ['active', '啟用']] },
+  students: { sheet: '學生', cols: [['id', 'id'], ['name', '姓名'], ['siteId', '據點id'], ['grade', '年級'], ['status', '狀態'], ['note', '備註'], ['createdAt', '建立時間']] },
+  lessons: {
+    sheet: '課堂紀錄',
+    cols: [['id', 'id'], ['siteId', '據點id'], ['term', '學期'], ['seq', '序號'], ['date', '日期'], ['status', '狀態'], ['topic', '課程主題'],
+      ['goals', '教學原理／目標設定'], ['timeline', '課程時間'], ['execution', '課堂執行紀錄'], ['indicators', '評量指標'],
+      ['groups', '分組（系統用）'], ['groupNote', '能力分類／分組說明'], ['qualitative', '質性觀察'], ['radar', '雷達分析（系統用）'],
+      ['radarNote', '雷達備註'], ['management', '班級經營'], ['slides', '簡報連結'], ['attendance', '出席（系統用）'],
+      ['updatedAt', '更新時間'], ['updatedBy', '更新者']],
+    json: { groups: [], radar: { dims: [], rows: [] }, attendance: [] }
+  },
+  scores: { sheet: '雷達分數', cols: [['lessonId', '課堂id'], ['site', '據點'], ['term', '學期'], ['seq', '序號'], ['date', '日期'], ['studentId', '學生id'], ['student', '學生'], ['dim', '維度'], ['score', '分數'], ['comment', '評語']] },
+  comments: { sheet: '回饋留言', cols: [['id', 'id'], ['lessonId', '課堂id'], ['email', 'Email'], ['name', '姓名'], ['role', '角色'], ['text', '內容'], ['at', '時間']] },
+  settings: { sheet: '設定', cols: [['key', 'key'], ['value', 'value'], ['note', '說明']] }
+};
+
+var DEFAULT_SETTINGS = {
+  terms: { value: '', note: '學期清單，逗號分隔，例如 114-2,115-1' },
+  currentTerm: { value: '', note: '目前學期' },
+  defaultDims: { value: '合作,理解,組裝,口語表達,解決問題', note: '新課堂的預設雷達維度' },
+  scoreMax: { value: '5', note: '雷達分數滿分' }
+};
+
+/* ───────── 進入點 ───────── */
+function doGet() {
+  return json_({ ok: true, app: APP.name, version: APP.version });
+}
+
+function doPost(e) {
+  var req = {};
+  try { req = JSON.parse((e && e.postData && e.postData.contents) || '{}'); } catch (x) { return json_({ ok: false, error: '請求格式錯誤', code: 'bad' }); }
+  return json_(handle(req));
+}
+
+function json_(o) {
+  return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function handle(req) {
+  try {
+    var fn = ROUTES[req.action];
+    if (!fn) throw err_('不認得的動作：' + req.action, 'bad');
+    var open = { ping: 1, 'login.request': 1, 'login.verify': 1, 'demo.login': 1 };
+    if (open[req.action]) return fn(req);
+    var me = auth_(req.token);
+    var write = !/^(load|logout)$/.test(req.action);
+    if (!write) return fn(req, me);
+    var lock = LockService.getScriptLock();
+    lock.waitLock(20000);
+    try { return fn(req, me); } finally { lock.releaseLock(); }
+  } catch (x) {
+    var out = { ok: false, error: (x && x.message) || String(x), code: (x && x.code) || 'error' };
+    if (x && x.current) out.current = x.current;
+    return out;
+  }
+}
+
+var ROUTES = {
+  ping: function () { return { ok: true, app: APP.name, version: APP.version }; },
+  'login.request': loginRequest_,
+  'login.verify': loginVerify_,
+  'demo.login': demoLogin_,
+  logout: function (req) { props_().deleteProperty('tok_' + req.token); return { ok: true }; },
+  load: function (req, me) { return load_(me); },
+  'lesson.save': lessonSave_,
+  'lesson.createMany': lessonCreateMany_,
+  'lesson.delete': lessonDelete_,
+  'comment.add': commentAdd_,
+  'comment.delete': commentDelete_,
+  'student.save': studentSave_,
+  'student.delete': studentDelete_,
+  'student.merge': studentMerge_,
+  'site.save': siteSave_,
+  'site.delete': siteDelete_,
+  'person.save': personSave_,
+  'person.delete': personDelete_,
+  'settings.save': settingsSave_,
+  'import': import_
+};
+
+/* ───────── 初始化（在編輯器手動執行一次） ───────── */
+function setup() {
+  Object.keys(TABLES).forEach(function (k) { sheet_(k); });
+  var people = read_('people');
+  var email = '';
+  try { email = Session.getEffectiveUser().getEmail(); } catch (x) {}
+  if (!people.length && email) {
+    people.push({ email: email.toLowerCase(), name: '督導', role: '督導', sites: '', active: 'TRUE', note: '執行 setup 的人（請改成真實姓名）' });
+    write_('people', people);
+  }
+  var st = read_('settings');
+  var have = {};
+  st.forEach(function (r) { have[r.key] = 1; });
+  Object.keys(DEFAULT_SETTINGS).forEach(function (k) {
+    if (!have[k]) {
+      var v = DEFAULT_SETTINGS[k].value;
+      if (k === 'currentTerm' || k === 'terms') v = termOf_(today_());
+      st.push({ key: k, value: v, note: DEFAULT_SETTINGS[k].note });
+    }
+  });
+  write_('settings', st);
+  return '完成：已建立工作表' + (email ? '，督導帳號：' + email : '');
+}
+
+/* ───────── 登入：Email 驗證碼 ───────── */
+function loginRequest_(req) {
+  var email = String(req.email || '').trim().toLowerCase();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw err_('Email 格式不對');
+  var people = read_('people');
+  if (!people.length) throw err_('系統還沒初始化：請督導在 Apps Script 執行 setup');
+  var p = findPerson_(email, people);
+  if (!p) throw err_('這個 Email 不在人員名單上，請社工或督導幫你加入');
+  if (!p.active) throw err_('這個帳號已停用，請聯絡社工或督導');
+  var cache = CacheService.getScriptCache();
+  if (cache.get('otpwait_' + email)) throw err_('剛剛已經寄過了，請等一分鐘再重新寄送');
+  var code = String(Math.floor(100000 + Math.random() * 900000));
+  cache.put('otp_' + email, JSON.stringify({ code: code, tries: 0 }), 600);
+  cache.put('otpwait_' + email, '1', 55);
+  MailApp.sendEmail({
+    to: email,
+    subject: '【' + APP.name + '】登入驗證碼 ' + code,
+    name: APP.name,
+    htmlBody: '<div style="font-family:sans-serif;line-height:1.8">' + esc_(p.name) + ' 你好：<br>你的登入驗證碼是<br>' +
+      '<div style="font-size:28px;font-weight:700;letter-spacing:6px;margin:8px 0">' + code + '</div>' +
+      '10 分鐘內有效。如果不是你本人要登入，請忽略這封信。</div>'
+  });
+  return { ok: true };
+}
+
+function loginVerify_(req) {
+  var email = String(req.email || '').trim().toLowerCase();
+  var cache = CacheService.getScriptCache();
+  var raw = cache.get('otp_' + email);
+  if (!raw) throw err_('驗證碼已過期，請重新寄送');
+  var o = JSON.parse(raw);
+  if (o.tries >= 5) { cache.remove('otp_' + email); throw err_('錯誤太多次，請重新寄送驗證碼'); }
+  if (String(req.code || '').trim() !== o.code) {
+    o.tries++;
+    cache.put('otp_' + email, JSON.stringify(o), 600);
+    throw err_('驗證碼不對，還可以再試 ' + (5 - o.tries) + ' 次');
+  }
+  cache.remove('otp_' + email);
+  var p = findPerson_(email);
+  if (!p || !p.active) throw err_('這個帳號已停用');
+  return { ok: true, token: newToken_(email, !!req.shared), me: pub_(p) };
+}
+
+function demoLogin_(req) {
+  if (typeof DEMO_MODE === 'undefined' || !DEMO_MODE) throw err_('不認得的動作', 'bad');
+  var people = read_('people');
+  var p = people.filter(function (x) { return x.role === req.role; })[0];
+  if (!p) throw err_('試用資料裡沒有這個角色');
+  var me = findPerson_(p.email);
+  return { ok: true, token: newToken_(me.email, true), me: pub_(me) };
+}
+
+function newToken_(email, shared) {
+  var tok = (Utilities.getUuid() + Utilities.getUuid()).replace(/-/g, '');
+  var ms = shared ? SHARED_HOURS * 3600e3 : TOKEN_DAYS * 86400e3;
+  var pr = props_();
+  pr.setProperty('tok_' + tok, JSON.stringify({ email: email, exp: Date.now() + ms }));
+  // 順手清掉過期的
+  var all = pr.getProperties();
+  Object.keys(all).forEach(function (k) {
+    if (k.indexOf('tok_') !== 0) return;
+    try { if (JSON.parse(all[k]).exp < Date.now()) pr.deleteProperty(k); } catch (x) { pr.deleteProperty(k); }
+  });
+  return tok;
+}
+
+function auth_(token) {
+  if (!token) throw err_('請先登入', 'auth');
+  var raw = props_().getProperty('tok_' + token);
+  if (!raw) throw err_('登入已過期，請重新登入', 'auth');
+  var s = JSON.parse(raw);
+  if (s.exp < Date.now()) { props_().deleteProperty('tok_' + token); throw err_('登入已過期，請重新登入', 'auth'); }
+  var p = findPerson_(s.email);
+  if (!p || !p.active) throw err_('這個帳號已停用', 'auth');
+  return p;
+}
+
+function findPerson_(email, people) {
+  email = String(email || '').toLowerCase();
+  var row = (people || read_('people')).filter(function (r) { return String(r.email).toLowerCase() === email; })[0];
+  if (!row) return null;
+  var role = ROLES.indexOf(row.role) >= 0 ? row.role : '老師';
+  var siteList = String(row.sites || '').split(/[,，、\s]+/).filter(String);
+  var sites = null;
+  if (siteList.length) {
+    var all = read_('sites');
+    sites = [];
+    siteList.forEach(function (s) {
+      all.forEach(function (x) { if (x.id === s || x.name === s) sites.push(x.id); });
+    });
+  }
+  return {
+    email: email, name: row.name || email, role: role, admin: role !== '老師',
+    sites: sites, active: !/^(false|否|0|停用|no)$/i.test(String(row.active || 'TRUE'))
+  };
+}
+
+function pub_(p) { return { email: p.email, name: p.name, role: p.role, admin: p.admin, sites: p.sites }; }
+
+function canSite_(me, siteId) { return me.admin || !me.sites || me.sites.indexOf(siteId) >= 0; }
+
+function needAdmin_(me, what) { if (!me.admin) throw err_((what || '這個動作') + '只有社工／督導可以做', 'perm'); }
+
+/* ───────── 讀取全部 ───────── */
+function load_(me) {
+  var sites = read_('sites'), students = read_('students'), lessons = read_('lessons'), comments = read_('comments');
+  if (!me.admin && me.sites) {
+    sites = sites.filter(function (s) { return canSite_(me, s.id); });
+    students = students.filter(function (s) { return canSite_(me, s.siteId); });
+    lessons = lessons.filter(function (l) { return canSite_(me, l.siteId); });
+    var ids = {};
+    lessons.forEach(function (l) { ids[l.id] = 1; });
+    comments = comments.filter(function (c) { return ids[c.lessonId]; });
+  }
+  var out = {
+    ok: true, me: pub_(me), sites: sites, students: students, lessons: lessons, comments: comments,
+    settings: settingsObj_(), server: { version: APP.version, now: new Date().toISOString() }
+  };
+  if (me.admin) out.people = read_('people');
+  return out;
+}
+
+/* ───────── 課堂紀錄 ───────── */
+var LESSON_TEXT = ['term', 'seq', 'date', 'status', 'topic', 'goals', 'timeline', 'execution', 'indicators', 'groupNote', 'qualitative', 'radarNote', 'management', 'slides'];
+
+function cleanLesson_(l) {
+  var o = {};
+  LESSON_TEXT.forEach(function (k) { o[k] = l[k] == null ? '' : String(l[k]); });
+  o.date = normDate_(o.date);
+  if (o.slides && !/^https?:\/\//i.test(o.slides)) o.slides = '';
+  o.siteId = String(l.siteId || '');
+  o.groups = Array.isArray(l.groups) ? l.groups.map(function (g) {
+    return { name: String(g.name || ''), members: (g.members || []).map(String), note: String(g.note || '') };
+  }) : [];
+  var r = l.radar || {};
+  o.radar = {
+    dims: (r.dims || []).map(function (d) { return String(d).trim(); }).filter(String),
+    rows: (r.rows || []).map(function (x) {
+      var sc = {};
+      Object.keys(x.scores || {}).forEach(function (d) {
+        var v = x.scores[d];
+        if (v !== '' && v != null && !isNaN(Number(v))) sc[d] = Number(v);
+      });
+      return { sid: String(x.sid || ''), scores: sc, comment: String(x.comment || '') };
+    }).filter(function (x) { return x.sid; })
+  };
+  o.attendance = Array.isArray(l.attendance) ? l.attendance.map(String) : [];
+  return o;
+}
+
+function lessonSave_(req, me) {
+  var l = req.lesson || {};
+  var sites = read_('sites');
+  if (!sites.some(function (s) { return s.id === l.siteId; })) throw err_('找不到這個據點');
+  if (!canSite_(me, l.siteId)) throw err_('你沒有這個據點的權限', 'perm');
+  var lessons = read_('lessons');
+  var idx = -1;
+  if (l.id) lessons.forEach(function (x, i) { if (x.id === l.id) idx = i; });
+  if (idx >= 0) {
+    var cur = lessons[idx];
+    if (!canSite_(me, cur.siteId)) throw err_('你沒有這個據點的權限', 'perm');
+    if (req.expect != null && String(req.expect) !== String(cur.updatedAt || '')) {
+      var e = err_('這堂課剛剛被 ' + (cur.updatedBy || '別人') + ' 更新過，請先看一下最新內容', 'conflict');
+      e.current = cur;
+      throw e;
+    }
+  }
+  var o = cleanLesson_(l);
+  o.id = idx >= 0 ? lessons[idx].id : (l.id || uid_('L'));
+  var now = new Date();
+  if (idx >= 0 && String(lessons[idx].updatedAt || '') >= now.toISOString()) now = new Date(Date.parse(lessons[idx].updatedAt) + 1);
+  o.updatedAt = now.toISOString(); // 保證每次存檔的時間都不一樣，衝突偵測才不會漏
+  o.updatedBy = me.name;
+  if (idx >= 0) lessons[idx] = o; else lessons.push(o);
+  write_('lessons', lessons);
+  rebuildScores_(lessons);
+  return { ok: true, lesson: o };
+}
+
+/** 一次排好多堂（只建新的空白課堂） */
+function lessonCreateMany_(req, me) {
+  var list = req.lessons || [];
+  if (!list.length || list.length > 40) throw err_('一次最多排 40 堂');
+  var siteIds = {};
+  read_('sites').forEach(function (s) { siteIds[s.id] = 1; });
+  var lessons = read_('lessons');
+  var now = new Date().toISOString();
+  var made = list.map(function (l) {
+    if (!siteIds[l.siteId]) throw err_('找不到這個據點');
+    if (!canSite_(me, l.siteId)) throw err_('你沒有這個據點的權限', 'perm');
+    var o = cleanLesson_(l);
+    o.id = uid_('L');
+    o.updatedAt = now;
+    o.updatedBy = me.name;
+    return o;
+  });
+  write_('lessons', lessons.concat(made));
+  return { ok: true, lessons: made };
+}
+
+function lessonDelete_(req, me) {
+  var lessons = read_('lessons');
+  var l = lessons.filter(function (x) { return x.id === req.id; })[0];
+  if (!l) throw err_('找不到這堂課');
+  if (!canSite_(me, l.siteId)) throw err_('你沒有這個據點的權限', 'perm');
+  lessons = lessons.filter(function (x) { return x.id !== req.id; });
+  write_('lessons', lessons);
+  write_('comments', read_('comments').filter(function (c) { return c.lessonId !== req.id; }));
+  rebuildScores_(lessons);
+  return { ok: true };
+}
+
+function rebuildScores_(lessons) {
+  var sites = {}, stu = {};
+  read_('sites').forEach(function (s) { sites[s.id] = s.name; });
+  read_('students').forEach(function (s) { stu[s.id] = s.name; });
+  var rows = [];
+  (lessons || read_('lessons')).forEach(function (l) {
+    var r = l.radar || {};
+    (r.rows || []).forEach(function (x) {
+      var dims = (r.dims || []).filter(function (d) { return x.scores && x.scores[d] != null; });
+      if (!dims.length && x.comment) dims = [''];
+      dims.forEach(function (d, i) {
+        rows.push({
+          lessonId: l.id, site: sites[l.siteId] || l.siteId, term: l.term, seq: l.seq, date: l.date,
+          studentId: x.sid, student: stu[x.sid] || x.sid, dim: d, score: d ? x.scores[d] : '', comment: i === 0 ? x.comment : ''
+        });
+      });
+    });
+  });
+  write_('scores', rows);
+}
+
+/* ───────── 回饋留言 ───────── */
+function commentAdd_(req, me) {
+  var text = String(req.text || '').trim();
+  if (!text) throw err_('留言是空的');
+  if (text.length > 5000) throw err_('留言太長了（最多 5000 字）');
+  var l = read_('lessons').filter(function (x) { return x.id === req.lessonId; })[0];
+  if (!l) throw err_('找不到這堂課');
+  if (!canSite_(me, l.siteId)) throw err_('你沒有這個據點的權限', 'perm');
+  var c = { id: uid_('C'), lessonId: l.id, email: me.email, name: me.name, role: me.role, text: text, at: new Date().toISOString() };
+  var all = read_('comments');
+  all.push(c);
+  write_('comments', all);
+  var mailed = 0;
+  if (req.notify) mailed = notify_(me, l, text);
+  return { ok: true, comment: c, mailed: mailed };
+}
+
+function notify_(me, l, text) {
+  var site = read_('sites').filter(function (s) { return s.id === l.siteId; })[0];
+  var people = read_('people');
+  var to = [];
+  people.forEach(function (r) {
+    var p = findPerson_(r.email, people);
+    if (!p || !p.active || p.email === me.email) return;
+    var want = me.admin ? !p.admin : p.admin; // 社工留言通知老師；老師留言通知社工／督導
+    if (want && canSite_(p, l.siteId)) to.push(p.email);
+  });
+  if (!to.length) return 0;
+  var title = (site ? site.name : '') + ' ' + (l.term || '') + ' 第' + (l.seq || '') + '次' + (l.topic ? '「' + l.topic + '」' : '');
+  MailApp.sendEmail({
+    to: to.join(','), name: APP.name,
+    subject: '【' + APP.name + '】' + me.name + '在 ' + title + ' 留言',
+    htmlBody: '<div style="font-family:sans-serif;line-height:1.8"><b>' + esc_(me.name) + '（' + esc_(me.role) + '）</b>在 ' + esc_(title) + ' 留言：' +
+      '<blockquote style="border-left:3px solid #ccc;margin:8px 0;padding:4px 12px;white-space:pre-wrap">' + esc_(text) + '</blockquote>' +
+      '請登入機器人課務系統查看與回覆。</div>'
+  });
+  return to.length;
+}
+
+function commentDelete_(req, me) {
+  var all = read_('comments');
+  var c = all.filter(function (x) { return x.id === req.id; })[0];
+  if (!c) throw err_('找不到這則留言');
+  if (c.email !== me.email && !me.admin) throw err_('只能刪除自己的留言', 'perm');
+  write_('comments', all.filter(function (x) { return x.id !== req.id; }));
+  return { ok: true };
+}
+
+/* ───────── 學生名冊 ───────── */
+function studentSave_(req, me) {
+  var s = req.student || {};
+  var name = String(s.name || '').trim();
+  if (!name) throw err_('請填學生姓名');
+  if (!canSite_(me, s.siteId)) throw err_('你沒有這個據點的權限', 'perm');
+  if (!read_('sites').some(function (x) { return x.id === s.siteId; })) throw err_('找不到這個據點');
+  var all = read_('students');
+  var idx = -1;
+  if (s.id) all.forEach(function (x, i) { if (x.id === s.id) idx = i; });
+  if (idx >= 0 && !me.admin && !canSite_(me, all[idx].siteId)) throw err_('你沒有這個據點的權限', 'perm');
+  var dup = all.filter(function (x) { return x.name === name && x.siteId === s.siteId && x.id !== s.id; })[0];
+  if (dup) throw err_('這個據點已經有一位「' + name + '」了');
+  var o = {
+    id: idx >= 0 ? all[idx].id : uid_('K'), name: name, siteId: s.siteId, grade: String(s.grade || ''),
+    status: s.status === '結案' ? '結案' : '在學', note: String(s.note || ''),
+    createdAt: idx >= 0 ? all[idx].createdAt : new Date().toISOString()
+  };
+  if (idx >= 0) all[idx] = o; else all.push(o);
+  write_('students', all);
+  if (idx >= 0) rebuildScores_();
+  return { ok: true, student: o };
+}
+
+function usedIds_(lessons) {
+  var used = {};
+  lessons.forEach(function (l) {
+    (l.attendance || []).forEach(function (id) { used[id] = 1; });
+    (l.groups || []).forEach(function (g) { (g.members || []).forEach(function (id) { used[id] = 1; }); });
+    ((l.radar || {}).rows || []).forEach(function (r) { used[r.sid] = 1; });
+  });
+  return used;
+}
+
+function studentDelete_(req, me) {
+  needAdmin_(me, '刪除學生');
+  if (usedIds_(read_('lessons'))[req.id]) throw err_('這位學生已經有課堂紀錄，不能刪除；可以改成「結案」，或合併到另一位學生');
+  write_('students', read_('students').filter(function (x) { return x.id !== req.id; }));
+  return { ok: true };
+}
+
+function studentMerge_(req, me) {
+  needAdmin_(me, '合併學生');
+  var from = String(req.fromId || ''), to = String(req.toId || '');
+  if (!from || !to || from === to) throw err_('請選兩位不同的學生');
+  var students = read_('students');
+  if (!students.some(function (x) { return x.id === to; }) || !students.some(function (x) { return x.id === from; })) throw err_('找不到學生');
+  var lessons = read_('lessons');
+  lessons.forEach(function (l) { mergeInLesson_(l, from, to); });
+  write_('lessons', lessons);
+  write_('students', students.filter(function (x) { return x.id !== from; }));
+  rebuildScores_(lessons);
+  return { ok: true };
+}
+
+function mergeInLesson_(l, from, to) {
+  var uniq = function (a) { var s = {}; return a.filter(function (x) { if (s[x]) return false; s[x] = 1; return true; }); };
+  l.attendance = uniq((l.attendance || []).map(function (x) { return x === from ? to : x; }));
+  (l.groups || []).forEach(function (g) { g.members = uniq((g.members || []).map(function (x) { return x === from ? to : x; })); });
+  var rows = (l.radar && l.radar.rows) || [];
+  var hasTo = rows.some(function (r) { return r.sid === to; });
+  if (hasTo) {
+    var f = rows.filter(function (r) { return r.sid === from; })[0];
+    var t = rows.filter(function (r) { return r.sid === to; })[0];
+    if (f) {
+      Object.keys(f.scores || {}).forEach(function (d) { if (t.scores[d] == null) t.scores[d] = f.scores[d]; });
+      if (f.comment && t.comment.indexOf(f.comment) < 0) t.comment = (t.comment ? t.comment + '\n' : '') + f.comment;
+    }
+    l.radar.rows = rows.filter(function (r) { return r.sid !== from; });
+  } else rows.forEach(function (r) { if (r.sid === from) r.sid = to; });
+}
+
+/* ───────── 據點、人員、設定 ───────── */
+function siteSave_(req, me) {
+  needAdmin_(me, '據點設定');
+  var s = req.site || {};
+  var name = String(s.name || '').trim();
+  if (!name) throw err_('請填據點名稱');
+  var all = read_('sites');
+  if (all.some(function (x) { return x.name === name && x.id !== s.id; })) throw err_('已經有同名的據點');
+  var idx = -1;
+  if (s.id) all.forEach(function (x, i) { if (x.id === s.id) idx = i; });
+  var o = { id: idx >= 0 ? all[idx].id : uid_('S'), name: name, day: String(s.day || ''), order: String(s.order || all.length + 1), active: s.active === false || s.active === 'FALSE' ? 'FALSE' : 'TRUE' };
+  if (idx >= 0) all[idx] = o; else all.push(o);
+  write_('sites', all);
+  return { ok: true, site: o };
+}
+
+function siteDelete_(req, me) {
+  needAdmin_(me, '刪除據點');
+  if (read_('lessons').some(function (l) { return l.siteId === req.id; }) || read_('students').some(function (s) { return s.siteId === req.id; }))
+    throw err_('這個據點已經有學生或課堂紀錄，不能刪除；可以改成停用');
+  write_('sites', read_('sites').filter(function (x) { return x.id !== req.id; }));
+  return { ok: true };
+}
+
+function personSave_(req, me) {
+  needAdmin_(me, '人員設定');
+  var p = req.person || {};
+  var email = String(p.email || '').trim().toLowerCase();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw err_('Email 格式不對');
+  if (ROLES.indexOf(p.role) < 0) throw err_('角色只能是：' + ROLES.join('、'));
+  var all = read_('people');
+  var orig = String(p.origEmail || email).toLowerCase();
+  var idx = -1;
+  all.forEach(function (x, i) { if (String(x.email).toLowerCase() === orig) idx = i; });
+  if (all.some(function (x, i) { return i !== idx && String(x.email).toLowerCase() === email; })) throw err_('這個 Email 已經在名單上');
+  if (orig === me.email && (p.role === '老師' || p.active === false)) throw err_('不能把自己改成老師或停用（避免沒有人能管理）');
+  var o = { email: email, name: String(p.name || '').trim() || email, role: p.role, sites: Array.isArray(p.sites) ? p.sites.join(',') : String(p.sites || ''), active: p.active === false ? 'FALSE' : 'TRUE', note: String(p.note || '') };
+  if (idx >= 0) all[idx] = o; else all.push(o);
+  write_('people', all);
+  return { ok: true, person: o };
+}
+
+function personDelete_(req, me) {
+  needAdmin_(me, '人員設定');
+  var email = String(req.email || '').toLowerCase();
+  if (email === me.email) throw err_('不能刪除自己');
+  write_('people', read_('people').filter(function (x) { return String(x.email).toLowerCase() !== email; }));
+  return { ok: true };
+}
+
+function settingsSave_(req, me) {
+  needAdmin_(me, '系統設定');
+  var st = read_('settings');
+  var vals = req.settings || {};
+  Object.keys(vals).forEach(function (k) {
+    if (!DEFAULT_SETTINGS[k]) return;
+    var row = st.filter(function (r) { return r.key === k; })[0];
+    if (row) row.value = String(vals[k]); else st.push({ key: k, value: String(vals[k]), note: DEFAULT_SETTINGS[k].note });
+  });
+  write_('settings', st);
+  return { ok: true, settings: settingsObj_() };
+}
+
+function settingsObj_() {
+  var o = {};
+  Object.keys(DEFAULT_SETTINGS).forEach(function (k) { o[k] = DEFAULT_SETTINGS[k].value; });
+  read_('settings').forEach(function (r) { if (r.key) o[r.key] = r.value; });
+  if (!o.currentTerm) o.currentTerm = termOf_(today_());
+  return o;
+}
+
+/* ───────── 匯入（社工從 Excel 匯入舊紀錄） ───────── */
+function import_(req, me) {
+  needAdmin_(me, '匯入');
+  var up = function (key, items, clean) {
+    var all = read_(key);
+    var pos = {};
+    all.forEach(function (x, i) { pos[x.id] = i; });
+    (items || []).forEach(function (it) {
+      var o = clean(it);
+      if (pos[o.id] != null) all[pos[o.id]] = o; else { pos[o.id] = all.length; all.push(o); }
+    });
+    write_(key, all);
+    return (items || []).length;
+  };
+  var n = {};
+  n.sites = up('sites', req.sites, function (s) { return { id: String(s.id || uid_('S')), name: String(s.name), day: String(s.day || ''), order: String(s.order || ''), active: 'TRUE' }; });
+  n.students = up('students', req.students, function (s) {
+    return { id: String(s.id || uid_('K')), name: String(s.name), siteId: String(s.siteId), grade: String(s.grade || ''), status: s.status === '結案' ? '結案' : '在學', note: String(s.note || ''), createdAt: s.createdAt || new Date().toISOString() };
+  });
+  var now = new Date().toISOString();
+  n.lessons = up('lessons', req.lessons, function (l) {
+    var o = cleanLesson_(l);
+    o.id = String(l.id || uid_('L'));
+    o.updatedAt = now;
+    o.updatedBy = me.name + '（匯入）';
+    return o;
+  });
+  if (req.terms && req.terms.length) {
+    var s = settingsObj_();
+    var terms = String(s.terms || '').split(/[,，]/).filter(String);
+    req.terms.forEach(function (t) { if (terms.indexOf(t) < 0) terms.push(t); });
+    terms.sort();
+    settingsSave_({ settings: { terms: terms.join(',') } }, me);
+  }
+  rebuildScores_();
+  return { ok: true, count: n };
+}
+
+/* ───────── 試算表存取 ───────── */
+function ss_() { return SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet(); }
+function props_() { return PropertiesService.getScriptProperties(); }
+
+function sheet_(key) {
+  var t = TABLES[key];
+  var ss = ss_();
+  var sh = ss.getSheetByName(t.sheet);
+  if (!sh) {
+    sh = ss.insertSheet(t.sheet);
+    var head = [t.cols.map(function (c) { return c[1]; })];
+    sh.getRange(1, 1, 1, t.cols.length).setValues(head);
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+
+function read_(key) {
+  var t = TABLES[key];
+  var values = sheet_(key).getDataRange().getValues();
+  if (values.length < 1) return [];
+  var head = values[0].map(function (h) { return String(h).trim(); });
+  var pos = t.cols.map(function (c) { return head.indexOf(c[1]); });
+  var out = [];
+  for (var r = 1; r < values.length; r++) {
+    var row = values[r];
+    if (row.every(function (v) { return v === '' || v == null; })) continue;
+    var o = {};
+    t.cols.forEach(function (c, i) {
+      var v = pos[i] >= 0 ? row[pos[i]] : '';
+      if (v instanceof Date) v = dateStr_(v);
+      else if (v == null) v = '';
+      else v = String(v);
+      if (t.json && c[0] in t.json) {
+        try { v = v ? JSON.parse(v) : JSON.parse(JSON.stringify(t.json[c[0]])); } catch (x) { v = JSON.parse(JSON.stringify(t.json[c[0]])); }
+      }
+      o[c[0]] = v;
+    });
+    if (key === 'people') o.email = String(o.email).trim().toLowerCase();
+    out.push(o);
+  }
+  return out;
+}
+
+function write_(key, rows) {
+  var t = TABLES[key];
+  var sh = sheet_(key);
+  var data = [t.cols.map(function (c) { return c[1]; })];
+  rows.forEach(function (o) {
+    data.push(t.cols.map(function (c) {
+      var v = o[c[0]];
+      if (t.json && c[0] in t.json) v = JSON.stringify(v == null ? t.json[c[0]] : v);
+      if (v == null) v = '';
+      if (typeof v === 'number' && key === 'scores') return v;
+      v = String(v);
+      if (v.length > 49000) throw err_('「' + c[1] + '」內容太長（試算表一格最多約 5 萬字）');
+      if (/^[=+\-@]/.test(v)) v = "'" + v;
+      return v;
+    }));
+  });
+  sh.clearContents();
+  var range = sh.getRange(1, 1, data.length, t.cols.length);
+  range.setNumberFormat('@');
+  range.setValues(data);
+}
+
+/* ───────── 小工具 ───────── */
+function err_(msg, code) { var e = new Error(msg); e.code = code || 'error'; return e; }
+function uid_(p) { return p + Utilities.getUuid().replace(/-/g, '').slice(0, 10); }
+function esc_(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+function pad_(n) { return (n < 10 ? '0' : '') + n; }
+function dateStr_(d) {
+  if (d.getHours() || d.getMinutes() || d.getSeconds()) return d.toISOString();
+  return d.getFullYear() + '-' + pad_(d.getMonth() + 1) + '-' + pad_(d.getDate());
+}
+function today_() { return dateStr_(new Date(new Date().setHours(0, 0, 0, 0))); }
+function normDate_(s) {
+  s = String(s || '').trim();
+  var m = s.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
+  return m ? m[1] + '-' + pad_(+m[2]) + '-' + pad_(+m[3]) : '';
+}
+/** 民國學年：8 月～隔年 1 月是第 1 學期，2～7 月是第 2 學期 */
+function termOf_(ymd) {
+  var m = String(ymd).match(/^(\d{4})-(\d{2})/);
+  if (!m) return '';
+  var y = +m[1], mo = +m[2];
+  if (mo >= 8) return (y - 1911) + '-1';
+  if (mo === 1) return (y - 1912) + '-1';
+  return (y - 1912) + '-2';
+}
+
+/* 試用模式的示範資料（全部是虛構的孩子與內容），以及把資料存在瀏覽器的方法 */
+var __KEY = 'robot-demo-db-v1';
+
+function __seed() {
+  __DB.sheets = {}; __DB.props = {};
+  Object.keys(TABLES).forEach(function (k) { sheet_(k); });
+  var rnd = (function () { var s = 7; return function () { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; }; })();
+  write_('people', [
+    { email: 'teacher@demo', name: '示範老師', role: '老師', sites: '', active: 'TRUE', note: '試用帳號' },
+    { email: 'social@demo', name: '示範社工', role: '社工', sites: '', active: 'TRUE', note: '試用帳號' }
+  ]);
+  var sites = [{ id: 'S_A', name: '森林站', day: '週二', order: '1', active: 'TRUE' }, { id: 'S_B', name: '小河站', day: '週五', order: '2', active: 'TRUE' }];
+  write_('sites', sites);
+  var kids = {
+    S_A: ['林小樹', '陳小禾', '張小葉', '黃小石', '吳小雲', '李小星'],
+    S_B: ['王小河', '周小風', '鄭小晴', '許小谷']
+  };
+  var students = [];
+  Object.keys(kids).forEach(function (sid) {
+    kids[sid].forEach(function (n, i) { students.push({ id: 'K_' + sid + i, name: n, siteId: sid, grade: String(3 + (i % 3)), status: '在學', note: '', createdAt: '2026-09-01T00:00:00.000Z' }); });
+  });
+  write_('students', students);
+  var plans = [
+    { topic: '認識零件與安全規則', goals: '認識 VEX GO 基本零件與工具\n建立安全操作與收納規則', dims: ['合作', '理解', '組裝', '口語表達', '解決問題'] },
+    { topic: '無教材自由造車', goals: '不提供組裝圖，由小組討論車體結構\n練習把想法說出來', dims: ['合作', '理解', '組裝', '口語表達', '解決問題'] },
+    { topic: '絕對與相對控制（一）', goals: '理解相對位置依目前方向變化\n理解絕對位置依固定基準點', dims: ['合作', '理解', '專注', '口語表達', '應用能力'] },
+    { topic: '絕對與相對控制（二）', goals: '從程式積木關鍵字辨認控制方式\n用實車驗證路線', dims: ['合作', '程式', '實作', '口語表達', '解決問題'] },
+    { topic: '齒輪變速：1.5 倍速改裝', goals: '認識主動齒輪、從動齒輪\n完成 1.5 倍速改裝並測試', dims: ['合作', '理解', '組裝', '口語表達', '解決問題'] },
+    { topic: '競賽任務分析與車體改裝', goals: '從關卡需求反推車體設計\n練習取捨與分工', dims: ['合作', '理解', '設計', '口語表達', '解決問題'] }
+  ];
+  var notes = ['能主動分配零件，帶著組員一起完成車底', '一開始容易分心，示範後能跟上進度', '願意上台說明自己的想法，聲音比上週大', '組裝速度快，下週可以試著讓他教同學', '遇到卡關會先停下來看組裝圖，再自己修正', '對齒輪很有興趣，會追問為什麼變快'];
+  var lessons = [], comments = [];
+  var start = { S_A: new Date(2026, 8, 22), S_B: new Date(2026, 8, 25) };
+  Object.keys(kids).forEach(function (sid) {
+    var ids = kids[sid].map(function (_, i) { return 'K_' + sid + i; });
+    var base = ids.map(function () { return 3 + rnd() * 1.2; });
+    for (var w = 0; w < 9; w++) {
+      var d = new Date(start[sid].getTime() + w * 7 * 86400e3);
+      var date = d.getFullYear() + '-' + pad_(d.getMonth() + 1) + '-' + pad_(d.getDate());
+      var id = 'L_' + sid + w;
+      var p = plans[w];
+      if (!p) { lessons.push({ id: id, siteId: sid, term: '115-1', seq: String(w + 1), date: date, status: '', topic: '', goals: '', timeline: '', execution: '', indicators: '', groups: [], groupNote: '', qualitative: '', radar: { dims: [], rows: [] }, radarNote: '', management: '', slides: '', attendance: [], updatedAt: '2026-09-01T00:00:00.000Z', updatedBy: '示範老師' }); continue; }
+      if (sid === 'S_B' && w === 2) {
+        lessons.push({ id: id, siteId: sid, term: '115-1', seq: String(w + 1), date: date, status: '停課', topic: '颱風停課', goals: '', timeline: '', execution: '', indicators: '', groups: [], groupNote: '', qualitative: '', radar: { dims: [], rows: [] }, radarNote: '', management: '', slides: '', attendance: [], updatedAt: '2026-09-01T00:00:00.000Z', updatedBy: '示範老師' });
+        continue;
+      }
+      var present = ids.filter(function () { return rnd() > 0.12; });
+      var half = Math.ceil(present.length / 2);
+      var rows = present.map(function (k) {
+        var i = ids.indexOf(k), sc = {};
+        p.dims.forEach(function (dm) { sc[dm] = Math.max(1, Math.min(5, Math.round((base[i] + w * 0.12 + (rnd() - 0.5)) * 2) / 2)); });
+        return { sid: k, scores: sc, comment: notes[Math.floor(rnd() * notes.length)] };
+      });
+      lessons.push({
+        id: id, siteId: sid, term: '115-1', seq: String(w + 1), date: date, status: '', topic: p.topic, goals: p.goals,
+        timeline: '暖身與複習（10min）\n概念說明與示範（20min）\n分組實作（40min）\n分享與收拾（10min）',
+        execution: '本堂課以「' + p.topic + '」為主。兩組都能在時間內完成任務，A 組分工清楚，B 組前段需要老師提醒分工。',
+        indicators: p.dims.join('、') + '能力', groups: [{ name: 'A組', members: present.slice(0, half), note: '' }, { name: 'B組', members: present.slice(half), note: '' }],
+        groupNote: '異質性分組', qualitative: '多數孩子能用自己的話說出今天學到的概念。\n實作時比聽講時專注。',
+        radar: { dims: p.dims, rows: rows }, radarNote: '', management: '倒數計時、點名回答、小組獎勵', slides: '', attendance: present,
+        updatedAt: '2026-10-0' + (w % 9 + 1) + 'T08:00:00.000Z', updatedBy: '示範老師'
+      });
+      if (w < 3) comments.push({ id: 'C_' + id, lessonId: id, email: 'social@demo', name: '示範社工', role: '社工', text: '分組安排很用心！下週可以多留意 B 組的分工，讓每個孩子都有自己的任務。', at: '2026-10-0' + (w + 2) + 'T10:00:00.000Z' });
+    }
+  });
+  write_('lessons', lessons);
+  write_('comments', comments);
+  write_('settings', [
+    { key: 'terms', value: '115-1', note: '' }, { key: 'currentTerm', value: '115-1', note: '' },
+    { key: 'defaultDims', value: '合作,理解,組裝,口語表達,解決問題', note: '' }, { key: 'scoreMax', value: '5', note: '' }
+  ]);
+  rebuildScores_(lessons);
+}
+
+function __persist() { try { localStorage.setItem(__KEY, JSON.stringify(__DB)); } catch (x) {} }
+function __reset() { __seed(); __persist(); }
+(function () {
+  var raw = null;
+  try { raw = localStorage.getItem(__KEY); } catch (x) {}
+  if (raw) { try { var o = JSON.parse(raw); __DB.sheets = o.sheets || {}; __DB.props = o.props || {}; return; } catch (x) {} }
+  __seed();
+  __persist();
+})();
+
+return { handle: handle, persist: __persist, reset: __reset };
+})();</script>
+<script>
+"use strict";
+/* ═════════════ 基本設定 ═════════════ */
+const CFG = window.ROBOT_CLOUD || {};
+const DEMO = /[?&]demo=1/.test(location.search) || !(CFG.api && /^https:\/\//.test(CFG.api));
+const SESSION_KEY = DEMO ? "robot-demo-session" : "robot-session";
+const EMAIL_KEY = "robot-email";
+const XLSX_URL = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+const ALIAS = { "問題解決": "解決問題" };
+const nd = (d) => ALIAS[String(d).trim()] || String(d).trim();
+const S = { token: "", me: null, data: null, term: "", route: "", loadedAt: 0 };
+let E = null; // 正在編輯的課堂
+
+/* ═════════════ 小工具 ═════════════ */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const clone = (o) => JSON.parse(JSON.stringify(o));
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const pad = (n) => String(n).padStart(2, "0");
+const ymd = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const today = () => ymd(new Date());
+const mean = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : null);
+const f1 = (v) => (v == null || isNaN(v) ? "–" : (Math.round(v * 10) / 10).toFixed(1));
+const lsGet = (k, d = null) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+const lsDel = (k) => { try { localStorage.removeItem(k); } catch {} };
+function h(html) { const t = document.createElement("template"); t.innerHTML = html.trim(); return t.content.firstElementChild; }
+function fmtDate(s, withYear) {
+  if (!s) return "未排日期";
+  const d = new Date(s + "T00:00:00");
+  if (isNaN(d)) return s;
+  return `${withYear ? d.getFullYear() + "/" : ""}${d.getMonth() + 1}/${d.getDate()}（${"日一二三四五六"[d.getDay()]}）`;
+}
+function fmtTime(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d)) return iso;
+  return `${d.getMonth() + 1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function termOf(s) {
+  const m = String(s || "").match(/^(\d{4})-(\d{2})/);
+  if (!m) return "";
+  const y = +m[1], mo = +m[2];
+  if (mo >= 8) return `${y - 1911}-1`;
+  if (mo === 1) return `${y - 1912}-1`;
+  return `${y - 1912}-2`;
+}
+function uid(p) { return p + Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-4); }
+
+const ICONS = {
+  robot: '<rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1"/><circle cx="9" cy="14" r="1.2"/><circle cx="15" cy="14" r="1.2"/><path d="M2 13v3M22 13v3"/>',
+  home: '<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>',
+  book: '<path d="M4 4h11a3 3 0 013 3v13H7a3 3 0 01-3-3z"/><path d="M4 17a3 3 0 013-3h11"/>',
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0113 0"/><path d="M16 4.5a3.5 3.5 0 010 7M18 20a6 6 0 00-2.5-4.9"/>',
+  chart: '<path d="M12 3l8 5v8l-8 5-8-5V8z"/><path d="M12 8l4 2.5v3L12 16l-4-2.5v-3z"/>',
+  msg: '<path d="M4 5h16v11H9l-5 4z"/>',
+  settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 01-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 010-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 014 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 010 4h-.1a1.7 1.7 0 00-1.5 1z"/>',
+  upload: '<path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v4h16v-4"/>',
+  download: '<path d="M12 4v12M7 11l5 5 5-5"/><path d="M4 20h16"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+  check: '<path d="M5 12l5 5 9-10"/>',
+  x: '<path d="M6 6l12 12M18 6L6 18"/>',
+  alert: '<path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18h.01"/>',
+  logout: '<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h11"/>',
+  menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
+  link: '<path d="M10 14a5 5 0 007 0l3-3a5 5 0 00-7-7l-1 1"/><path d="M14 10a5 5 0 00-7 0l-3 3a5 5 0 007 7l1-1"/>',
+  back: '<path d="M15 5l-7 7 7 7"/>',
+  edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/>',
+  merge: '<path d="M6 4v5a6 6 0 006 6h6M15 12l3 3-3 3"/><path d="M6 20v-5"/>',
+  send: '<path d="M4 12l16-8-6 16-3-7z"/>',
+  refresh: '<path d="M20 11a8 8 0 10-2.3 5.7"/><path d="M20 4v7h-7"/>',
+  cal: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>'
+};
+const icon = (n, sm) => `<svg class="i${sm ? " sm" : ""}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ""}</svg>`;
+
+function toast(msg, err) {
+  const t = h(`<div class="toast ${err ? "err" : ""}">${esc(msg)}</div>`);
+  $("#toasts").appendChild(t);
+  setTimeout(() => t.remove(), err ? 5200 : 2600);
+}
+function modal({ title, body = "", buttons = [{ label: "好", value: true, cls: "primary" }], wide, onOpen }) {
+  return new Promise((resolve) => {
+    const scrim = h('<div class="scrim"></div>');
+    const m = h(`<div class="modal ${wide ? "wide" : ""}" role="dialog" aria-modal="true"><div class="modal-body">${title ? `<h3>${esc(title)}</h3>` : ""}${body}</div>
+      <div class="modal-foot">${buttons.map((b, i) => `<button class="btn ${b.cls || ""}" data-i="${i}">${esc(b.label)}</button>`).join("")}</div></div>`);
+    const close = (v) => { scrim.remove(); m.remove(); document.removeEventListener("keydown", onKey); resolve(v); };
+    const onKey = (e) => { if (e.key === "Escape") close(null); };
+    scrim.onclick = () => close(null);
+    m.querySelectorAll(".modal-foot button").forEach((b) => (b.onclick = async () => {
+      const def = buttons[+b.dataset.i];
+      if (def.check) { const ok = await def.check(m); if (!ok) return; }
+      close(def.value);
+    }));
+    document.body.append(scrim, m);
+    document.addEventListener("keydown", onKey);
+    if (onOpen) onOpen(m);
+    const f = m.querySelector("input, select, textarea");
+    if (f) f.focus();
+  });
+}
+const confirmBox = (title, body, okLabel = "確定", danger) => modal({ title, body: `<p class="ink2" style="margin:0;line-height:1.8">${body}</p>`, buttons: [{ label: "取消", value: false }, { label: okLabel, value: true, cls: danger ? "danger" : "primary" }] });
+
+/* ═════════════ 雲端連線 ═════════════ */
+function setSync(state) {
+  const el = $("#sync");
+  if (!el) return;
+  const txt = { busy: "同步中…", ok: "已同步 " + fmtTime(new Date().toISOString()).split(" ")[1], err: "連線失敗" }[state];
+  el.innerHTML = `<span class="dot ${state === "ok" ? "" : state}"></span><span>${DEMO ? "試用模式・" : ""}${txt}</span>`;
+}
+async function api(action, payload = {}) {
+  const body = { action, ...payload };
+  if (S.token) body.token = S.token;
+  setSync("busy");
+  let j;
+  try {
+    if (DEMO) {
+      await sleep(120);
+      j = clone(window.DemoServer.handle(clone(body)));
+      window.DemoServer.persist();
+    } else {
+      let res;
+      try {
+        res = await fetch(CFG.api, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body) });
+      } catch {
+        throw Object.assign(new Error("連不上雲端主機，請檢查網路後再試一次"), { code: "offline" });
+      }
+      try { j = await res.json(); } catch { throw new Error(`雲端主機沒有正確回應（${res.status}），請稍後再試`); }
+    }
+  } catch (e) { setSync("err"); throw e; }
+  setSync("ok");
+  if (!j.ok) {
+    const e = new Error(j.error || "雲端主機發生錯誤");
+    e.code = j.code; e.current = j.current;
+    if (e.code === "auth" && action !== "login.verify") { clearSession(); showLogin(e.message); }
+    throw e;
+  }
+  return j;
+}
+function saveSession() { const s = { token: S.token, me: S.me, api: CFG.api || "" }; try { (S.shared ? sessionStorage : localStorage).setItem(SESSION_KEY, JSON.stringify(s)); } catch {} }
+function loadSession() {
+  for (const st of [() => sessionStorage, () => localStorage]) {
+    try { const s = JSON.parse(st().getItem(SESSION_KEY) || "null"); if (s && s.token && (DEMO || s.api === CFG.api)) return s; } catch {}
+  }
+  return null;
+}
+function clearSession() { S.token = ""; try { localStorage.removeItem(SESSION_KEY); sessionStorage.removeItem(SESSION_KEY); } catch {} }
+
+async function reload() {
+  const j = await api("load");
+  S.me = j.me;
+  S.data = { sites: j.sites || [], students: j.students || [], lessons: j.lessons || [], comments: j.comments || [], people: j.people || [], settings: j.settings || {} };
+  S.data.lessons.forEach(fixLesson);
+  S.loadedAt = Date.now();
+  const ts = terms();
+  const want = lsGet("robot-term") || S.data.settings.currentTerm;
+  S.term = ts.includes(want) ? want : (ts.includes(S.data.settings.currentTerm) ? S.data.settings.currentTerm : ts[0] || termOf(today()));
+  saveSession();
+}
+function fixLesson(l) {
+  l.groups = Array.isArray(l.groups) ? l.groups : [];
+  l.radar = l.radar && typeof l.radar === "object" ? l.radar : { dims: [], rows: [] };
+  l.radar.dims = l.radar.dims || []; l.radar.rows = l.radar.rows || [];
+  l.attendance = Array.isArray(l.attendance) ? l.attendance : [];
+  return l;
+}
+
+/* ═════════════ 資料查詢 ═════════════ */
+const D = () => S.data;
+const isAdmin = () => !!(S.me && S.me.admin);
+const siteById = (id) => D().sites.find((s) => s.id === id);
+const stuById = (id) => D().students.find((s) => s.id === id);
+const stuName = (id) => (stuById(id) || {}).name || "（已刪除）";
+const lessonById = (id) => D().lessons.find((l) => l.id === id);
+const activeSites = () => D().sites.filter((s) => String(s.active) !== "FALSE").sort((a, b) => (+a.order || 99) - (+b.order || 99) || a.name.localeCompare(b.name, "zh-Hant"));
+const siteStudents = (sid, all) => D().students.filter((s) => s.siteId === sid && (all || s.status !== "結案")).sort((a, b) => a.name.localeCompare(b.name, "zh-Hant"));
+function terms() {
+  const set = new Set(String(D().settings.terms || "").split(/[,，]/).map((s) => s.trim()).filter(Boolean));
+  D().lessons.forEach((l) => l.term && set.add(l.term));
+  if (D().settings.currentTerm) set.add(D().settings.currentTerm);
+  return [...set].sort().reverse();
+}
+const seqN = (l) => parseInt(l.seq, 10) || 0;
+const byLesson = (a, b) => (a.date || "9999").localeCompare(b.date || "9999") || seqN(a) - seqN(b);
+const termLessons = (sid, term = S.term) => D().lessons.filter((l) => (!sid || l.siteId === sid) && (term === "*" || l.term === term)).sort(byLesson);
+const hasRecord = (l) => !!(l.execution || l.qualitative || l.radar.rows.length || l.management);
+function lessonState(l) {
+  if (l.status === "停課") return "off";
+  if (hasRecord(l)) return "done";
+  if (l.date && l.date <= today()) return "todo";
+  if (l.goals || l.timeline || l.topic) return "prepared";
+  return "future";
+}
+const STATE_CHIP = {
+  done: '<span class="chip good">已記錄</span>', todo: '<span class="chip serious">待補紀錄</span>',
+  prepared: '<span class="chip accent">已備課</span>', future: '<span class="chip outline">預定</span>', off: '<span class="chip">停課</span>'
+};
+const lessonComments = (id) => D().comments.filter((c) => c.lessonId === id).sort((a, b) => a.at.localeCompare(b.at));
+const hasAdminFeedback = (l) => lessonComments(l.id).some((c) => c.role !== "老師");
+const needsFeedback = (l) => lessonState(l) === "done" && !hasAdminFeedback(l);
+function seen() { return lsGet("robot-seen-" + (S.me?.email || ""), {}); }
+function markSeen(lid) { const s = seen(); s[lid] = new Date().toISOString(); lsSet("robot-seen-" + S.me.email, s); }
+function unreadComments() {
+  const s = seen();
+  return D().comments.filter((c) => c.email !== S.me.email && (!s[c.lessonId] || c.at > s[c.lessonId]));
+}
+function lessonTitle(l) { const s = siteById(l.siteId); return `${s ? s.name : ""} 第${l.seq || "?"}次`; }
+
+/* 學生能力分析 */
+function stuSeries(sid, term = S.term) {
+  return D().lessons.filter((l) => (term === "*" || l.term === term) && l.radar.rows.some((r) => r.sid === sid)).sort(byLesson).map((l) => {
+    const r = l.radar.rows.find((x) => x.sid === sid);
+    const sc = {};
+    Object.entries(r.scores || {}).forEach(([d, v]) => { if (v != null && v !== "") sc[nd(d)] = +v; });
+    const vals = Object.values(sc);
+    return { l, scores: sc, comment: r.comment || "", avg: mean(vals) };
+  });
+}
+function coreDims(series, max = 8) {
+  const cnt = {}, first = {};
+  series.forEach((p, i) => Object.keys(p.scores).forEach((d) => { cnt[d] = (cnt[d] || 0) + 1; if (first[d] == null) first[d] = i; }));
+  let dims = Object.keys(cnt);
+  if (series.length > 2) dims = dims.filter((d) => cnt[d] >= 2);
+  return dims.sort((a, b) => cnt[b] - cnt[a] || first[a] - first[b]).slice(0, max).sort((a, b) => first[a] - first[b]);
+}
+function dimAvg(series, d) { return mean(series.map((p) => p.scores[d]).filter((v) => v != null)); }
+function trendOf(series) {
+  const a = series.map((p) => p.avg).filter((v) => v != null);
+  if (a.length < 3) return null;
+  const k = Math.min(2, Math.floor(a.length / 2));
+  return mean(a.slice(-k)) - mean(a.slice(0, a.length - k).slice(-k));
+}
+function attendanceOf(sid, term = S.term) {
+  const st = stuById(sid);
+  const held = termLessons(st?.siteId, term).filter((l) => lessonState(l) === "done");
+  return { present: held.filter((l) => l.attendance.includes(sid) || l.radar.rows.some((r) => r.sid === sid)).length, held: held.length };
+}
+
+/* ═════════════ 圖表（SVG） ═════════════ */
+const SERIES = ["var(--s1)", "var(--s2)", "var(--s3)", "var(--s4)", "var(--s5)", "var(--s6)", "var(--s7)", "var(--s8)"];
+function radarSVG(dims, series, max = 5, size = 300) {
+  if (dims.length < 3) return `<div class="empty small">至少要有 3 個評分維度才畫得出雷達圖</div>`;
+  const cx = size / 2, cy = size / 2 + 4, R = size / 2 - 52, n = dims.length;
+  const pt = (i, v) => { const a = -Math.PI / 2 + (i * 2 * Math.PI) / n; return [cx + Math.cos(a) * R * v / max, cy + Math.sin(a) * R * v / max]; };
+  let g = "";
+  for (let k = 1; k <= max; k++) g += `<polygon points="${dims.map((_, i) => pt(i, k).join(",")).join(" ")}" style="fill:none;stroke:var(--grid)"/>`;
+  dims.forEach((d, i) => {
+    const [x, y] = pt(i, max), [lx, ly] = pt(i, max + 0.9);
+    g += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" style="stroke:var(--grid)"/>`;
+    g += `<text class="lbl" x="${lx}" y="${ly + 4}" text-anchor="${Math.abs(lx - cx) < 8 ? "middle" : lx > cx ? "start" : "end"}">${esc(d)}</text>`;
+  });
+  series.forEach((s, si) => {
+    const pts = dims.map((d, i) => pt(i, s.values[d] ?? 0));
+    const shown = pts.filter((_, i) => s.values[dims[i]] != null);
+    if (shown.length < 2) return;
+    g += `<polygon points="${shown.map((p) => p.join(",")).join(" ")}" style="fill:${s.color};fill-opacity:${si ? 0.08 : 0.18};stroke:${s.color};stroke-width:2;${s.dash ? "stroke-dasharray:5 4" : ""}"/>`;
+    pts.forEach((p, i) => { if (s.values[dims[i]] != null) g += `<circle cx="${p[0]}" cy="${p[1]}" r="3" style="fill:${s.color}"><title>${esc(s.label)}・${esc(dims[i])} ${s.values[dims[i]]}</title></circle>`; });
+  });
+  return `<svg class="chart" viewBox="-40 0 ${size + 80} ${size}" role="img" aria-label="能力雷達圖" style="width:100%;max-width:${size + 120}px;display:block;margin:auto">${g}</svg>`;
+}
+function lineSVG(labels, series, min = 1, max = 5) {
+  const W = 640, H = 220, L = 30, Rr = 26, T = 12, B = 30;
+  const n = labels.length;
+  if (!n) return '<div class="empty small">還沒有分數</div>';
+  const x = (i) => L + (n === 1 ? (W - L - Rr) / 2 : (i * (W - L - Rr)) / (n - 1));
+  const y = (v) => T + ((max - v) * (H - T - B)) / (max - min);
+  let g = "";
+  for (let v = min; v <= max; v++) g += `<line x1="${L}" x2="${W - Rr}" y1="${y(v)}" y2="${y(v)}" style="stroke:var(--grid)"/><text x="${L - 8}" y="${y(v) + 4}" text-anchor="end">${v}</text>`;
+  const step = Math.ceil(n / 12);
+  labels.forEach((lb, i) => { if (i % step === 0 || i === n - 1) g += `<text x="${x(i)}" y="${H - 8}" text-anchor="middle">${esc(lb)}</text>`; });
+  series.forEach((s) => {
+    let d = "", pen = false;
+    s.values.forEach((v, i) => { if (v == null) { pen = false; return; } d += `${pen ? "L" : "M"}${x(i)},${y(v)}`; pen = true; });
+    g += `<path d="${d}" style="fill:none;stroke:${s.color};stroke-width:${s.bold ? 3 : 1.8};stroke-linejoin:round;${s.bold ? "" : "opacity:.85"}"/>`;
+    s.values.forEach((v, i) => { if (v != null) g += `<circle cx="${x(i)}" cy="${y(v)}" r="${s.bold ? 3.5 : 2.5}" style="fill:${s.color}"><title>${esc(s.label)}・${esc(labels[i])}：${v}</title></circle>`; });
+  });
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="分數趨勢圖" style="width:100%;height:auto;display:block">${g}</svg>`;
+}
+function sparkSVG(values) {
+  const v = values.filter((x) => x != null);
+  if (v.length < 2) return '<span class="muted small">–</span>';
+  const W = 90, H = 24, lo = 1, hi = 5;
+  const pts = v.map((x, i) => `${(i * W) / (v.length - 1)},${H - 2 - ((x - lo) * (H - 4)) / (hi - lo)}`);
+  return `<svg viewBox="-2 -2 ${W + 4} ${H + 4}" width="${W}" height="${H}" aria-hidden="true"><polyline points="${pts.join(" ")}" style="fill:none;stroke:var(--s1);stroke-width:1.8"/></svg>`;
+}
+
+/* ═════════════ 登入 ═════════════ */
+function showLogin(note = "") {
+  E = null;
+  const root = $("#root");
+  if (DEMO) {
+    root.innerHTML = `<div class="boot"><div class="card boot-card"><div class="card-body stack" style="gap:14px;padding:24px">
+      <div class="boot-icon">${icon("robot")}</div>
+      <h2>永齡機器人課務系統</h2>
+      <div class="callout warn">${icon("alert", "sm")} <b>試用模式</b>：用虛構的示範資料，所有修改只存在這台電腦的瀏覽器，不會上傳。</div>
+      ${note ? `<div class="callout warn small">${esc(note)}</div>` : ""}
+      <div class="role-pick">
+        <button data-role="老師"><span class="boot-icon" style="width:38px;height:38px">${icon("book")}</span><span><b>以課輔老師身分試用</b><span class="small muted">備課、寫課堂紀錄、幫孩子評分</span></span></button>
+        <button data-role="社工"><span class="boot-icon" style="width:38px;height:38px;background:linear-gradient(135deg,#5b93ea,#2563c9)">${icon("msg")}</span><span><b>以社工身分試用</b><span class="small muted">給回饋、看能力趨勢、管理名冊、匯入匯出</span></span></button>
+      </div>
+      ${CFG.api ? "" : '<p class="small muted" style="margin:0">正式上線前，請督導把 Apps Script 網址填進 config.js。</p>'}
+    </div></div></div>`;
+    $$(".role-pick button").forEach((b) => (b.onclick = async () => {
+      try {
+        const r = await api("demo.login", { role: b.dataset.role });
+        S.token = r.token; S.me = r.me; S.shared = false;
+        await start();
+      } catch (e) { toast(e.message, true); }
+    }));
+    return;
+  }
+  let email = lsGet(EMAIL_KEY, "") || "";
+  const step1 = (msg = note) => {
+    root.innerHTML = `<div class="boot"><div class="card boot-card"><div class="card-body stack" style="gap:14px;padding:24px">
+      <div class="boot-icon">${icon("robot")}</div>
+      <h2>永齡機器人課務系統</h2>
+      <p class="ink2" style="margin:0">請輸入你在人員名單上的 Email（通常是 Gmail），系統會寄一組 6 位數驗證碼給你。</p>
+      ${msg ? `<div class="callout warn small">${icon("alert", "sm")} ${esc(msg)}</div>` : ""}
+      <form id="f1" class="stack" style="gap:10px">
+        <label class="field"><span>Email</span><input class="input" id="em" type="email" autocomplete="email" inputmode="email" required value="${esc(email)}" placeholder="例：name@gmail.com"></label>
+        <button class="btn primary lg" id="go1" type="submit">${icon("send", "sm")}寄驗證碼</button>
+      </form>
+      <p class="small muted" style="margin:0">登入後，自己的電腦 30 天內不用再登入；共用電腦請在下一步勾選「這是共用電腦」。</p>
+    </div></div></div>`;
+    $("#em").focus();
+    $("#f1").onsubmit = async (e) => {
+      e.preventDefault();
+      email = $("#em").value.trim().toLowerCase();
+      const b = $("#go1"); b.disabled = true; b.textContent = "寄送中…";
+      try { await api("login.request", { email }); lsSet(EMAIL_KEY, email); step2(); } catch (err) { step1(err.message); }
+    };
+  };
+  const step2 = (msg = "") => {
+    root.innerHTML = `<div class="boot"><div class="card boot-card"><div class="card-body stack" style="gap:14px;padding:24px">
+      <div class="boot-icon">${icon("mail")}</div>
+      <h2>輸入驗證碼</h2>
+      <p class="ink2" style="margin:0">驗證碼已寄到 <b>${esc(email)}</b>，10 分鐘內有效。<br><span class="small muted">沒收到的話，請看一下「垃圾郵件」或「促銷內容」。</span></p>
+      ${msg ? `<div class="callout warn small">${icon("alert", "sm")} ${esc(msg)}</div>` : ""}
+      <form id="f2" class="stack" style="gap:10px">
+        <label class="field"><span>6 位數驗證碼</span><input class="input" id="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required style="font-size:22px;letter-spacing:6px;text-align:center;height:46px"></label>
+        <label class="row small" style="gap:8px;cursor:pointer"><input type="checkbox" id="shared">這是共用電腦（關掉瀏覽器就自動登出）</label>
+        <button class="btn primary lg" id="go2" type="submit">${icon("check", "sm")}登入</button>
+      </form>
+      <div class="row"><button class="btn sm ghost" id="back">換一個 Email</button><span class="sp"></span><button class="btn sm" id="resend">重新寄送</button></div>
+    </div></div></div>`;
+    $("#code").focus();
+    $("#back").onclick = () => step1("");
+    $("#resend").onclick = async () => { try { await api("login.request", { email }); toast("已重新寄送驗證碼"); } catch (err) { step2(err.message); } };
+    $("#f2").onsubmit = async (e) => {
+      e.preventDefault();
+      const b = $("#go2"); b.disabled = true; b.textContent = "登入中…";
+      try {
+        S.shared = $("#shared").checked;
+        const r = await api("login.verify", { email, code: $("#code").value.trim(), shared: S.shared });
+        S.token = r.token; S.me = r.me;
+        await start();
+      } catch (err) { step2(err.message); }
+    };
+  };
+  step1();
+}
+async function start() {
+  try { await reload(); }
+  catch (e) {
+    if (e.code === "auth") return;
+    $("#root").innerHTML = `<div class="boot"><div class="card boot-card"><div class="card-body stack" style="padding:24px"><div class="callout warn">${esc(e.message)}</div><button class="btn primary lg" id="retry">${icon("refresh", "sm")}再試一次</button><button class="btn ghost" id="relog">改用其他帳號登入</button></div></div></div>`;
+    $("#retry").onclick = start;
+    $("#relog").onclick = () => { clearSession(); showLogin(); };
+    return;
+  }
+  renderShell();
+  route();
+}
+async function logout() {
+  if (E && E.dirty && !(await confirmBox("還沒儲存", "這堂課有還沒儲存的修改（草稿會留在這台電腦）。確定要登出嗎？", "登出"))) return;
+  try { await api("logout"); } catch {}
+  clearSession(); E = null; S.me = null;
+  if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+  showLogin();
+}
+
+/* ═════════════ 外框與導覽 ═════════════ */
+function renderShell() {
+  $("#root").innerHTML = `<div class="app" id="app">
+    <aside class="side">
+      <div class="side-head">
+        <div class="brand"><div class="brand-mark">${icon("robot")}</div><div class="brand-text"><b>機器人課務系統</b><span>永齡希望小學</span></div></div>
+        <select class="term-select" id="term" aria-label="學期"></select>
+      </div>
+      <nav class="nav" id="nav"></nav>
+      <div class="side-foot">
+        <div class="who"><div class="avatar">${esc((S.me.name || "?").slice(-1))}</div><div class="who-text"><b>${esc(S.me.name)}</b><span>${esc(S.me.role)}</span></div>
+          <button class="icon-btn" id="logout" title="登出" aria-label="登出">${icon("logout")}</button></div>
+        <div class="sync" id="sync"></div>
+      </div>
+    </aside>
+    <div class="main">
+      ${DEMO ? `<div class="demo-banner">${icon("alert", "sm")}<span><b>試用模式</b>：虛構的示範資料，修改只存在這台電腦。</span><button class="btn sm" id="demo-reset">重設示範資料</button><button class="btn sm ghost" id="demo-switch">切換身分</button></div>` : ""}
+      <header class="topbar">
+        <button class="icon-btn burger" id="burger" aria-label="選單">${icon("menu")}</button>
+        <div class="page-title"><h1 id="pt"></h1><div class="sub" id="ps"></div></div>
+        <div class="top-actions" id="pa"></div>
+      </header>
+      <main class="content" id="content"></main>
+    </div>
+  </div>`;
+  setSync("ok");
+  $("#logout").onclick = logout;
+  $("#burger").onclick = () => $("#app").classList.toggle("nav-open");
+  $("#term").onchange = (e) => { S.term = e.target.value; lsSet("robot-term", S.term); route(); };
+  if (DEMO) {
+    $("#demo-reset").onclick = async () => {
+      if (!(await confirmBox("重設示範資料", "會把試用模式的資料恢復成一開始的樣子。", "重設"))) return;
+      window.DemoServer.reset(); E = null; await reload(); location.hash = "#/"; route(); toast("已重設");
+    };
+    $("#demo-switch").onclick = logout;
+  }
+}
+function renderNav() {
+  const ts = terms();
+  $("#term").innerHTML = ts.map((t) => `<option value="${esc(t)}" ${t === S.term ? "selected" : ""}>${esc(t)} 學期</option>`).join("") + `<option value="*" ${S.term === "*" ? "selected" : ""}>全部學期</option>`;
+  let r = S.route;
+  if (r.startsWith("#/student/")) r = "#/students";
+  if (r.startsWith("#/lesson/")) { const l = lessonById(r.split("/")[2]); if (l) r = "#/site/" + l.siteId; }
+  const a = (href, ic, label, badge, soft) => `<a href="${href}" class="${r === href || (href !== "#/" && r.startsWith(href + "/")) ? "active" : ""}">${icon(ic)}<span>${esc(label)}</span>${badge ? `<span class="badge ${soft ? "soft" : ""}">${badge}</span>` : ""}</a>`;
+  let html = a("#/", "home", "總覽");
+  html += `<div class="nav-label">課堂紀錄</div>`;
+  activeSites().forEach((s) => {
+    const ls = termLessons(s.id);
+    const n = isAdmin() ? ls.filter(needsFeedback).length : ls.filter((l) => lessonState(l) === "todo").length;
+    html += a("#/site/" + s.id, "book", s.name, n || "", false);
+  });
+  if (!activeSites().length) html += `<div class="small" style="color:var(--side-muted);padding:4px 10px">${isAdmin() ? "先到「據點與人員」新增據點，或匯入 Excel" : "社工還沒幫你設定據點"}</div>`;
+  html += `<div class="nav-label">孩子</div>`;
+  html += a("#/students", "chart", "學生能力");
+  const un = unreadComments().length;
+  html += a("#/feedback", "msg", isAdmin() ? "課堂回饋" : "回饋留言", un || "", false);
+  html += a("#/roster", "users", "名冊與分組");
+  if (isAdmin()) {
+    html += `<div class="nav-label">管理</div>`;
+    html += a("#/people", "settings", "據點與人員");
+    html += a("#/import", "upload", "匯入 Excel");
+  }
+  html += a("#/export", "download", "匯出 Excel");
+  $("#nav").innerHTML = html;
+  $$("#nav a").forEach((x) => (x.onclick = () => $("#app").classList.remove("nav-open")));
+}
+function setTop(title, sub = "", actions = "") {
+  $("#pt").textContent = title;
+  $("#ps").innerHTML = sub;
+  $("#pa").innerHTML = actions;
+  document.title = title + "｜永齡機器人課務系統";
+}
+
+/* ═════════════ 路由 ═════════════ */
+let lastHash = location.hash;
+window.addEventListener("hashchange", async () => {
+  if (!S.me) return;
+  if (E && E.dirty && location.hash !== lastHash) {
+    const target = location.hash;
+    history.replaceState(null, "", lastHash || "#/");
+    const v = await modal({ title: "這堂課還沒儲存", body: '<p class="ink2" style="margin:0">要先儲存再離開嗎？（不儲存的話，草稿會暫時留在這台電腦）</p>', buttons: [{ label: "留在這裡", value: "stay" }, { label: "不儲存，離開", value: "leave" }, { label: "儲存後離開", value: "save", cls: "primary" }] });
+    if (v === "save") { if (!(await saveLesson())) return; }
+    if (v === "save" || v === "leave") { E.dirty = false; location.hash = target; }
+    return;
+  }
+  lastHash = location.hash;
+  route();
+});
+window.addEventListener("beforeunload", (e) => { if (E && E.dirty) { e.preventDefault(); e.returnValue = ""; } });
+window.addEventListener("focus", async () => {
+  if (!S.me || (E && E.dirty) || Date.now() - S.loadedAt < 90e3) return;
+  try { await reload(); if (!E) route(); else renderNav(); } catch {}
+});
+function route() {
+  if (!S.me || !$("#content")) return;
+  const hsh = location.hash || "#/";
+  S.route = hsh.replace(/\/$/, "") || "#/";
+  if (S.route === "#") S.route = "#/";
+  const [, page, arg] = hsh.split("/");
+  if (page !== "lesson") E = null;
+  renderNav();
+  window.scrollTo(0, 0);
+  const content = $("#content");
+  content.innerHTML = "";
+  const views = { "": viewHome, site: viewSite, lesson: viewLesson, students: viewStudents, student: viewStudent, feedback: viewFeedback, roster: viewRoster, people: viewPeople, import: viewImport, export: viewExport };
+  const fn = views[page || ""] || viewHome;
+  if ((page === "people" || page === "import") && !isAdmin()) return viewHome();
+  try { fn(arg ? decodeURIComponent(arg) : ""); }
+  catch (e) { console.error(e); content.innerHTML = `<div class="callout warn">畫面出了點問題：${esc(e.message)}</div>`; }
+}
+
+/* ═════════════ 總覽 ═════════════ */
+function viewHome() {
+  const hr = new Date().getHours();
+  const hi = hr < 11 ? "早安" : hr < 14 ? "午安" : hr < 18 ? "午安" : "晚安";
+  setTop(`${hi}，${S.me.name}`, `${S.term === "*" ? "全部學期" : S.term + " 學期"} · ${fmtDate(today(), true)}`);
+  const c = $("#content");
+  const sites = activeSites();
+  if (!sites.length) {
+    c.innerHTML = `<div class="card"><div class="empty">${icon("robot")}<p>還沒有任何據點。</p>${isAdmin() ? '<div class="row" style="justify-content:center"><a class="btn primary" href="#/import">匯入舊的 Excel 紀錄</a><a class="btn" href="#/people">新增據點</a></div>' : "<p>請社工幫你設定據點。</p>"}</div></div>`;
+    return;
+  }
+  let html = `<div class="grid g${Math.min(sites.length, 3) === 1 ? 2 : Math.min(sites.length, 3)}">`;
+  sites.forEach((s) => {
+    const ls = termLessons(s.id);
+    const done = ls.filter((l) => lessonState(l) === "done").length;
+    const held = ls.filter((l) => l.status !== "停課").length;
+    const next = ls.find((l) => l.date && l.date >= today() && l.status !== "停課");
+    const todo = ls.filter((l) => lessonState(l) === "todo");
+    const nf = ls.filter(needsFeedback).length;
+    html += `<div class="card"><div class="card-head"><h3>${esc(s.name)}</h3><span class="sub">${esc(s.day || "")}・${siteStudents(s.id).length} 位孩子</span><span class="sp"></span><a class="btn sm" href="#/site/${s.id}">全部課堂</a></div>
+      <div class="card-body stack" style="gap:10px">
+        <div class="row" style="gap:16px"><div><div class="small ink2">已記錄</div><b style="font-size:22px">${done}</b><span class="muted"> / ${held} 堂</span></div>
+          ${isAdmin() ? `<div><div class="small ink2">待回饋</div><b style="font-size:22px;color:${nf ? "var(--serious)" : "inherit"}">${nf}</b><span class="muted"> 堂</span></div>` : `<div><div class="small ink2">待補紀錄</div><b style="font-size:22px;color:${todo.length ? "var(--serious)" : "inherit"}">${todo.length}</b><span class="muted"> 堂</span></div>`}</div>
+        ${next ? `<a class="jcard ${lessonState(next)}" href="#/lesson/${next.id}" style="margin:0"><div class="small ink2">下一堂</div><h4>第${esc(next.seq)}次<small>${fmtDate(next.date)}</small></h4><div class="jmeta">${next.topic ? esc(next.topic) : '<span class="muted">還沒填主題</span>'} ${STATE_CHIP[lessonState(next)]}</div></a>` : `<div class="small muted">這學期沒有排定的下一堂課</div>`}
+        ${!isAdmin() && todo.length ? `<div class="small"><b>待補紀錄：</b>${todo.slice(0, 4).map((l) => `<a href="#/lesson/${l.id}">第${esc(l.seq)}次 ${fmtDate(l.date)}</a>`).join("、")}</div>` : ""}
+      </div></div>`;
+  });
+  html += `</div>`;
+  // 回饋與需要關心的孩子
+  const un = unreadComments().sort((a, b) => b.at.localeCompare(a.at)).slice(0, 5);
+  html += `<div class="grid g2 mt16">`;
+  html += `<div class="card"><div class="card-head"><h3>${isAdmin() ? "老師的新留言" : "社工的新回饋"}</h3><span class="sp"></span><a class="btn sm ghost" href="#/feedback">看全部</a></div><div class="card-body">`;
+  html += un.length ? un.map((cm) => { const l = lessonById(cm.lessonId); return l ? `<a class="cmt sw" href="#/lesson/${l.id}" style="display:block;color:inherit"><div class="row small"><b>${esc(cm.name)}</b><span class="muted">${esc(lessonTitle(l))}・${fmtTime(cm.at)}</span></div><div class="cmt-b small" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(cm.text)}</div></a>` : ""; }).join("") : `<div class="empty small">沒有新的留言</div>`;
+  html += `</div></div>`;
+  // 需要關心
+  const watch = [];
+  sites.forEach((s) => siteStudents(s.id).forEach((st) => { const ser = stuSeries(st.id); const t = trendOf(ser); if (t != null && t <= -0.5) watch.push({ st, t, ser }); }));
+  watch.sort((a, b) => a.t - b.t);
+  html += `<div class="card"><div class="card-head"><h3>最近分數往下的孩子</h3><span class="sub">最近兩堂平均比之前低 0.5 分以上</span></div><div class="card-body">`;
+  html += watch.length ? `<table class="tbl"><tbody>${watch.slice(0, 6).map((w) => `<tr class="click" data-href="#/student/${w.st.id}"><td><b>${esc(w.st.name)}</b> <span class="muted small">${esc(siteById(w.st.siteId)?.name || "")}</span></td><td>${sparkSVG(w.ser.map((p) => p.avg))}</td><td class="num trend-down">${f1(w.t)}</td></tr>`).join("")}</tbody></table><p class="small muted mb8">分數只是線索，不是結論；點進去看老師的評語，會更清楚發生了什麼。</p>` : `<div class="empty small">目前沒有明顯往下的孩子</div>`;
+  html += `</div></div></div>`;
+  c.innerHTML = html;
+  bindRowLinks(c);
+}
+function bindRowLinks(el) { $$("tr[data-href]", el).forEach((tr) => (tr.onclick = () => (location.hash = tr.dataset.href))); }
+
+/* ═════════════ 據點課堂列表 ═════════════ */
+function viewSite(id) {
+  const s = siteById(id);
+  if (!s) return notFound();
+  const ls = termLessons(id);
+  setTop(`${s.name} 課堂紀錄`, `${S.term === "*" ? "全部學期" : S.term + " 學期"} · ${ls.length} 堂`,
+    S.term !== "*" ? `<button class="btn" id="add-many">${icon("cal", "sm")}一次排多堂</button><button class="btn primary" id="add">${icon("plus", "sm")}新增一堂</button>` : "");
+  const c = $("#content");
+  if (!ls.length) {
+    c.innerHTML = `<div class="card"><div class="empty">${icon("book")}<p>這學期還沒有課堂。</p><p class="small">按右上角「新增一堂」，或「一次排多堂」把整學期的日期先排好。</p></div></div>`;
+  } else {
+    c.innerHTML = `<div class="row wrap mb12 small ink2" style="gap:12px"><span><span class="chip good">已記錄</span> 寫好課堂紀錄</span><span><span class="chip serious">待補紀錄</span> 日期過了還沒寫</span><span><span class="chip accent">已備課</span> 有主題或目標</span><span><span class="chip outline">預定</span> 還沒上</span></div>` +
+      ls.map((l) => {
+        const st = lessonState(l);
+        const cms = lessonComments(l.id);
+        const sw = cms.filter((x) => x.role !== "老師").length;
+        const rated = l.radar.rows.filter((r) => Object.keys(r.scores || {}).length).length;
+        return `<a class="jcard ${st}" href="#/lesson/${l.id}"><div class="row top"><div class="sp" style="min-width:0"><h4>第${esc(l.seq || "?")}次<small>${fmtDate(l.date)}</small></h4>
+          <div class="jmeta">${l.topic ? `<b style="color:var(--ink)">${esc(l.topic)}</b>` : '<span class="muted">還沒填主題</span>'} ${STATE_CHIP[st]} ${l.status === "代課" ? '<span class="chip warn">代課</span>' : ""}</div>
+          ${l.execution ? `<div class="jexcerpt">${esc(l.execution)}</div>` : ""}</div>
+          <div class="stack small ink2" style="gap:4px;align-items:flex-end;flex:none">
+            ${st === "done" ? `<span>${icon("users", "sm")} 出席 ${l.attendance.length || l.radar.rows.length} 人</span><span>${icon("chart", "sm")} 評分 ${rated} 人</span>` : ""}
+            ${cms.length ? `<span class="${sw ? "" : "muted"}">${icon("msg", "sm")} 回饋 ${cms.length}</span>` : isAdmin() && st === "done" ? '<span class="chip serious">待回饋</span>' : ""}
+          </div></div></a>`;
+      }).join("");
+  }
+  const add = $("#add");
+  if (add) add.onclick = async () => {
+    const last = ls[ls.length - 1];
+    const nextDate = last && last.date ? ymd(new Date(new Date(last.date + "T00:00:00").getTime() + 7 * 864e5)) : today();
+    const seq = String(ls.reduce((m, l) => Math.max(m, seqN(l)), 0) + 1);
+    try {
+      const r = await api("lesson.save", { lesson: { siteId: id, term: S.term, seq, date: nextDate, radar: { dims: defaultDims(id), rows: [] } } });
+      D().lessons.push(fixLesson(r.lesson));
+      location.hash = "#/lesson/" + r.lesson.id;
+    } catch (e) { toast(e.message, true); }
+  };
+  const am = $("#add-many");
+  if (am) am.onclick = () => addManyLessons(id, ls);
+}
+async function addManyLessons(siteId, ls) {
+  const last = ls[ls.length - 1];
+  const start = last && last.date ? ymd(new Date(new Date(last.date + "T00:00:00").getTime() + 7 * 864e5)) : today();
+  let vals = null;
+  const v = await modal({
+    title: "一次排多堂課", body: `<div class="stack"><p class="small ink2" style="margin:0">從第一堂的日期開始，每週同一天排一堂。排好之後，遇到放假可以把那堂改成「停課」或刪掉。</p>
+      <div class="grid g2"><label class="field"><span>第一堂日期</span><input class="input" type="date" id="m-start" value="${start}"></label>
+      <label class="field"><span>要排幾堂</span><input class="input" type="number" id="m-n" value="10" min="1" max="30"></label></div></div>`,
+    buttons: [{ label: "取消", value: null }, {
+      label: "排課", cls: "primary", value: "ok", check: (m) => {
+        vals = { start: $("#m-start", m).value, n: parseInt($("#m-n", m).value, 10) };
+        if (!vals.start || !(vals.n >= 1 && vals.n <= 30)) { toast("請填第一堂日期，堂數 1～30", true); return false; }
+        return true;
+      }
+    }]
+  });
+  if (v !== "ok") return;
+  let seq = ls.reduce((m, l) => Math.max(m, seqN(l)), 0);
+  const have = new Set(ls.map((l) => l.date));
+  const dims = defaultDims(siteId);
+  const base = new Date(vals.start + "T00:00:00").getTime();
+  const list = [];
+  for (let i = 0; i < vals.n; i++) {
+    const date = ymd(new Date(base + i * 7 * 864e5));
+    if (have.has(date)) continue;
+    list.push({ siteId, term: S.term, seq: String(++seq), date, radar: { dims, rows: [] } });
+  }
+  if (!list.length) return toast("這些日期都已經有課了");
+  try {
+    const r = await api("lesson.createMany", { lessons: list });
+    r.lessons.forEach((l) => D().lessons.push(fixLesson(l)));
+    toast(`已排好 ${r.lessons.length} 堂課`);
+    route();
+  } catch (e) { toast(e.message, true); }
+}
+function defaultDims(siteId) {
+  const prev = termLessons(siteId, "*").filter((l) => l.radar.dims.length).pop();
+  if (prev) return prev.radar.dims.slice();
+  return String(D().settings.defaultDims || "合作,理解,組裝,口語表達,解決問題").split(/[,，、]/).map((s) => s.trim()).filter(Boolean);
+}
+function notFound() { setTop("找不到"); $("#content").innerHTML = `<div class="card"><div class="empty">找不到這個頁面，可能已經被刪除了。<div class="mt12"><a class="btn" href="#/">回總覽</a></div></div></div>`; }
+
+/* ═════════════ 課堂編輯 ═════════════ */
+const PH = {
+  goals: "這堂課想讓孩子懂什麼、會做什麼？例：理解相對位置是依照目前方向變化",
+  timeline: "例：\n概念介紹（15min）\n分組實作（40min）\n分享與收拾（10min）",
+  indicators: "例：合作能力、方向理解能力、實作組裝能力",
+  execution: "照時間順序寫：各組怎麼分工、哪裡卡關、孩子怎麼解決的",
+  qualitative: "今天哪個孩子讓你印象深刻？他做了什麼、說了什麼？",
+  management: "今天用了哪些方法讓孩子回到課堂？哪個有效、下次想換什麼？",
+  groupNote: "例：異質性分組；A 組主要觀察齒輪結構，B 組觀察合作分工",
+  radarNote: "對整體評分的補充，例：新生第一週的分數先視為初始觀察值"
+};
+function viewLesson(id) {
+  const l0 = lessonById(id);
+  if (!l0) return notFound();
+  const site = siteById(l0.siteId);
+  E = { id, orig: clone(l0), l: fixLesson(clone(l0)), dirty: false };
+  if (!E.l.radar.dims.length && !E.l.radar.rows.length) E.l.radar.dims = defaultDims(E.l.siteId);
+  markSeen(id);
+  renderNav();
+  const back = `#/site/${l0.siteId}`;
+  setTop(`第${l0.seq || "?"}次・${l0.topic || "（還沒填主題）"}`, `${esc(site?.name || "")} · ${esc(l0.term)} 學期 · ${fmtDate(l0.date, true)} · 最後更新：${esc(l0.updatedBy || "")} ${fmtTime(l0.updatedAt)}`,
+    `<a class="btn ghost" href="${back}">${icon("back", "sm")}回列表</a><button class="btn danger" id="del">${icon("trash", "sm")}刪除</button>`);
+  const fld = (k, label, rows = 3, hint = "") => `<label class="field"><span>${label}${hint ? ` <span class="hint">${hint}</span>` : ""}</span><textarea class="textarea" data-k="${k}" rows="${rows}" placeholder="${esc(PH[k] || "")}">${esc(E.l[k])}</textarea></label>`;
+  const c = $("#content");
+  c.innerHTML = `
+    <div id="draft-slot"></div>
+    <div class="card"><div class="card-body grid g4" style="padding-top:16px">
+      <label class="field"><span>第幾次</span><input class="input" data-k="seq" value="${esc(E.l.seq)}" inputmode="numeric"></label>
+      <label class="field"><span>日期</span><input class="input" type="date" data-k="date" value="${esc(E.l.date)}"></label>
+      <label class="field"><span>狀態</span><div class="seg" id="status">${["上課", "代課", "停課"].map((s) => `<button type="button" data-v="${s === "上課" ? "" : s}" class="${(E.l.status || "") === (s === "上課" ? "" : s) ? "on" : ""}">${s}</button>`).join("")}</div></label>
+      <label class="field"><span>學期</span><input class="input" data-k="term" value="${esc(E.l.term)}"></label>
+      <label class="field span2"><span>課程主題</span><input class="input" data-k="topic" value="${esc(E.l.topic)}" placeholder="例：齒輪變速：1.5 倍速改裝"></label>
+      <label class="field span2"><span>簡報連結 <span class="hint">Canva、NotebookLM、Google 簡報都可以</span></span><div class="row"><input class="input" data-k="slides" value="${esc(E.l.slides)}" placeholder="https://"><a class="btn icon ${E.l.slides ? "" : "hidden"}" id="open-slides" href="${esc(E.l.slides)}" target="_blank" rel="noopener" title="開啟簡報">${icon("link", "sm")}</a></div></label>
+    </div></div>
+
+    <div class="section-title"><span class="n">1</span>備課</div>
+    <div class="card"><div class="card-body stack" style="padding-top:16px">
+      ${fld("goals", "教學原理／目標設定", 3)}
+      <div class="grid g2">${fld("timeline", "課程時間", 4)}${fld("indicators", "評量指標", 4)}</div>
+    </div></div>
+
+    <div class="section-title"><span class="n">2</span>出席與分組</div>
+    <div class="card"><div class="card-body stack" style="padding-top:16px">
+      <div><div class="row mb8"><b class="small ink2">出席的孩子</b><span class="small muted" id="att-count"></span><span class="sp"></span><button class="btn sm" id="att-all">全部到</button><button class="btn sm ghost" id="add-kid">${icon("plus", "sm")}新增學生</button></div><div class="kchips" id="att"></div></div>
+      <div><div class="row mb8"><b class="small ink2">分組</b><span class="sp"></span><button class="btn sm" id="g-prev">沿用上一堂分組</button><button class="btn sm" id="g-add">${icon("plus", "sm")}新增一組</button></div><div id="groups"></div></div>
+      ${fld("groupNote", "能力分類／分組說明", 2)}
+    </div></div>
+
+    <div class="section-title"><span class="n">3</span>課堂紀錄</div>
+    <div class="card"><div class="card-body stack" style="padding-top:16px">
+      ${fld("execution", "課堂執行紀錄", 6)}
+      ${fld("qualitative", "質性觀察", 4)}
+      ${fld("management", "班級經營", 3)}
+    </div></div>
+
+    <div class="section-title"><span class="n">4</span>雷達分析 <span class="small muted" style="font-weight:400">每個孩子 1～${esc(D().settings.scoreMax || 5)} 分，可填 0.5</span></div>
+    <div class="card"><div class="card-body stack" style="padding-top:16px">
+      <div><div class="small ink2 mb8"><b>這堂課的評分維度</b>（每堂可以不同，例如這週看「程式」、下週看「設計」）</div>
+        <div class="row wrap" id="dims"></div></div>
+      <div class="tbl-wrap"><table class="tbl radar-tbl" id="radar"></table></div>
+      ${fld("radarNote", "雷達備註", 2)}
+    </div></div>
+
+    <div class="section-title"><span class="n">5</span>回饋與討論</div>
+    <div class="card"><div class="card-body" style="padding-top:16px" id="thread"></div></div>
+
+    <div class="savebar"><span class="state" id="save-state">所有修改都已儲存</span><span class="sp"></span><button class="btn primary" id="save">${icon("check", "sm")}儲存</button></div>`;
+  // 基本欄位
+  $$("[data-k]", c).forEach((el) => {
+    el.addEventListener("input", () => {
+      E.l[el.dataset.k] = el.value;
+      if (el.dataset.k === "slides") { const a = $("#open-slides"); a.href = el.value; a.classList.toggle("hidden", !/^https?:\/\//.test(el.value)); }
+      if (el.tagName === "TEXTAREA") grow(el);
+      dirty();
+    });
+    if (el.tagName === "TEXTAREA") grow(el);
+  });
+  $$("#status button").forEach((b) => (b.onclick = () => { E.l.status = b.dataset.v; $$("#status button").forEach((x) => x.classList.toggle("on", x === b)); dirty(); }));
+  $("#save").onclick = saveLesson;
+  $("#del").onclick = deleteLesson;
+  $("#att-all").onclick = () => { E.l.attendance = siteStudents(E.l.siteId).map((s) => s.id); renderAttendance(); renderGroups(); renderRadar(); dirty(); };
+  $("#add-kid").onclick = () => editStudent(null, E.l.siteId, (st) => { E.l.attendance.push(st.id); renderAttendance(); renderGroups(); renderRadar(); dirty(); });
+  $("#g-add").onclick = () => { E.l.groups.push({ name: "第" + "一二三四五六七八九十"[E.l.groups.length % 10] + "組", members: [], note: "" }); renderGroups(); dirty(); };
+  $("#g-prev").onclick = () => {
+    const p = prevLesson(E.l, (x) => x.groups.length);
+    if (!p) return toast("前面的課堂沒有分組可以沿用");
+    E.l.groups = clone(p.groups).map((g) => ({ ...g, members: g.members.filter((m) => stuById(m)) }));
+    renderGroups(); dirty(); toast(`已沿用第${p.seq}次的分組`);
+  };
+  renderAttendance(); renderGroups(); renderDims(); renderRadar(); renderThread();
+  checkDraft();
+}
+function grow(el) { el.style.height = "auto"; el.style.height = Math.min(el.scrollHeight + 2, 640) + "px"; }
+let draftTimer = null;
+function dirty() {
+  if (!E) return;
+  E.dirty = true;
+  const st = $("#save-state");
+  if (st) { st.textContent = "有還沒儲存的修改"; st.classList.add("dirty"); }
+  clearTimeout(draftTimer);
+  draftTimer = setTimeout(() => { if (E && E.dirty) lsSet("robot-draft-" + E.id, { l: E.l, at: new Date().toISOString(), base: E.orig.updatedAt }); }, 500);
+}
+function checkDraft() {
+  const d = lsGet("robot-draft-" + E.id);
+  if (!d || !d.l) return;
+  if (JSON.stringify(cleanForSave(d.l)) === JSON.stringify(cleanForSave(E.orig))) { lsDel("robot-draft-" + E.id); return; }
+  const changed = d.base !== E.orig.updatedAt;
+  const slot = $("#draft-slot");
+  slot.innerHTML = `<div class="callout warn mb12 row wrap">${icon("alert", "sm")}<span class="sp">這台電腦上有一份 ${fmtTime(d.at)} 還沒儲存的草稿。${changed ? "<b>注意：之後雲端上的內容又被更新過了。</b>" : ""}</span><button class="btn sm" id="d-drop">丟掉草稿</button><button class="btn sm primary" id="d-use">還原草稿</button></div>`;
+  $("#d-drop").onclick = () => { lsDel("robot-draft-" + E.id); slot.innerHTML = ""; };
+  $("#d-use").onclick = () => { const id = E.id; const keep = d.l; lessonById(id) && viewLessonWith(id, keep); };
+}
+function viewLessonWith(id, data) {
+  viewLesson(id);
+  E.l = fixLesson(clone({ ...data, id, updatedAt: E.orig.updatedAt }));
+  // 重新把值填進畫面
+  $$("[data-k]").forEach((el) => { el.value = E.l[el.dataset.k] ?? ""; if (el.tagName === "TEXTAREA") grow(el); });
+  $$("#status button").forEach((x) => x.classList.toggle("on", x.dataset.v === (E.l.status || "")));
+  renderAttendance(); renderGroups(); renderDims(); renderRadar();
+  $("#draft-slot").innerHTML = "";
+  dirty();
+  toast("已還原草稿，記得按儲存");
+}
+function prevLesson(l, pred) {
+  const ls = termLessons(l.siteId, "*").filter((x) => x.id !== l.id && byLesson(x, l) < 0 && pred(x));
+  return ls[ls.length - 1] || null;
+}
+function rosterFor(l) {
+  const ids = new Set(siteStudents(l.siteId).map((s) => s.id));
+  l.attendance.forEach((x) => ids.add(x));
+  l.radar.rows.forEach((r) => ids.add(r.sid));
+  l.groups.forEach((g) => g.members.forEach((m) => ids.add(m)));
+  return [...ids].filter((x) => stuById(x)).sort((a, b) => stuName(a).localeCompare(stuName(b), "zh-Hant"));
+}
+function renderAttendance() {
+  const el = $("#att");
+  const ids = rosterFor(E.l);
+  el.innerHTML = ids.length ? ids.map((sid) => `<button type="button" class="kchip ${E.l.attendance.includes(sid) ? "on" : ""}" data-sid="${sid}">${E.l.attendance.includes(sid) ? icon("check", "sm") : ""}${esc(stuName(sid))}</button>`).join("") : '<span class="small muted">這個據點還沒有學生，按「新增學生」加入。</span>';
+  $("#att-count").textContent = `${E.l.attendance.length} / ${ids.length} 人`;
+  $$("button", el).forEach((b) => (b.onclick = () => {
+    const sid = b.dataset.sid;
+    if (E.l.attendance.includes(sid)) E.l.attendance = E.l.attendance.filter((x) => x !== sid);
+    else E.l.attendance.push(sid);
+    renderAttendance(); renderGroups(); renderRadar(); dirty();
+  }));
+}
+function renderGroups() {
+  const el = $("#groups");
+  const pool = E.l.attendance.length ? E.l.attendance : rosterFor(E.l);
+  if (!E.l.groups.length) { el.innerHTML = '<div class="small muted">還沒有分組。可以按「新增一組」或「沿用上一堂分組」。</div>'; return; }
+  el.innerHTML = E.l.groups.map((g, i) => {
+    const ids = [...new Set([...pool, ...g.members])];
+    return `<div class="gcard"><div class="row mb8"><input class="input sm" style="max-width:160px;font-weight:700" data-gname="${i}" value="${esc(g.name)}"><span class="small muted">${g.members.length} 人</span><span class="sp"></span><button class="btn sm ghost" data-gdel="${i}" title="刪除這組">${icon("x", "sm")}</button></div>
+      <div class="kchips">${ids.map((sid) => { const on = g.members.includes(sid); const other = !on && E.l.groups.some((x, j) => j !== i && x.members.includes(sid)); return `<button type="button" class="kchip ${on ? "on" : ""} ${other ? "taken" : ""}" data-g="${i}" data-sid="${sid}">${esc(stuName(sid))}</button>`; }).join("")}</div></div>`;
+  }).join("") + '<p class="small muted" style="margin:8px 0 0">點名字加入這一組；顏色淡的是已經在別組的孩子，點了會移過來。</p>';
+  $$("[data-gname]", el).forEach((inp) => (inp.oninput = () => { E.l.groups[+inp.dataset.gname].name = inp.value; dirty(); }));
+  $$("[data-gdel]", el).forEach((b) => (b.onclick = () => { E.l.groups.splice(+b.dataset.gdel, 1); renderGroups(); dirty(); }));
+  $$("button[data-g]", el).forEach((b) => (b.onclick = () => {
+    const i = +b.dataset.g, sid = b.dataset.sid, g = E.l.groups[i];
+    if (g.members.includes(sid)) g.members = g.members.filter((x) => x !== sid);
+    else { E.l.groups.forEach((x) => (x.members = x.members.filter((m) => m !== sid))); g.members.push(sid); }
+    renderGroups(); dirty();
+  }));
+}
+function renderDims() {
+  const el = $("#dims");
+  el.innerHTML = E.l.radar.dims.map((d, i) => `<span class="dimchip">${esc(d)}<button type="button" data-ddel="${i}" aria-label="移除 ${esc(d)}">${icon("x", "sm")}</button></span>`).join("") +
+    `<form id="dim-form" class="row" style="gap:6px"><input class="input sm" id="dim-new" placeholder="新增維度" style="width:110px"><button class="btn sm" type="submit">${icon("plus", "sm")}</button></form>
+     <button class="btn sm ghost" id="dim-prev" type="button">沿用上一堂</button><button class="btn sm ghost" id="dim-def" type="button">用預設</button>`;
+  $$("[data-ddel]", el).forEach((b) => (b.onclick = async () => {
+    const d = E.l.radar.dims[+b.dataset.ddel];
+    const used = E.l.radar.rows.some((r) => r.scores[d] != null);
+    if (used && !(await confirmBox("移除維度", `「${esc(d)}」已經有分數了，移除後這些分數也會一起刪掉。`, "移除", true))) return;
+    E.l.radar.dims = E.l.radar.dims.filter((x) => x !== d);
+    E.l.radar.rows.forEach((r) => delete r.scores[d]);
+    renderDims(); renderRadar(); dirty();
+  }));
+  $("#dim-form").onsubmit = (e) => {
+    e.preventDefault();
+    const v = $("#dim-new").value.trim();
+    if (!v) return;
+    if (E.l.radar.dims.includes(v)) return toast("已經有這個維度了");
+    E.l.radar.dims.push(v); renderDims(); renderRadar(); dirty();
+    $("#dim-new").focus();
+  };
+  const setDims = (dims, msg) => {
+    const lost = E.l.radar.dims.filter((d) => !dims.includes(d) && E.l.radar.rows.some((r) => r.scores[d] != null));
+    if (lost.length) return toast(`「${lost.join("、")}」已經有分數，請先手動移除`, true);
+    E.l.radar.dims = dims.slice(); renderDims(); renderRadar(); dirty(); toast(msg);
+  };
+  $("#dim-prev").onclick = () => { const p = prevLesson(E.l, (x) => x.radar.dims.length); p ? setDims(p.radar.dims, `已沿用第${p.seq}次的維度`) : toast("前面的課堂沒有維度可以沿用"); };
+  $("#dim-def").onclick = () => setDims(String(D().settings.defaultDims || "").split(/[,，、]/).map((s) => s.trim()).filter(Boolean), "已換成預設維度");
+}
+function renderRadar() {
+  const tbl = $("#radar");
+  const dims = E.l.radar.dims;
+  const max = +D().settings.scoreMax || 5;
+  const ids = [...E.l.attendance];
+  E.l.radar.rows.forEach((r) => { if (!ids.includes(r.sid) && (Object.keys(r.scores).length || r.comment)) ids.push(r.sid); });
+  if (!dims.length) { tbl.innerHTML = '<tbody><tr><td class="muted small">先在上面加入評分維度。</td></tr></tbody>'; return; }
+  if (!ids.length) { tbl.innerHTML = '<tbody><tr><td class="muted small">先在「出席與分組」點選出席的孩子，這裡就會出現評分表。</td></tr></tbody>'; return; }
+  const prev = prevLesson(E.l, (x) => x.radar.rows.length);
+  const opts = (v) => { let o = '<option value="">–</option>'; for (let x = 1; x <= max; x += 0.5) o += `<option value="${x}" ${+v === x && v !== "" && v != null ? "selected" : ""}>${x}</option>`; return o; };
+  const rowOf = (sid) => { let r = E.l.radar.rows.find((x) => x.sid === sid); if (!r) { r = { sid, scores: {}, comment: "" }; E.l.radar.rows.push(r); } return r; };
+  let html = `<thead><tr><th>孩子</th>${dims.map((d) => `<th class="c">${esc(d)}</th>`).join("")}<th class="num">平均</th></tr></thead><tbody>`;
+  ids.forEach((sid) => {
+    const r = rowOf(sid);
+    const pr = prev && prev.radar.rows.find((x) => x.sid === sid);
+    const absent = !E.l.attendance.includes(sid);
+    html += `<tr><td class="nm">${esc(stuName(sid))}${absent ? ' <span class="chip">未勾出席</span>' : ""}</td>`;
+    dims.forEach((d) => {
+      const v = r.scores[d];
+      const pv = pr ? pr.scores[d] : null;
+      let hint = "";
+      if (pv != null) { const diff = v != null ? v - pv : 0; hint = `<div class="prev ${v != null && diff > 0 ? "up" : v != null && diff < 0 ? "down" : ""}">上次 ${pv}${v != null && diff ? (diff > 0 ? " ↑" : " ↓") : ""}</div>`; }
+      html += `<td class="c"><select class="select sm" data-score="${sid}|${esc(d)}" aria-label="${esc(stuName(sid))} ${esc(d)}">${opts(v)}</select>${hint}</td>`;
+    });
+    const vals = dims.map((d) => r.scores[d]).filter((v) => v != null);
+    html += `<td class="num"><b data-avg="${sid}">${f1(mean(vals))}</b></td></tr>`;
+    html += `<tr class="cm sep"><td colspan="${dims.length + 2}"><textarea class="textarea" rows="2" data-cm="${sid}" placeholder="${esc(stuName(sid))}這週最值得被看見的一件事是…；下週可以試試…">${esc(r.comment)}</textarea></td></tr>`;
+  });
+  tbl.innerHTML = html + "</tbody>";
+  $$("select[data-score]", tbl).forEach((s) => (s.onchange = () => {
+    const [sid, d] = s.dataset.score.split("|");
+    const r = rowOf(sid);
+    if (s.value === "") delete r.scores[d]; else r.scores[d] = +s.value;
+    const vals = dims.map((x) => r.scores[x]).filter((v) => v != null);
+    $(`[data-avg="${sid}"]`, tbl).textContent = f1(mean(vals));
+    dirty();
+  }));
+  $$("textarea[data-cm]", tbl).forEach((t) => { grow(t); t.oninput = () => { rowOf(t.dataset.cm).comment = t.value; grow(t); dirty(); }; });
+}
+function cleanForSave(l0) {
+  const l = fixLesson(clone(l0));
+  l.radar.rows = l.radar.rows.filter((r) => Object.keys(r.scores || {}).length || (r.comment || "").trim());
+  l.groups = l.groups.filter((g) => g.name.trim() || g.members.length);
+  const pick = {};
+  ["id", "siteId", "term", "seq", "date", "status", "topic", "goals", "timeline", "execution", "indicators", "groups", "groupNote", "qualitative", "radar", "radarNote", "management", "slides", "attendance"].forEach((k) => (pick[k] = l[k] ?? ""));
+  return pick;
+}
+async function saveLesson(force) {
+  if (!E) return false;
+  const btn = $("#save");
+  if (btn) { btn.disabled = true; btn.innerHTML = "儲存中…"; }
+  const lesson = cleanForSave(E.l);
+  if (lesson.slides && !/^https?:\/\//i.test(lesson.slides)) { toast("簡報連結要用 http 或 https 開頭", true); if (btn) { btn.disabled = false; btn.innerHTML = icon("check", "sm") + "儲存"; } return false; }
+  try {
+    const r = await api("lesson.save", { lesson, expect: force === true ? (E.conflictAt || "") : (E.orig.updatedAt || "") });
+    const saved = fixLesson(r.lesson);
+    const i = D().lessons.findIndex((x) => x.id === saved.id);
+    if (i >= 0) D().lessons[i] = saved; else D().lessons.push(saved);
+    E.orig = clone(saved);
+    E.l.updatedAt = saved.updatedAt;
+    E.dirty = false;
+    lsDel("robot-draft-" + E.id);
+    const st = $("#save-state");
+    if (st) { st.textContent = `已儲存 ${fmtTime(saved.updatedAt)}`; st.classList.remove("dirty"); }
+    $("#ps").innerHTML = `${esc(siteById(saved.siteId)?.name || "")} · ${esc(saved.term)} 學期 · ${fmtDate(saved.date, true)} · 最後更新：${esc(saved.updatedBy)} ${fmtTime(saved.updatedAt)}`;
+    $("#pt").textContent = `第${saved.seq || "?"}次・${saved.topic || "（還沒填主題）"}`;
+    renderNav();
+    toast("已儲存");
+    return true;
+  } catch (e) {
+    if (e.code === "conflict") {
+      E.conflictAt = e.current.updatedAt;
+      const v = await modal({ title: "這堂課剛剛被別人改過", body: `<p class="ink2" style="margin:0;line-height:1.8">${esc(e.message)}。<br>你可以先看最新版本（你的修改會保留成草稿，可以再還原），或直接用你的版本蓋過去。</p>`, buttons: [{ label: "看最新版本", value: "load" }, { label: "用我的版本覆蓋", value: "force", cls: "danger" }] });
+      if (v === "force") return saveLesson(true);
+      if (v === "load") {
+        lsSet("robot-draft-" + E.id, { l: E.l, at: new Date().toISOString(), base: e.current.updatedAt });
+        const i = D().lessons.findIndex((x) => x.id === E.id);
+        D().lessons[i] = fixLesson(e.current);
+        E.dirty = false;
+        viewLesson(E.id);
+      }
+    } else toast(e.message, true);
+    return false;
+  } finally {
+    const b = $("#save");
+    if (b) { b.disabled = false; b.innerHTML = icon("check", "sm") + "儲存"; }
+  }
+}
+async function deleteLesson() {
+  const l = E.orig;
+  const has = hasRecord(l) || lessonComments(l.id).length;
+  if (!(await confirmBox("刪除這堂課", has ? `第${esc(l.seq)}次已經有紀錄${lessonComments(l.id).length ? "和回饋留言" : ""}，刪除後就找不回來了。<br>如果只是這週沒上課，建議把狀態改成「停課」。` : `確定刪除第${esc(l.seq)}次（${fmtDate(l.date)}）嗎？`, "刪除", true))) return;
+  try {
+    await api("lesson.delete", { id: l.id });
+    D().lessons = D().lessons.filter((x) => x.id !== l.id);
+    D().comments = D().comments.filter((x) => x.lessonId !== l.id);
+    lsDel("robot-draft-" + l.id);
+    E = null;
+    toast("已刪除");
+    location.hash = "#/site/" + l.siteId;
+  } catch (e) { toast(e.message, true); }
+}
+function renderThread() {
+  const el = $("#thread");
+  const cms = lessonComments(E.id);
+  el.innerHTML = (cms.length ? cms.map((c) => `<div class="cmt ${c.role !== "老師" ? "sw" : ""}"><div class="row small"><b>${esc(c.name)}</b><span class="chip ${c.role !== "老師" ? "brand" : ""}">${esc(c.role)}</span><span class="muted">${fmtTime(c.at)}</span><span class="sp"></span>${c.email === S.me.email || isAdmin() ? `<button class="btn sm ghost" data-cdel="${c.id}">刪除</button>` : ""}</div><div class="cmt-b">${esc(c.text)}</div></div>`).join("") : `<div class="small muted">${isAdmin() ? "還沒有回饋。看完這堂課的紀錄，留一句話給老師吧。" : "社工的回饋會出現在這裡，你也可以在這裡提問或回覆。"}</div>`) +
+    `<div class="stack mt12" style="gap:8px"><textarea class="textarea" id="c-text" rows="3" placeholder="${isAdmin() ? "例：B 組的分工調整得很好！下週可以試試讓每個人負責一個小區塊…" : "回覆社工，或提出想討論的問題"}"></textarea>
+      <div class="row wrap"><label class="row small" style="gap:6px;cursor:pointer"><input type="checkbox" id="c-notify" ${isAdmin() ? "checked" : ""}>${icon("mail", "sm")}同時寄 Email 通知${isAdmin() ? "這個據點的老師" : "社工"}</label><span class="sp"></span><button class="btn primary" id="c-send">${icon("send", "sm")}${isAdmin() ? "送出回饋" : "送出留言"}</button></div></div>`;
+  $("#c-send").onclick = async () => {
+    const text = $("#c-text").value.trim();
+    if (!text) return toast("留言是空的");
+    const b = $("#c-send"); b.disabled = true;
+    try {
+      const r = await api("comment.add", { lessonId: E.id, text, notify: $("#c-notify").checked });
+      D().comments.push(r.comment);
+      markSeen(E.id);
+      renderThread(); renderNav();
+      toast(r.mailed ? `已送出，並寄信通知 ${r.mailed} 人` : "已送出");
+    } catch (e) { toast(e.message, true); b.disabled = false; }
+  };
+  $$("[data-cdel]", el).forEach((b) => (b.onclick = async () => {
+    if (!(await confirmBox("刪除留言", "確定刪除這則留言？", "刪除", true))) return;
+    try { await api("comment.delete", { id: b.dataset.cdel }); D().comments = D().comments.filter((x) => x.id !== b.dataset.cdel); renderThread(); } catch (e) { toast(e.message, true); }
+  }));
+}
+document.addEventListener("keydown", (e) => { if ((e.ctrlKey || e.metaKey) && e.key === "s" && E) { e.preventDefault(); saveLesson(); } });
+
+/* ═════════════ 學生能力 ═════════════ */
+function viewStudents(siteArg) {
+  const sites = activeSites();
+  const sid = siteArg || lsGet("robot-stu-site") || (sites[0] && sites[0].id) || "";
+  setTop("學生能力", `${S.term === "*" ? "全部學期" : S.term + " 學期"} · 雷達分數的變化與老師的評語`);
+  const c = $("#content");
+  if (!sites.length) { c.innerHTML = '<div class="card"><div class="empty">還沒有據點</div></div>'; return; }
+  const site = siteById(sid) || sites[0];
+  lsSet("robot-stu-site", site.id);
+  const kids = siteStudents(site.id, true);
+  const rows = kids.map((st) => { const ser = stuSeries(st.id); const at = attendanceOf(st.id); return { st, ser, at, avg: mean(ser.map((p) => p.avg).filter((v) => v != null)), t: trendOf(ser), last: [...ser].reverse().find((p) => p.comment) }; });
+  c.innerHTML = `<div class="pills mb12">${sites.map((s) => `<button class="pill ${s.id === site.id ? "on" : ""}" data-s="${s.id}">${esc(s.name)}</button>`).join("")}</div>
+    <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>孩子</th><th class="c">出席</th><th class="num">平均</th><th>每堂平均</th><th class="num">最近變化</th><th>最近一則評語</th></tr></thead><tbody>
+    ${rows.length ? rows.map((r) => `<tr class="click" data-href="#/student/${r.st.id}"><td><b>${esc(r.st.name)}</b>${r.st.status === "結案" ? ' <span class="chip">結案</span>' : ""}${r.st.grade ? ` <span class="muted small">${esc(r.st.grade)}年級</span>` : ""}</td>
+      <td class="c num">${r.at.held ? `${r.at.present}/${r.at.held}` : "–"}</td><td class="num"><b>${f1(r.avg)}</b></td><td>${sparkSVG(r.ser.map((p) => p.avg))}</td>
+      <td class="num ${r.t == null ? "muted" : r.t >= 0.3 ? "trend-up" : r.t <= -0.3 ? "trend-down" : ""}">${r.t == null ? "–" : (r.t > 0 ? "+" : "") + f1(r.t)}</td>
+      <td class="small ink2" style="max-width:380px">${r.last ? `<span style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(r.last.comment)}</span>` : '<span class="muted">–</span>'}</td></tr>`).join("") : '<tr><td colspan="6" class="empty">這個據點還沒有學生</td></tr>'}
+    </tbody></table></div></div>
+    <p class="small muted">「最近變化」是最近兩堂的平均減掉前兩堂的平均。每堂課的評分維度可能不同，平均只當參考。</p>`;
+  $$("[data-s]", c).forEach((b) => (b.onclick = () => (location.hash = "#/students/" + b.dataset.s)));
+  bindRowLinks(c);
+}
+function viewStudent(id) {
+  const st = stuById(id);
+  if (!st) return notFound();
+  const site = siteById(st.siteId);
+  const ser = stuSeries(id);
+  const at = attendanceOf(id);
+  setTop(st.name, `${esc(site?.name || "")}${st.grade ? ` · ${esc(st.grade)} 年級` : ""} · ${S.term === "*" ? "全部學期" : S.term + " 學期"}${st.status === "結案" ? " · 已結案" : ""}`,
+    `<a class="btn ghost" href="#/students/${st.siteId}">${icon("back", "sm")}回學生列表</a>`);
+  const c = $("#content");
+  if (!ser.length) { c.innerHTML = `<div class="card"><div class="empty">${icon("chart")}<p>這學期還沒有 ${esc(st.name)} 的評分。</p><p class="small">可以在左上角換學期看看。</p></div></div>`; return; }
+  const dims = coreDims(ser);
+  const avgVals = {}; dims.forEach((d) => (avgVals[d] = dimAvg(ser, d)));
+  const last = ser[ser.length - 1];
+  const sorted = dims.filter((d) => avgVals[d] != null).sort((a, b) => avgVals[b] - avgVals[a]);
+  const t = trendOf(ser);
+  const lineDims = dims.slice(0, 6);
+  c.innerHTML = `<div class="grid g4">
+      <div class="card stat"><div class="label">出席</div><div class="value">${at.present}<small>/ ${at.held} 堂</small></div><div class="foot">有評分的課堂 ${ser.length} 堂</div></div>
+      <div class="card stat"><div class="label">學期平均</div><div class="value">${f1(mean(ser.map((p) => p.avg).filter((v) => v != null)))}</div><div class="foot">${t == null ? "堂數還不夠看變化" : `最近變化 <b class="${t >= 0.3 ? "trend-up" : t <= -0.3 ? "trend-down" : ""}">${t > 0 ? "+" : ""}${f1(t)}</b>`}</div></div>
+      <div class="card stat"><div class="label">最穩定的能力</div><div class="value" style="font-size:20px">${esc(sorted[0] || "–")}</div><div class="foot">平均 ${f1(avgVals[sorted[0]])}</div></div>
+      <div class="card stat"><div class="label">可以多陪伴的能力</div><div class="value" style="font-size:20px">${esc(sorted[sorted.length - 1] || "–")}</div><div class="foot">平均 ${f1(avgVals[sorted[sorted.length - 1]])}</div></div>
+    </div>
+    <div class="grid g2 mt16">
+      <div class="card"><div class="card-head"><h3>能力雷達</h3><span class="sub">學期平均 vs. 最近一堂（第${esc(last.l.seq)}次）</span></div><div class="card-body">
+        ${radarSVG(dims, [{ label: "學期平均", color: "var(--s1)", values: avgVals }, { label: "最近一堂", color: "var(--s2)", values: last.scores, dash: true }], +D().settings.scoreMax || 5)}
+        <div class="legend" style="justify-content:center"><span><i style="background:var(--s1)"></i>學期平均</span><span><i style="background:var(--s2)"></i>最近一堂${dims.some((d) => last.scores[d] == null) ? "（只連有評分的維度）" : ""}</span></div>
+        ${dims.length < 3 ? "" : `<p class="small muted" style="margin:8px 0 0">只畫出現兩堂以上的維度；「問題解決」和「解決問題」視為同一項。</p>`}
+      </div></div>
+      <div class="card"><div class="card-head"><h3>每堂的分數</h3></div><div class="card-body">
+        ${lineSVG(ser.map((p) => "第" + p.l.seq + "次"), [{ label: "平均", color: "var(--ink)", values: ser.map((p) => p.avg), bold: true }, ...lineDims.map((d, i) => ({ label: d, color: SERIES[i], values: ser.map((p) => p.scores[d] ?? null) }))], 1, +D().settings.scoreMax || 5)}
+        <div class="legend mt8"><span><i style="background:var(--ink)"></i>平均</span>${lineDims.map((d, i) => `<span><i style="background:${SERIES[i]}"></i>${esc(d)}</span>`).join("")}</div>
+      </div></div>
+    </div>
+    <div class="section-title">${icon("book", "sm")}這學期的 ${esc(st.name)}</div>
+    <div class="card"><div class="card-body" style="padding-top:18px"><div class="story">
+      ${[...ser].reverse().map((p) => `<div class="story-item"><div class="when"><a href="#/lesson/${p.l.id}">第${esc(p.l.seq)}次・${fmtDate(p.l.date)}</a>　${esc(p.l.topic || "")}</div>
+        <div class="row wrap mt8" style="gap:6px">${Object.entries(p.scores).map(([d, v]) => `<span class="chip outline">${esc(d)} <b>${v}</b></span>`).join("")}</div>
+        ${p.comment ? `<div class="prewrap mt8">${esc(p.comment)}</div>` : ""}</div>`).join("")}
+    </div></div></div>`;
+}
+
+/* ═════════════ 回饋 ═════════════ */
+function viewFeedback() {
+  const tab = lsGet("robot-fb-tab") || (isAdmin() ? "need" : "all");
+  setTop(isAdmin() ? "課堂回饋" : "回饋留言", isAdmin() ? "看老師的課堂紀錄，留下回饋" : "社工給你的回饋，和你們的討論");
+  const c = $("#content");
+  const lessons = termLessons(null).filter((l) => activeSites().some((s) => s.id === l.siteId));
+  const need = lessons.filter(needsFeedback).reverse();
+  const un = new Set(unreadComments().map((x) => x.id));
+  const all = D().comments.filter((cm) => lessons.some((l) => l.id === cm.lessonId)).sort((a, b) => b.at.localeCompare(a.at));
+  const tabs = isAdmin() ? [["need", `還沒回饋（${need.length}）`], ["all", `全部留言（${all.length}）`]] : [["all", `全部留言（${all.length}）`]];
+  let html = `<div class="pills mb12">${tabs.map(([k, label]) => `<button class="pill ${tab === k ? "on" : ""}" data-tab="${k}">${label}</button>`).join("")}</div>`;
+  if (isAdmin() && tab === "need") {
+    html += need.length ? need.map((l) => `<div class="card mb12"><div class="card-head"><h3><a href="#/lesson/${l.id}">${esc(lessonTitle(l))}・${esc(l.topic || "")}</a></h3><span class="sub">${fmtDate(l.date, true)}・出席 ${l.attendance.length || l.radar.rows.length} 人</span></div>
+      <div class="card-body stack" style="gap:8px">
+        ${l.execution ? `<div><div class="small ink2"><b>課堂執行紀錄</b></div><div class="prewrap small" style="max-height:9.5em;overflow:hidden">${esc(l.execution)}</div></div>` : ""}
+        ${l.qualitative ? `<div><div class="small ink2"><b>質性觀察</b></div><div class="prewrap small" style="max-height:6em;overflow:hidden">${esc(l.qualitative)}</div></div>` : ""}
+        <div class="row" style="align-items:flex-end;gap:8px"><textarea class="textarea" rows="2" data-fb="${l.id}" placeholder="留一句回饋給老師…"></textarea><button class="btn primary" data-fbsend="${l.id}">${icon("send", "sm")}送出</button></div>
+        <label class="row small" style="gap:6px"><input type="checkbox" data-fbmail="${l.id}" checked>同時寄 Email 通知老師</label>
+      </div></div>`).join("") : `<div class="card"><div class="empty">${icon("check")}<p>這學期每一堂有紀錄的課，都已經回饋過了。</p></div></div>`;
+  } else {
+    html += all.length ? `<div class="stack" style="gap:8px">${all.map((cm) => { const l = lessonById(cm.lessonId); return `<a class="cmt ${cm.role !== "老師" ? "sw" : ""}" href="#/lesson/${l.id}" style="display:block;color:inherit;${un.has(cm.id) ? "outline:2px solid var(--accent)" : ""}"><div class="row small wrap"><b>${esc(cm.name)}</b><span class="chip ${cm.role !== "老師" ? "brand" : ""}">${esc(cm.role)}</span><span class="muted">${esc(lessonTitle(l))}・${esc(l.topic || "")}・${fmtTime(cm.at)}</span>${un.has(cm.id) ? '<span class="chip accent">新</span>' : ""}</div><div class="cmt-b">${esc(cm.text)}</div></a>`; }).join("")}</div>` : `<div class="card"><div class="empty">這學期還沒有留言</div></div>`;
+  }
+  c.innerHTML = html;
+  $$("[data-tab]", c).forEach((b) => (b.onclick = () => { lsSet("robot-fb-tab", b.dataset.tab); viewFeedback(); }));
+  $$("[data-fbsend]", c).forEach((b) => (b.onclick = async () => {
+    const id = b.dataset.fbsend;
+    const text = $(`[data-fb="${id}"]`, c).value.trim();
+    if (!text) return toast("回饋是空的");
+    b.disabled = true;
+    try {
+      const r = await api("comment.add", { lessonId: id, text, notify: $(`[data-fbmail="${id}"]`, c).checked });
+      D().comments.push(r.comment); markSeen(id);
+      toast(r.mailed ? `已送出，並寄信通知 ${r.mailed} 人` : "已送出");
+      renderNav(); viewFeedback();
+    } catch (e) { toast(e.message, true); b.disabled = false; }
+  }));
+}
+
+/* ═════════════ 名冊 ═════════════ */
+function similar(a, b) {
+  if (a === b || a.length !== b.length || a.length < 2) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) diff++;
+  return diff === 1 && a[0] === b[0];
+}
+function viewRoster(siteArg) {
+  const sites = activeSites();
+  setTop("名冊與分組", isAdmin() ? "管理每個據點的學生；分組在每堂課的紀錄裡設定" : "看看每個據點的學生；需要刪除或合併時請找社工",
+    sites.length ? `<button class="btn primary" id="add-stu">${icon("plus", "sm")}新增學生</button>` : "");
+  const c = $("#content");
+  if (!sites.length) { c.innerHTML = '<div class="card"><div class="empty">還沒有據點</div></div>'; return; }
+  const site = siteById(siteArg || lsGet("robot-roster-site")) || sites[0];
+  lsSet("robot-roster-site", site.id);
+  const kids = siteStudents(site.id, true);
+  const used = {};
+  D().lessons.forEach((l) => { const ids = new Set([...l.attendance, ...l.radar.rows.map((r) => r.sid)]); ids.forEach((x) => (used[x] = (used[x] || 0) + 1)); });
+  const pairs = [];
+  kids.forEach((a, i) => kids.slice(i + 1).forEach((b) => similar(a.name, b.name) && pairs.push([a, b])));
+  const lastG = termLessons(site.id).filter((l) => l.groups.length).pop();
+  c.innerHTML = `<div class="pills mb12">${sites.map((s) => `<button class="pill ${s.id === site.id ? "on" : ""}" data-s="${s.id}">${esc(s.name)}</button>`).join("")}</div>
+    ${isAdmin() && pairs.length ? `<div class="callout warn mb12"><b>${icon("alert", "sm")} 這些名字只差一個字，是同一個孩子打錯字嗎？</b><div class="small ink2">如果是同一人，按「合併」會把兩邊的課堂紀錄併在一起；如果是兄弟姊妹（例如名字很像），就不用理它。</div>
+      <div class="stack mt8" style="gap:6px">${pairs.map(([a, b]) => `<div class="row wrap small"><b>${esc(a.name)}</b>（${used[a.id] || 0} 堂）／<b>${esc(b.name)}</b>（${used[b.id] || 0} 堂）<span class="sp"></span><button class="btn sm" data-merge="${b.id}|${a.id}">併入「${esc(a.name)}」</button><button class="btn sm" data-merge="${a.id}|${b.id}">併入「${esc(b.name)}」</button></div>`).join("")}</div></div>` : ""}
+    <div class="grid g-main" style="grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)">
+      <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>姓名</th><th>年級</th><th>狀態</th><th class="num">出現堂數</th><th class="num"></th></tr></thead><tbody>
+        ${kids.length ? kids.map((k) => `<tr><td><a href="#/student/${k.id}"><b>${esc(k.name)}</b></a>${k.note ? `<div class="small muted">${esc(k.note)}</div>` : ""}</td><td>${esc(k.grade || "")}</td><td>${k.status === "結案" ? '<span class="chip">結案</span>' : '<span class="chip good">在學</span>'}</td><td class="num">${used[k.id] || 0}</td>
+          <td class="num" style="white-space:nowrap"><button class="btn sm ghost" data-edit="${k.id}">${icon("edit", "sm")}編輯</button>${isAdmin() ? `<button class="btn sm ghost" data-mto="${k.id}" title="合併到另一位">${icon("merge", "sm")}</button>` : ""}</td></tr>`).join("") : '<tr><td colspan="5" class="empty">還沒有學生</td></tr>'}
+      </tbody></table></div></div>
+      <div class="card"><div class="card-head"><h3>最近一次分組</h3>${lastG ? `<span class="sub"><a href="#/lesson/${lastG.id}">第${esc(lastG.seq)}次・${fmtDate(lastG.date)}</a></span>` : ""}</div><div class="card-body">
+        ${lastG ? lastG.groups.map((g) => `<div class="gcard"><b>${esc(g.name)}</b><div class="kchips mt8">${g.members.map((m) => `<span class="kchip on" style="cursor:default">${esc(stuName(m))}</span>`).join("") || '<span class="small muted">沒有成員</span>'}</div></div>`).join("") : '<div class="small muted">這學期還沒有分組。分組在每堂課的「出席與分組」設定，下一堂可以一鍵沿用。</div>'}
+      </div></div>
+    </div>`;
+  $$("[data-s]", c).forEach((b) => (b.onclick = () => (location.hash = "#/roster/" + b.dataset.s)));
+  $("#add-stu").onclick = () => editStudent(null, site.id, () => viewRoster(site.id));
+  $$("[data-edit]", c).forEach((b) => (b.onclick = () => editStudent(stuById(b.dataset.edit), site.id, () => viewRoster(site.id))));
+  $$("[data-merge]", c).forEach((b) => (b.onclick = () => { const [from, to] = b.dataset.merge.split("|"); mergeStudents(from, to, site.id); }));
+  $$("[data-mto]", c).forEach((b) => (b.onclick = async () => {
+    const from = stuById(b.dataset.mto);
+    const others = D().students.filter((x) => x.id !== from.id && x.siteId === from.siteId);
+    if (!others.length) return toast("這個據點沒有其他學生可以合併");
+    let pick = "";
+    const v = await modal({ title: `把「${from.name}」合併到…`, body: `<p class="small ink2" style="margin-top:0">「${esc(from.name)}」所有的課堂紀錄會移到你選的學生名下，然後「${esc(from.name)}」會從名冊刪除。</p><select class="select" id="m-to">${others.map((o) => `<option value="${o.id}">${esc(o.name)}</option>`).join("")}</select>`,
+      buttons: [{ label: "取消", value: null }, { label: "合併", cls: "primary", value: "ok", check: (m) => { pick = $("#m-to", m).value; return true; } }] });
+    if (v === "ok") mergeStudents(from.id, pick, site.id);
+  }));
+}
+async function mergeStudents(from, to, siteId) {
+  if (!(await confirmBox("合併學生", `把「${esc(stuName(from))}」的紀錄全部併入「${esc(stuName(to))}」，然後刪除「${esc(stuName(from))}」。這個動作沒辦法復原。`, "合併"))) return;
+  try { await api("student.merge", { fromId: from, toId: to }); await reload(); toast("已合併"); viewRoster(siteId); renderNav(); } catch (e) { toast(e.message, true); }
+}
+async function editStudent(st, siteId, done) {
+  const isNew = !st;
+  st = st || { name: "", siteId, grade: "", status: "在學", note: "" };
+  const sites = activeSites().filter((s) => isAdmin() || !S.me.sites || S.me.sites.includes(s.id));
+  let data = null;
+  const v = await modal({
+    title: isNew ? "新增學生" : `編輯：${st.name}`,
+    body: `<div class="stack"><label class="field"><span>姓名</span><input class="input" id="s-name" value="${esc(st.name)}"></label>
+      <div class="grid g2"><label class="field"><span>據點</span><select class="select" id="s-site">${sites.map((s) => `<option value="${s.id}" ${s.id === st.siteId ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select></label>
+      <label class="field"><span>年級</span><input class="input" id="s-grade" value="${esc(st.grade)}" placeholder="例：4"></label></div>
+      ${isAdmin() ? `<label class="field"><span>狀態</span><select class="select" id="s-status"><option ${st.status !== "結案" ? "selected" : ""}>在學</option><option ${st.status === "結案" ? "selected" : ""}>結案</option></select></label>` : ""}
+      <label class="field"><span>備註 <span class="hint">老師和社工都看得到，請不要寫敏感的家庭資訊</span></span><input class="input" id="s-note" value="${esc(st.note)}"></label></div>`,
+    buttons: [...(!isNew && isAdmin() ? [{ label: "刪除", value: "del", cls: "danger" }] : []), { label: "取消", value: null }, {
+      label: "儲存", value: "ok", cls: "primary", check: (m) => {
+        data = { id: st.id, name: $("#s-name", m).value.trim(), siteId: $("#s-site", m).value, grade: $("#s-grade", m).value.trim(), status: $("#s-status", m) ? $("#s-status", m).value : st.status, note: $("#s-note", m).value.trim() };
+        if (!data.name) { toast("請填姓名", true); return false; }
+        return true;
+      }
+    }]
+  });
+  if (v === "del") {
+    if (!(await confirmBox("刪除學生", `確定刪除「${esc(st.name)}」？有課堂紀錄的學生不能刪除，可以改成「結案」。`, "刪除", true))) return;
+    try { await api("student.delete", { id: st.id }); D().students = D().students.filter((x) => x.id !== st.id); toast("已刪除"); done && done(); } catch (e) { toast(e.message, true); }
+    return;
+  }
+  if (v !== "ok") return;
+  try {
+    const r = await api("student.save", { student: data });
+    const i = D().students.findIndex((x) => x.id === r.student.id);
+    if (i >= 0) D().students[i] = r.student; else D().students.push(r.student);
+    toast(isNew ? `已新增 ${r.student.name}` : "已儲存");
+    done && done(r.student);
+  } catch (e) { toast(e.message, true); }
+}
+
+/* ═════════════ 據點與人員（社工） ═════════════ */
+function viewPeople() {
+  setTop("據點與人員", "誰可以登入、看得到哪些據點；以及系統設定");
+  const c = $("#content");
+  const people = D().people || [];
+  const st = D().settings;
+  c.innerHTML = `<div class="grid g2">
+    <div class="card"><div class="card-head"><h3>據點</h3><span class="sp"></span><button class="btn sm primary" id="site-add">${icon("plus", "sm")}新增據點</button></div><div class="card-body"><table class="tbl"><thead><tr><th>名稱</th><th>上課日</th><th>學生</th><th></th></tr></thead><tbody>
+      ${D().sites.map((s) => `<tr><td><b>${esc(s.name)}</b>${String(s.active) === "FALSE" ? ' <span class="chip">停用</span>' : ""}</td><td>${esc(s.day || "")}</td><td class="num">${siteStudents(s.id).length}</td><td class="num"><button class="btn sm ghost" data-site="${s.id}">${icon("edit", "sm")}編輯</button></td></tr>`).join("") || '<tr><td colspan="4" class="empty">還沒有據點</td></tr>'}
+    </tbody></table></div></div>
+    <div class="card"><div class="card-head"><h3>系統設定</h3></div><div class="card-body stack">
+      <label class="field"><span>學期清單 <span class="hint">逗號分隔，例如 114-2,115-1</span></span><input class="input" id="st-terms" value="${esc(st.terms || "")}"></label>
+      <label class="field"><span>目前學期 <span class="hint">大家登入時預設看到的學期</span></span><input class="input" id="st-cur" value="${esc(st.currentTerm || "")}"></label>
+      <label class="field"><span>新課堂的預設評分維度</span><input class="input" id="st-dims" value="${esc(st.defaultDims || "")}"></label>
+      <div><button class="btn primary" id="st-save">${icon("check", "sm")}儲存設定</button></div>
+    </div></div></div>
+    <div class="card mt16"><div class="card-head"><h3>人員</h3><span class="sub">老師只看得到自己據點的孩子；社工、督導看得到全部，也能管理名冊</span><span class="sp"></span><button class="btn sm primary" id="p-add">${icon("plus", "sm")}新增人員</button></div>
+      <div class="card-body tbl-wrap"><table class="tbl"><thead><tr><th>姓名</th><th>Email</th><th>角色</th><th>據點</th><th>狀態</th><th></th></tr></thead><tbody>
+      ${people.map((p) => `<tr><td><b>${esc(p.name)}</b></td><td>${esc(p.email)}</td><td><span class="chip ${p.role !== "老師" ? "brand" : ""}">${esc(p.role)}</span></td><td>${esc(p.sites || "全部")}</td><td>${/^(false|否|0|停用|no)$/i.test(String(p.active)) ? '<span class="chip">停用</span>' : '<span class="chip good">啟用</span>'}</td><td class="num"><button class="btn sm ghost" data-p="${esc(p.email)}">${icon("edit", "sm")}編輯</button></td></tr>`).join("")}
+      </tbody></table></div></div>`;
+  $("#site-add").onclick = () => editSite(null);
+  $$("[data-site]", c).forEach((b) => (b.onclick = () => editSite(siteById(b.dataset.site))));
+  $("#p-add").onclick = () => editPerson(null);
+  $$("[data-p]", c).forEach((b) => (b.onclick = () => editPerson(people.find((p) => p.email === b.dataset.p))));
+  $("#st-save").onclick = async () => {
+    try {
+      const r = await api("settings.save", { settings: { terms: $("#st-terms").value.trim(), currentTerm: $("#st-cur").value.trim(), defaultDims: $("#st-dims").value.trim() } });
+      D().settings = r.settings; toast("已儲存設定"); renderNav();
+    } catch (e) { toast(e.message, true); }
+  };
+}
+async function editSite(s) {
+  const isNew = !s;
+  s = s || { name: "", day: "", order: "", active: "TRUE" };
+  let data;
+  const v = await modal({
+    title: isNew ? "新增據點" : `編輯據點：${s.name}`,
+    body: `<div class="stack"><label class="field"><span>名稱</span><input class="input" id="x-name" value="${esc(s.name)}" placeholder="例：古坑"></label>
+      <div class="grid g2"><label class="field"><span>上課日</span><input class="input" id="x-day" value="${esc(s.day)}" placeholder="例：週二"></label><label class="field"><span>排序</span><input class="input" id="x-order" value="${esc(s.order)}" inputmode="numeric"></label></div>
+      ${isNew ? "" : `<label class="row small"><input type="checkbox" id="x-active" ${String(s.active) !== "FALSE" ? "checked" : ""}>啟用（停用後不會出現在左邊選單，資料都還在）</label>`}</div>`,
+    buttons: [...(!isNew ? [{ label: "刪除", value: "del", cls: "danger" }] : []), { label: "取消", value: null }, { label: "儲存", value: "ok", cls: "primary", check: (m) => { data = { id: s.id, name: $("#x-name", m).value.trim(), day: $("#x-day", m).value.trim(), order: $("#x-order", m).value.trim(), active: $("#x-active", m) ? $("#x-active", m).checked : true }; return !!data.name || (toast("請填名稱", true), false); } }]
+  });
+  try {
+    if (v === "del") { if (await confirmBox("刪除據點", `確定刪除「${esc(s.name)}」？已經有學生或課堂的據點不能刪除，可以改成停用。`, "刪除", true)) { await api("site.delete", { id: s.id }); await reload(); toast("已刪除"); } }
+    else if (v === "ok") { await api("site.save", { site: data }); await reload(); toast("已儲存"); }
+    else return;
+  } catch (e) { toast(e.message, true); }
+  route();
+}
+async function editPerson(p) {
+  const isNew = !p;
+  p = p || { email: "", name: "", role: "老師", sites: "", active: "TRUE", note: "" };
+  const cur = String(p.sites || "").split(/[,，、\s]+/).filter(Boolean);
+  let data;
+  const v = await modal({
+    title: isNew ? "新增人員" : `編輯：${p.name}`,
+    body: `<div class="stack"><div class="grid g2"><label class="field"><span>姓名</span><input class="input" id="p-name" value="${esc(p.name)}"></label><label class="field"><span>角色</span><select class="select" id="p-role">${["老師", "社工", "督導"].map((r) => `<option ${p.role === r ? "selected" : ""}>${r}</option>`).join("")}</select></label></div>
+      <label class="field"><span>Email <span class="hint">用來收登入驗證碼，通常是 Gmail</span></span><input class="input" id="p-email" type="email" value="${esc(p.email)}"></label>
+      <div class="field"><span style="font-weight:600;font-size:12.5px;color:var(--ink-2)">負責的據點 <span class="hint">都不勾 = 全部據點</span></span><div class="row wrap mt8">${D().sites.map((s) => `<label class="row small" style="gap:4px;margin-right:10px"><input type="checkbox" class="p-site" value="${esc(s.name)}" ${cur.includes(s.name) || cur.includes(s.id) ? "checked" : ""}>${esc(s.name)}</label>`).join("")}</div></div>
+      <label class="row small"><input type="checkbox" id="p-active" ${/^(false|否|0|停用|no)$/i.test(String(p.active)) ? "" : "checked"}>啟用（停用後就不能登入）</label></div>`,
+    buttons: [...(!isNew ? [{ label: "刪除", value: "del", cls: "danger" }] : []), { label: "取消", value: null }, {
+      label: "儲存", value: "ok", cls: "primary", check: (m) => {
+        data = { origEmail: p.email || "", name: $("#p-name", m).value.trim(), role: $("#p-role", m).value, email: $("#p-email", m).value.trim(), sites: $$(".p-site", m).filter((x) => x.checked).map((x) => x.value), active: $("#p-active", m).checked };
+        if (!data.email) { toast("請填 Email", true); return false; }
+        return true;
+      }
+    }]
+  });
+  try {
+    if (v === "del") { if (await confirmBox("刪除人員", `確定刪除「${esc(p.name)}」？刪除後就不能登入，但他寫過的紀錄都還在。`, "刪除", true)) { await api("person.delete", { email: p.email }); await reload(); toast("已刪除"); } }
+    else if (v === "ok") { await api("person.save", { person: data }); await reload(); toast("已儲存"); }
+    else return;
+  } catch (e) { toast(e.message, true); }
+  route();
+}
+
+/* ═════════════ Excel 匯入（舊紀錄） ═════════════ */
+let xlsxP = null;
+function loadXLSX() {
+  if (window.XLSX) return Promise.resolve(window.XLSX);
+  return (xlsxP = xlsxP || new Promise((res, rej) => {
+    const s = document.createElement("script");
+    s.src = XLSX_URL;
+    s.onload = () => res(window.XLSX);
+    s.onerror = () => { xlsxP = null; rej(new Error("Excel 工具載入失敗，請檢查網路後再試一次")); };
+    document.head.appendChild(s);
+  }));
+}
+const NAME_RE = /^[一-鿿]{2,4}$/;
+const SCORE_RE = /^([^\d：:➡→（(]{1,10}?)\s*[：:]?\s*(\d(?:\.\d+)?)\s*分?$/;
+function parseRadarText(text) {
+  const out = { dims: [], rows: [], note: "" };
+  const notes = [];
+  const lines = String(text || "").split(/\r?\n/).map((s) => s.replace(/[　\t]/g, " ").trim());
+  const next = (i) => { for (let j = i + 1; j < lines.length; j++) if (lines[j]) return lines[j]; return ""; };
+  let cur = null;
+  for (let i = 0; i < lines.length; i++) {
+    const s = lines[i];
+    if (!s) continue;
+    const m = s.match(SCORE_RE);
+    if (m && cur && !cur.done && +m[2] <= 10) {
+      const d = m[1].trim();
+      cur.scores[d] = +m[2];
+      if (!out.dims.includes(d)) out.dims.push(d);
+      continue;
+    }
+    if (NAME_RE.test(s) && SCORE_RE.test(next(i))) { cur = { name: s, scores: {}, comment: "", done: false }; out.rows.push(cur); continue; }
+    if (cur && !cur.done && (/^[➡→]/.test(s) || /^[（(]/.test(s) || Object.keys(cur.scores).length)) {
+      cur.comment = s.replace(/^[➡→]\s*/, "").replace(/^[（(]/, "").replace(/[）)]$/, "").trim();
+      cur.done = true;
+      continue;
+    }
+    notes.push(s);
+  }
+  out.note = notes.join("\n");
+  out.rows.forEach((r) => delete r.done);
+  return out;
+}
+function parseGroupText(text) {
+  const groups = [];
+  String(text || "").split(/\r?\n/).forEach((line) => {
+    const m = line.trim().match(/^(第[一二三四五六七八九十\d]+組|[A-Za-zＡ-Ｚ]組)\s*(?:[（(][^）)]*[）)])?\s*[-－—：:]\s*(.*)$/);
+    if (!m) return;
+    const names = m[2].split(/[、,，\s]+/).map((t) => t.trim()).filter((t) => NAME_RE.test(t));
+    if (names.length) groups.push({ name: m[1], names });
+  });
+  return groups;
+}
+function parseLessonSheet(XLSX, name, ws) {
+  const rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: true, defval: "" });
+  const hi = rows.findIndex((r) => r.some((c) => String(c).includes("日期")) && r.some((c) => String(c).includes("課程主題")));
+  if (hi < 0) return null;
+  const head = rows[hi].map((c) => String(c).replace(/\s/g, ""));
+  const col = (...keys) => { for (const k of keys) { const i = head.findIndex((c) => c.includes(k)); if (i >= 0) return i; } return -1; };
+  const C = { seq: col("序號"), date: col("日期"), topic: col("課程主題"), goals: col("教學原理", "目標設定"), timeline: col("課程時間"), execution: col("執行紀錄"), indicators: col("評量指標"), groupNote: col("能力分類", "分組"), qualitative: col("質性觀察"), radar: col("雷達"), management: col("班級經營"), slides: col("簡報") };
+  if (C.seq < 0) C.seq = 0;
+  const tm = name.match(/(\d{3})\s*-\s*([12])/);
+  const sm = name.match(/[-－]\s*([^-－]+?)\s*$/);
+  const sheet = { name, term: tm ? `${tm[1]}-${tm[2]}` : "", site: sm ? sm[1].replace(/課堂紀錄/, "").trim() : name.trim(), lessons: [], names: new Set(), warnings: [] };
+  const get = (row, k) => (C[k] >= 0 ? row[C[k]] : "");
+  const txt = (v) => String(v ?? "").replace(/\r\n/g, "\n").trim();
+  const seen = {};
+  for (let r = hi + 1; r < rows.length; r++) {
+    const row = rows[r];
+    const seqCell = txt(get(row, "seq"));
+    if (/範例/.test(seqCell)) continue;
+    const sn = seqCell.match(/(\d+)/);
+    if (!sn) continue;
+    const L = { seq: sn[1], date: "", status: "", topic: txt(get(row, "topic")) };
+    const dv = get(row, "date");
+    if (typeof dv === "number" && dv > 20000) { const p = XLSX.SSF.parse_date_code(dv); L.date = `${p.y}-${pad(p.m)}-${pad(p.d)}`; }
+    else if (dv instanceof Date) L.date = ymd(dv);
+    else if (txt(dv)) {
+      const m = txt(dv).match(/(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
+      if (m) L.date = `${m[1]}-${pad(+m[2])}-${pad(+m[3])}`;
+      else { if (!L.topic) L.topic = txt(dv); if (/颱風|停課|放假|取消|停班/.test(txt(dv))) L.status = "停課"; }
+    }
+    if (/代課/.test(L.topic)) L.status = "代課";
+    ["goals", "timeline", "execution", "indicators", "groupNote", "qualitative", "management"].forEach((k) => (L[k] = txt(get(row, k))));
+    const sl = txt(get(row, "slides"));
+    L.slides = /^https?:\/\//i.test(sl) ? sl : "";
+    if (sl && !L.slides) L.management = (L.management ? L.management + "\n" : "") + "（簡報：" + sl + "）";
+    const rad = parseRadarText(get(row, "radar"));
+    L.radarParsed = rad;
+    L.radarNote = rad.note;
+    if (txt(get(row, "radar")) && !rad.rows.length) L.radarNote = txt(get(row, "radar"));
+    L.groupsParsed = parseGroupText(L.groupNote);
+    const names = new Set([...rad.rows.map((x) => x.name), ...L.groupsParsed.flatMap((g) => g.names)]);
+    L.names = [...names];
+    L.names.forEach((n) => sheet.names.add(n));
+    const key = L.seq;
+    if (seen[key]) sheet.warnings.push(`「第${L.seq}次」出現兩次（${fmtDate(seen[key])}、${fmtDate(L.date)}），匯入後可以在課堂裡改序號`);
+    seen[key] = L.date || "?";
+    sheet.lessons.push(L);
+  }
+  const ds = sheet.lessons.map((l) => l.date).filter(Boolean).sort();
+  sheet.dateTerm = ds.length ? termOf(ds[0]) : "";
+  if (!sheet.term) sheet.term = sheet.dateTerm;
+  sheet.names = [...sheet.names];
+  return sheet;
+}
+function viewImport() {
+  setTop("匯入 Excel", "把以前的「機器人課程列表與紀錄」Excel 匯進系統");
+  const c = $("#content");
+  c.innerHTML = `<div class="card"><div class="card-body stack" style="padding-top:18px">
+    <div class="callout accent">每一張工作表（例如「115-1 課堂紀錄-古坑」）會變成一個據點、一個學期的課堂。系統會讀出每堂課的內容、分組，並把「雷達分析」裡的分數和評語拆到每個孩子身上。<br>
+    <b>檔案只在你的瀏覽器裡讀取</b>，按下「開始匯入」之後才會存進你們的 Google 試算表。</div>
+    <label class="field"><span>選擇 Excel 檔（.xlsx）</span><input type="file" id="imp-file" accept=".xlsx,.xls"></label>
+    <div id="imp-preview"></div></div></div>`;
+  $("#imp-file").onchange = async (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const pv = $("#imp-preview");
+    pv.innerHTML = '<div class="muted">讀取中…</div>';
+    try {
+      const XLSX = await loadXLSX();
+      const wb = XLSX.read(await f.arrayBuffer(), { type: "array" });
+      const sheets = wb.SheetNames.map((n) => parseLessonSheet(XLSX, n, wb.Sheets[n])).filter(Boolean);
+      if (!sheets.length) { pv.innerHTML = '<div class="callout warn">這個檔案裡找不到課堂紀錄的工作表（要有「日期」和「課程主題」欄位）。</div>'; return; }
+      renderImportPreview(sheets);
+    } catch (err) { console.error(err); pv.innerHTML = `<div class="callout warn">讀不到這個檔案：${esc(err.message)}</div>`; }
+  };
+}
+function renderImportPreview(sheets) {
+  const pv = $("#imp-preview");
+  const siteNames = () => [...new Set([...D().sites.map((s) => s.name), ...sheets.map((s) => s.site)])];
+  // 每個據點所有的名字（含名冊上已有的），找出只差一個字的
+  const bySite = {};
+  sheets.forEach((s) => { (bySite[s.site] = bySite[s.site] || new Set()); s.names.forEach((n) => bySite[s.site].add(n)); });
+  const pairs = [];
+  Object.entries(bySite).forEach(([site, set]) => {
+    const exist = D().students.filter((x) => siteById(x.siteId)?.name === site).map((x) => x.name);
+    const all = [...new Set([...set, ...exist])];
+    const freq = (n) => sheets.filter((s) => s.site === site).reduce((a, s) => a + s.lessons.filter((l) => l.names.includes(n)).length, 0);
+    all.forEach((a, i) => all.slice(i + 1).forEach((b) => { if (similar(a, b)) { const [keep, drop] = freq(a) >= freq(b) ? [a, b] : [b, a]; pairs.push({ site, keep, drop, fk: freq(keep), fd: freq(drop) }); } }));
+  });
+  pv.innerHTML = `<div class="section-title" style="margin-top:4px">找到 ${sheets.length} 張工作表</div>
+    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>匯入</th><th>工作表</th><th>據點</th><th>學期</th><th class="num">堂數</th><th class="num">有紀錄</th><th>孩子</th></tr></thead><tbody>
+    ${sheets.map((s, i) => `<tr><td class="c"><input type="checkbox" data-inc="${i}" checked></td><td>${esc(s.name)}</td>
+      <td><input class="input sm" data-site="${i}" value="${esc(s.site)}" list="site-list" style="width:90px"></td>
+      <td><input class="input sm" data-term="${i}" value="${esc(s.term)}" style="width:72px">${s.dateTerm && s.dateTerm !== s.term ? `<div class="small" style="color:var(--warn);max-width:200px">日期在 ${esc(s.lessons.find((l) => l.date)?.date.slice(0, 7))}，照學年算是 <b>${esc(s.dateTerm)}</b> <button class="btn sm" data-useterm="${i}">改成 ${esc(s.dateTerm)}</button></div>` : ""}</td>
+      <td class="num">${s.lessons.length}</td><td class="num">${s.lessons.filter((l) => l.execution || l.radarParsed.rows.length).length}</td>
+      <td class="small">${s.names.map(esc).join("、") || "–"}${s.warnings.map((w) => `<div style="color:var(--warn)">${icon("alert", "sm")} ${esc(w)}</div>`).join("")}</td></tr>`).join("")}
+    </tbody></table></div>
+    <datalist id="site-list">${siteNames().map((n) => `<option value="${esc(n)}">`).join("")}</datalist>
+    ${pairs.length ? `<div class="callout warn mt12"><b>這些名字只差一個字，是同一個孩子嗎？</b><div class="small ink2">勾起來的會當成同一人（用比較常出現的寫法）；兄弟姊妹名字很像的話，就不要勾。之後也可以在「名冊與分組」再合併。</div>
+      <div class="stack mt8" style="gap:4px">${pairs.map((p, i) => `<label class="row small"><input type="checkbox" data-pair="${i}">${esc(p.site)}：把「${esc(p.drop)}」（${p.fd} 堂）當成「<b>${esc(p.keep)}</b>」（${p.fk} 堂）</label>`).join("")}</div></div>` : ""}
+    <div class="row wrap mt12"><label class="field"><span>如果系統裡已經有同一個據點、同一學期、同一次的課堂</span><select class="select" id="imp-dup" style="width:auto"><option value="skip">保留系統裡的，略過 Excel 的</option><option value="over">用 Excel 的覆蓋</option></select></label></div>
+    <div class="row mt16"><span class="sp"></span><button class="btn primary lg" id="imp-go">${icon("upload", "sm")}開始匯入</button></div>`;
+  $$("[data-useterm]", pv).forEach((b) => (b.onclick = () => { const i = +b.dataset.useterm; $(`[data-term="${i}"]`, pv).value = sheets[i].dateTerm; b.parentElement.innerHTML = `已改成 ${esc(sheets[i].dateTerm)}`; }));
+  $("#imp-go").onclick = () => doImport(sheets, pairs);
+}
+async function doImport(sheets, pairs) {
+  const pv = $("#imp-preview");
+  const alias = {};
+  $$("[data-pair]", pv).forEach((cb) => { if (cb.checked) { const p = pairs[+cb.dataset.pair]; alias[p.site + "|" + p.drop] = p.keep; } });
+  const dup = $("#imp-dup").value;
+  const out = { sites: [], students: [], lessons: [], terms: [] };
+  const siteId = {};
+  D().sites.forEach((s) => (siteId[s.name] = s.id));
+  const stuId = {};
+  D().students.forEach((s) => (stuId[s.siteId + "|" + s.name] = s.id));
+  let skipped = 0;
+  sheets.forEach((s, i) => {
+    if (!$(`[data-inc="${i}"]`, pv).checked) return;
+    const siteName = $(`[data-site="${i}"]`, pv).value.trim() || s.site;
+    const term = $(`[data-term="${i}"]`, pv).value.trim() || s.term;
+    if (!siteId[siteName]) { siteId[siteName] = uid("S"); out.sites.push({ id: siteId[siteName], name: siteName, order: String(D().sites.length + out.sites.length + 1) }); }
+    const sid = siteId[siteName];
+    if (term && !out.terms.includes(term)) out.terms.push(term);
+    const kid = (name) => {
+      const real = alias[s.site + "|" + name] || name;
+      const k = sid + "|" + real;
+      if (!stuId[k]) { stuId[k] = uid("K"); out.students.push({ id: stuId[k], name: real, siteId: sid }); }
+      return stuId[k];
+    };
+    s.lessons.forEach((L) => {
+      const exist = D().lessons.find((x) => x.siteId === sid && x.term === term && x.seq === L.seq && (x.date || "") === (L.date || ""));
+      if (exist && dup === "skip") { skipped++; return; }
+      const radar = { dims: L.radarParsed.dims, rows: [] };
+      L.radarParsed.rows.forEach((r) => { const id = kid(r.name); const ex = radar.rows.find((x) => x.sid === id); if (ex) { Object.assign(ex.scores, r.scores); ex.comment = [ex.comment, r.comment].filter(Boolean).join("\n"); } else radar.rows.push({ sid: id, scores: r.scores, comment: r.comment }); });
+      const groups = L.groupsParsed.map((g) => ({ name: g.name, members: [...new Set(g.names.map(kid))], note: "" }));
+      const attendance = [...new Set(L.names.map(kid))];
+      out.lessons.push({ id: exist ? exist.id : uid("L"), siteId: sid, term, seq: L.seq, date: L.date, status: L.status, topic: L.topic, goals: L.goals, timeline: L.timeline, execution: L.execution, indicators: L.indicators, groups, groupNote: L.groupNote, qualitative: L.qualitative, radar, radarNote: L.radarNote, management: L.management, slides: L.slides, attendance });
+    });
+  });
+  if (!out.lessons.length && !out.students.length) return toast(skipped ? `全部 ${skipped} 堂都已經在系統裡了，沒有新的可以匯入` : "沒有勾選要匯入的工作表", true);
+  const b = $("#imp-go"); b.disabled = true; b.textContent = "匯入中…";
+  try {
+    const r = await api("import", out);
+    await reload();
+    pv.innerHTML = `<div class="callout good"><b>${icon("check", "sm")} 匯入完成</b>：${r.count.lessons} 堂課、${out.students.length} 位新學生${out.sites.length ? `、${out.sites.length} 個新據點` : ""}${skipped ? `；略過 ${skipped} 堂已經存在的課` : ""}。</div>
+      <div class="row wrap mt12">${[...new Set(out.lessons.map((l) => l.siteId))].map((id) => `<a class="btn" href="#/site/${id}">看 ${esc(siteById(id)?.name || "")} 的課堂</a>`).join("")}<a class="btn" href="#/roster">檢查名冊</a><a class="btn" href="#/people">設定老師帳號</a></div>`;
+    renderNav();
+  } catch (e) { toast(e.message, true); b.disabled = false; b.innerHTML = icon("upload", "sm") + "開始匯入"; }
+}
+
+/* ═════════════ Excel 匯出 ═════════════ */
+function radarText(l) {
+  const parts = l.radar.rows.map((r) => [stuName(r.sid), ...l.radar.dims.filter((d) => r.scores[d] != null).map((d) => `${d}${r.scores[d]}`), ...Object.keys(r.scores).filter((d) => !l.radar.dims.includes(d)).map((d) => `${d}${r.scores[d]}`), r.comment ? "➡ " + r.comment : ""].filter(Boolean).join("\n"));
+  if (l.radarNote) parts.push(l.radarNote);
+  return parts.join("\n\n");
+}
+function groupText(l) {
+  const gt = l.groups.map((g) => `${g.name}：${g.members.map(stuName).join("、")}`).join("\n");
+  if (!l.groupNote) return gt;
+  if (!gt || l.groups.every((g) => g.members.every((m) => l.groupNote.includes(stuName(m))))) return l.groupNote;
+  return gt + "\n" + l.groupNote;
+}
+function viewExport() {
+  setTop("匯出 Excel", "下載成跟原本一樣格式的 Excel，給成果報告或總會使用");
+  const c = $("#content");
+  const ts = terms();
+  c.innerHTML = `<div class="card"><div class="card-body stack" style="padding-top:18px">
+    <div class="grid g2"><label class="field"><span>學期</span><select class="select" id="ex-term">${ts.map((t) => `<option ${t === S.term ? "selected" : ""}>${esc(t)}</option>`).join("")}<option value="*" ${S.term === "*" ? "selected" : ""}>全部學期</option></select></label>
+    <div class="field"><span style="font-weight:600;font-size:12.5px;color:var(--ink-2)">據點</span><div class="row wrap" style="min-height:34px">${activeSites().map((s) => `<label class="row small" style="gap:4px;margin-right:10px"><input type="checkbox" class="ex-site" value="${s.id}" checked>${esc(s.name)}</label>`).join("")}</div></div></div>
+    <div class="callout small">會產生：每個據點一張「課堂紀錄」工作表（欄位和原本的 Excel 一樣，多了「狀態」和「社工回饋」）、一張「雷達分數」長表（一個孩子一個維度一列，方便做樞紐分析或圖表），以及「學生名冊」。</div>
+    <div><button class="btn primary lg" id="ex-go">${icon("download", "sm")}下載 Excel</button></div></div></div>`;
+  $("#ex-go").onclick = async () => {
+    const b = $("#ex-go"); b.disabled = true;
+    try {
+      const XLSX = await loadXLSX();
+      const term = $("#ex-term").value;
+      const sids = $$(".ex-site").filter((x) => x.checked).map((x) => x.value);
+      const wb = buildExport(XLSX, term, sids);
+      if (!wb.SheetNames.length) { toast("這個學期還沒有資料", true); return; }
+      const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+      const url = URL.createObjectURL(new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
+      const a = document.createElement("a");
+      a.href = url; a.download = `機器人課程紀錄_${term === "*" ? "全部學期" : term}_${today()}.xlsx`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+      toast("已下載");
+    } catch (e) { toast(e.message, true); } finally { b.disabled = false; }
+  };
+}
+function buildExport(XLSX, term, sids) {
+  const wb = XLSX.utils.book_new();
+  const used = new Set();
+  const sheetName = (n) => { let s = n.replace(/[\\/?*[\]:]/g, "").slice(0, 31); let k = 2; while (used.has(s)) s = n.slice(0, 28) + "_" + k++; used.add(s); return s; };
+  const head = ["序號", "日期", "課程主題", "【教學原理／目標設定】", "【課程時間】", "【課堂執行紀錄】", "【評量指標】", "【能力分類】", "【質性觀察】", "【雷達分析】", "【班級經營】", "簡報播放版", "狀態", "社工回饋"];
+  const long = [["據點", "學期", "序號", "日期", "課程主題", "學生", "維度", "分數", "評語"]];
+  sids.forEach((sid) => {
+    const site = siteById(sid);
+    const byTerm = {};
+    termLessons(sid, term).forEach((l) => (byTerm[l.term] = byTerm[l.term] || []).push(l));
+    Object.keys(byTerm).sort().forEach((t) => {
+      const aoa = [head];
+      byTerm[t].forEach((l) => {
+        aoa.push([`第${l.seq}次`, l.date, l.topic, l.goals, l.timeline, l.execution, l.indicators, groupText(l), l.qualitative, radarText(l), l.management, l.slides, l.status || (hasRecord(l) ? "已上課" : ""),
+          lessonComments(l.id).map((c) => `${c.name}（${fmtTime(c.at)}）：${c.text}`).join("\n")]);
+        l.radar.rows.forEach((r) => {
+          const ds = Object.keys(r.scores);
+          (ds.length ? ds : [""]).forEach((d, i) => long.push([site.name, l.term, +l.seq || l.seq, l.date, l.topic, stuName(r.sid), d, d ? r.scores[d] : "", i === 0 ? r.comment : ""]));
+        });
+      });
+      const ws = XLSX.utils.aoa_to_sheet(aoa);
+      ws["!cols"] = [8, 11, 20, 34, 30, 50, 22, 28, 40, 44, 34, 24, 8, 34].map((w) => ({ wch: w }));
+      XLSX.utils.book_append_sheet(wb, ws, sheetName(`${t} 課堂紀錄-${site.name}`));
+    });
+  });
+  if (!wb.SheetNames.length) return wb;
+  const ws2 = XLSX.utils.aoa_to_sheet(long);
+  ws2["!cols"] = [8, 8, 6, 11, 22, 10, 12, 6, 60].map((w) => ({ wch: w }));
+  XLSX.utils.book_append_sheet(wb, ws2, "雷達分數");
+  const roster = [["據點", "姓名", "年級", "狀態", "備註"], ...D().students.filter((s) => sids.includes(s.siteId)).map((s) => [siteById(s.siteId)?.name || "", s.name, s.grade, s.status, s.note])];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(roster), "學生名冊");
+  return wb;
+}
+
+/* ═════════════ 開始 ═════════════ */
+(function boot() {
+  if (!DEMO && !CFG.api) { showLogin(); return; }
+  const s = loadSession();
+  if (!s) return showLogin();
+  S.token = s.token; S.me = s.me;
+  start();
+})();
+</script>
+</body>
+</html>
