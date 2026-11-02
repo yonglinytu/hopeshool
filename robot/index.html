@@ -384,7 +384,7 @@ var TABLES = {
 };
 
 var DEFAULT_SETTINGS = {
-  terms: { value: '', note: '學期清單，逗號分隔，例如 114-2,115-1' },
+  terms: { value: '', note: '學期清單，逗號分隔，例如 115-1,115-2,115-3' },
   currentTerm: { value: '', note: '目前學期' },
   defaultDims: { value: '合作,理解,組裝,口語表達,解決問題', note: '新課堂的預設雷達維度' },
   scoreMax: { value: '5', note: '雷達分數滿分' }
@@ -1033,13 +1033,14 @@ function normDate_(s) {
   var m = s.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
   return m ? m[1] + '-' + pad_(+m[2]) + '-' + pad_(+m[3]) : '';
 }
-/** 民國學年：8 月～隔年 1 月是第 1 學期，2～7 月是第 2 學期 */
+/** 民國學年：9～隔年 1 月是第 1 學期，2～6 月是第 2 學期，7～8 月（暑假）是第 3 學期 */
 function termOf_(ymd) {
   var m = String(ymd).match(/^(\d{4})-(\d{2})/);
   if (!m) return '';
   var y = +m[1], mo = +m[2];
-  if (mo >= 8) return (y - 1911) + '-1';
+  if (mo >= 9) return (y - 1911) + '-1';
   if (mo === 1) return (y - 1912) + '-1';
+  if (mo >= 7) return (y - 1912) + '-3';
   return (y - 1912) + '-2';
 }
 
@@ -1169,12 +1170,14 @@ function fmtTime(iso) {
   if (isNaN(d)) return iso;
   return `${d.getMonth() + 1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
+/** 依日期推學期：9～1 月是第 1 學期，2～6 月是第 2 學期，7～8 月（暑假）是第 3 學期 */
 function termOf(s) {
   const m = String(s || "").match(/^(\d{4})-(\d{2})/);
   if (!m) return "";
   const y = +m[1], mo = +m[2];
-  if (mo >= 8) return `${y - 1911}-1`;
+  if (mo >= 9) return `${y - 1911}-1`;
   if (mo === 1) return `${y - 1912}-1`;
+  if (mo >= 7) return `${y - 1912}-3`;
   return `${y - 1912}-2`;
 }
 function uid(p) { return p + Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-4); }
@@ -2269,7 +2272,8 @@ function viewPeople() {
       ${D().sites.map((s) => `<tr><td><b>${esc(s.name)}</b>${String(s.active) === "FALSE" ? ' <span class="chip">停用</span>' : ""}</td><td>${esc(s.day || "")}</td><td class="num">${siteStudents(s.id).length}</td><td class="num"><button class="btn sm ghost" data-site="${s.id}">${icon("edit", "sm")}編輯</button></td></tr>`).join("") || '<tr><td colspan="4" class="empty">還沒有據點</td></tr>'}
     </tbody></table></div></div>
     <div class="card"><div class="card-head"><h3>系統設定</h3></div><div class="card-body stack">
-      <label class="field"><span>學期清單 <span class="hint">逗號分隔，例如 114-2,115-1</span></span><input class="input" id="st-terms" value="${esc(st.terms || "")}"></label>
+      <div class="field"><span style="font-weight:600;font-size:12.5px;color:var(--ink-2)">學期清單 <span class="hint" style="font-weight:400">逗號分隔，例如 115-1,115-2,115-3</span></span>
+        <div class="row"><input class="input" id="st-terms" value="${esc(st.terms || "")}"><button class="btn" id="st-next" type="button">${icon("plus", "sm")}新增下一個學期</button></div></div>
       <label class="field"><span>目前學期 <span class="hint">大家登入時預設看到的學期</span></span><input class="input" id="st-cur" value="${esc(st.currentTerm || "")}"></label>
       <label class="field"><span>新課堂的預設評分維度</span><input class="input" id="st-dims" value="${esc(st.defaultDims || "")}"></label>
       <div><button class="btn primary" id="st-save">${icon("check", "sm")}儲存設定</button></div>
@@ -2283,6 +2287,7 @@ function viewPeople() {
   $("#p-add").onclick = () => editPerson(null);
   $("#p-import").onclick = importPeople;
   $$("[data-p]", c).forEach((b) => (b.onclick = () => editPerson(people.find((p) => p.email === b.dataset.p))));
+  $("#st-next").onclick = addNextTerm;
   $("#st-save").onclick = async () => {
     try {
       const r = await api("settings.save", { settings: { terms: $("#st-terms").value.trim(), currentTerm: $("#st-cur").value.trim(), defaultDims: $("#st-dims").value.trim() } });
@@ -2344,6 +2349,35 @@ function importPeople() {
     else toast(`已匯入 ${rows.length} 位人員，他們現在可以用自己的 Email 登入了`);
   };
   inp.click();
+}
+/* 新增下一個學期：115-1 → 115-2、115-2 → 116-1 */
+function nextTermOf(t) {
+  const m = String(t || "").match(/^(\d{2,3})-([123])$/);
+  if (!m) return "";
+  return m[2] === "3" ? `${+m[1] + 1}-1` : `${m[1]}-${+m[2] + 1}`;
+}
+async function addNextTerm() {
+  const list = $("#st-terms").value.split(/[,，、\s]+/).map((x) => x.trim()).filter(Boolean);
+  const all = [...new Set([...list, ...terms()])].filter((t) => /^\d{2,3}-[123]$/.test(t)).sort((a, b) => { const [ya, sa] = a.split("-"), [yb, sb] = b.split("-"); return +ya - +yb || +sa - +sb; });
+  const next = nextTermOf(all[all.length - 1] || termOf(today()));
+  if (!next) return toast("學期清單的格式看不懂，請用 115-1、115-2、115-3 這種寫法", true);
+  const v = await modal({
+    title: `新增 ${next} 學期`,
+    body: `<p class="ink2" style="margin:0;line-height:1.8">會把 <b>${esc(next)}</b> 加進學期清單，左上角的學期選單就能切換過去。<br>
+      <span class="small muted">學生名冊和據點會沿用，不用重建；新學期的課堂到各據點按「一次排多堂」就能排好。</span></p>`,
+    buttons: [{ label: "取消", value: null }, { label: "只新增", value: "add" }, { label: `新增，並設為目前學期`, value: "cur", cls: "primary" }]
+  });
+  if (!v) return;
+  const newList = [...new Set([...all, next])];
+  const settings = { terms: newList.join(",") };
+  if (v === "cur") settings.currentTerm = next;
+  try {
+    const r = await api("settings.save", { settings });
+    D().settings = r.settings;
+    if (v === "cur") { S.term = next; lsSet("robot-term", next); }
+    toast(v === "cur" ? `已新增 ${next}，大家登入會先看到這個學期` : `已新增 ${next}`);
+    renderNav(); viewPeople();
+  } catch (e) { toast(e.message, true); }
 }
 async function editSite(s) {
   const isNew = !s;
