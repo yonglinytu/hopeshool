@@ -62,7 +62,7 @@ const ISLANDS=[{"number":1,"places":[{"id":"balloon","name":"氣球攤","unit":"
 const CONCEPTS=["全部概念", "整數與計算", "用錢", "乘法與除法", "分數", "小數", "時間", "長度", "容量與重量", "周長與面積", "角與圖形", "體積", "統計圖表", "比率與速度", "解題與數量關係"];
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const grades=['全部年級','一年級','二年級','三年級','四年級','五年級','六年級'];
-const ISLAND_FILES={"1": "希望數學群島_第01島_授課流暢動手互動解題示範版_2026-11-03.html", "2": "希望數學群島_第02島_授課流暢動手互動解題示範版_2026-11-03.html", "3": "希望數學群島_第03島_授課流暢動手互動解題示範版_2026-11-03.html", "4": "希望數學群島_第04島_授課流暢動手互動解題示範版_2026-11-03.html", "5": "希望數學群島_第05島_授課流暢動手互動解題示範版_2026-11-03.html", "6": "希望數學群島_第06島_授課流暢動手互動解題示範版_2026-11-03.html", "7": "希望數學群島_第07島_授課流暢動手互動解題示範版_2026-11-03.html", "8": "希望數學群島_第08島_授課流暢動手互動解題示範版_2026-11-03.html", "9": "希望數學群島_第09島_授課流暢動手互動版_2026-11-03.html", "10": "希望數學群島_第10島_授課流暢動手互動解題示範版_2026-11-03.html", "11": "希望數學群島_第11島_授課流暢動手互動解題示範版_2026-11-03.html", "12": "希望數學群島_第12島_授課流暢動手互動解題示範版_2026-11-03.html"};
+const ISLAND_FILES={"1": "island01-balloon-park.html", "2": "island02-pond-park.html", "3": "island03-zoo.html", "4": "island04-summer-camp.html", "5": "island05-school-fair.html", "6": "island06-tomato-market.html", "7": "island07-mountain-trail.html", "8": "island08-train-town.html", "9": "island09-ocean-lab.html", "10": "island10-flower-expo.html", "11": "island11-sports-park.html", "12": "island12-graduation-trip.html"};
 const href=(n,place)=>encodeURI(ISLAND_FILES[n])+(place?'#place='+encodeURIComponent(place):'');
 const allPlaces=ISLANDS.flatMap(i=>i.places.map(p=>({...p,island:i.number,islandTitle:i.title,grade:i.grade,term:i.term,image:i.image})));
 let state={mode:'islands',grade:0,concept:'全部概念',search:'',limit:12};
