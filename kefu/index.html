@@ -11807,6 +11807,455 @@ ${lines.join("\n")}`;
   var zhTerms = () => terms();
   var reportZhRecord = (term) => downloadRecord(classes().filter(isZhClass), term);
 
+  // src/js/cards.js
+  var CARD_FAMILIES = [
+    { c: "黃", pos: "把心安放好，情緒就有地方回家。", cards: [
+      [1, "心安", "心裡安安穩穩的，像被輕輕托住。"],
+      [2, "放鬆", "身體慢慢軟下來，呼吸也跟著變慢。"],
+      [3, "輕鬆", "肩膀變輕了，好像把很重的書包放下。"],
+      [4, "喜悅", "心裡慢慢亮起來，像有一束溫暖的小太陽。"],
+      [5, "開心", "一想到這件事，就想笑出聲。"],
+      [6, "高興", "心裡好像開了一盞小燈。"],
+      [7, "興奮", "全身都有電一樣，超想立刻去做。"],
+      [8, "有趣", "好好玩，心裡一直想：「可以再玩一次嗎？」"],
+      [9, "得意", "心裡亮亮的，想跟自己擊掌說：「我好棒！」"],
+      [10, "自豪", "心裡站得很直，覺得自己有價值。"],
+      [11, "感動", "心裡被碰了一下，眼淚有點想掉。"],
+      [12, "感恩", "心裡裝滿「還好有你／有這件事」。"],
+      [13, "滿足", "心裡剛剛好，不多也不少。"],
+      [14, "幸福", "心裡像被厚厚抱住，覺得自己被好好愛著。"]
+    ] },
+    { c: "綠", pos: "穩住節奏，把努力長成力量。", cards: [
+      [1, "怪怪的", "心裡有一點怪怪的，說不上來哪裡不對。"],
+      [2, "不合拍", "感覺跟自己不太合，心裡有一點卡卡的。"],
+      [3, "看膩", "一看到就覺得「又是這個」，好膩喔。"],
+      [4, "厭煩", "同一件事一再出現，只想說：「夠了啦。」"],
+      [5, "討厭", "一看到就皺眉，完全不想靠近。"],
+      [6, "反感", "身體會自己往後退，心裡一直說「不要」。"],
+      [7, "嫌棄", "覺得超不好，心裡在「哼」的一聲。"],
+      [8, "厭惡", "心裡很排斥，一想到就想說「好噁」。"],
+      [9, "噁心", "胃有點翻，覺得整個好噁。"],
+      [10, "超噁", "想馬上轉頭、閉眼，完全不想再看到。"],
+      [11, "想吐", "喉嚨卡卡的，好像要吐出來。"],
+      [12, "反胃", "肚子翻來翻去，很不舒服。"],
+      [13, "躲開", "很想離遠一點，找一個安全的地方。"],
+      [14, "拒絕", "心裡很清楚：「這個我不要。」"]
+    ] },
+    { c: "藍", pos: "低落不是壞事，它在提醒我需要支持。", cards: [
+      [1, "心悶", "心裡有一小塊陰影，不太開心。"],
+      [2, "失落", "沒做到或沒得到，心有點空空的。"],
+      [3, "小難過", "有點想嘆氣，心裡暖暖的變涼了。"],
+      [4, "難過", "心裡沉沉的，好像背著一顆石頭。"],
+      [5, "傷心", "在意的人或事變糟時，眼淚有點想掉。"],
+      [6, "心酸", "一想到那件事，心裡酸酸的、有點痛。"],
+      [7, "委屈", "明明有話想說卻被誤會，心裡縮起來。"],
+      [8, "寂寞", "周圍很安靜，好像只有自己一個人。"],
+      [9, "孤單", "明明有人在旁邊，卻覺得沒有人懂我。"],
+      [10, "失望", "期待的事沒有發生，像氣球慢慢漏氣。"],
+      [11, "沮喪", "覺得怎麼努力都沒用，好像被按下暫停鍵。"],
+      [12, "低落", "做什麼都提不起勁，只想靜靜的。"],
+      [13, "心碎", "好像心被重重摔了一下，碎成很多片。"],
+      [14, "無助", "很想有人幫忙，卻不知道能找誰。"]
+    ] },
+    { c: "橘", pos: "驚訝讓我停一下，再決定下一步怎麼做。", cards: [
+      [1, "好奇", "很想知道「後面會怎樣？」"],
+      [2, "小驚喜", "比想像中好一點，心裡亮一下。"],
+      [3, "意外", "跟原本想的不一樣，有點出乎意料。"],
+      [4, "想不到", "心裡說：「咦？想不到竟然是這樣！」"],
+      [5, "驚訝", "眼睛突然睜大，腦袋暫時跟不上。"],
+      [6, "讚嘆", "心裡一直「哇～」，覺得超厲害。"],
+      [7, "驚豔", "又美又特別，讓人捨不得移開視線。"],
+      [8, "欣喜", "開心得很暖，嘴角一直收不起來。"],
+      [9, "狂喜", "開心到想跳起來大叫：「太好了！」"],
+      [10, "嚇一跳", "突然被嚇一下，心臟「咚」地跳一下，發現沒事就笑出來。"],
+      [11, "傻眼", "實在太扯，只能在心裡說：「蛤？」"],
+      [12, "超驚喜", "又驚又喜，覺得「也太好了吧！」"],
+      [13, "大吃一驚", "完全沒預料到，一下子說不出話。"],
+      [14, "嚇呆", "被結果嚇到，一時間愣在那裡，腦袋短暫當機。"]
+    ] },
+    { c: "紫", pos: "害怕不是弱，是身體在保護我。", cards: [
+      [1, "緊張", "要做新的事情前，心跟手都有點緊緊的。"],
+      [2, "不安", "好像有事要發生，卻說不出是哪一件。"],
+      [3, "擔心", "一直在想「如果出事怎麼辦」。"],
+      [4, "煩惱", "腦袋一直轉來轉去，想很多又停不下來。"],
+      [5, "怕被罵", "做錯事時，心裡一直想大人會不會生氣。"],
+      [6, "怕失敗", "很怕做不好，別人會笑我或失望。"],
+      [7, "焦慮", "心裡一直拉警報，覺得好像哪裡真的很不安全。"],
+      [8, "害怕", "覺得可能會發生不好的事。"],
+      [9, "心慌", "心跳變快，手腳有點不知道放哪裡。"],
+      [10, "驚嚇", "突然發生一件事，心臟「砰」地跳很大一下。"],
+      [11, "驚恐", "覺得很危險，腦袋只想著「快逃走」。"],
+      [12, "恐懼", "一直躲著那件事，光想到就不敢面對。"],
+      [13, "超害怕", "怕到全身發抖，聲音都變小了。"],
+      [14, "嚇壞", "被嚇到腦袋一片空白，好幾秒都動不了。"]
+    ] },
+    { c: "紅", pos: "生氣在告訴我：有一個界線被碰到了。", cards: [
+      [1, "悶悶", "心裡卡卡的，說不出哪裡怪。"],
+      [2, "心煩", "腦袋很多事，一點小聲音都覺得吵。"],
+      [3, "不爽", "臉臭臭的，就是覺得哪裡不對勁。"],
+      [4, "惱火", "好像被一直戳，火慢慢被點起來。"],
+      [5, "生氣", "心裡大聲說：「我很不開心！」"],
+      [6, "氣憤", "覺得事情超不公平，越想越氣。"],
+      [7, "火大", "像胸口有火在燒，很想大聲吼。"],
+      [8, "怒氣", "全身都是怒氣，眉頭皺得很緊。"],
+      [9, "憤怒", "心裡像打雷，什麼都不想聽。"],
+      [10, "氣炸", "覺得快爆掉了，一點就會炸開。"],
+      [11, "怨氣", "那口氣吞不下去，一直卡在心裡。"],
+      [12, "怨恨", "一想到那件事，心裡就又酸又氣。"],
+      [13, "不服", "覺得被看扁，很想證明「我可以」。"],
+      [14, "報復", "氣到想讓對方也不好受。"]
+    ] }
+  ];
+  var FAMILY_COLOR = { 黃: "#e0a000", 綠: "#4c9a3a", 藍: "#3a7bd5", 橘: "#e07a1f", 紫: "#7a5cc4", 紅: "#d64545" };
+  var cardOf = (fam, name) => CARD_FAMILIES.find((f) => f.c === fam)?.cards.find((c) => c[1] === name) || null;
+
+  // src/js/pages/gathering.js
+  var NEEDS = ["班級經營", "教材與進度", "某位孩子", "時間安排", "我自己的狀態", "目前都還好"];
+  var OPEN_BEFORE = 7;
+  var OPEN_AFTER = 7;
+  var MOOD_V = { 很好: 5, 不錯: 4, 還不錯: 3, 不太好: 2, 很糟: 1 };
+  var MOOD_C = { 5: "#2e8b57", 4: "#7fb069", 3: "#d9b44a", 2: "#e08a4a", 1: "#c2531f" };
+  var gatherings = () => S.settings?.gatherings || {};
+  var list = () => Object.entries(gatherings()).filter(([, d]) => d).map(([month, date]) => ({ month, date, open: addDays2(date, -OPEN_BEFORE) })).sort((a, b) => b.date.localeCompare(a.date));
+  var monthLabel = (m) => {
+    const [y, mo] = String(m || "").split("-");
+    return y ? `${Number(y) - 1911} 年 ${Number(mo)} 月` : "";
+  };
+  var semOf = (date) => (S.data.semesters || []).find((s) => s.start && s.end && s.start <= date && date <= s.end)?.id || S.semester;
+  var refId = (tid, month) => `RF-${tid}~M-${month}`;
+  var letterId = (tid, sem) => `RF-${tid}~L-${sem}`;
+  var refsOf = (tid) => (S.data.reflections || []).filter((r) => r.teacherId === tid && r.kind === "月聚會").sort((a, b) => (a.month || "").localeCompare(b.month || ""));
+  function currentGathering(today3 = todayISO()) {
+    return list().find((g) => g.open <= today3) || null;
+  }
+  var inWindow = (g, today3 = todayISO()) => !!g && today3 >= g.open && today3 <= addDays2(g.date, OPEN_AFTER);
+  var myRef = (month) => {
+    const tid = myTeacherId();
+    return tid ? get("reflections", refId(tid, month)) : null;
+  };
+  function gatheringTodo() {
+    if (isSupervisor2() || !myTeacherId()) return null;
+    const g = currentGathering();
+    return g && inWindow(g) && !myRef(g.month) ? g : null;
+  }
+  function gatheringReminder() {
+    const g = gatheringTodo();
+    return g ? `<div class="callout accent mb8">${icon("heart", "sm")} ${mdw(g.date)} 月聚會的小問卷開放了：這個月和孩子相處，最像哪一張牌卡？兩分鐘就好。<a href="#/gathering">去填寫 ›</a></div>` : "";
+  }
+  var dot = (fam) => `<i class="emo-dot" style="background:${FAMILY_COLOR[fam] || "var(--muted)"}"></i>`;
+  var cardChip = (r) => r?.card ? `<span class="g-card" style="--fc:${FAMILY_COLOR[r.family] || "var(--muted)"}">${dot(r.family)}${esc(r.family)}色・${esc(r.card)}</span>` : "";
+  var lineOf = (r) => cardOf(r.family, r.card)?.[2] || "";
+  function teacherPool(sem) {
+    const ids = new Set(classes().filter((c) => c.semesterId === sem || !sem).map((c) => c.teacherId).filter(Boolean));
+    for (const r of S.data.reflections || []) if (r.teacherId) ids.add(r.teacherId);
+    return [...ids].map((id) => get("teachers", id)).filter(Boolean).sort((a, b) => String(a.name).localeCompare(String(b.name), "zh-Hant"));
+  }
+  function letterHtml(tid, sem) {
+    const s = get("semesters", sem) || {};
+    const refs = refsOf(tid).filter((r) => r.semesterId === sem || !r.semesterId && s.start && r.month >= s.start.slice(0, 7) && r.month <= (s.end || "").slice(0, 7));
+    const note = get("reflections", letterId(tid, sem));
+    return `<div class="g-letter">
+    <div class="g-letter-head"><div class="small">${esc(orgName())}・${esc(sem)}${s.name ? ` ${esc(s.name)}` : ""}</div><h1>我的這學期</h1><div>${esc(nameOf("teachers", tid))} 老師</div></div>
+    <p class="g-letter-intro">每個月，你都選了一張最像那段日子的牌卡，也留下了一個瞬間。把它們放在一起，就是你這學期和孩子們走過的路。</p>
+    ${refs.length ? refs.map((r) => `<div class="g-letter-month" style="--fc:${FAMILY_COLOR[r.family] || "#999"}">
+      <div class="g-letter-m">${esc(monthLabel(r.month))}</div>
+      <div class="g-letter-card"><b>${esc(r.family)}色・${esc(r.card)}</b><span>${esc(lineOf(r))}</span></div>
+      ${r.moment ? `<div class="g-letter-moment">「${esc(r.moment)}」</div>` : ""}</div>`).join("") : '<p class="g-letter-intro">這學期還沒有填過月聚會小問卷。</p>'}
+    ${note?.text ? `<div class="g-letter-note"><div class="small">給你的話</div><div>${esc(note.text).replace(/\n/g, "<br>")}</div><div class="small" style="text-align:right">${esc(note.by || "")}</div></div>` : ""}
+    <p class="g-letter-end">謝謝你這學期的陪伴。有好的日子，也有不容易的日子，都是真實的你。</p></div>`;
+  }
+  var printLetter = (tid, sem) => printHtml(letterHtml(tid, sem), { margin: "14mm", title: `${sem}_我的這學期_${nameOf("teachers", tid)}` });
+  var form = null;
+  function teacherView(ctx) {
+    const tid = myTeacherId();
+    const g = currentGathering();
+    const mine = refsOf(tid).slice().reverse();
+    if (g && (!form || form.month !== g.month)) {
+      const r2 = myRef(g.month);
+      form = { month: g.month, family: r2?.family || "", card: r2?.card || "", moment: r2?.moment || "", needs: new Set(String(r2?.needs || "").split("、").filter(Boolean)), share: r2?.share === "V" };
+    }
+    const r = g ? myRef(g.month) : null;
+    ctx.el.innerHTML = `
+    <div class="card"><div class="card-head"><h3>${icon("heart", "sm")} ${g ? `${mdw(g.date)} 月聚會小問卷` : "月聚會小問卷"}</h3>
+      <span class="sub">${g ? r ? `已填寫・${esc((r.updatedAt || "").slice(5, 16))}，下次開放前都還能修改` : "兩分鐘就好；只有你和社工、督導看得到" : ""}</span></div>
+      <div class="card-body stack" style="gap:16px">${g ? reflectReady() ? formHtml2() : `<div class="callout warn">${icon("info", "sm")} 雲端主機還沒更新，暫時不能填寫，請通知督導重新部署 Apps Script。</div>` : '<div class="small muted">社工排好月聚會日期後，聚會前一週會在這裡開放小問卷。</div>'}</div></div>
+    <div class="card mt16"><div class="card-head"><h3>我的每個月</h3><span class="sp"></span>
+      <button class="btn sm" id="g-letter">${icon("print", "sm")}我的這學期</button></div>
+      <div class="card-body">${mine.length ? mine.map((x) => `<div class="g-hist"><div class="g-hist-m">${esc(monthLabel(x.month))}</div>
+        <div>${cardChip(x)}<div class="small muted mt4">${esc(lineOf(x))}</div>${x.moment ? `<div class="mt8">「${esc(x.moment)}」</div>` : ""}
+        ${x.needs ? `<div class="small muted mt4">需要的支持：${esc(x.needs)}</div>` : ""}</div></div>`).join("") : '<div class="small muted">填過的小問卷會留在這裡，學期末可以印成「我的這學期」。</div>'}</div></div>`;
+    if (g && reflectReady()) bindForm2(ctx);
+    $("#g-letter").onclick = () => printLetter(tid, S.semester);
+  }
+  function formHtml2() {
+    const f = form, fam = CARD_FAMILIES.find((x) => x.c === f.family);
+    return `<div><div class="g-q">1. 這個月和孩子相處，最像哪一張牌卡？</div>
+      <div class="g-fams">${CARD_FAMILIES.map((x) => `<button type="button" data-fam="${x.c}" class="${x.c === f.family ? "on" : ""}" style="--fc:${FAMILY_COLOR[x.c]}">${dot(x.c)}${x.c}色家族</button>`).join("")}</div>
+      ${fam ? `<div class="small muted mt8">${esc(fam.pos)}</div><div class="g-cards">${fam.cards.map(([n, name, line3]) => `<button type="button" data-card="${esc(name)}" class="${name === f.card ? "on" : ""}" style="--fc:${FAMILY_COLOR[fam.c]}">
+        <b>${String(n).padStart(2, "0")}｜${esc(name)}</b><span>${esc(line3)}</span></button>`).join("")}</div>` : '<div class="small muted mt8">先選一個顏色，再挑那一族裡最像的一張。</div>'}</div>
+    <label class="field"><span class="g-q">2. 一個想留下的瞬間（一兩句話就好）</span>
+      <textarea class="textarea" id="g-moment" rows="3" placeholder="例：小安第一次自己舉手問問題，問完還偷偷看我有沒有笑">${esc(f.moment)}</textarea></label>
+    <div><div class="g-q">3. 這個月最需要的支持（可複選）</div>
+      <div class="g-needs">${NEEDS.map((n) => `<button type="button" data-need="${esc(n)}" class="${f.needs.has(n) ? "on" : ""}">${esc(n)}</button>`).join("")}</div></div>
+    <label class="row small" style="gap:6px"><input type="checkbox" id="g-share" ${f.share ? "checked" : ""}>我的瞬間可以<b>匿名</b>在月聚會分享</label>
+    <div class="row"><span class="small muted">只有你和社工、督導看得到；這不是考核，是想知道大家過得好不好。</span><span class="sp"></span>
+      <button class="btn primary" id="g-save">${icon("save", "sm")}${myRef(f.month) ? "更新" : "送出"}</button></div>`;
+  }
+  function bindForm2(ctx) {
+    const body = ctx.el.querySelector(".card-body");
+    body.onclick = async (e) => {
+      const fb = e.target.closest("[data-fam]");
+      if (fb) {
+        if (form.family !== fb.dataset.fam) {
+          form.family = fb.dataset.fam;
+          form.card = "";
+        }
+        return teacherView(ctx);
+      }
+      const cb = e.target.closest("[data-card]");
+      if (cb) {
+        form.card = cb.dataset.card;
+        $$("[data-card]", body).forEach((b) => b.classList.toggle("on", b === cb));
+        return;
+      }
+      const nb = e.target.closest("[data-need]");
+      if (nb) {
+        const n = nb.dataset.need;
+        if (form.needs.has(n)) form.needs.delete(n);
+        else {
+          if (n === "目前都還好") form.needs.clear();
+          else form.needs.delete("目前都還好");
+          form.needs.add(n);
+        }
+        $$("[data-need]", body).forEach((b) => b.classList.toggle("on", form.needs.has(b.dataset.need)));
+        return;
+      }
+      if (e.target.closest("#g-save")) {
+        if (!form.card) {
+          toast("請先選一張牌卡", "err");
+          return;
+        }
+        const g = currentGathering();
+        try {
+          await mutate("/api/reflect/save", { month: form.month, semesterId: semOf(g.date), family: form.family, card: form.card, moment: form.moment, needs: NEEDS.filter((n) => form.needs.has(n)).join("、"), share: form.share }, "已送出，謝謝你");
+          form = null;
+          teacherView(ctx);
+        } catch {
+        }
+      }
+    };
+    $("#g-moment", body).oninput = (e) => {
+      form.moment = e.target.value;
+    };
+    $("#g-share", body).onchange = (e) => {
+      form.share = e.target.checked;
+    };
+  }
+  var TABS = [["status", "填寫狀況"], ["meet", "聚會用"], ["people", "每位老師"], ["letters", "學期末"], ["setup", "聚會日期"]];
+  function pickMonth(ctx) {
+    const all = list();
+    const want = ctx.query.get("m");
+    return all.find((g) => g.month === want) || currentGathering() || all[all.length - 1] || null;
+  }
+  function monthSelect(ctx, g) {
+    const all = list();
+    return all.length ? `<select class="select" id="g-month" style="width:auto">${all.map((x) => `<option value="${x.month}" ${x.month === g?.month ? "selected" : ""}>${esc(monthLabel(x.month))}（${mdw(x.date)}）</option>`).join("")}</select>` : "";
+  }
+  function socialView(ctx) {
+    const tab = TABS.some(([k]) => k === ctx.query.get("tab")) ? ctx.query.get("tab") : "status";
+    const g = pickMonth(ctx);
+    const needG = ["status", "meet"].includes(tab);
+    const body = needG && !g ? `<div class="card"><div class="empty">${icon("calendar")}<div>還沒有排月聚會。到「聚會日期」填上日期，問卷就會在聚會前一週開放。</div></div></div>` : tab === "status" ? statusTab(g) : tab === "meet" ? meetTab(g) : tab === "people" ? peopleTab(ctx) : tab === "letters" ? lettersTab(ctx) : setupTab();
+    ctx.el.innerHTML = `<div class="row wrap no-print" style="gap:8px;margin-bottom:12px"><div class="pills">${TABS.map(([k, l]) => `<button class="pill ${k === tab ? "on" : ""}" data-tab="${k}">${l}</button>`).join("")}</div>
+      <span class="sp"></span>${needG ? monthSelect(ctx, g) : ""}</div>
+    ${reflectReady() ? "" : `<div class="callout warn mb8">${icon("info", "sm")} 雲端主機還沒更新，老師暫時不能填寫。請重新部署 Apps Script（管理部署作業 → 編輯 → 新版本）。</div>`}
+    <div id="g-body">${body}</div>`;
+    $$("[data-tab]", ctx.el).forEach((b) => b.onclick = () => ctx.go(`#/gathering?tab=${b.dataset.tab}${g ? `&m=${g.month}` : ""}`));
+    const ms = $("#g-month", ctx.el);
+    if (ms) ms.onchange = () => ctx.go(`#/gathering?tab=${tab}&m=${ms.value}`);
+    bindSocial(ctx, tab, g);
+  }
+  function statusTab(g) {
+    const sem = semOf(g.date), pool = teacherPool(sem);
+    const rows2 = pool.map((t) => ({ t, r: get("reflections", refId(t.id, g.month)) }));
+    const done = rows2.filter((x) => x.r).length;
+    const st9 = inWindow(g) ? "開放中" : todayISO() < g.open ? `${md2(g.open)} 開放` : "已過開放期間（還能補填）";
+    return `<div class="card"><div class="card-head"><h3>${esc(monthLabel(g.month))}月聚會・${mdw(g.date)}</h3><span class="sub">${st9}・${md2(g.open)} 起開放填寫</span><span class="sp"></span>
+      <span class="chip ${done === rows2.length && rows2.length ? "good" : "outline"}">已填 ${done}／${rows2.length}</span></div>
+    <div class="card-body"><div class="small muted mb8">現場可以邀請還沒填的老師用手機填，兩分鐘就好。</div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>老師</th><th>狀態</th><th>牌卡</th><th>填寫時間</th></tr></thead><tbody>
+      ${rows2.map(({ t, r }) => `<tr><td class="nowrap"><b>${esc(t.name)}</b></td><td>${r ? '<span class="chip good">已填</span>' : '<span class="chip outline">還沒填</span>'}</td>
+        <td>${r ? cardChip(r) : ""}</td><td class="small muted">${r ? esc((r.updatedAt || "").slice(5, 16)) : ""}</td></tr>`).join("") || '<tr><td colspan="4" class="muted">這學期還沒有排課的老師</td></tr>'}</tbody></table></div></div></div>`;
+  }
+  function meetTab(g) {
+    const refs = (S.data.reflections || []).filter((r) => r.kind === "月聚會" && r.month === g.month);
+    const famN = Object.fromEntries(CARD_FAMILIES.map((f) => [f.c, 0]));
+    const cardN = /* @__PURE__ */ new Map(), needN = new Map(NEEDS.map((n) => [n, 0]));
+    for (const r of refs) {
+      if (r.family) famN[r.family]++;
+      if (r.card) {
+        const k = `${r.family}|${r.card}`;
+        cardN.set(k, (cardN.get(k) || 0) + 1);
+      }
+      for (const n of String(r.needs || "").split("、").filter(Boolean)) needN.set(n, (needN.get(n) || 0) + 1);
+    }
+    const max = Math.max(1, ...Object.values(famN));
+    const shared = refs.filter((r) => r.share === "V" && (r.moment || "").trim());
+    return `<div class="g-meet" id="g-meet">
+    <div class="row"><h2 style="margin:0">${esc(monthLabel(g.month))}月聚會</h2><span class="sp"></span><span class="small muted">${refs.length} 位老師填寫・不顯示名字</span>
+      <button class="btn sm no-print" id="g-print-meet">${icon("print", "sm")}列印</button></div>
+    <div class="g-meet-sec"><h3>這個月，大家最像的牌卡</h3>
+      <div class="g-bars">${CARD_FAMILIES.map((f) => `<div class="g-bar"><span>${dot(f.c)}${f.c}色</span><em class="fill" style="width:${famN[f.c] / max * 100}%;background:${FAMILY_COLOR[f.c]}"></em><b>${famN[f.c]}</b></div>`).join("")}</div>
+      <div class="g-picked">${[...cardN].sort((a, b) => b[1] - a[1]).map(([k, n]) => {
+      const [fam, card2] = k.split("|");
+      return `<span class="g-card" style="--fc:${FAMILY_COLOR[fam]}">${dot(fam)}${esc(card2)}${n > 1 ? ` ×${n}` : ""}<small>${esc(cardOf(fam, card2)?.[2] || "")}</small></span>`;
+    }).join("") || '<span class="muted">還沒有人填</span>'}</div></div>
+    <div class="g-meet-sec"><h3>想留下的瞬間</h3>${shared.length ? shared.map((r) => `<blockquote class="g-quote" style="--fc:${FAMILY_COLOR[r.family] || "#999"}">「${esc(r.moment)}」</blockquote>`).join("") : '<div class="muted">還沒有同意分享的瞬間</div>'}</div>
+    <div class="g-meet-sec"><h3>大家這個月需要的支持</h3><div class="g-needs-sum">${[...needN].map(([n, c]) => `<span class="chip ${c ? "accent" : "outline"}">${esc(n)} ${c}</span>`).join("")}</div>
+      <div class="small muted mt8">最多人選的，可以當這個月聚會的小主題。</div></div></div>`;
+  }
+  function moodWeeks(tid) {
+    const by = /* @__PURE__ */ new Map();
+    for (const s of S.data.sessions || []) {
+      const c = get("classes", s.classId);
+      if (!s.mood || !MOOD_V[s.mood] || (s.teacherId || c?.teacherId) !== tid) continue;
+      const w = weekNo(s.date);
+      if (w <= 0) continue;
+      if (!by.has(w)) by.set(w, []);
+      by.get(w).push(MOOD_V[s.mood]);
+    }
+    return [...by].sort((a, b) => a[0] - b[0]).map(([w, xs]) => ({ w, v: xs.reduce((a, b) => a + b, 0) / xs.length, n: xs.length }));
+  }
+  function moodSvg(weeks) {
+    if (!weeks.length) return '<span class="small muted">這學期還沒有課堂心情紀錄</span>';
+    const W = 16, H = 46, last = Math.max(...weeks.map((x) => x.w));
+    const bars = weeks.map((x) => {
+      const hgt = x.v / 5 * H;
+      return `<rect x="${(x.w - 1) * W + 2}" y="${H - hgt}" width="${W - 4}" height="${hgt}" rx="2" fill="${MOOD_C[Math.round(x.v)]}"><title>第 ${x.w} 週：平均 ${x.v.toFixed(1)}（${x.n} 堂）</title></rect>`;
+    }).join("");
+    return `<svg class="g-mood" viewBox="0 0 ${last * W} ${H + 14}" width="${Math.min(640, last * W)}" height="${H + 14}" role="img" aria-label="每週課堂心情">
+    ${bars}${weeks.map((x) => `<text x="${(x.w - 1) * W + W / 2}" y="${H + 12}" text-anchor="middle">${x.w}</text>`).join("")}</svg>`;
+  }
+  function kidEmoByMonth(tid) {
+    const out = /* @__PURE__ */ new Map();
+    for (const r of S.data.records || []) {
+      if (!r.emoHard && !r.emoGood) continue;
+      const s = get("sessions", r.sessionId), c = s && get("classes", s.classId);
+      if (!s || (s.teacherId || c?.teacherId) !== tid) continue;
+      const m = s.date.slice(0, 7), o = out.get(m) || { hard: 0, good: 0 };
+      o.hard += String(r.emoHard || "").split("、").filter((x) => x && x !== EMO_NONE).length;
+      o.good += String(r.emoGood || "").split("、").filter((x) => x && x !== EMO_NONE).length;
+      out.set(m, o);
+    }
+    return out;
+  }
+  function peopleTab(ctx) {
+    const pool = teacherPool(S.semester);
+    if (!pool.length) return '<div class="card"><div class="empty">這學期還沒有排課的老師</div></div>';
+    const tid = pool.some((t) => t.id === ctx.query.get("t")) ? ctx.query.get("t") : pool[0].id;
+    const refs = refsOf(tid), emo = kidEmoByMonth(tid), weeks = moodWeeks(tid);
+    const months = [.../* @__PURE__ */ new Set([...refs.map((r) => r.month), ...emo.keys()])].sort();
+    const low = weeks.filter((x) => x.v <= 2.5).map((x) => x.w);
+    const silent = low.length >= 2 && !refs.some((r) => /我自己的狀態|班級經營|某位孩子|教材|時間/.test(r.needs || ""));
+    return `<div class="row wrap mb8" style="gap:8px"><select class="select" id="g-teacher" style="width:auto">${pool.map((t) => `<option value="${t.id}" ${t.id === tid ? "selected" : ""}>${esc(t.name)}</option>`).join("")}</select>
+      <span class="small muted">只有社工和督導看得到；用來照顧與支持，不是考核。</span></div>
+    <div class="card"><div class="card-head"><h3>課堂心情（每週平均）</h3><span class="sub">老師每堂課後紀錄的「課堂氣氛」，很好＝5、很糟＝1</span></div>
+      <div class="card-body">${moodSvg(weeks)}
+        ${low.length ? `<div class="callout warn mt8">${icon("eye", "sm")} 第 ${low.join("、")} 週平均偏低${silent ? "，但小問卷沒有勾過需要支持，可以主動關心一下" : ""}。</div>` : ""}</div></div>
+    <div class="card mt16"><div class="card-head"><h3>每個月</h3></div><div class="card-body tbl-wrap"><table class="tbl"><thead><tr><th>月份</th><th>牌卡</th><th>想留下的瞬間</th><th>需要的支持</th><th>帶的孩子</th></tr></thead><tbody>
+      ${months.map((m) => {
+      const r = refs.find((x) => x.month === m), e = emo.get(m);
+      return `<tr><td class="nowrap">${esc(monthLabel(m))}</td><td>${r ? cardChip(r) : '<span class="muted small">沒填</span>'}</td>
+        <td class="small">${esc(r?.moment || "")}${r?.share === "V" ? ' <span class="chip outline small">同意分享</span>' : ""}</td><td class="small">${esc(r?.needs || "")}</td>
+        <td class="small nowrap">${e ? `困難時刻 ${e.hard}・好時刻 ${e.good}` : "—"}</td></tr>`;
+    }).join("") || '<tr><td colspan="5" class="muted">還沒有資料</td></tr>'}</tbody></table></div></div>`;
+  }
+  function lettersTab(ctx) {
+    const sems = [...S.data.semesters].sort((a, b) => (b.start || "").localeCompare(a.start || ""));
+    const sem = sems.some((s) => s.id === ctx.query.get("s")) ? ctx.query.get("s") : S.semester;
+    const pool = teacherPool(sem);
+    return `<div class="row wrap mb8" style="gap:8px"><select class="select" id="g-sem" style="width:auto">${sems.map((s) => `<option value="${esc(s.id)}" ${s.id === sem ? "selected" : ""}>${esc(s.id)} ${esc(s.name || "")}</option>`).join("")}</select>
+      <span class="small muted">學期末替每位老師寫幾句話（選填），會印在老師的「我的這學期」最後。老師登入後也看得到。</span></div>
+    ${pool.map((t) => {
+      const n = get("reflections", letterId(t.id, sem)), cnt = refsOf(t.id).filter((r) => r.semesterId === sem).length;
+      return `<div class="card mb8" data-tid="${t.id}"><div class="card-body"><div class="row wrap" style="gap:8px"><b>${esc(t.name)}</b><span class="small muted">這學期填了 ${cnt} 次小問卷</span><span class="sp"></span>
+        <button class="btn sm" data-preview="${t.id}">${icon("print", "sm")}預覽／列印</button></div>
+        <textarea class="textarea mt8" rows="2" data-note="${t.id}" placeholder="給這位老師的話（選填）">${esc(n?.text || "")}</textarea>
+        <div class="row mt8"><span class="small muted">${n ? `${esc(n.by || "")} ${esc((n.updatedAt || "").slice(5, 16))}` : ""}</span><span class="sp"></span><button class="btn sm" data-savenote="${t.id}">${icon("save", "sm")}儲存</button></div></div></div>`;
+    }).join("") || '<div class="card"><div class="empty">這學期還沒有排課的老師</div></div>'}`;
+  }
+  function setupTab() {
+    const all = list();
+    return `<div class="card"><div class="card-head"><h3>月聚會日期</h3><span class="sub">填上日期後，小問卷會在前 ${OPEN_BEFORE} 天開放；一個月一次</span></div>
+    <div class="card-body stack" style="gap:10px">
+      <div class="row wrap" style="gap:8px"><input class="input" type="date" id="g-newdate" style="width:170px"><button class="btn primary" id="g-add">${icon("plus", "sm")}新增／更新</button>
+        <span class="small muted">同一個月份再填一次會改成新的日期</span></div>
+      ${all.length ? `<table class="tbl"><thead><tr><th>月份</th><th>聚會日期</th><th>開放填寫</th><th>填寫</th><th></th></tr></thead><tbody>${all.map((g) => `<tr><td>${esc(monthLabel(g.month))}</td><td>${mdw(g.date)}</td><td>${md2(g.open)} 起</td>
+        <td>${(S.data.reflections || []).filter((r) => r.kind === "月聚會" && r.month === g.month).length} 份</td>
+        <td><button class="btn sm ghost" data-delg="${g.month}" title="移除這次聚會（已填的問卷會保留）">${icon("trash", "sm")}</button></td></tr>`).join("")}</tbody></table>` : '<div class="small muted">還沒有排月聚會</div>'}
+    </div></div>`;
+  }
+  function bindSocial(ctx, tab, g) {
+    const el = ctx.el;
+    if (tab === "meet") $("#g-print-meet", el).onclick = () => printHtml($("#g-meet", el).outerHTML, { margin: "12mm", title: `${g.month}_月聚會` });
+    if (tab === "people") $("#g-teacher", el).onchange = (e) => ctx.go(`#/gathering?tab=people&t=${e.target.value}`);
+    if (tab === "letters") {
+      const sem = $("#g-sem", el).value;
+      $("#g-sem", el).onchange = (e) => ctx.go(`#/gathering?tab=letters&s=${e.target.value}`);
+      $$("[data-preview]", el).forEach((b) => b.onclick = () => printLetter(b.dataset.preview, sem));
+      $$("[data-savenote]", el).forEach((b) => b.onclick = async () => {
+        const tid = b.dataset.savenote, text = $(`[data-note="${tid}"]`, el).value;
+        b.disabled = true;
+        try {
+          await mutate("/api/reflect/letter", { teacherId: tid, semesterId: sem, text }, "已儲存");
+          render(ctx);
+        } catch {
+          b.disabled = false;
+        }
+      });
+    }
+    if (tab === "setup") {
+      const save4 = async (next, msg) => {
+        await mutate("/api/settings", { key: "gatherings", value: next }, msg);
+        render(ctx);
+      };
+      $("#g-add", el).onclick = async () => {
+        const d = $("#g-newdate", el).value;
+        if (!d) {
+          toast("請選日期", "err");
+          return;
+        }
+        try {
+          await save4({ ...gatherings(), [d.slice(0, 7)]: d }, `已排 ${mdw(d)} 月聚會`);
+        } catch {
+        }
+      };
+      $$("[data-delg]", el).forEach((b) => b.onclick = async () => {
+        if (!await confirmBox("移除這次月聚會？老師已經填的問卷會保留。", { okText: "移除" })) return;
+        const next = { ...gatherings() };
+        delete next[b.dataset.delg];
+        try {
+          await save4(next, "已移除");
+        } catch {
+        }
+      });
+    }
+  }
+  function render(ctx) {
+    ctx.title("月聚會", isSupervisor2() ? "老師每月的小問卷與聚會素材・只有社工和督導看得到全部" : "每月一次，聊聊這個月和孩子相處的感受");
+    if (isSocial2()) socialView(ctx);
+    else if (myTeacherId()) teacherView(ctx);
+    else ctx.el.innerHTML = `<div class="card"><div class="empty">${icon("lock")}<div>月聚會的內容只有課輔老師本人和社工、督導看得到。</div></div></div>`;
+  }
+  var gathering_default = {
+    render(ctx) {
+      render(ctx);
+    },
+    destroy() {
+      form = null;
+    }
+  };
+
   // src/js/rollcall.js
   var WD2 = "日一二三四五六";
   var pad7 = (n) => String(n).padStart(2, "0");
@@ -12493,7 +12942,8 @@ ${lines.join("\n")}`;
     ["chinese", "國語評量", "journal"],
     ["visit", "指導員訪視", "eye"],
     ["eval", "學期評語", "user"],
-    ["survey", "情緒課程問卷", "heart"]
+    ["survey", "情緒課程問卷", "heart"],
+    ["gathering", "月聚會小問卷", "heart"]
   ];
   var LV = { over: 0, soon: 1, later: 2 };
   var SOON_DAYS = 3;
@@ -12607,6 +13057,10 @@ ${lines.join("\n")}`;
       if (st9.key !== "open" && st9.key !== "over") continue;
       add("survey", st9.key === "over" ? "over" : level(st9.w.end, today3), st9.w.end, { date: st9.w.end, cls: c, text: `${r}（${md2(st9.w.start)}–${md2(st9.w.end)}）${st9.s ? "・草稿" : ""}`, href: `#/selsurvey/${encodeURIComponent(c.id)}/${encodeURIComponent(r)}` });
     }
+    if (tid === myTeacherId()) {
+      const g = gatheringTodo();
+      if (g) add("gathering", "soon", g.date, { date: g.date, cls: null, text: `${mdw(g.date)} 月聚會：這個月最像哪一張牌卡？兩分鐘就好`, href: "#/gathering" });
+    }
     return out;
   }
   var addHours = (hm3, h2) => {
@@ -12634,7 +13088,7 @@ ${lines.join("\n")}`;
     return gs.sort((a, b) => LV[a.level] - LV[b.level] || a.due.localeCompare(b.due));
   }
   var KIND2 = Object.fromEntries(KINDS.map(([k, l, i]) => [k, { label: l, icon: i }]));
-  var unit = { record: "堂", flow: "堂", math: "張", english: "位", chinese: "位", visit: "份", eval: "位", survey: "份" };
+  var unit = { record: "堂", flow: "堂", math: "張", english: "位", chinese: "位", visit: "份", eval: "位", survey: "份", gathering: "份" };
   var lvChip = (lv) => lv === "over" ? '<span class="chip critical small">已逾期</span>' : lv === "soon" ? '<span class="chip warn small">快到期</span>' : '<span class="chip outline small">之後要做</span>';
   function summary(g) {
     const k = g.kind, f = g.items[0];
@@ -12651,7 +13105,7 @@ ${lines.join("\n")}`;
     const over = items.filter((x) => x.level === "over").length;
     const head2 = `<div class="card-head"><h3>${esc(title)}</h3><span class="sub">${gs.length ? `${items.length} 項${over ? `・逾期 ${over} 項` : ""}${who ? `・${esc(who)}` : ""}` : ""}</span></div>`;
     if (!gs.length) return `<div class="card todo-card">${head2}<div class="card-body"><div class="empty">${icon("check")}<div>都完成了 ✓</div></div></div></div>`;
-    const row = (g) => `<div class="todo-row ${g.level}"><div class="row" style="gap:8px">${icon(KIND2[g.kind].icon, "sm")}<b>${esc(KIND2[g.kind].label)}</b>${lvChip(g.level)}
+    const row = (g) => `<div class="todo-row ${g.level}"><div class="row" style="gap:8px">${icon(KIND2[g.kind].icon, "sm")}<b>${esc(KIND2[g.kind].label)}</b>${g.kind === "gathering" ? '<span class="chip accent small">開放中</span>' : lvChip(g.level)}
       <span class="small grow">${g.cls ? `${esc(g.cls.name)}${subjectOfClass(g.cls) ? `（${esc(subjectOfClass(g.cls))}）` : ""}・` : ""}${esc(summary(g))}</span>
       <a class="btn sm ${g.level === "over" ? "primary" : ""}" href="${g.items[0].href}">去填</a></div>
     ${g.items.length > 1 ? `<details class="todo-more"><summary class="small muted">看全部 ${g.items.length} 筆</summary>${g.items.map((x) => `<div class="row small" style="gap:6px;padding:3px 0 3px 26px">${lvChip(x.level)}<span class="grow">${esc(x.text)}</span><a href="${x.href}">去填</a></div>`).join("")}</details>` : ""}</div>`;
@@ -12675,7 +13129,7 @@ ${lines.join("\n")}`;
 
   // src/js/pages/closures.js
   var KIND3 = { all: "全分校停課", site: "據點停課", kids: "孩子學校放假" };
-  var list = (v) => String(v || "").split(/[、,，;；\s]+/).map((x) => x.trim()).filter(Boolean);
+  var list2 = (v) => String(v || "").split(/[、,，;；\s]+/).map((x) => x.trim()).filter(Boolean);
   var sites = () => [...new Set(classes().map((c) => String(c.site || "").trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, "zh-Hant"));
   var schools = () => [...new Set(classes().flatMap((c) => roster(c.id)).map((k) => String(k.school || "").trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, "zh-Hant"));
   function semesterClosures() {
@@ -12689,14 +13143,14 @@ ${lines.join("\n")}`;
     for (const r of S.data.closures || []) if (r.date && inSem(r.date)) out.push({ type: r.kind === "孩子學校放假" ? "kids" : "site", date: r.date, name: r.name || "", makeup: r.makeup || "", note: r.note || "", row: r });
     return out.sort((a, b) => a.date.localeCompare(b.date));
   }
-  var scopeText = (x) => x.type === "all" ? "全部據點" : x.type === "kids" ? `就讀 ${list(x.row.schools).join("、") || "—"} 的孩子` : [list(x.row.sites).join("、"), list(x.row.classIds).map((id) => get("classes", id)?.name).filter(Boolean).join("、")].filter(Boolean).join("、") || "—";
+  var scopeText = (x) => x.type === "all" ? "全部據點" : x.type === "kids" ? `就讀 ${list2(x.row.schools).join("、") || "—"} 的孩子` : [list2(x.row.sites).join("、"), list2(x.row.classIds).map((id) => get("classes", id)?.name).filter(Boolean).join("、")].filter(Boolean).join("、") || "—";
   function affected(x) {
     if (x.type === "kids") {
-      const sc = new Set(list(x.row.schools));
+      const sc = new Set(list2(x.row.schools));
       return classes().filter((c) => roster(c.id).some((k) => sc.has(String(k.school || "").trim())));
     }
     if (x.type === "all") return classes();
-    const ss = new Set(list(x.row.sites)), cs = new Set(list(x.row.classIds));
+    const ss = new Set(list2(x.row.sites)), cs = new Set(list2(x.row.classIds));
     return classes().filter((c) => cs.has(c.id) || ss.has(String(c.site || "").trim()));
   }
   function openClosures(ctx) {
@@ -12733,7 +13187,7 @@ ${lines.join("\n")}`;
   function editClosure(x, redraw) {
     const isNew = !x;
     x = x || { type: "site", date: todayISO(), name: "", makeup: "", note: "", row: {} };
-    const ss = new Set(list(x.row.sites)), cs = new Set(list(x.row.classIds)), sc = new Set(list(x.row.schools));
+    const ss = new Set(list2(x.row.sites)), cs = new Set(list2(x.row.classIds)), sc = new Set(list2(x.row.schools));
     const body = h(`<div class="stack" style="gap:12px">
     <div class="grid g2" style="gap:10px"><label class="field"><span>日期</span><input class="input" type="date" data-k="date" value="${esc(x.date)}"></label>
       <label class="field"><span>原因</span><input class="input" data-k="name" value="${esc(x.name)}" placeholder="例：校慶補假、颱風停課"></label></div>
@@ -12838,9 +13292,9 @@ ${lines.join("\n")}`;
       const mk = cls.filter((c) => S.idx.cl?.makeupOf(c.id, d));
       if (mk.length) out.push(`${i === 0 ? "今天" : i === 1 ? "明天" : mdw(d)} ${esc([...new Set(mk.map((c) => c.name))].join("、"))} 補課（補 ${md2(S.idx.cl.makeupOf(mk[0].id, d))} 的課）`);
       for (const r of closuresOn(d)) if (r.kind === "孩子學校放假") {
-        const sc = new Set(list(r.schools));
+        const sc = new Set(list2(r.schools));
         const kids = [...new Set(cls.filter((c) => ids.has(c.id) && slotFor(c.id, d) && !S.idx.cl.closed(c.id, d)).flatMap((c) => roster(c.id)).filter((k) => sc.has(String(k.school || "").trim())).map((k) => k.name))];
-        if (kids.length) out.push(`${i === 0 ? "今天" : i === 1 ? "明天" : mdw(d)} ${esc(list(r.schools).join("、"))} 放假（${esc(r.name)}），${kids.length} 位孩子請假：${esc(kids.slice(0, 8).join("、"))}${kids.length > 8 ? "…" : ""}`);
+        if (kids.length) out.push(`${i === 0 ? "今天" : i === 1 ? "明天" : mdw(d)} ${esc(list2(r.schools).join("、"))} 放假（${esc(r.name)}），${kids.length} 位孩子請假：${esc(kids.slice(0, 8).join("、"))}${kids.length > 8 ? "…" : ""}`);
       }
     }
     return out.length ? `<div class="callout accent mb8">${icon("calendar", "sm")} <b>停課與補課</b><ul style="margin:4px 0 0 18px;padding:0">${out.map((x) => `<li class="small">${x}</li>`).join("")}</ul></div>` : "";
@@ -13363,7 +13817,7 @@ ${lines.join("\n")}`;
   var pad25 = (n) => String(n).padStart(2, "0");
   var isoOf3 = (v) => v instanceof Date && !isNaN(v) ? `${v.getFullYear()}-${pad25(v.getMonth() + 1)}-${pad25(v.getDate())}` : /^\d{4}[-/]\d{1,2}[-/]\d{1,2}/.test(String(v || "")) ? String(v).slice(0, 10).replace(/\//g, "-").replace(/-(\d)(?=-|$)/g, "-0$1") : "";
   var stampOf = (v) => v instanceof Date && !isNaN(v) ? `${v.getFullYear()}${pad25(v.getMonth() + 1)}${pad25(v.getDate())}${pad25(v.getHours())}${pad25(v.getMinutes())}${pad25(v.getSeconds())}` : String(v || "").replace(/\D/g, "");
-  var semOf = (d) => S.data.semesters.find((s) => s.start && s.end && d >= s.start && d <= s.end)?.id || S.semester;
+  var semOf2 = (d) => S.data.semesters.find((s) => s.start && s.end && d >= s.start && d <= s.end)?.id || S.semester;
   function parseResponses(aoa) {
     const head2 = (aoa[0] || []).map((v) => String(v ?? "").trim());
     const C = {
@@ -13464,7 +13918,7 @@ ${lines.join("\n")}`;
           date: it.date,
           kind: it.kind,
           recorder: it.recorder,
-          semesterId: c?.semesterId || semOf(it.date),
+          semesterId: c?.semesterId || semOf2(it.date),
           classId: c?.id || "",
           school: v.school,
           className: v.className,
@@ -15510,455 +15964,6 @@ ${lines.join("\n")}`;
       }
     });
   }
-
-  // src/js/cards.js
-  var CARD_FAMILIES = [
-    { c: "黃", pos: "把心安放好，情緒就有地方回家。", cards: [
-      [1, "心安", "心裡安安穩穩的，像被輕輕托住。"],
-      [2, "放鬆", "身體慢慢軟下來，呼吸也跟著變慢。"],
-      [3, "輕鬆", "肩膀變輕了，好像把很重的書包放下。"],
-      [4, "喜悅", "心裡慢慢亮起來，像有一束溫暖的小太陽。"],
-      [5, "開心", "一想到這件事，就想笑出聲。"],
-      [6, "高興", "心裡好像開了一盞小燈。"],
-      [7, "興奮", "全身都有電一樣，超想立刻去做。"],
-      [8, "有趣", "好好玩，心裡一直想：「可以再玩一次嗎？」"],
-      [9, "得意", "心裡亮亮的，想跟自己擊掌說：「我好棒！」"],
-      [10, "自豪", "心裡站得很直，覺得自己有價值。"],
-      [11, "感動", "心裡被碰了一下，眼淚有點想掉。"],
-      [12, "感恩", "心裡裝滿「還好有你／有這件事」。"],
-      [13, "滿足", "心裡剛剛好，不多也不少。"],
-      [14, "幸福", "心裡像被厚厚抱住，覺得自己被好好愛著。"]
-    ] },
-    { c: "綠", pos: "穩住節奏，把努力長成力量。", cards: [
-      [1, "怪怪的", "心裡有一點怪怪的，說不上來哪裡不對。"],
-      [2, "不合拍", "感覺跟自己不太合，心裡有一點卡卡的。"],
-      [3, "看膩", "一看到就覺得「又是這個」，好膩喔。"],
-      [4, "厭煩", "同一件事一再出現，只想說：「夠了啦。」"],
-      [5, "討厭", "一看到就皺眉，完全不想靠近。"],
-      [6, "反感", "身體會自己往後退，心裡一直說「不要」。"],
-      [7, "嫌棄", "覺得超不好，心裡在「哼」的一聲。"],
-      [8, "厭惡", "心裡很排斥，一想到就想說「好噁」。"],
-      [9, "噁心", "胃有點翻，覺得整個好噁。"],
-      [10, "超噁", "想馬上轉頭、閉眼，完全不想再看到。"],
-      [11, "想吐", "喉嚨卡卡的，好像要吐出來。"],
-      [12, "反胃", "肚子翻來翻去，很不舒服。"],
-      [13, "躲開", "很想離遠一點，找一個安全的地方。"],
-      [14, "拒絕", "心裡很清楚：「這個我不要。」"]
-    ] },
-    { c: "藍", pos: "低落不是壞事，它在提醒我需要支持。", cards: [
-      [1, "心悶", "心裡有一小塊陰影，不太開心。"],
-      [2, "失落", "沒做到或沒得到，心有點空空的。"],
-      [3, "小難過", "有點想嘆氣，心裡暖暖的變涼了。"],
-      [4, "難過", "心裡沉沉的，好像背著一顆石頭。"],
-      [5, "傷心", "在意的人或事變糟時，眼淚有點想掉。"],
-      [6, "心酸", "一想到那件事，心裡酸酸的、有點痛。"],
-      [7, "委屈", "明明有話想說卻被誤會，心裡縮起來。"],
-      [8, "寂寞", "周圍很安靜，好像只有自己一個人。"],
-      [9, "孤單", "明明有人在旁邊，卻覺得沒有人懂我。"],
-      [10, "失望", "期待的事沒有發生，像氣球慢慢漏氣。"],
-      [11, "沮喪", "覺得怎麼努力都沒用，好像被按下暫停鍵。"],
-      [12, "低落", "做什麼都提不起勁，只想靜靜的。"],
-      [13, "心碎", "好像心被重重摔了一下，碎成很多片。"],
-      [14, "無助", "很想有人幫忙，卻不知道能找誰。"]
-    ] },
-    { c: "橘", pos: "驚訝讓我停一下，再決定下一步怎麼做。", cards: [
-      [1, "好奇", "很想知道「後面會怎樣？」"],
-      [2, "小驚喜", "比想像中好一點，心裡亮一下。"],
-      [3, "意外", "跟原本想的不一樣，有點出乎意料。"],
-      [4, "想不到", "心裡說：「咦？想不到竟然是這樣！」"],
-      [5, "驚訝", "眼睛突然睜大，腦袋暫時跟不上。"],
-      [6, "讚嘆", "心裡一直「哇～」，覺得超厲害。"],
-      [7, "驚豔", "又美又特別，讓人捨不得移開視線。"],
-      [8, "欣喜", "開心得很暖，嘴角一直收不起來。"],
-      [9, "狂喜", "開心到想跳起來大叫：「太好了！」"],
-      [10, "嚇一跳", "突然被嚇一下，心臟「咚」地跳一下，發現沒事就笑出來。"],
-      [11, "傻眼", "實在太扯，只能在心裡說：「蛤？」"],
-      [12, "超驚喜", "又驚又喜，覺得「也太好了吧！」"],
-      [13, "大吃一驚", "完全沒預料到，一下子說不出話。"],
-      [14, "嚇呆", "被結果嚇到，一時間愣在那裡，腦袋短暫當機。"]
-    ] },
-    { c: "紫", pos: "害怕不是弱，是身體在保護我。", cards: [
-      [1, "緊張", "要做新的事情前，心跟手都有點緊緊的。"],
-      [2, "不安", "好像有事要發生，卻說不出是哪一件。"],
-      [3, "擔心", "一直在想「如果出事怎麼辦」。"],
-      [4, "煩惱", "腦袋一直轉來轉去，想很多又停不下來。"],
-      [5, "怕被罵", "做錯事時，心裡一直想大人會不會生氣。"],
-      [6, "怕失敗", "很怕做不好，別人會笑我或失望。"],
-      [7, "焦慮", "心裡一直拉警報，覺得好像哪裡真的很不安全。"],
-      [8, "害怕", "覺得可能會發生不好的事。"],
-      [9, "心慌", "心跳變快，手腳有點不知道放哪裡。"],
-      [10, "驚嚇", "突然發生一件事，心臟「砰」地跳很大一下。"],
-      [11, "驚恐", "覺得很危險，腦袋只想著「快逃走」。"],
-      [12, "恐懼", "一直躲著那件事，光想到就不敢面對。"],
-      [13, "超害怕", "怕到全身發抖，聲音都變小了。"],
-      [14, "嚇壞", "被嚇到腦袋一片空白，好幾秒都動不了。"]
-    ] },
-    { c: "紅", pos: "生氣在告訴我：有一個界線被碰到了。", cards: [
-      [1, "悶悶", "心裡卡卡的，說不出哪裡怪。"],
-      [2, "心煩", "腦袋很多事，一點小聲音都覺得吵。"],
-      [3, "不爽", "臉臭臭的，就是覺得哪裡不對勁。"],
-      [4, "惱火", "好像被一直戳，火慢慢被點起來。"],
-      [5, "生氣", "心裡大聲說：「我很不開心！」"],
-      [6, "氣憤", "覺得事情超不公平，越想越氣。"],
-      [7, "火大", "像胸口有火在燒，很想大聲吼。"],
-      [8, "怒氣", "全身都是怒氣，眉頭皺得很緊。"],
-      [9, "憤怒", "心裡像打雷，什麼都不想聽。"],
-      [10, "氣炸", "覺得快爆掉了，一點就會炸開。"],
-      [11, "怨氣", "那口氣吞不下去，一直卡在心裡。"],
-      [12, "怨恨", "一想到那件事，心裡就又酸又氣。"],
-      [13, "不服", "覺得被看扁，很想證明「我可以」。"],
-      [14, "報復", "氣到想讓對方也不好受。"]
-    ] }
-  ];
-  var FAMILY_COLOR = { 黃: "#e0a000", 綠: "#4c9a3a", 藍: "#3a7bd5", 橘: "#e07a1f", 紫: "#7a5cc4", 紅: "#d64545" };
-  var cardOf = (fam, name) => CARD_FAMILIES.find((f) => f.c === fam)?.cards.find((c) => c[1] === name) || null;
-
-  // src/js/pages/gathering.js
-  var NEEDS = ["班級經營", "教材與進度", "某位孩子", "時間安排", "我自己的狀態", "目前都還好"];
-  var OPEN_BEFORE = 7;
-  var OPEN_AFTER = 7;
-  var MOOD_V = { 很好: 5, 不錯: 4, 還不錯: 3, 不太好: 2, 很糟: 1 };
-  var MOOD_C = { 5: "#2e8b57", 4: "#7fb069", 3: "#d9b44a", 2: "#e08a4a", 1: "#c2531f" };
-  var gatherings = () => S.settings?.gatherings || {};
-  var list2 = () => Object.entries(gatherings()).filter(([, d]) => d).map(([month, date]) => ({ month, date, open: addDays2(date, -OPEN_BEFORE) })).sort((a, b) => b.date.localeCompare(a.date));
-  var monthLabel = (m) => {
-    const [y, mo] = String(m || "").split("-");
-    return y ? `${Number(y) - 1911} 年 ${Number(mo)} 月` : "";
-  };
-  var semOf2 = (date) => (S.data.semesters || []).find((s) => s.start && s.end && s.start <= date && date <= s.end)?.id || S.semester;
-  var refId = (tid, month) => `RF-${tid}~M-${month}`;
-  var letterId = (tid, sem) => `RF-${tid}~L-${sem}`;
-  var refsOf = (tid) => (S.data.reflections || []).filter((r) => r.teacherId === tid && r.kind === "月聚會").sort((a, b) => (a.month || "").localeCompare(b.month || ""));
-  function currentGathering(today3 = todayISO()) {
-    return list2().find((g) => g.open <= today3) || null;
-  }
-  var inWindow = (g, today3 = todayISO()) => !!g && today3 >= g.open && today3 <= addDays2(g.date, OPEN_AFTER);
-  var myRef = (month) => {
-    const tid = myTeacherId();
-    return tid ? get("reflections", refId(tid, month)) : null;
-  };
-  function gatheringTodo() {
-    if (isSupervisor2() || !myTeacherId()) return null;
-    const g = currentGathering();
-    return g && inWindow(g) && !myRef(g.month) ? g : null;
-  }
-  function gatheringReminder() {
-    const g = gatheringTodo();
-    return g ? `<div class="callout accent mb8">${icon("heart", "sm")} ${mdw(g.date)} 月聚會的小問卷開放了：這個月和孩子相處，最像哪一張牌卡？兩分鐘就好。<a href="#/gathering">去填寫 ›</a></div>` : "";
-  }
-  var dot = (fam) => `<i class="emo-dot" style="background:${FAMILY_COLOR[fam] || "var(--muted)"}"></i>`;
-  var cardChip = (r) => r?.card ? `<span class="g-card" style="--fc:${FAMILY_COLOR[r.family] || "var(--muted)"}">${dot(r.family)}${esc(r.family)}色・${esc(r.card)}</span>` : "";
-  var lineOf = (r) => cardOf(r.family, r.card)?.[2] || "";
-  function teacherPool(sem) {
-    const ids = new Set(classes().filter((c) => c.semesterId === sem || !sem).map((c) => c.teacherId).filter(Boolean));
-    for (const r of S.data.reflections || []) if (r.teacherId) ids.add(r.teacherId);
-    return [...ids].map((id) => get("teachers", id)).filter(Boolean).sort((a, b) => String(a.name).localeCompare(String(b.name), "zh-Hant"));
-  }
-  function letterHtml(tid, sem) {
-    const s = get("semesters", sem) || {};
-    const refs = refsOf(tid).filter((r) => r.semesterId === sem || !r.semesterId && s.start && r.month >= s.start.slice(0, 7) && r.month <= (s.end || "").slice(0, 7));
-    const note = get("reflections", letterId(tid, sem));
-    return `<div class="g-letter">
-    <div class="g-letter-head"><div class="small">${esc(orgName())}・${esc(sem)}${s.name ? ` ${esc(s.name)}` : ""}</div><h1>我的這學期</h1><div>${esc(nameOf("teachers", tid))} 老師</div></div>
-    <p class="g-letter-intro">每個月，你都選了一張最像那段日子的牌卡，也留下了一個瞬間。把它們放在一起，就是你這學期和孩子們走過的路。</p>
-    ${refs.length ? refs.map((r) => `<div class="g-letter-month" style="--fc:${FAMILY_COLOR[r.family] || "#999"}">
-      <div class="g-letter-m">${esc(monthLabel(r.month))}</div>
-      <div class="g-letter-card"><b>${esc(r.family)}色・${esc(r.card)}</b><span>${esc(lineOf(r))}</span></div>
-      ${r.moment ? `<div class="g-letter-moment">「${esc(r.moment)}」</div>` : ""}</div>`).join("") : '<p class="g-letter-intro">這學期還沒有填過月聚會小問卷。</p>'}
-    ${note?.text ? `<div class="g-letter-note"><div class="small">給你的話</div><div>${esc(note.text).replace(/\n/g, "<br>")}</div><div class="small" style="text-align:right">${esc(note.by || "")}</div></div>` : ""}
-    <p class="g-letter-end">謝謝你這學期的陪伴。有好的日子，也有不容易的日子，都是真實的你。</p></div>`;
-  }
-  var printLetter = (tid, sem) => printHtml(letterHtml(tid, sem), { margin: "14mm", title: `${sem}_我的這學期_${nameOf("teachers", tid)}` });
-  var form = null;
-  function teacherView(ctx) {
-    const tid = myTeacherId();
-    const g = currentGathering();
-    const mine = refsOf(tid).slice().reverse();
-    if (g && (!form || form.month !== g.month)) {
-      const r2 = myRef(g.month);
-      form = { month: g.month, family: r2?.family || "", card: r2?.card || "", moment: r2?.moment || "", needs: new Set(String(r2?.needs || "").split("、").filter(Boolean)), share: r2?.share === "V" };
-    }
-    const r = g ? myRef(g.month) : null;
-    ctx.el.innerHTML = `
-    <div class="card"><div class="card-head"><h3>${icon("heart", "sm")} ${g ? `${mdw(g.date)} 月聚會小問卷` : "月聚會小問卷"}</h3>
-      <span class="sub">${g ? r ? `已填寫・${esc((r.updatedAt || "").slice(5, 16))}，下次開放前都還能修改` : "兩分鐘就好；只有你和社工、督導看得到" : ""}</span></div>
-      <div class="card-body stack" style="gap:16px">${g ? reflectReady() ? formHtml2() : `<div class="callout warn">${icon("info", "sm")} 雲端主機還沒更新，暫時不能填寫，請通知督導重新部署 Apps Script。</div>` : '<div class="small muted">社工排好月聚會日期後，聚會前一週會在這裡開放小問卷。</div>'}</div></div>
-    <div class="card mt16"><div class="card-head"><h3>我的每個月</h3><span class="sp"></span>
-      <button class="btn sm" id="g-letter">${icon("print", "sm")}我的這學期</button></div>
-      <div class="card-body">${mine.length ? mine.map((x) => `<div class="g-hist"><div class="g-hist-m">${esc(monthLabel(x.month))}</div>
-        <div>${cardChip(x)}<div class="small muted mt4">${esc(lineOf(x))}</div>${x.moment ? `<div class="mt8">「${esc(x.moment)}」</div>` : ""}
-        ${x.needs ? `<div class="small muted mt4">需要的支持：${esc(x.needs)}</div>` : ""}</div></div>`).join("") : '<div class="small muted">填過的小問卷會留在這裡，學期末可以印成「我的這學期」。</div>'}</div></div>`;
-    if (g && reflectReady()) bindForm2(ctx);
-    $("#g-letter").onclick = () => printLetter(tid, S.semester);
-  }
-  function formHtml2() {
-    const f = form, fam = CARD_FAMILIES.find((x) => x.c === f.family);
-    return `<div><div class="g-q">1. 這個月和孩子相處，最像哪一張牌卡？</div>
-      <div class="g-fams">${CARD_FAMILIES.map((x) => `<button type="button" data-fam="${x.c}" class="${x.c === f.family ? "on" : ""}" style="--fc:${FAMILY_COLOR[x.c]}">${dot(x.c)}${x.c}色家族</button>`).join("")}</div>
-      ${fam ? `<div class="small muted mt8">${esc(fam.pos)}</div><div class="g-cards">${fam.cards.map(([n, name, line3]) => `<button type="button" data-card="${esc(name)}" class="${name === f.card ? "on" : ""}" style="--fc:${FAMILY_COLOR[fam.c]}">
-        <b>${String(n).padStart(2, "0")}｜${esc(name)}</b><span>${esc(line3)}</span></button>`).join("")}</div>` : '<div class="small muted mt8">先選一個顏色，再挑那一族裡最像的一張。</div>'}</div>
-    <label class="field"><span class="g-q">2. 一個想留下的瞬間（一兩句話就好）</span>
-      <textarea class="textarea" id="g-moment" rows="3" placeholder="例：小安第一次自己舉手問問題，問完還偷偷看我有沒有笑">${esc(f.moment)}</textarea></label>
-    <div><div class="g-q">3. 這個月最需要的支持（可複選）</div>
-      <div class="g-needs">${NEEDS.map((n) => `<button type="button" data-need="${esc(n)}" class="${f.needs.has(n) ? "on" : ""}">${esc(n)}</button>`).join("")}</div></div>
-    <label class="row small" style="gap:6px"><input type="checkbox" id="g-share" ${f.share ? "checked" : ""}>我的瞬間可以<b>匿名</b>在月聚會分享</label>
-    <div class="row"><span class="small muted">只有你和社工、督導看得到；這不是考核，是想知道大家過得好不好。</span><span class="sp"></span>
-      <button class="btn primary" id="g-save">${icon("save", "sm")}${myRef(f.month) ? "更新" : "送出"}</button></div>`;
-  }
-  function bindForm2(ctx) {
-    const body = ctx.el.querySelector(".card-body");
-    body.onclick = async (e) => {
-      const fb = e.target.closest("[data-fam]");
-      if (fb) {
-        if (form.family !== fb.dataset.fam) {
-          form.family = fb.dataset.fam;
-          form.card = "";
-        }
-        return teacherView(ctx);
-      }
-      const cb = e.target.closest("[data-card]");
-      if (cb) {
-        form.card = cb.dataset.card;
-        $$("[data-card]", body).forEach((b) => b.classList.toggle("on", b === cb));
-        return;
-      }
-      const nb = e.target.closest("[data-need]");
-      if (nb) {
-        const n = nb.dataset.need;
-        if (form.needs.has(n)) form.needs.delete(n);
-        else {
-          if (n === "目前都還好") form.needs.clear();
-          else form.needs.delete("目前都還好");
-          form.needs.add(n);
-        }
-        $$("[data-need]", body).forEach((b) => b.classList.toggle("on", form.needs.has(b.dataset.need)));
-        return;
-      }
-      if (e.target.closest("#g-save")) {
-        if (!form.card) {
-          toast("請先選一張牌卡", "err");
-          return;
-        }
-        const g = currentGathering();
-        try {
-          await mutate("/api/reflect/save", { month: form.month, semesterId: semOf2(g.date), family: form.family, card: form.card, moment: form.moment, needs: NEEDS.filter((n) => form.needs.has(n)).join("、"), share: form.share }, "已送出，謝謝你");
-          form = null;
-          teacherView(ctx);
-        } catch {
-        }
-      }
-    };
-    $("#g-moment", body).oninput = (e) => {
-      form.moment = e.target.value;
-    };
-    $("#g-share", body).onchange = (e) => {
-      form.share = e.target.checked;
-    };
-  }
-  var TABS = [["status", "填寫狀況"], ["meet", "聚會用"], ["people", "每位老師"], ["letters", "學期末"], ["setup", "聚會日期"]];
-  function pickMonth(ctx) {
-    const all = list2();
-    const want = ctx.query.get("m");
-    return all.find((g) => g.month === want) || currentGathering() || all[all.length - 1] || null;
-  }
-  function monthSelect(ctx, g) {
-    const all = list2();
-    return all.length ? `<select class="select" id="g-month" style="width:auto">${all.map((x) => `<option value="${x.month}" ${x.month === g?.month ? "selected" : ""}>${esc(monthLabel(x.month))}（${mdw(x.date)}）</option>`).join("")}</select>` : "";
-  }
-  function socialView(ctx) {
-    const tab = TABS.some(([k]) => k === ctx.query.get("tab")) ? ctx.query.get("tab") : "status";
-    const g = pickMonth(ctx);
-    const needG = ["status", "meet"].includes(tab);
-    const body = needG && !g ? `<div class="card"><div class="empty">${icon("calendar")}<div>還沒有排月聚會。到「聚會日期」填上日期，問卷就會在聚會前一週開放。</div></div></div>` : tab === "status" ? statusTab(g) : tab === "meet" ? meetTab(g) : tab === "people" ? peopleTab(ctx) : tab === "letters" ? lettersTab(ctx) : setupTab();
-    ctx.el.innerHTML = `<div class="row wrap no-print" style="gap:8px;margin-bottom:12px"><div class="pills">${TABS.map(([k, l]) => `<button class="pill ${k === tab ? "on" : ""}" data-tab="${k}">${l}</button>`).join("")}</div>
-      <span class="sp"></span>${needG ? monthSelect(ctx, g) : ""}</div>
-    ${reflectReady() ? "" : `<div class="callout warn mb8">${icon("info", "sm")} 雲端主機還沒更新，老師暫時不能填寫。請重新部署 Apps Script（管理部署作業 → 編輯 → 新版本）。</div>`}
-    <div id="g-body">${body}</div>`;
-    $$("[data-tab]", ctx.el).forEach((b) => b.onclick = () => ctx.go(`#/gathering?tab=${b.dataset.tab}${g ? `&m=${g.month}` : ""}`));
-    const ms = $("#g-month", ctx.el);
-    if (ms) ms.onchange = () => ctx.go(`#/gathering?tab=${tab}&m=${ms.value}`);
-    bindSocial(ctx, tab, g);
-  }
-  function statusTab(g) {
-    const sem = semOf2(g.date), pool = teacherPool(sem);
-    const rows2 = pool.map((t) => ({ t, r: get("reflections", refId(t.id, g.month)) }));
-    const done = rows2.filter((x) => x.r).length;
-    const st9 = inWindow(g) ? "開放中" : todayISO() < g.open ? `${md2(g.open)} 開放` : "已過開放期間（還能補填）";
-    return `<div class="card"><div class="card-head"><h3>${esc(monthLabel(g.month))}月聚會・${mdw(g.date)}</h3><span class="sub">${st9}・${md2(g.open)} 起開放填寫</span><span class="sp"></span>
-      <span class="chip ${done === rows2.length && rows2.length ? "good" : "outline"}">已填 ${done}／${rows2.length}</span></div>
-    <div class="card-body"><div class="small muted mb8">現場可以邀請還沒填的老師用手機填，兩分鐘就好。</div>
-      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>老師</th><th>狀態</th><th>牌卡</th><th>填寫時間</th></tr></thead><tbody>
-      ${rows2.map(({ t, r }) => `<tr><td class="nowrap"><b>${esc(t.name)}</b></td><td>${r ? '<span class="chip good">已填</span>' : '<span class="chip outline">還沒填</span>'}</td>
-        <td>${r ? cardChip(r) : ""}</td><td class="small muted">${r ? esc((r.updatedAt || "").slice(5, 16)) : ""}</td></tr>`).join("") || '<tr><td colspan="4" class="muted">這學期還沒有排課的老師</td></tr>'}</tbody></table></div></div></div>`;
-  }
-  function meetTab(g) {
-    const refs = (S.data.reflections || []).filter((r) => r.kind === "月聚會" && r.month === g.month);
-    const famN = Object.fromEntries(CARD_FAMILIES.map((f) => [f.c, 0]));
-    const cardN = /* @__PURE__ */ new Map(), needN = new Map(NEEDS.map((n) => [n, 0]));
-    for (const r of refs) {
-      if (r.family) famN[r.family]++;
-      if (r.card) {
-        const k = `${r.family}|${r.card}`;
-        cardN.set(k, (cardN.get(k) || 0) + 1);
-      }
-      for (const n of String(r.needs || "").split("、").filter(Boolean)) needN.set(n, (needN.get(n) || 0) + 1);
-    }
-    const max = Math.max(1, ...Object.values(famN));
-    const shared = refs.filter((r) => r.share === "V" && (r.moment || "").trim());
-    return `<div class="g-meet" id="g-meet">
-    <div class="row"><h2 style="margin:0">${esc(monthLabel(g.month))}月聚會</h2><span class="sp"></span><span class="small muted">${refs.length} 位老師填寫・不顯示名字</span>
-      <button class="btn sm no-print" id="g-print-meet">${icon("print", "sm")}列印</button></div>
-    <div class="g-meet-sec"><h3>這個月，大家最像的牌卡</h3>
-      <div class="g-bars">${CARD_FAMILIES.map((f) => `<div class="g-bar"><span>${dot(f.c)}${f.c}色</span><em class="fill" style="width:${famN[f.c] / max * 100}%;background:${FAMILY_COLOR[f.c]}"></em><b>${famN[f.c]}</b></div>`).join("")}</div>
-      <div class="g-picked">${[...cardN].sort((a, b) => b[1] - a[1]).map(([k, n]) => {
-      const [fam, card2] = k.split("|");
-      return `<span class="g-card" style="--fc:${FAMILY_COLOR[fam]}">${dot(fam)}${esc(card2)}${n > 1 ? ` ×${n}` : ""}<small>${esc(cardOf(fam, card2)?.[2] || "")}</small></span>`;
-    }).join("") || '<span class="muted">還沒有人填</span>'}</div></div>
-    <div class="g-meet-sec"><h3>想留下的瞬間</h3>${shared.length ? shared.map((r) => `<blockquote class="g-quote" style="--fc:${FAMILY_COLOR[r.family] || "#999"}">「${esc(r.moment)}」</blockquote>`).join("") : '<div class="muted">還沒有同意分享的瞬間</div>'}</div>
-    <div class="g-meet-sec"><h3>大家這個月需要的支持</h3><div class="g-needs-sum">${[...needN].map(([n, c]) => `<span class="chip ${c ? "accent" : "outline"}">${esc(n)} ${c}</span>`).join("")}</div>
-      <div class="small muted mt8">最多人選的，可以當這個月聚會的小主題。</div></div></div>`;
-  }
-  function moodWeeks(tid) {
-    const by = /* @__PURE__ */ new Map();
-    for (const s of S.data.sessions || []) {
-      const c = get("classes", s.classId);
-      if (!s.mood || !MOOD_V[s.mood] || (s.teacherId || c?.teacherId) !== tid) continue;
-      const w = weekNo(s.date);
-      if (w <= 0) continue;
-      if (!by.has(w)) by.set(w, []);
-      by.get(w).push(MOOD_V[s.mood]);
-    }
-    return [...by].sort((a, b) => a[0] - b[0]).map(([w, xs]) => ({ w, v: xs.reduce((a, b) => a + b, 0) / xs.length, n: xs.length }));
-  }
-  function moodSvg(weeks) {
-    if (!weeks.length) return '<span class="small muted">這學期還沒有課堂心情紀錄</span>';
-    const W = 16, H = 46, last = Math.max(...weeks.map((x) => x.w));
-    const bars = weeks.map((x) => {
-      const hgt = x.v / 5 * H;
-      return `<rect x="${(x.w - 1) * W + 2}" y="${H - hgt}" width="${W - 4}" height="${hgt}" rx="2" fill="${MOOD_C[Math.round(x.v)]}"><title>第 ${x.w} 週：平均 ${x.v.toFixed(1)}（${x.n} 堂）</title></rect>`;
-    }).join("");
-    return `<svg class="g-mood" viewBox="0 0 ${last * W} ${H + 14}" width="${Math.min(640, last * W)}" height="${H + 14}" role="img" aria-label="每週課堂心情">
-    ${bars}${weeks.map((x) => `<text x="${(x.w - 1) * W + W / 2}" y="${H + 12}" text-anchor="middle">${x.w}</text>`).join("")}</svg>`;
-  }
-  function kidEmoByMonth(tid) {
-    const out = /* @__PURE__ */ new Map();
-    for (const r of S.data.records || []) {
-      if (!r.emoHard && !r.emoGood) continue;
-      const s = get("sessions", r.sessionId), c = s && get("classes", s.classId);
-      if (!s || (s.teacherId || c?.teacherId) !== tid) continue;
-      const m = s.date.slice(0, 7), o = out.get(m) || { hard: 0, good: 0 };
-      o.hard += String(r.emoHard || "").split("、").filter((x) => x && x !== EMO_NONE).length;
-      o.good += String(r.emoGood || "").split("、").filter((x) => x && x !== EMO_NONE).length;
-      out.set(m, o);
-    }
-    return out;
-  }
-  function peopleTab(ctx) {
-    const pool = teacherPool(S.semester);
-    if (!pool.length) return '<div class="card"><div class="empty">這學期還沒有排課的老師</div></div>';
-    const tid = pool.some((t) => t.id === ctx.query.get("t")) ? ctx.query.get("t") : pool[0].id;
-    const refs = refsOf(tid), emo = kidEmoByMonth(tid), weeks = moodWeeks(tid);
-    const months = [.../* @__PURE__ */ new Set([...refs.map((r) => r.month), ...emo.keys()])].sort();
-    const low = weeks.filter((x) => x.v <= 2.5).map((x) => x.w);
-    const silent = low.length >= 2 && !refs.some((r) => /我自己的狀態|班級經營|某位孩子|教材|時間/.test(r.needs || ""));
-    return `<div class="row wrap mb8" style="gap:8px"><select class="select" id="g-teacher" style="width:auto">${pool.map((t) => `<option value="${t.id}" ${t.id === tid ? "selected" : ""}>${esc(t.name)}</option>`).join("")}</select>
-      <span class="small muted">只有社工和督導看得到；用來照顧與支持，不是考核。</span></div>
-    <div class="card"><div class="card-head"><h3>課堂心情（每週平均）</h3><span class="sub">老師每堂課後紀錄的「課堂氣氛」，很好＝5、很糟＝1</span></div>
-      <div class="card-body">${moodSvg(weeks)}
-        ${low.length ? `<div class="callout warn mt8">${icon("eye", "sm")} 第 ${low.join("、")} 週平均偏低${silent ? "，但小問卷沒有勾過需要支持，可以主動關心一下" : ""}。</div>` : ""}</div></div>
-    <div class="card mt16"><div class="card-head"><h3>每個月</h3></div><div class="card-body tbl-wrap"><table class="tbl"><thead><tr><th>月份</th><th>牌卡</th><th>想留下的瞬間</th><th>需要的支持</th><th>帶的孩子</th></tr></thead><tbody>
-      ${months.map((m) => {
-      const r = refs.find((x) => x.month === m), e = emo.get(m);
-      return `<tr><td class="nowrap">${esc(monthLabel(m))}</td><td>${r ? cardChip(r) : '<span class="muted small">沒填</span>'}</td>
-        <td class="small">${esc(r?.moment || "")}${r?.share === "V" ? ' <span class="chip outline small">同意分享</span>' : ""}</td><td class="small">${esc(r?.needs || "")}</td>
-        <td class="small nowrap">${e ? `困難時刻 ${e.hard}・好時刻 ${e.good}` : "—"}</td></tr>`;
-    }).join("") || '<tr><td colspan="5" class="muted">還沒有資料</td></tr>'}</tbody></table></div></div>`;
-  }
-  function lettersTab(ctx) {
-    const sems = [...S.data.semesters].sort((a, b) => (b.start || "").localeCompare(a.start || ""));
-    const sem = sems.some((s) => s.id === ctx.query.get("s")) ? ctx.query.get("s") : S.semester;
-    const pool = teacherPool(sem);
-    return `<div class="row wrap mb8" style="gap:8px"><select class="select" id="g-sem" style="width:auto">${sems.map((s) => `<option value="${esc(s.id)}" ${s.id === sem ? "selected" : ""}>${esc(s.id)} ${esc(s.name || "")}</option>`).join("")}</select>
-      <span class="small muted">學期末替每位老師寫幾句話（選填），會印在老師的「我的這學期」最後。老師登入後也看得到。</span></div>
-    ${pool.map((t) => {
-      const n = get("reflections", letterId(t.id, sem)), cnt = refsOf(t.id).filter((r) => r.semesterId === sem).length;
-      return `<div class="card mb8" data-tid="${t.id}"><div class="card-body"><div class="row wrap" style="gap:8px"><b>${esc(t.name)}</b><span class="small muted">這學期填了 ${cnt} 次小問卷</span><span class="sp"></span>
-        <button class="btn sm" data-preview="${t.id}">${icon("print", "sm")}預覽／列印</button></div>
-        <textarea class="textarea mt8" rows="2" data-note="${t.id}" placeholder="給這位老師的話（選填）">${esc(n?.text || "")}</textarea>
-        <div class="row mt8"><span class="small muted">${n ? `${esc(n.by || "")} ${esc((n.updatedAt || "").slice(5, 16))}` : ""}</span><span class="sp"></span><button class="btn sm" data-savenote="${t.id}">${icon("save", "sm")}儲存</button></div></div></div>`;
-    }).join("") || '<div class="card"><div class="empty">這學期還沒有排課的老師</div></div>'}`;
-  }
-  function setupTab() {
-    const all = list2();
-    return `<div class="card"><div class="card-head"><h3>月聚會日期</h3><span class="sub">填上日期後，小問卷會在前 ${OPEN_BEFORE} 天開放；一個月一次</span></div>
-    <div class="card-body stack" style="gap:10px">
-      <div class="row wrap" style="gap:8px"><input class="input" type="date" id="g-newdate" style="width:170px"><button class="btn primary" id="g-add">${icon("plus", "sm")}新增／更新</button>
-        <span class="small muted">同一個月份再填一次會改成新的日期</span></div>
-      ${all.length ? `<table class="tbl"><thead><tr><th>月份</th><th>聚會日期</th><th>開放填寫</th><th>填寫</th><th></th></tr></thead><tbody>${all.map((g) => `<tr><td>${esc(monthLabel(g.month))}</td><td>${mdw(g.date)}</td><td>${md2(g.open)} 起</td>
-        <td>${(S.data.reflections || []).filter((r) => r.kind === "月聚會" && r.month === g.month).length} 份</td>
-        <td><button class="btn sm ghost" data-delg="${g.month}" title="移除這次聚會（已填的問卷會保留）">${icon("trash", "sm")}</button></td></tr>`).join("")}</tbody></table>` : '<div class="small muted">還沒有排月聚會</div>'}
-    </div></div>`;
-  }
-  function bindSocial(ctx, tab, g) {
-    const el = ctx.el;
-    if (tab === "meet") $("#g-print-meet", el).onclick = () => printHtml($("#g-meet", el).outerHTML, { margin: "12mm", title: `${g.month}_月聚會` });
-    if (tab === "people") $("#g-teacher", el).onchange = (e) => ctx.go(`#/gathering?tab=people&t=${e.target.value}`);
-    if (tab === "letters") {
-      const sem = $("#g-sem", el).value;
-      $("#g-sem", el).onchange = (e) => ctx.go(`#/gathering?tab=letters&s=${e.target.value}`);
-      $$("[data-preview]", el).forEach((b) => b.onclick = () => printLetter(b.dataset.preview, sem));
-      $$("[data-savenote]", el).forEach((b) => b.onclick = async () => {
-        const tid = b.dataset.savenote, text = $(`[data-note="${tid}"]`, el).value;
-        b.disabled = true;
-        try {
-          await mutate("/api/reflect/letter", { teacherId: tid, semesterId: sem, text }, "已儲存");
-          render(ctx);
-        } catch {
-          b.disabled = false;
-        }
-      });
-    }
-    if (tab === "setup") {
-      const save4 = async (next, msg) => {
-        await mutate("/api/settings", { key: "gatherings", value: next }, msg);
-        render(ctx);
-      };
-      $("#g-add", el).onclick = async () => {
-        const d = $("#g-newdate", el).value;
-        if (!d) {
-          toast("請選日期", "err");
-          return;
-        }
-        try {
-          await save4({ ...gatherings(), [d.slice(0, 7)]: d }, `已排 ${mdw(d)} 月聚會`);
-        } catch {
-        }
-      };
-      $$("[data-delg]", el).forEach((b) => b.onclick = async () => {
-        if (!await confirmBox("移除這次月聚會？老師已經填的問卷會保留。", { okText: "移除" })) return;
-        const next = { ...gatherings() };
-        delete next[b.dataset.delg];
-        try {
-          await save4(next, "已移除");
-        } catch {
-        }
-      });
-    }
-  }
-  function render(ctx) {
-    ctx.title("月聚會", isSupervisor2() ? "老師每月的小問卷與聚會素材・只有社工和督導看得到全部" : "每月一次，聊聊這個月和孩子相處的感受");
-    if (isSocial2()) socialView(ctx);
-    else if (myTeacherId()) teacherView(ctx);
-    else ctx.el.innerHTML = `<div class="card"><div class="empty">${icon("lock")}<div>月聚會的內容只有課輔老師本人和社工、督導看得到。</div></div></div>`;
-  }
-  var gathering_default = {
-    render(ctx) {
-      render(ctx);
-    },
-    destroy() {
-      form = null;
-    }
-  };
 
   // src/js/pages/record.js
   var rs = null;
