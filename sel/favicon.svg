@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- 背景圓角方形，深綠 -->
+  <rect width="32" height="32" rx="9" fill="#305f4f"/>
+  <!-- 淡綠裝飾圓點右上 -->
+  <circle cx="24" cy="8" r="5" fill="#4a8c6f" opacity="0.7"/>
+  <circle cx="24" cy="8" r="3" fill="#6aab88" opacity="0.6"/>
+  <!-- S 字母 -->
+  <text x="15.5" y="22.5" text-anchor="middle"
+        font-family="Georgia,'Noto Serif TC',serif"
+        font-size="19" font-weight="700"
+        fill="#e6f2e8">S</text>
+  <!-- 小葉脈線 -->
+  <line x1="22" y1="6" x2="26" y2="10" stroke="#c8e8d8" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+  <line x1="21" y1="8" x2="24" y2="10" stroke="#c8e8d8" stroke-width="0.8" stroke-linecap="round" opacity="0.5"/>
+</svg>
