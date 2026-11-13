@@ -328,6 +328,17 @@ table.tbl { width: 100%; border-collapse: separate; border-spacing: 0; font-size
 .risk.medium { background: var(--serious-soft); color: var(--serious); }
 .risk.low { background: var(--warn-soft); color: var(--warn); }
 .risk.stable { background: var(--good-soft); color: var(--good); }
+.ks-fam { display: flex; height: 22px; border-radius: 6px; overflow: hidden; margin-bottom: 12px; font-size: 12px; color: #fff; }
+.ks-fam span { display: flex; align-items: center; justify-content: center; white-space: nowrap; overflow: hidden; }
+.ks-tbl { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.ks-tbl details { border-top: 1px solid var(--line-2); }
+.ks-head { display: grid; grid-template-columns: minmax(0, 1fr) 90px 90px 80px; gap: 8px; padding: 8px 10px; background: var(--surface-2); font-size: 13px; color: var(--ink-2); font-weight: 600; }
+.ks-head .num { text-align: right; }
+.ks-tbl summary { display: grid; grid-template-columns: minmax(0, 1fr) 90px 90px 80px; gap: 8px; padding: 8px 10px; cursor: pointer; list-style: none; }
+.ks-tbl summary::-webkit-details-marker { display: none; }
+.ks-tbl summary .num { text-align: right; font-variant-numeric: tabular-nums; }
+.ks-tbl details[open] summary { background: var(--surface-2); font-weight: 600; }
+.ks-more { padding: 6px 12px 12px; }
 .risk.insufficient { background: var(--neutral-soft); color: var(--muted); }
 .risk.off { background: var(--neutral-soft); color: var(--muted); font-weight: 600; }
 .risk.off::before { background: transparent; border: 1.5px solid currentColor; box-sizing: border-box; }
@@ -21069,6 +21080,125 @@ ${parts[0][1]}` : parts.map(([d, t]) => `${d} ${t}`).join("\n");
     const out = p.mode === "class" ? classWorkbook(XS, groups[+p.group || 0], orgName()) : monthWorkbook(XS, groups, p.month, orgName());
     saveFitted(XS, out.wb, out.name);
   }
+  // 孩子狀況統計（只給社工／督導）：多數孩子需要關注的情況、最常見的困難時刻與好時刻；可以展開看是哪些孩子、各班最常見的是什麼
+  function kidStatData(from, to, scope) {
+    const inScope = (c) => !scope || (scope.startsWith("site:") ? (c.site || "") === scope.slice(5) : c.name === scope.slice(4));
+    const split3 = (v) => String(v || "").split(/[、,，]/).map((x) => x.trim()).filter((x) => x && x !== EMO_NONE);
+    const blocks = { behav: new Map(), learn: new Map(), hard: new Map(), good: new Map() };
+    const kids = new Set(), emoKids = new Set(), attKids = new Set();
+    let hardN = 0, goodN = 0;
+    const add = (key, word, sid, cls) => {
+      const m = blocks[key];
+      if (!m.has(word)) m.set(word, { word, kids: new Map(), times: 0, cls: new Map() });
+      const o = m.get(word);
+      o.times++;
+      o.kids.set(sid, (o.kids.get(sid) || 0) + 1);
+      if (!o.cls.has(cls)) o.cls.set(cls, new Set());
+      o.cls.get(cls).add(sid);
+    };
+    for (const r of S.data.records || []) {
+      const s = get("sessions", r.sessionId);
+      if (!s || s.date < from || s.date > to) continue;
+      const c = get("classes", s.classId);
+      if (!c || !inScope(c)) continue;
+      if (["出席", "遲到", "早退"].includes(r.attendance)) attKids.add(r.studentId);
+      kids.add(r.studentId);
+      for (const w of split3(r.behaviorTags)) add("behav", w, r.studentId, c.name);
+      for (const w of split3(r.learningTags)) add("learn", w, r.studentId, c.name);
+      if (r.emoHard || r.emoGood) emoKids.add(r.studentId);
+      for (const w of split3(r.emoHard)) { add("hard", w, r.studentId, c.name); hardN++; }
+      for (const w of split3(r.emoGood)) { add("good", w, r.studentId, c.name); goodN++; }
+    }
+    const sorted = (m) => [...m.values()].sort((a, b) => b.kids.size - a.kids.size || b.times - a.times);
+    return { attKids: attKids.size, emoKids: emoKids.size, hardN, goodN, behav: sorted(blocks.behav), learn: sorted(blocks.learn), hard: sorted(blocks.hard), good: sorted(blocks.good) };
+  }
+  var KS_FAM = Object.fromEntries([...EMO_HARD, ...EMO_GOOD, ["不服", "紅"], ["怕失敗", "紫"], ["沮喪", "藍"]]);
+  function kidStatBlock(title, list3, base, opts = {}) {
+    const pctOf = (n) => (base ? `${Math.round(n / base * 100)}%` : "—");
+    const dot2 = (w) => opts.emo ? `<i class="emo-dot" style="background:${EMO_FAMILY[KS_FAM[w]] || "var(--muted)"}"></i>` : "";
+    let fam = "";
+    if (opts.emo && list3.length) {
+      const fm = new Map();
+      for (const o of list3) { const f2 = KS_FAM[o.word] || "其他"; fm.set(f2, (fm.get(f2) || 0) + o.times); }
+      const tot = [...fm.values()].reduce((a, b) => a + b, 0) || 1;
+      fam = `<div class="ks-fam">${[...fm].sort((a, b) => b[1] - a[1]).map(([f2, n]) => `<span style="flex:${n};background:${EMO_FAMILY[f2] || "#999"}" title="${esc(f2)}色家族 ${n} 次">${n / tot >= 0.08 ? `${esc(f2)} ${Math.round(n / tot * 100)}%` : ""}</span>`).join("")}</div>`;
+    }
+    const byCls = new Map();
+    for (const o of list3) for (const [cn, set] of o.cls) { const cur = byCls.get(cn); if (!cur || set.size > cur.n) byCls.set(cn, { word: o.word, n: set.size }); }
+    return `<div class="card mb16"><div class="card-head"><h3>${title}</h3><span class="sub">${opts.sub || ""}</span></div><div class="card-body">
+      ${fam}
+      ${list3.length ? `<div class="ks-tbl"><div class="ks-head"><span>${opts.emo ? "情緒" : "情況"}</span><span class="num">幾位孩子</span><span class="num">佔比</span><span class="num">共幾次</span></div>
+        ${list3.map((o) => `<details><summary><span class="ks-c">${dot2(o.word)}${esc(o.word)}</span><span class="num">${o.kids.size} 位</span><span class="num">${pctOf(o.kids.size)}</span><span class="num">${o.times} 次</span></summary>
+          <div class="ks-more"><div class="small muted">各班：${[...o.cls].sort((a, b) => b[1].size - a[1].size).map(([cn, set]) => `${esc(cn)} ${set.size} 位`).join("、")}</div>
+          <div class="mt8">${[...o.kids].sort((a, b) => b[1] - a[1]).map(([sid, n]) => `<a class="chip outline" style="margin:2px" href="#/kids/${esc(sid)}">${esc(get("students", sid)?.name || sid)}${n > 1 ? ` ×${n}` : ""}</a>`).join("")}</div></div></details>`).join("")}</div>
+        <details class="mt8"><summary class="small">依班級看：各班最常見的是什麼</summary><table class="tbl mt8"><thead><tr><th>班級</th><th>最常見</th><th class="num">幾位孩子</th></tr></thead><tbody>
+          ${[...byCls].sort((a, b) => collator.compare(a[0], b[0])).map(([cn, x]) => `<tr><td>${esc(cn)}</td><td>${dot2(x.word)}${esc(x.word)}</td><td class="num">${x.n}</td></tr>`).join("")}</tbody></table></details>`
+        : `<div class="small muted">這段期間沒有紀錄</div>`}</div></div>`;
+  }
+  function downloadKidStat(D, label) {
+    const XS = window.XLSXS;
+    if (!XS) throw new Error("Excel 元件沒有載入");
+    const wb = XS.utils.book_new();
+    const sheet = (name, list3, base, emo) => {
+      const rows = [[emo ? "情緒" : "情況", ...emo ? ["家族"] : [], "幾位孩子", "佔孩子比例", "共幾次", "各班", "孩子"]];
+      for (const o of list3) rows.push([o.word, ...emo ? [(KS_FAM[o.word] || "") + "色"] : [], o.kids.size, base ? Math.round(o.kids.size / base * 100) / 100 : "", o.times,
+        [...o.cls].map(([cn, set]) => `${cn} ${set.size}`).join("、"), [...o.kids].map(([sid, n]) => `${get("students", sid)?.name || sid}${n > 1 ? `×${n}` : ""}`).join("、")]);
+      const ws = XS.utils.aoa_to_sheet(rows);
+      ws["!cols"] = [{ wch: 12 }, ...emo ? [{ wch: 6 }] : [], { wch: 9 }, { wch: 10 }, { wch: 8 }, { wch: 30 }, { wch: 50 }];
+      XS.utils.book_append_sheet(wb, ws, name);
+    };
+    sheet("需要關注（行為）", D.behav, D.attKids, false);
+    sheet("需要關注（學習）", D.learn, D.attKids, false);
+    sheet("困難時刻", D.hard, D.emoKids, true);
+    sheet("好時刻", D.good, D.emoKids, true);
+    saveFitted(XS, wb, `孩子狀況統計_${label}.xlsx`);
+  }
+  function openKidStats() {
+    const sem2 = semester();
+    const sites = [...new Set(classes().map((c) => c.site).filter(Boolean))].sort(collator.compare);
+    const names = [...new Set(classes().map((c) => c.name))].sort(collator.compare);
+    const body = h(`<div class="stack" style="gap:10px">
+      <div class="row wrap" style="gap:8px;align-items:flex-end">
+        <label class="field"><span>期間</span><select class="select" data-k="mode"><option value="month">本月（可選月份）</option><option value="4w">近四週</option><option value="sem">本學期</option><option value="custom">自訂</option></select></label>
+        <label class="field" data-show="month"><span>月份</span><input class="input" type="month" data-k="month" value="${thisMonth2()}"></label>
+        <label class="field" data-show="custom" hidden><span>從</span><input class="input" type="date" data-k="from"></label>
+        <label class="field" data-show="custom" hidden><span>到</span><input class="input" type="date" data-k="to"></label>
+        <label class="field"><span>範圍</span><select class="select" data-k="scope"><option value="">全分校</option>
+          ${sites.length ? `<optgroup label="據點">${sites.map((x) => `<option value="site:${esc(x)}">${esc(x)}</option>`).join("")}</optgroup>` : ""}
+          <optgroup label="課輔班">${names.map((x) => `<option value="cls:${esc(x)}">${esc(x)}</option>`).join("")}</optgroup></select></label>
+        <span class="sp"></span><button class="btn" data-k="xlsx">${icon("download", "sm")}下載 Excel</button></div>
+      <div id="ks-out"></div></div>`);
+    let D = null, label = "";
+    const range = () => {
+      const v = (k) => body.querySelector(`[data-k="${k}"]`).value;
+      const mode = v("mode"), today3 = todayISO();
+      if (mode === "4w") return [addDays(today3, -27), today3, "近四週"];
+      if (mode === "sem") return [sem2.start || "0000", sem2.end || today3, S.semester];
+      if (mode === "custom") return [v("from") || "0000", v("to") || today3, `${v("from") || "開始"}_${v("to") || "今天"}`];
+      const m = v("month") || thisMonth2();
+      return [`${m}-01`, `${m}-31`, m];
+    };
+    const draw = () => {
+      const [from, to, lb] = range(), scope = body.querySelector('[data-k="scope"]').value;
+      label = lb + (scope ? `_${scope.slice(scope.indexOf(":") + 1)}` : "");
+      D = kidStatData(from, to, scope);
+      const emoNote = to < EMO_SINCE ? "情緒觀察 10/22 才開始記錄，這段期間沒有資料" : from < EMO_SINCE ? "情緒觀察 10/22 才開始記錄，從那天起算" : "";
+      body.querySelector("#ks-out").innerHTML = `<div class="small muted mb8">這段期間有上課的孩子 ${D.attKids} 位；有情緒觀察紀錄的孩子 ${D.emoKids} 位。依「幾位孩子」排序，點一列可以看各班與孩子名單。這是老師在課堂上的紀錄，標準可能因人而異。</div>
+        ${kidStatBlock("需要關注的情況・行為表現", D.behav, D.attKids, { sub: "行為表現點「需要關注」時勾的狀況" })}
+        ${kidStatBlock("需要關注的情況・學習表現", D.learn, D.attKids, { sub: "學習表現點「需要關注」時勾的狀況" })}
+        ${kidStatBlock("困難時刻", D.hard, D.emoKids, { emo: true, sub: emoNote || "上方長條：六大家族的比例" })}
+        ${kidStatBlock("好時刻", D.good, D.emoKids, { emo: true, sub: `困難時刻 ${D.hardN} 次：好時刻 ${D.goodN} 次${emoNote ? "・" + emoNote : ""}` })}`;
+    };
+    body.addEventListener("change", (e) => {
+      if (e.target.dataset.k === "mode") body.querySelectorAll("[data-show]").forEach((x) => { x.hidden = x.dataset.show !== e.target.value; });
+      draw();
+    });
+    body.querySelector('[data-k="xlsx"]').onclick = () => { try { downloadKidStat(D, label); } catch (err) { toast(err.message, "err"); } };
+    draw();
+    openModal({ title: "孩子狀況統計（只有社工和督導看得到）", body, buttons: [{ text: "關閉", value: null }] });
+    const md3 = body.closest(".modal");
+    if (md3) md3.style.width = "min(920px, calc(100vw - 32px))";
+  }
   function cards() {
     const f = featureOn;
     return [
@@ -21101,7 +21231,8 @@ ${parts[0][1]}` : parts.map(([d, t]) => `${d} ${t}`).join("\n");
       { cat: "社工紀錄（敏感）", note: "內容涉及孩子與家庭隱私，下載後請妥善保管，不要轉寄或上傳到公開位置", lock: true, items: [
         { id: "sv", title: "訪視紀錄", freq: "需要時", desc: "這學期的教學訪視與指導員訪視。", run: () => reportSocial("visits") },
         { id: "sc", title: "個案工作", freq: "需要時", desc: "全部個案工作紀錄。", run: () => reportSocial("cases") },
-        { id: "se", title: "特殊事件", freq: "需要時", desc: "全部特殊事件紀錄。", run: () => reportSocial("events") }
+        { id: "se", title: "特殊事件", freq: "需要時", desc: "全部特殊事件紀錄。", run: () => reportSocial("events") },
+        { id: "kidstat", title: "孩子狀況統計", freq: "每月", desc: "多數孩子需要關注的情況（行為、學習），以及最常見的困難時刻與好時刻；可以展開看各班與孩子名單，也可以下載 Excel。", btn: "查看統計", run: () => openKidStats() }
       ] },
       { cat: "系統資料", note: "備份或大量修改用", items: [
         { id: "all", title: "完整資料 Excel", freq: "需要時", desc: "基本資料加上教學紀錄、學習摘要與風險。", run: () => downloadUrl("/api/export/workbook") },
