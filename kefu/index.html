@@ -6816,6 +6816,10 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     const c = getRow("classes", it?.classId);
     if (!c) throw new DbError("班級不存在");
     if (!isSupervisor() && c.teacherId !== DB.me?.teacherId) throw new DbError("只能填自己班的問卷");
+    if (!isSupervisor()) {      // 老師：開放日到了才能填（社工／督導不受限）
+      const w = roundsOf(c.semesterId)[it.round];
+      if (!w?.start || todayISO() < w.start) throw new DbError(w?.start ? `${md2(w.start)} 才開放填寫，到時候再填` : "這次問卷還沒排時段");
+    }
     const id = `SS-${c.id}~${it.round}`;
     const old = getRow("selSurveys", id);
     const row = surveyRow({ ...it, submittedAt: "", by: void 0, source: "" }, old, nowStr());
@@ -6824,6 +6828,13 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     }
     await commit([{ table: "selSurveys", row }]);
     return { survey: getRow("selSurveys", id), version: DB.version };
+  }
+  // 社工／督導：清除一份問卷（例如老師在開放前填錯）
+  async function deleteSelSurvey(id) {
+    if (!isSupervisor()) throw new DbError("只有社工／督導可以清除問卷");
+    if (!getRow("selSurveys", id)) throw new DbError("找不到這份問卷");
+    await commit([{ table: "selSurveys", id: String(id), delete: true }]);
+    return { ok: true, version: DB.version };
   }
   async function importSelSurveys(list3) {
     if (!isSupervisor()) throw new DbError("只有社工／督導可以匯入");
@@ -8088,6 +8099,8 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
           return saveVisitForm(b);
         case "/api/selsurvey/save":
           return saveSelSurvey(b);
+        case "/api/selsurvey/delete":
+          return deleteSelSurvey(String(b.id || ""));
         case "/api/selsurvey/import":
           return importSelSurveys(b.list || []);
         case "/api/import/base":
@@ -12851,12 +12864,15 @@ ${lines.join("\n")}`;
     if (!fs2 || fs2.cid !== cid || fs2.round !== round || !fs2.dirty) fs2 = { cid, round, data: Object.fromEntries(QK.map((k) => [k, s?.[k] ?? null])), dirty: false };
     const st9 = surveyState(cid, round);
     const mine = isSupervisor2() || c.teacherId === DB.me?.teacherId;
-    const canEdit2 = mine && surveyReady();
+    const early = !isSupervisor2() && (!st9.w.start || todayISO() < st9.w.start);      // 老師：還沒到開放日不能填
+    const canEdit2 = mine && surveyReady() && !early;
     ctx.title(`${round}・情緒課程回饋問卷`, `${esc(c.name)}・${esc(subjectOfClass(c))}・${esc(teacherOfClass(c) || "")}・${st9.w.start ? `${md2(st9.w.start)}–${md2(st9.w.end)}` : "未排時段"}`);
     ctx.actions(`<a class="btn ghost" href="#/selsurvey">${icon("left", "sm")}問卷清單</a>${rounds().map((r) => `<a class="btn ${r === round ? "primary" : ""}" href="#/selsurvey/${encodeURIComponent(cid)}/${encodeURIComponent(r)}">${r}</a>`).join("")}`);
     const prev = rounds().slice(0, rounds().indexOf(round)).map((r) => surveyOf(cid, r)).filter((x) => x?.submittedAt).pop();
     ctx.el.innerHTML = `<div class="row wrap mb8" style="gap:6px">${chipOf(st9)}${s?.submittedAt ? `<span class="small muted">送出於 ${esc(s.submittedAt.slice(0, 16))}${s.source === "匯入" ? "（由 Google 表單匯入）" : ""}</span>` : ""}
-      ${st9.key === "later" && st9.w.start ? `<span class="small muted">${md2(st9.w.start)} 開放，可以先填</span>` : ""}</div>
+      ${st9.w.start && todayISO() < st9.w.start && isSupervisor2() ? `<span class="small muted">${md2(st9.w.start)} 開放；老師到時候才能填，社工／督導可以先填</span>` : ""}
+      ${isSupervisor2() && s ? `<span class="sp"></span><button class="btn sm ghost" id="ss-clear">${icon("trash", "sm")}清除這份問卷</button>` : ""}</div>
+    ${early && mine ? `<div class="callout warn mb8">${icon("info", "sm")} ${st9.w.start ? `${md2(st9.w.start)}–${md2(st9.w.end)} 才開放填寫` : "這次問卷還沒排時段"}，現在可以先看題目，到時候再填。</div>` : ""}
     ${!surveyReady() ? `<div class="callout warn mb8">${icon("alert", "sm")} 雲端主機還沒更新，暫時不能填問卷，請通知督導。</div>` : ""}
     <div class="callout accent mb8">${icon("info", "sm")} <b>評分建議</b>：${esc(HINT)}<div class="small muted mt4">請依「${esc(c.name)}」班上學生們的情況，就以下各點做整體性的評估。1＝非常不同意，5＝非常同意。</div></div>
     <div class="card"><div class="card-body stack ss-form" id="ss-f" style="gap:4px">
@@ -12872,6 +12888,15 @@ ${lines.join("\n")}`;
       if (el) el.textContent = n ? `還有 ${n} 題沒選` : "9 題都選好了";
     };
     left();
+    $("#ss-clear")?.addEventListener("click", async () => {
+      if (!await confirmBox(`清除「${c.name}・${subjectOfClass(c)}」的${round}？分數會刪掉，老師要在開放時間重新填。`, { okText: "清除" })) return;
+      try {
+        await mutate("/api/selsurvey/delete", { id: `SS-${cid}~${round}` }, "已清除");
+        fs2 = null;
+        renderForm2(ctx, cid, round);
+      } catch {
+      }
+    });
     if (!canEdit2) return;
     const show = (html) => {
       const f = $("#ss-foot");
