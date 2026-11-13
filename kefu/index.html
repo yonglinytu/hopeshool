@@ -15462,8 +15462,21 @@ ${lines.join("\n")}`;
     <tbody><tr class="progress"><td class="time"><b>今日進度</b><span>選${esc(subj)}單元</span></td>${kids.map((k) => leaveOf(k.id, st4.date) ? `<td style="${LEAVE_BG}"><span class="small">請假，不用排</span></td>` : `<td>${progField(k.id, st4.progress[k.id] || "", prevProg[k.id]?.progress || "")}</td>`).join("")}</tr>
     ${rows2}</tbody></table>`;
   }
+  // 複製流程的來源：優先找同一個時段（開始、結束時間都一樣）的最近一堂，例如週三上課時間不同，就找上週三；找不到才用上一堂
+  function copySource() {
+    const past = classDates(st4.cid).filter((d) => d < st4.date).reverse().map((d) => sessionFor(st4.cid, d)).filter((s) => s && blocksOf(s.id).length);
+    const timeOf = (s) => [s.start || slotFor(st4.cid, s.date)?.start || "", s.end || slotFor(st4.cid, s.date)?.end || ""].join("-");
+    const same = past.find((s) => timeOf(s) === `${st4.start}-${st4.end}`);
+    if (same) {
+      const sameWd = weekdayIdx(same.date) === weekdayIdx(st4.date);
+      const days = Math.round((Date.parse(st4.date) - Date.parse(same.date)) / 864e5);
+      return { s: same, same: true, label: sameWd && days <= 7 ? `複製上週${WD[weekdayIdx(same.date)]}` : `複製 ${mdw(same.date)}` };
+    }
+    return past[0] ? { s: past[0], same: false, label: "複製上一堂" } : null;
+  }
   function renderAll3() {
     const ctx = ctxRef;
+    const cpLabel = esc(copySource()?.label || "複製上一堂");
     const c = st4.cls;
     const wk = weekNo(st4.date);
     const dates = classDates(st4.cid);
@@ -15486,7 +15499,7 @@ ${lines.join("\n")}`;
     ctx.title("教學流程", `${esc(c.name)}・${mdw(st4.date)}${st4.sessionId ? "" : "・尚未建立"}`);
     ctx.el.innerHTML = `
     ${st4.restored ? `<div class="callout accent mb8 no-print">${icon("info", "sm")} 已還原 ${esc(st4.restored)} 未儲存的草稿。<button class="btn sm ghost" id="f-discard">捨棄草稿</button></div>` : ""}
-    ${st4.fromTemplate ? `<div class="callout mb8 no-print">${icon("info", "sm")} 這堂課還沒有教學流程，下面是依上課時間自動產生的範本；可直接編輯後儲存，或 <button class="btn sm" id="f-copy">${icon("copy", "sm")}複製上一堂</button></div>` : ""}
+    ${st4.fromTemplate ? `<div class="callout mb8 no-print">${icon("info", "sm")} 這堂課還沒有教學流程，下面是依上課時間自動產生的範本；可直接編輯後儲存，或 <button class="btn sm" id="f-copy">${icon("copy", "sm")}${cpLabel}</button></div>` : ""}
     <div class="flow-head"><h2>${esc(c.name)}</h2><span class="meta">${esc(subjectOfClass(c))}</span><span class="meta">${mdw(st4.date)}</span>
       ${wk > 0 ? `<span class="meta">第 ${wk} 週</span>` : ""}<span class="meta">${hoursText(st4.start, st4.end)}（${esc(st4.start)}–${esc(st4.end)}）</span></div>
     <div class="flow-sub"><span>課輔老師 <b>${esc(teacherLine(c, st4.date))}</b></span>
@@ -15496,7 +15509,7 @@ ${lines.join("\n")}`;
       <span class="sp"></span>
       <span class="no-print row gap4">${canOrder(st4.cid) && st4.kids.length > 1 ? `<button class="btn sm" id="f-order" title="調整孩子在流程表、課後紀錄、任務單的順序">${icon("users", "sm")}孩子順序</button>` : ""}<button class="btn sm" id="f-add">${icon("plus", "sm")}新增區塊</button>
         <button class="btn sm" id="f-regen" title="依上方時間重新產生區塊（保留同名區塊的任務）">${icon("refresh", "sm")}依時間重排</button>
-        ${st4.fromTemplate ? "" : `<button class="btn sm" id="f-copy">${icon("copy", "sm")}複製上一堂</button>`}</span></div>
+        ${st4.fromTemplate ? "" : `<button class="btn sm" id="f-copy">${icon("copy", "sm")}${cpLabel}</button>`}</span></div>
     <div class="flow-grid-wrap" id="f-grid">${grid2()}</div>
     <div class="row wrap mt8 small muted no-print" style="gap:4px 14px">${TASK_CATS.map((c2) => `<span>${typeTag(c2)} ${esc(CAT_NOTE[c2])}</span>`).join("")}<span>灰字＝同上（沿用前一個任務或今日進度的單元）</span></div>
     <div class="sticky-foot"><span id="flow-foot-msg">${st4.dirty ? '<span class="chip warn">尚未儲存</span> <span class="small muted">草稿已自動保存在這台電腦</span>' : st4.sessionId ? `<span class="small muted">已儲存${st4.updatedAt ? "・" + esc(st4.updatedAt) : ""}</span>` : ""}</span><span class="sp"></span>
@@ -15571,7 +15584,7 @@ ${lines.join("\n")}`;
       regen();
     };
     $("#f-copy", el)?.addEventListener("click", () => {
-      const prev = classDates(st4.cid).filter((d) => d < st4.date).reverse().map((d) => sessionFor(st4.cid, d)).find((s) => s && blocksOf(s.id).length);
+      const src = copySource(), prev = src?.s;
       if (!prev) {
         toast("找不到上一堂的教學流程", "err");
         return;
@@ -15589,7 +15602,7 @@ ${lines.join("\n")}`;
       st4.fromTemplate = false;
       touch();
       renderAll3();
-      toast(`已複製 ${md2(prev.date)} 的流程（完成狀態已清空）`);
+      toast(`已複製 ${mdw(prev.date)}的流程（完成狀態已清空）${src.same ? "" : "；那天的上課時間不同，請調整各時段的時間"}`);
     });
     $("#f-save", el).onclick = save;
     $("#f-grid", el).addEventListener("click", (e) => {
