@@ -8191,10 +8191,16 @@ var XLSX={};function make_xlsx_lib(a){a.version="0.18.5",a.style_version="1.2.0"
     for (const c of res.classes) {
       const n = c.dates.length;
       const aoa = [
-        ["孩子", "年級", ...c.dateLabels, "出席率", "遲到", "早退", "請假", "缺席"],
-        ...c.students.map((s) => [s.name, s.gradeLabel, ...c.dates.map((d) => s.marks[d] ?? ""), s.rate ?? "—", s.late, s.early, s.leave, s.absent])
+        ["孩子", "年級", ...c.dateLabels, "出席率", "遲到", "早退", "請假", "假別", "缺席"],
+        ...c.students.map((s) => {
+          const lt = (d) => getRow("records", `R-${c.classId}-${d}-${s.studentId}`)?.leaveType || getRow("kidLeaves", `LV-${d}-${s.studentId}`)?.type || "";
+          const cell = (d) => s.marks[d] === "請假" ? ({ 事假: "事假", 病假: "病假", 其他: "其他假" }[lt(d)] || "請假") : s.marks[d] ?? "";
+          const sum = {};
+          for (const d of c.dates) if (s.marks[d] === "請假") { const t = { 事假: "事假", 病假: "病假", 其他: "其他假" }[lt(d)] || "沒填假別"; sum[t] = (sum[t] || 0) + 1; }
+          return [s.name, s.gradeLabel, ...c.dates.map(cell), s.rate ?? "—", s.late, s.early, s.leave, Object.entries(sum).map(([k, v]) => `${k}${v}`).join("、"), s.absent];
+        })
       ];
-      X.utils.book_append_sheet(wb, sheet(aoa, [10, 8, ...Array(n).fill(11), 8, 6, 6, 6, 6], [2 + n]), safeTitle(c.name, used));
+      X.utils.book_append_sheet(wb, sheet(aoa, [10, 8, ...Array(n).fill(11), 8, 6, 6, 6, 14, 6], [2 + n]), safeTitle(c.name, used));
     }
     saveBook(wb, `出席彙整_${m}.xlsx`);
   }
@@ -12349,13 +12355,14 @@ ${lines.join("\n")}`;
       kidClasses.get(k).add(cid);
     };
     for (const cid of ids) for (const k of roster(cid)) kc(k.id, cid);
-    const day = ids.some(hasDayPlan), segs = /* @__PURE__ */ new Map(), notes = /* @__PURE__ */ new Map();
+    const day = ids.some(hasDayPlan), segs = /* @__PURE__ */ new Map(), notes = /* @__PURE__ */ new Map(), leaves = /* @__PURE__ */ new Map();
     for (const [d, cs] of dayClass) for (const cid of cs) {
       const s = sessionFor(cid, d);
       if (s) for (const r of recordsOf(s.id)) {
         if (!r.attendance) continue;
         kc(r.studentId, cid);
         const key = `${r.studentId}|${d}`, cur = marks.get(key);
+        if (r.attendance === "請假" && !leaves.has(key)) leaves.set(key, r.leaveType || get("kidLeaves", `LV-${d}-${r.studentId}`)?.type || "");
         if (day) {
           if (!segs.has(key)) segs.set(key, []);
           segs.get(key).push({ start: slotFor(cid, d)?.start || s.start || "", att: r.attendance });
@@ -12376,7 +12383,7 @@ ${lines.join("\n")}`;
     const extra = [...classDays].filter((d) => !days2.includes(d));
     const cols = [...days2, ...extra].sort();
     const applies = (kid, d) => [...dayClass.get(d) || []].some((cid) => kidClasses.get(kid)?.has(cid));
-    return { sem, cols, classDays, dayClass, marks, notes, kids, applies, first, last };
+    return { sem, cols, classDays, dayClass, marks, notes, leaves, kids, applies, first, last };
   }
   var thin = { style: "thin", color: { rgb: "000000" } };
   var BORDER = { top: thin, bottom: thin, left: thin, right: thin };
@@ -12457,7 +12464,8 @@ ${lines.join("\n")}`;
       set(r, 3, k ? k.name : "", st3());
       D.cols.forEach((d, j) => {
         const off = !(k ? D.applies(k.id, d) : D.classDays.has(d)) || closedFor(ids[0], d);
-        const v = k ? MARK[D.marks.get(`${k.id}|${d}`)] ?? "" : "";
+        const mk2 = k ? D.marks.get(`${k.id}|${d}`) : "";
+        const v = !k ? "" : mk2 === "請假" ? ({ 事假: "事", 病假: "病" }[D.leaves.get(`${k.id}|${d}`)] || "假") : MARK[mk2] ?? "";      // 請假依假別：事、病，其他或沒填記「假」
         const nt = k ? D.notes.get(`${k.id}|${d}`) || { 遲到: "遲到", 早退: "早退" }[D.marks.get(`${k.id}|${d}`)] || "" : "";
         set(r, C0 + j, v, st3({ fill: off ? "E7E6E6" : void 0, color: v === "X" ? "C00000" : void 0 }), nt ? { c: [{ a: "課輔系統", t: nt }] } : {});
       });
@@ -12488,7 +12496,7 @@ ${lines.join("\n")}`;
     const rN = rSum + 3;
     const sem = D.sem;
     const span = sem.start && sem.end ? `${roc2(sem.start)}（${wdOf2(sem.start)}）～${roc2(sem.end)}（${wdOf2(sem.end)}）` : "";
-    const note = `圖例說明："1"：表示學童有到（遲到、早退也記 1）； X：表示學童曠課； 假：學童請假（假別請看課後紀錄）； 灰底：這位孩子當天沒有課
+    const note = `圖例說明："1"：表示學童有到（遲到、早退也記 1）； X：表示學童曠課； 事：事假；病：病假；假：其他假或沒有填假別； 灰底：這位孩子當天沒有課
 
 備註：
  1.到校後，須先點名，確認學童出席狀況並且做回報，若有緊急狀況請立即通知社工
@@ -15279,7 +15287,7 @@ ${lines.join("\n")}`;
   }
   function leaveSum(c, s) {
     const n = {};
-    for (const d of c.dates) if (s.marks[d] === "請假") { const t = leaveTypeOf(c.classId, d, s.studentId) || "沒填假別"; n[t] = (n[t] || 0) + 1; }
+    for (const d of c.dates) if (s.marks[d] === "請假") { const t0 = leaveTypeOf(c.classId, d, s.studentId), t = t0 === "其他" ? "其他假" : t0 || "沒填假別"; n[t] = (n[t] || 0) + 1; }
     return Object.entries(n).map(([k, v]) => `${k} ${v}`).join("、");
   }
 
