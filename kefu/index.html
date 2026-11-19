@@ -15264,10 +15264,24 @@ ${lines.join("\n")}`;
         <div class="card-body"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>孩子</th><th>年級</th>
           ${c.dateLabels.map((l) => `<th class="c">${esc(l)}</th>`).join("")}<th style="min-width:130px">出席率</th><th class="num">遲到</th><th class="num">早退</th><th class="num">請假</th><th class="num">缺席</th></tr></thead><tbody>
           ${c.students.map((s) => `<tr><td class="nowrap"><a href="#/kids/${s.studentId}">${esc(s.name)}</a>${s.inRoster ? "" : ' <span class="chip outline">已離班</span>'}</td><td>${esc(s.gradeLabel)}</td>
-            ${c.dates.map((d) => `<td class="c">${s.marks[d] ? attChip(s.marks[d]) : '<span class="muted">—</span>'}</td>`).join("")}
-            <td>${meter(s.rate)}</td><td class="num">${s.late}</td><td class="num">${s.early}</td><td class="num">${s.leave}</td><td class="num">${s.absent}</td></tr>`).join("") || `<tr><td colspan="${7 + c.dates.length}"><div class="empty small">尚未建立孩子名單</div></td></tr>`}</tbody></table></div></div></div>`).join("")}`;
+            ${c.dates.map((d) => `<td class="c">${s.marks[d] ? (s.marks[d] === "請假" ? leaveChip(c.classId, d, s.studentId) : attChip(s.marks[d])) : '<span class="muted">—</span>'}</td>`).join("")}
+            <td>${meter(s.rate)}</td><td class="num">${s.late}</td><td class="num">${s.early}</td><td class="num" title="${esc(leaveSum(c, s))}">${s.leave}</td><td class="num">${s.absent}</td></tr>`).join("") || `<tr><td colspan="${7 + c.dates.length}"><div class="empty small">尚未建立孩子名單</div></td></tr>`}</tbody></table></div></div></div>`).join("")}`;
     }
   };
+
+  // 月出席：請假顯示假別（課後紀錄的假別，沒有就看事先請假的登記）
+  function leaveTypeOf(cid, d, sid) {
+    return get("records", `R-${cid}-${d}-${sid}`)?.leaveType || get("kidLeaves", `LV-${d}-${sid}`)?.type || "";
+  }
+  function leaveChip(cid, d, sid) {
+    const t = leaveTypeOf(cid, d, sid);
+    return `<span class="att 請假" title="請假${t ? "・" + esc(t) : "（沒有填假別）"}">${t ? esc(t === "其他" ? "其他假" : t) : "請假"}</span>`;
+  }
+  function leaveSum(c, s) {
+    const n = {};
+    for (const d of c.dates) if (s.marks[d] === "請假") { const t = leaveTypeOf(c.classId, d, s.studentId) || "沒填假別"; n[t] = (n[t] || 0) + 1; }
+    return Object.entries(n).map(([k, v]) => `${k} ${v}`).join("、");
+  }
 
   // src/js/pages/kidorder.js
   var canOrder = (cid) => isSupervisor2() || get("classes", cid)?.teacherId === myTeacherId();
